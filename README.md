@@ -53,21 +53,6 @@ The mesh is then exported as an `.obj` file, ready for inspection, slicing, and 
 
 ---
 
-## Repository structure
-
-```text
-Python/
-├── Equation Driven Pottery.py
-├── Equation Driven PotteryGui.py
-├── GuiDash.py
-└── GuipyVista.py
-
-Images/
-└── pyVistaGui.jpg
-```
-
----
-
 ## Getting started
 
 ### 1. Clone the repository
@@ -245,12 +230,6 @@ You can also build more layered forms using piecewise or frequency-mixed express
 A collection of pot equations is available here:
 
 [Pot Equations Spreadsheet](https://docs.google.com/spreadsheets/d/e/2PACX-1vRYxQRyGNsDuxl4WaNONKAniyfK-77zSTJY7q4plz88dK7fTNcIbU8814u9wOJ2o2BI10GwCpFbcP3U/pubhtml?widget=true&headers=false)
-
-If you want to use the embedded version outside GitHub README rendering, here is the iframe:
-
-```html
-<iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRYxQRyGNsDuxl4WaNONKAniyfK-77zSTJY7q4plz88dK7fTNcIbU8814u9wOJ2o2BI10GwCpFbcP3U/pubhtml?widget=true&amp;headers=false"></iframe>
-```
 
 ---
 
