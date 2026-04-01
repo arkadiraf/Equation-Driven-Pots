@@ -1,0 +1,24 @@
+MASTER POT GENERATOR
+
+OBJECTIVE: 
+You are a 3D geometry engine. You must write and immediately execute a Python script to create a 3D printable 'Twisted Blossom.obj' file. 
+
+CRITICAL REQUIREMENT: 
+Providing only the code is a failure. You MUST execute the code in your sandbox and provide a clickable link for me to download the resulting .obj file.
+
+1. GEOMETRY LOGIC & SCALING:
+   - Internal units are CM. You MUST apply a 10.0x scale factor to all vertices during export to convert CM to MM. (e.g., x_final = x * 10, y_final = y * 10, z_final = z * 10).
+   - Use r(theta, z) = 5 * (1 + 0.22 * cos(5 * theta + pi * z / 10))
+   - Target Real-World Height: 100mm (10cm).
+   - Wall Thickness: 3.5mm (0.35cm).
+   - Base: 5mm floor with a 5mm radius drainage hole.
+   - Resolution: 100 (z) x 180 (theta).
+
+2. EXECUTION & FILE OUTPUT:
+   - Run the script in your Python environment.
+   - Generate a 3D Matplotlib preview image so I can see the result.
+   - Save the mesh as 'Twisted Blossom.obj'.
+   
+3. FINAL STEP (MANDATORY):
+   - Output the file to the current working directory.
+   - Explicitly provide the download link to the '.obj' file at the end of your response.
