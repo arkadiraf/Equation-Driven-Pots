@@ -233,6 +233,14 @@ A collection of pot equations is available here:
 
 ---
 
+## Gallery
+
+Below is a collection of the designs generated using the provided equations. Each model is exported as a high-resolution `.obj` file and a 3D preview.
+
+![Pot Designs Grid](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/Images/pot_designs_3xn_grid.jpg?raw=true)
+
+---
+
 ## Main parameters
 
 The generators expose several parameters that affect both geometry and printability:
@@ -285,6 +293,3 @@ This makes it possible to explore procedural form, computational design, and dig
 ## License
 
 This repository is licensed under GPL-3.0.
-
-# Equation-Driven-Pots
-A Python project that generates functional 3D-printable plant pots from equations in r(z, θ), turning mathematical surfaces into customizable, fabrication-ready objects.
