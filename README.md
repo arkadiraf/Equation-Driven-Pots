@@ -290,6 +290,29 @@ This makes it possible to explore procedural form, computational design, and dig
 
 ---
 
+* * *
+
+## Optional AI-assisted direct generation
+
+In addition to the Python scripts in this repository, you can use the included prompt file to ask an AI model to generate a 3D pot mesh directly.
+
+Prompt file:
+
+- [`3dPotGenerator.txt`](./3dPotGenerator.txt)
+
+Tested with:
+
+- Gemini Thinking mode
+- ChatGPT Thinking mode
+
+The prompt instructs the model to generate and run Python code that creates a printable `.obj` file, produces a preview image, and returns a downloadable result.
+
+This is useful if you want a fast, portable workflow for one-off pot generation without manually editing the scripts first.
+
+> This prompt-based workflow is experimental and not consistent. Results may vary between models, versions, and runs.
+
+* * *
+
 ## License
 
 This repository is licensed under GPL-3.0.
