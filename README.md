@@ -1,6 +1,6 @@
 # Equation-Driven Pots
 
-A project for generating functional 3D-printable plant pots from equations in cylindrical coordinates.
+A Python project for generating functional 3D-printable plant pots from equations in cylindrical coordinates.
 
 Instead of sculpting a pot manually, this project defines the surface mathematically with a radius function:
 
@@ -22,6 +22,10 @@ The result is a printable hollow vessel generated directly from an equation. By 
 
 ![PyVista GUI](Images/pyVistaGui.jpg)
 
+### Fusion 360 MathSweep Studio
+
+![Fusion 360 MathSweep Studio](Images/Fusion360Gui.jpg)
+
 ---
 
 ## HTML tool previews
@@ -38,7 +42,7 @@ The result is a printable hollow vessel generated directly from an equation. By 
 
 ## How it works
 
-The code evaluates a user-defined equation `r(z, θ)` over a sampled grid of height and angle values.  
+The code evaluates a user-defined equation `r(z, θ)` over a sampled grid of height and angle values.
 From that sampled surface, it generates:
 
 - an outer wall
@@ -63,6 +67,7 @@ The mesh is then exported as an `.obj` file, ready for inspection, slicing, and 
   - PyVista preview GUI
   - browser-based HTML pot designer
   - browser-based HTML sweep designer
+  - Fusion 360 parametric sweep reconstruction script
 
 ---
 
@@ -101,7 +106,7 @@ If you want everything installed:
 pip install numpy dash plotly pyvista
 ```
 
-> `tkinter` is usually included with standard Python installations.  
+> `tkinter` is usually included with standard Python installations.
 > On some Linux systems, you may need to install it separately with your package manager.
 
 ---
@@ -113,16 +118,19 @@ pip install numpy dash plotly pyvista
 Basic command-line OBJ generator.
 
 **Purpose**
+
 - Generates a pot mesh directly from a hardcoded equation
 - Exports a manifold OBJ file
 
 **Required packages**
+
 - No external packages
 - Uses Python standard library only:
   - `math`
   - `dataclasses`
 
 **Run**
+
 ```bash
 python "Python/Equation Driven Pottery.py"
 ```
@@ -134,10 +142,12 @@ python "Python/Equation Driven Pottery.py"
 Simple desktop GUI built with Tkinter.
 
 **Purpose**
+
 - Lets you enter the equation and dimensions in a form
 - Exports the generated pot as an OBJ file
 
 **Required packages**
+
 - No external pip packages
 - Uses Python standard library only:
   - `math`
@@ -146,6 +156,7 @@ Simple desktop GUI built with Tkinter.
   - `os`
 
 **Run**
+
 ```bash
 python "Python/Equation Driven PotteryGui.py"
 ```
@@ -157,10 +168,12 @@ python "Python/Equation Driven PotteryGui.py"
 Desktop GUI with PyVista-based 3D preview.
 
 **Purpose**
+
 - Generate the OBJ mesh
 - Open a rendered preview in a PyVista viewer
 
 **Required packages**
+
 - External:
   - `pyvista`
 - Standard library:
@@ -170,11 +183,13 @@ Desktop GUI with PyVista-based 3D preview.
   - `os`
 
 **Install**
+
 ```bash
 pip install pyvista
 ```
 
 **Run**
+
 ```bash
 python "Python/GuipyVista.py"
 ```
@@ -186,11 +201,13 @@ python "Python/GuipyVista.py"
 Browser-based interface using Dash and Plotly.
 
 **Purpose**
+
 - Enter an equation in a web app
 - Preview the pot in 3D
 - Export a higher-resolution OBJ file
 
 **Required packages**
+
 - External:
   - `numpy`
   - `dash`
@@ -202,16 +219,58 @@ Browser-based interface using Dash and Plotly.
   - `pathlib`
 
 **Install**
+
 ```bash
 pip install numpy dash plotly
 ```
 
 **Run**
+
 ```bash
 python "Python/GuiDash.py"
 ```
 
 Then open the local Dash address shown in the terminal.
+
+---
+
+### [`Python/Fusion360/3d MathSweep Studio.py`](./Python/Fusion360/3d%20MathSweep%20Studio.py)
+
+Fusion 360 script for reconstructing equation-driven swept geometry directly inside Fusion.
+
+**Purpose**
+
+- Rebuild a 3D swept form in Fusion 360 from a mathematical path and a base profile
+- Make the design easier to inspect, edit, and continue modeling as native Fusion geometry
+- Provide a more CAD-friendly workflow than importing a mesh generated from the sweep designer
+
+This tool is useful when the designer wants to reconstruct the 3D shape directly in Fusion 360 instead of importing the mesh file exported by the sweep designer. Working natively in Fusion makes it easier to continue editing, combining features, and adapting the result for downstream CAD work.
+
+**How to add it in Fusion 360**
+
+1. Open **Fusion 360**.
+2. Go to **Utilities**.
+3. Open **Add-Ins**.
+4. Open **Scripts and Add-Ins**.
+5. Click **+ New Script**.
+6. Copy or place `3d MathSweep Studio.py` into the created script folder.
+7. Return to **Scripts and Add-Ins**, select the script, and run it.
+
+**Notes**
+
+- The script is heavier on Fusion 360 than the mesh-based workflow.
+- More complex profiles and higher section counts can noticeably slow generation.
+- The Fusion workflow is best when you want editable CAD geometry rather than a lightweight imported mesh.
+
+**Required packages**
+
+- No external pip packages
+- Runs inside Fusion 360's Python environment
+- Uses Fusion API modules such as:
+  - `adsk.core`
+  - `adsk.fusion`
+  - `math`
+  - `traceback`
 
 ---
 
@@ -222,6 +281,7 @@ Then open the local Dash address shown in the terminal.
 Browser-based pot designer for creating printable 3D pots directly in HTML and JavaScript.
 
 **Purpose**
+
 - Works similarly to the Python pot generator
 - Lets you adjust the pot equation and geometry in the browser
 - Exports the generated design as OBJ or STL
@@ -233,6 +293,7 @@ Browser-based pot designer for creating printable 3D pots directly in HTML and J
 Browser-based 3D sweep designer for creating guided swept forms.
 
 **Purpose**
+
 - Lets you build more complex 3D swept shapes interactively
 - Exports the generated design as OBJ or STL
 - Can be used as a starting point for more intricate pot designs with additional work
@@ -272,7 +333,8 @@ A collection of pot equations is available here:
 
 ## Gallery
 
-Below is a collection of the designs generated using the provided equations. Each model is exported as a high-resolution `.obj` file and a 3D preview.
+Below is a collection of the designs generated using the provided equations.
+Each model is exported as a high-resolution `.obj` file and a 3D preview.
 
 ![Pot Designs Grid](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/Images/pot_designs_3xn_grid.jpg?raw=true)
 
@@ -296,7 +358,9 @@ Higher section counts produce smoother meshes, but also larger files and slower 
 
 ## Output
 
-The scripts and HTML tools export `.obj` files, and the HTML tools can also export `.stl` files. These can be opened in tools such as:
+The scripts and HTML tools export `.obj` files, and the HTML tools can also export `.stl` files.
+
+These can be opened in tools such as:
 
 - Blender
 - MeshLab
@@ -320,10 +384,8 @@ For best results:
 
 ## Why this project?
 
-Equation-Driven Pots turns mathematics into fabrication.  
-It treats equations not just as descriptions, but as design tools for producing real, usable objects.
-
-This makes it possible to explore procedural form, computational design, digital fabrication, and browser-based interactive design in a simple workflow.
+Equation-Driven Pots turns mathematics into fabrication.
+It treats equations not just as descriptions, but as design tools for producing real, usable objects. This makes it possible to explore procedural form, computational design, digital fabrication, and browser-based interactive design in a simple workflow.
 
 ---
 
@@ -332,10 +394,12 @@ This makes it possible to explore procedural form, computational design, digital
 In addition to the Python and HTML tools in this repository, you can also use AI to generate a 3D pot mesh directly.
 
 **AI workflows**
+
 - Feed the Python pot-generation scripts to a capable AI model
 - Use the included prompt file: [`3dPotGenerator.txt`](./3dPotGenerator.txt)
 
 **Tested with**
+
 - Gemini Thinking mode
 - ChatGPT Thinking mode
 
