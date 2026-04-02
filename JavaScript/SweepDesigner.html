@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3D Sweep Designer</title>
+    <style>
+        :root { --bg: #f4f7f6; --panel: #ffffff; --primary: #e67e22; --secondary: #2c3e50; --success: #27ae60; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: var(--bg); }
+        #sidebar { width: 420px; background: var(--panel); padding: 25px; box-shadow: 2px 0 15px rgba(0,0,0,0.1); overflow-y: auto; z-index: 100; }
+        .input-group { margin-bottom: 12px; }
+        label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: #444; }
+        input, textarea, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 0.9rem; }
+        .checkbox-group { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; background: #fff3e6; padding: 10px; border-radius: 6px; border: 1px solid #e67e22; }
+        .checkbox-group input { width: auto; cursor: pointer; }
+        textarea { height: 60px; font-family: 'Courier New', monospace; background: #fafafa; }
+        button { width: 100%; padding: 12px; margin-top: 8px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; transition: 0.2s; }
+        .btn-preview { background: var(--primary); }
+        .btn-obj { background: var(--secondary); }
+        .btn-stl { background: var(--success); }
+        button:hover { filter: brightness(1.05); }
+        #viewer-container { flex-grow: 1; background: #ffffff; position: relative; }
+        #status { position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.7); color: white; padding: 8px 18px; border-radius: 20px; font-size: 11px; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .section-title { font-size: 0.7rem; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin: 15px 0 8px 0; border-bottom: 1px solid #eee; padding-bottom: 3px; }
+    </style>
+</head>
+<body>
+
+<div id="sidebar">
+    <h2 style="margin-top:0; color:var(--secondary)">3D Sweep Designer</h2>
+    
+    <div class="input-group">
+        <label>Topology Path</label>
+        <select id="pathType" onchange="applyPathPreset()">
+            <option value="Mobius Curve">Mobius Curve</option>
+            <option value="Torus Knot">Torus Knot</option>
+            <option value="Flower Ring">Flower Ring</option>
+            <option value="Braided Loop">Braided Loop</option>
+        </select>
+    </div>
+
+    <div class="input-group">
+        <label>Profile Preset (Ø 6cm Base)</label>
+        <select id="profileSelect" onchange="applyProfilePreset()">
+            <option value="Circle">Circle</option>
+            <option value="DoublePetal">Double Petal</option>
+            <option value="ThreePetal">Triangle</option>
+            <option value="Square">Square</option>
+            <option value="FivePetal">Star</option>
+        </select>
+    </div>
+
+    <textarea id="equation">3.0</textarea>
+
+    <div class="section-title">Geometric Basis</div>
+    <div class="grid-inputs">
+        <div class="input-group"><label>Path Diam (cm)</label><input type="number" id="diameter" value="20"></div>
+        <div class="input-group"><label>Z-Stretch</label><input type="number" id="zStretch" value="10.0" step="0.1"></div>
+    </div>
+
+    <div id="dynamic-params"></div>
+
+    <div class="section-title">Resolution (Complexity)</div>
+    <div class="grid-inputs">
+        <div class="input-group"><label>Path Steps</label><input type="number" id="sections" value="400"></div>
+        <div class="input-group"><label>Radial Points</label><input type="number" id="radialRes" value="48"></div>
+    </div>
+
+    <div class="section-title">Fabrication Options</div>
+    <div class="checkbox-group">
+        <input type="checkbox" id="enableHollow" onchange="updatePreview()" checked>
+        <label for="enableHollow" style="margin:0; color:#d35400;">Enable Hollow Shell</label>
+    </div>
+    <div class="input-group">
+        <label>Wall Thickness (cm)</label>
+        <input type="number" id="shellThick" value="0.35" step="0.05" onchange="updatePreview()">
+    </div>
+    
+    <button class="btn-preview" onclick="updatePreview()">GENERATE 3D MODEL</button>
+    <button class="btn-obj" onclick="exportOBJ()">EXPORT .OBJ</button>
+    <button class="btn-stl" onclick="exportSTL()">EXPORT .STL (PRINT READY)</button>
+</div>
+
+<div id="viewer-container">
+    <div id="status">System Online</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+    let scene, camera, renderer, controls, currentMesh;
+
+    const pathLib = {
+        "Mobius Curve": { params: [] },
+        "Torus Knot": { params: [{id:'p',label:'p (Main)',val:2},{id:'q',label:'q (Secondary)',val:3},{id:'amp',label:'Amplitude',val:3.5}] },
+        "Flower Ring": { params: [{id:'n',label:'Petals (n)',val:5},{id:'amp',label:'Amplitude',val:3}] },
+        "Braided Loop": { params: [{id:'n1',label:'Base Freq (n1)',val:3},{id:'amp1',label:'Amp 1',val:2.5},{id:'amp2',label:'Amp 2',val:1.0}] }
+    };
+
+    function applyPathPreset() {
+        const key = document.getElementById('pathType').value;
+        const data = pathLib[key];
+        const container = document.getElementById('dynamic-params');
+        container.innerHTML = data.params.map(p => `
+            <div class="input-group"><label>${p.label}</label><input type="number" id="${p.id}" value="${p.val}" step="0.1" onchange="updatePreview()"></div>
+        `).join('');
+        updatePreview();
+    }
+
+    function applyProfilePreset() {
+        // Base constant updated to 3.0 for 6cm Diameter
+        const p = { 
+            "Circle": "3.0", 
+            "DoublePetal": "3.0*(1+0.4*cos(2*theta))", 
+            "ThreePetal": "3.0*(1+0.3*cos(3*theta))", 
+            "Square": "3.0*(1+0.2*cos(4*theta))", 
+            "FivePetal": "3.0*(1+0.3*cos(5*theta))" 
+        };
+        document.getElementById('equation').value = p[document.getElementById('profileSelect').value];
+        updatePreview();
+    }
+
+    function getPathPoint(t, cfg) {
+        const rx = cfg.diameter * 0.5, zA = cfg.zStretch, pi = Math.PI, sin = Math.sin, cos = Math.cos;
+        if (cfg.type === 'Mobius Curve') {
+            let phi = 0.5 * t;
+            return new THREE.Vector3((rx + zA * cos(phi)) * cos(t), (rx + zA * cos(phi)) * sin(t), zA * sin(phi));
+        } else if (cfg.type === 'Torus Knot') {
+            return new THREE.Vector3((rx + cfg.amp * cos(cfg.q * t)) * cos(cfg.p * t), (rx + cfg.amp * cos(cfg.q * t)) * sin(cfg.p * t), zA * sin(cfg.q * t));
+        } else if (cfg.type === 'Flower Ring') {
+            return new THREE.Vector3((rx + cfg.amp * cos(cfg.n * t)) * cos(t), (rx + cfg.amp * cos(cfg.n * t)) * sin(t), zA * sin(cfg.n * t));
+        } else if (cfg.type === 'Braided Loop') {
+            let n2 = cfg.n1 + 3, rad = rx + cfg.amp1 * cos(cfg.n1 * t) + cfg.amp2 * cos(n2 * t);
+            return new THREE.Vector3(rad * cos(t), rad * sin(t), zA * sin(cfg.n1 * t) + cfg.amp2 * sin(n2 * t));
+        }
+    }
+
+    function buildMesh(cfg, scale) {
+        const vertices = [], indices = [], steps = cfg.sections, resR = cfg.radialRes;
+        const pi = Math.PI, sin = Math.sin, cos = Math.cos;
+        const maxT = (cfg.type === 'Mobius Curve') ? 4 * pi : 2 * pi;
+
+        const pts = [];
+        for (let i = 0; i <= steps; i++) pts.push(getPathPoint((i/steps)*maxT, cfg));
+
+        let frms = [];
+        let tang = new THREE.Vector3().subVectors(pts[1], pts[0]).normalize();
+        let norm = new THREE.Vector3(1,0,0);
+        if (Math.abs(tang.x) > 0.9) norm.set(0,1,0);
+        let bino = new THREE.Vector3().crossVectors(tang, norm).normalize();
+        norm.crossVectors(bino, tang).normalize();
+
+        for (let i = 0; i <= steps; i++) {
+            let pNext = pts[(i+1)%(steps+1)], pPrev = pts[(i-1+steps+1)%(steps+1)];
+            let cTang = new THREE.Vector3().subVectors(pNext, pPrev).normalize();
+            let axis = new THREE.Vector3().crossVectors(tang, cTang);
+            if (axis.length() > 0.0001) {
+                let quat = new THREE.Quaternion().setFromAxisAngle(axis.normalize(), Math.acos(Math.min(Math.max(tang.dot(cTang), -1), 1)));
+                norm.applyQuaternion(quat); bino.applyQuaternion(quat);
+            }
+            tang.copy(cTang);
+            frms.push({p: pts[i], n: norm.clone(), b: bino.clone()});
+        }
+
+        let err = Math.atan2(frms[steps].n.dot(frms[0].b), frms[steps].n.dot(frms[0].n));
+
+        for (let i = 0; i < steps; i++) {
+            let corr = -(i/steps)*err;
+            let n = frms[i].n.clone().multiplyScalar(cos(corr)).add(frms[i].b.clone().multiplyScalar(sin(corr)));
+            let b = frms[i].b.clone().multiplyScalar(cos(corr)).sub(frms[i].n.clone().multiplyScalar(sin(corr)));
+            for (let j = 0; j < resR; j++) {
+                let theta = (j/resR)*2*pi, r;
+                try { r = eval(cfg.eq); } catch(e) { r = 3.0; }
+                let vO = frms[i].p.clone().add(n.clone().multiplyScalar(r * cos(theta))).add(b.clone().multiplyScalar(r * sin(theta)));
+                vertices.push(vO.x*scale, vO.y*scale, vO.z*scale);
+            }
+        }
+        if (cfg.doHollow) {
+            for (let i = 0; i < steps; i++) {
+                let corr = -(i/steps)*err;
+                let n = frms[i].n.clone().multiplyScalar(cos(corr)).add(frms[i].b.clone().multiplyScalar(sin(corr)));
+                let b = frms[i].b.clone().multiplyScalar(cos(corr)).sub(frms[i].n.clone().multiplyScalar(sin(corr)));
+                for (let j = 0; j < resR; j++) {
+                    let theta = (j/resR)*2*pi, r;
+                    try { r = eval(cfg.eq); } catch(e) { r = 3.0; }
+                    let rIn = Math.max(0.01, r - cfg.shellThick);
+                    let vI = frms[i].p.clone().add(n.clone().multiplyScalar(rIn * cos(theta))).add(b.clone().multiplyScalar(rIn * sin(theta)));
+                    vertices.push(vI.x*scale, vI.y*scale, vI.z*scale);
+                }
+            }
+        }
+
+        for (let i = 0; i < steps; i++) {
+            let nxtI = (i + 1) % steps;
+            for (let j = 0; j < resR; j++) {
+                let nxtJ = (j + 1) % resR;
+                let o1 = i*resR+j, o2 = nxtI*resR+j, o3 = nxtI*resR+nxtJ, o4 = i*resR+nxtJ;
+                indices.push(o1, o2, o3, o1, o3, o4);
+                if (cfg.doHollow) {
+                    let vOff = steps * resR;
+                    let i1 = vOff + i*resR+j, i2 = vOff + nxtI*resR+j, i3 = vOff + nxtI*resR+nxtJ, i4 = vOff + i*resR+nxtJ;
+                    indices.push(i1, i3, i2, i1, i4, i3);
+                }
+            }
+        }
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        geo.setIndex(indices); geo.computeVertexNormals();
+        return geo;
+    }
+
+    function readCfg() {
+        return {
+            type: document.getElementById('pathType').value, eq: document.getElementById('equation').value,
+            diameter: parseFloat(document.getElementById('diameter').value), zStretch: parseFloat(document.getElementById('zStretch').value),
+            sections: parseInt(document.getElementById('sections').value), radialRes: parseInt(document.getElementById('radialRes').value),
+            shellThick: parseFloat(document.getElementById('shellThick').value), doHollow: document.getElementById('enableHollow').checked,
+            p: parseFloat(document.getElementById('p')?.value || 2), q: parseFloat(document.getElementById('q')?.value || 3),
+            n: parseFloat(document.getElementById('n')?.value || 5), n1: parseFloat(document.getElementById('n1')?.value || 3),
+            amp: parseFloat(document.getElementById('amp')?.value || 3.5), amp1: parseFloat(document.getElementById('amp1')?.value || 2.5),
+            amp2: parseFloat(document.getElementById('amp2')?.value || 1.0)
+        };
+    }
+
+    function updatePreview() {
+        if (currentMesh) scene.remove(currentMesh);
+        const geo = buildMesh(readCfg(), 1.0);
+        currentMesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({color: 0xbc9b70, side: THREE.DoubleSide, roughness: 0.4}));
+        scene.add(currentMesh);
+        document.getElementById('status').innerText = "Wide Profile Active (Ø 6cm).";
+    }
+
+    function exportOBJ() {
+        const geo = buildMesh(readCfg(), 10.0);
+        const pos = geo.attributes.position.array, idx = geo.index.array;
+        let obj = "# 3D Sweep Designer Export\n";
+        for(let i=0; i<pos.length; i+=3) obj += `v ${pos[i].toFixed(4)} ${pos[i+1].toFixed(4)} ${pos[i+2].toFixed(4)}\n`;
+        for(let i=0; i<idx.length; i+=3) obj += `f ${idx[i]+1} ${idx[i+1]+1} ${idx[i+2]+1}\n`;
+        download(obj, "sweep_design.obj");
+    }
+
+    function exportSTL() {
+        const geo = buildMesh(readCfg(), 10.0);
+        const pos = geo.attributes.position.array, idx = geo.index.array;
+        const buf = new ArrayBuffer(84 + (idx.length / 3) * 50);
+        const view = new DataView(buf);
+        view.setUint32(80, idx.length / 3, true);
+        for (let i = 0, offset = 84; i < idx.length; i += 3, offset += 50) {
+            for (let j = 0; j < 3; j++) {
+                const vB = idx[i + j] * 3;
+                view.setFloat32(offset + 12 + j * 12, pos[vB], true);
+                view.setFloat32(offset + 12 + j * 12 + 4, pos[vB + 1], true);
+                view.setFloat32(offset + 12 + j * 12 + 8, pos[vB + 2], true);
+            }
+        }
+        download(new Blob([buf]), "sweep_design.stl");
+    }
+
+    function download(content, name) {
+        const link = document.createElement('a');
+        link.href = (content instanceof Blob) ? URL.createObjectURL(content) : URL.createObjectURL(new Blob([content]));
+        link.download = name; link.click();
+    }
+
+    function initThree() {
+        scene = new THREE.Scene(); scene.background = new THREE.Color(0xfafafa);
+        const container = document.getElementById('viewer-container');
+        camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(65, 65, 65);
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+        const l = new THREE.PointLight(0xffffff, 1); l.position.set(30, 60, 30); scene.add(l);
+        function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
+        animate();
+    }
+    window.onload = () => { initThree(); applyPathPreset(); applyProfilePreset(); };
+</script>
+</body>
+</html>
