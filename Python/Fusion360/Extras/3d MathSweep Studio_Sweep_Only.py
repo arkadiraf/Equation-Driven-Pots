@@ -2,17 +2,14 @@ import adsk.core, adsk.fusion, traceback
 import math
 
 # -----------------------------------------------------------------------------
-# MathSweep Studio - clean body generation
-# - Sweep mode: native Fusion sweep along full path.
-# - Loft Sections mode: builds the body section-by-section using consecutive
-#   profile lofts that are joined into one solid. This is more primitive and
-#   often more robust when a single sweep self-intersects.
-# - Circle profile uses a native sketch circle instead of a segmented polygon.
+# Clean sweep-based MathSweep Studio.
+# - Uses a true continuous sweep body instead of node/ring thickening.
+# - Uses a native circle profile when profileType == 'Circle'.
+# - Keeps sampled r(theta) profiles for petal variants.
 # -----------------------------------------------------------------------------
 defaultName = 'Segmented Sweep Shape'
 defaultPathType = 'Mobius Curve'
 defaultProfileType = 'Circle'
-defaultBodyMethod = 'Sweep'
 defaultDiameter = 20.0          # cm
 defaultZStretch = 10.0          # cm
 defaultPathSegments = 120
@@ -109,8 +106,6 @@ class ShapeCommandExecuteHandler(adsk.core.CommandEventHandler):
                     shape.pathType = input.selectedItem.name
                 elif input.id == 'profileType' and getattr(input, 'selectedItem', None):
                     shape.profileType = input.selectedItem.name
-                elif input.id == 'bodyMethod' and getattr(input, 'selectedItem', None):
-                    shape.bodyMethod = input.selectedItem.name
                 elif input.id == 'diameter':
                     shape.diameter = unitsMgr.evaluateExpression(input.expression, 'cm')
                 elif input.id == 'zStretch':
@@ -172,12 +167,7 @@ class ShapeCommandInputChangedHandler(adsk.core.InputChangedEventHandler):
             changedInput = args.input
             inputs = args.inputs
 
-            if changedInput.id not in [
-                'pathType', 'profileType', 'bodyMethod', 'diameter', 'zStretch',
-                'profileRadius', 'profileEquation', 'generateSolid', 'pathSegments',
-                'profileSegments', 'internalLoops', 'mainLoops', 'secondaryLoops',
-                'amplitude', 'petals', 'flowerAmplitude', 'baseFreq', 'amp1', 'amp2'
-            ]:
+            if changedInput.id not in ['pathType', 'profileType', 'diameter', 'zStretch', 'profileRadius', 'profileEquation', 'generateSolid', 'pathSegments', 'profileSegments', 'internalLoops', 'mainLoops', 'secondaryLoops', 'amplitude', 'petals', 'flowerAmplitude', 'baseFreq', 'amp1', 'amp2']:
                 return
 
             pathInput = inputs.itemById('pathType')
@@ -220,13 +210,6 @@ class ShapeCommandInputChangedHandler(adsk.core.InputChangedEventHandler):
             eqInput = inputs.itemById('profileEquation')
             if changedInput.id == 'profileType' and eqInput:
                 eqInput.value = PROFILE_PRESET_EQUATIONS.get(profileType, defaultProfileEquation)
-
-            bodyMethodInput = inputs.itemById('bodyMethod')
-            bodyMethod = bodyMethodInput.selectedItem.name if bodyMethodInput and bodyMethodInput.selectedItem else defaultBodyMethod
-            pathSegmentsInput = inputs.itemById('pathSegments')
-            if changedInput.id == 'bodyMethod' and pathSegmentsInput:
-                if bodyMethod == 'Loft Sections':
-                    pathSegmentsInput.value = 25
 
             if profileSegmentsInput:
                 profileSegmentsInput.isEnabled = (profileType != 'Circle')
@@ -283,20 +266,13 @@ class ShapeCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             profileItems.add('4 Petals', False, '')
             profileItems.add('5 Petals', False, '')
 
-            bodyMethodInput = inputs.addDropDownCommandInput(
-                'bodyMethod', 'Body Method', adsk.core.DropDownStyles.TextListDropDownStyle
-            )
-            bodyMethodItems = bodyMethodInput.listItems
-            bodyMethodItems.add('Sweep', True, '')
-            bodyMethodItems.add('Loft Sections', False, '')
-
             eqInput = inputs.addStringValueInput('profileEquation', 'r(theta) Equation', defaultProfileEquation)
             eqInput.tooltip = 'Use R, theta, pi, sin, cos, tan, abs, min, max. Example: R*(1+0.3*cos(5*theta))'
 
             inputs.addValueInput('diameter', 'Path Diameter', 'cm', adsk.core.ValueInput.createByReal(defaultDiameter))
             inputs.addValueInput('zStretch', 'Z Stretch', 'cm', adsk.core.ValueInput.createByReal(defaultZStretch))
             inputs.addValueInput('profileRadius', 'Base Profile Radius', 'cm', adsk.core.ValueInput.createByReal(defaultProfileRadius))
-            inputs.addBoolValueInput('generateSolid', 'Generate 3D Body', True, '', defaultGenerateSolid)
+            inputs.addBoolValueInput('generateSolid', 'Generate 3D Sweep Body', True, '', defaultGenerateSolid)
 
             inputs.addIntegerSpinnerCommandInput('pathSegments', 'Path Segments', 12, 2000, 1, defaultPathSegments)
             inputs.addIntegerSpinnerCommandInput('profileSegments', 'Base Shape Resolution', 6, 360, 1, defaultProfileSegments)
@@ -319,7 +295,6 @@ class ShapeCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             inputs.itemById('baseFreq').isVisible = False
             inputs.itemById('amp1').isVisible = False
             inputs.itemById('amp2').isVisible = False
-            inputs.itemById('profileSegments').isEnabled = False
 
             shape = ShapeGenerator()
             shape.buildFromInputs(inputs)
@@ -333,7 +308,6 @@ class ShapeGenerator:
         self._shapeName = defaultName
         self._pathType = defaultPathType
         self._profileType = defaultProfileType
-        self._bodyMethod = defaultBodyMethod
         self._diameter = defaultDiameter
         self._zStretch = defaultZStretch
         self._pathSegments = defaultPathSegments
@@ -374,14 +348,6 @@ class ShapeGenerator:
     @profileType.setter
     def profileType(self, value):
         self._profileType = str(value)
-
-    @property
-    def bodyMethod(self):
-        return self._bodyMethod
-
-    @bodyMethod.setter
-    def bodyMethod(self, value):
-        self._bodyMethod = str(value)
 
     @property
     def diameter(self):
@@ -600,19 +566,6 @@ class ShapeGenerator:
             pts.append(self.pointAt(t))
         return pts
 
-    def rotateAroundAxis(self, vec, axis, angle):
-        axis = normalize(axis)
-        c = math.cos(angle)
-        s = math.sin(angle)
-        term1 = scaled_vector(vec, c)
-        term2 = scaled_vector(cross(axis, vec), s)
-        term3 = scaled_vector(axis, dot(axis, vec) * (1.0 - c))
-        return adsk.core.Vector3D.create(
-            term1.x + term2.x + term3.x,
-            term1.y + term2.y + term3.y,
-            term1.z + term2.z + term3.z
-        )
-
     def buildTransportFrames(self, points):
         count = len(points)
         if count < 3:
@@ -670,6 +623,19 @@ class ShapeGenerator:
             frames.append({'p': points[i], 't': tangents[i], 'n': corrected_normals[i], 'b': corrected_binormals[i]})
         return frames
 
+    def rotateAroundAxis(self, vec, axis, angle):
+        axis = normalize(axis)
+        c = math.cos(angle)
+        s = math.sin(angle)
+        term1 = scaled_vector(vec, c)
+        term2 = scaled_vector(cross(axis, vec), s)
+        term3 = scaled_vector(axis, dot(axis, vec) * (1.0 - c))
+        return adsk.core.Vector3D.create(
+            term1.x + term2.x + term3.x,
+            term1.y + term2.y + term3.y,
+            term1.z + term2.z + term3.z
+        )
+
     def createPreviewPathSketch(self, targetComp, path_points):
         sketches = targetComp.sketches
         sketch = sketches.add(targetComp.xYConstructionPlane)
@@ -703,11 +669,36 @@ class ShapeGenerator:
         except:
             pass
 
+        if self.profileType == 'Circle':
+            points = []
+            sample_count = max(24, self.profileSegments)
+            for j in range(sample_count):
+                theta = 2.0 * math.pi * float(j) / float(sample_count)
+                offset_n = scaled_vector(frame['n'], self.profileRadius * math.cos(theta))
+                offset_b = scaled_vector(frame['b'], self.profileRadius * math.sin(theta))
+                points.append(adsk.core.Point3D.create(
+                    frame['p'].x + offset_n.x + offset_b.x,
+                    frame['p'].y + offset_n.y + offset_b.y,
+                    frame['p'].z + offset_n.z + offset_b.z
+                ))
+            lines = sketch.sketchCurves.sketchLines
+            prev = None
+            first = None
+            for pt in points:
+                sp = sketch.sketchPoints.add(pt)
+                if first is None:
+                    first = sp
+                if prev is not None:
+                    lines.addByTwoPoints(prev, sp)
+                prev = sp
+            if prev and first:
+                lines.addByTwoPoints(prev, first)
+            return sketch
+
         points = []
-        sample_count = max(24, self.profileSegments) if self.profileType == 'Circle' else self.profileSegments
-        for j in range(sample_count):
-            theta = 2.0 * math.pi * float(j) / float(sample_count)
-            r = self.profileRadius if self.profileType == 'Circle' else self.profileRadiusAt(theta)
+        for j in range(self.profileSegments):
+            theta = 2.0 * math.pi * float(j) / float(self.profileSegments)
+            r = self.profileRadiusAt(theta)
             offset_n = scaled_vector(frame['n'], r * math.cos(theta))
             offset_b = scaled_vector(frame['b'], r * math.sin(theta))
             points.append(adsk.core.Point3D.create(
@@ -730,7 +721,7 @@ class ShapeGenerator:
             lines.addByTwoPoints(prev, first)
         return sketch
 
-    def createPerpendicularPlane(self, targetComp, point, tangentVec, name_suffix):
+    def createPerpendicularStartPlane(self, targetComp, startPoint, tangentVec):
         planes = targetComp.constructionPlanes
         sketches = targetComp.sketches
 
@@ -751,12 +742,13 @@ class ShapeGenerator:
             return None
 
         refSize = max(self.diameter * 0.2, self.profileRadius * 2.0, 0.5)
-        p1 = point
-        p2 = add_point_vec(point, scaled_vector(side, refSize))
-        p3 = add_point_vec(point, scaled_vector(normal_in_plane, refSize))
+
+        p1 = startPoint
+        p2 = add_point_vec(startPoint, scaled_vector(side, refSize))
+        p3 = add_point_vec(startPoint, scaled_vector(normal_in_plane, refSize))
 
         helperSketch = sketches.add(targetComp.xYConstructionPlane)
-        helperSketch.name = self.shapeName + ' Plane Helper ' + name_suffix
+        helperSketch.name = self.shapeName + ' Start Plane Helper'
         try:
             helperSketch.is3D = True
         except:
@@ -774,7 +766,7 @@ class ShapeGenerator:
         planeInput = planes.createInput()
         planeInput.setByThreePoints(sp1, sp2, sp3)
         plane = planes.add(planeInput)
-        plane.name = self.shapeName + ' Plane ' + name_suffix
+        plane.name = self.shapeName + ' Start Plane'
         return plane
 
     def createSweepPath(self, targetComp, path_points):
@@ -803,10 +795,11 @@ class ShapeGenerator:
                 first_line = line
             prev_sketch_point = next_sketch_point
 
-        if self.isClosedPath() and len(path_points) > 2 and not self.pointsAreClose(path_points[0], path_points[-1]):
-            close_line = lines.addByTwoPoints(prev_sketch_point, first_sketch_point)
-            if first_line is None:
-                first_line = close_line
+        if self.isClosedPath() and len(path_points) > 2:
+            if not self.pointsAreClose(path_points[0], path_points[-1]):
+                close_line = lines.addByTwoPoints(prev_sketch_point, first_sketch_point)
+                if first_line is None:
+                    first_line = close_line
 
         if not first_line:
             return sketch, None
@@ -819,13 +812,13 @@ class ShapeGenerator:
 
         return sketch, path
 
-    def createProfileSketchOnPlane(self, targetComp, plane, frame, name_suffix):
-        if not plane:
+    def createSweepProfileSketch(self, targetComp, startPlane, frame):
+        if not startPlane:
             return None, None
 
         sketches = targetComp.sketches
-        sketch = sketches.add(plane)
-        sketch.name = self.shapeName + ' Section ' + name_suffix
+        sketch = sketches.add(startPlane)
+        sketch.name = self.shapeName + ' Sweep Profile'
 
         if self.profileType == 'Circle':
             center2d = sketch.modelToSketchSpace(frame['p'])
@@ -879,70 +872,18 @@ class ShapeGenerator:
         if sweep and sweep.bodies.count > 0:
             body = sweep.bodies.item(0)
             body.name = self.shapeName + ' Body'
-            self.cleanupHelperGeometry(targetComp)
             return body
         return None
 
-    def createLoftSectionBody(self, targetComp, frames):
-        if len(frames) < 2:
-            return None
-
-        lofts = targetComp.features.loftFeatures
-        base_body = None
-        is_closed = self.isClosedPath()
-        profile_refs = []
-
-        # Build each section exactly once per frame using the transported frame tangent.
-        # Reusing the same section at shared points prevents gaps between neighboring loft spans,
-        # which was especially visible for circles.
-        for i, frame in enumerate(frames):
-            tangent = frame['t']
-            if vector_length(tangent) < 1e-8:
-                continue
-            plane = self.createPerpendicularPlane(targetComp, frame['p'], tangent, str(i))
-            if not plane:
-                profile_refs.append(None)
-                continue
-            _, profile = self.createProfileSketchOnPlane(targetComp, plane, frame, str(i))
-            profile_refs.append(profile)
-
-        pair_count = len(frames) if is_closed else (len(frames) - 1)
-        for i in range(pair_count):
-            j = (i + 1) % len(frames)
-            profile0 = profile_refs[i] if i < len(profile_refs) else None
-            profile1 = profile_refs[j] if j < len(profile_refs) else None
-            if not profile0 or not profile1:
-                continue
-
-            operation = adsk.fusion.FeatureOperations.NewBodyFeatureOperation if base_body is None else adsk.fusion.FeatureOperations.JoinFeatureOperation
-            loftInput = lofts.createInput(operation)
-            loftInput.loftSections.add(profile0)
-            loftInput.loftSections.add(profile1)
-            try:
-                loftInput.isSolid = True
-            except:
-                pass
-            try:
-                loftInput.isClosed = False
-            except:
-                pass
-
-            loftFeature = lofts.add(loftInput)
-            if loftFeature and loftFeature.bodies.count > 0 and base_body is None:
-                base_body = loftFeature.bodies.item(0)
-                base_body.name = self.shapeName + ' Body'
-
-        return base_body
-
     def cleanupExistingGeometry(self, targetComp):
         name_prefixes = [
+            self.shapeName + ' Path',
             self.shapeName + ' Sweep Path',
             self.shapeName + ' Path Preview',
             self.shapeName + ' Base Profile Preview',
             self.shapeName + ' Sweep Profile',
-            self.shapeName + ' Plane Helper ',
-            self.shapeName + ' Plane ',
-            self.shapeName + ' Section ',
+            self.shapeName + ' Start Plane Helper',
+            self.shapeName + ' Start Plane',
             self.shapeName + ' Body'
         ]
 
@@ -970,44 +911,13 @@ class ShapeGenerator:
         except:
             pass
 
-
-
-    def cleanupHelperGeometry(self, targetComp):
-        helper_prefixes = [
-            self.shapeName + ' Sweep Path',
-            self.shapeName + ' Path Preview',
-            self.shapeName + ' Base Profile Preview',
-            self.shapeName + ' Sweep Profile',
-            self.shapeName + ' Plane Helper ',
-            self.shapeName + ' Plane ',
-            self.shapeName + ' Section '
-        ]
-
-        try:
-            for i in range(targetComp.sketches.count - 1, -1, -1):
-                sketch = targetComp.sketches.item(i)
-                if any(sketch.name.startswith(prefix) for prefix in helper_prefixes):
-                    sketch.deleteMe()
-        except:
-            pass
-
-        try:
-            for i in range(targetComp.constructionPlanes.count - 1, -1, -1):
-                plane = targetComp.constructionPlanes.item(i)
-                if any(plane.name.startswith(prefix) for prefix in helper_prefixes):
-                    plane.deleteMe()
-        except:
-            pass
-
     def buildFromInputs(self, inputs):
         unitsMgr = app.activeProduct.unitsManager
         self.shapeName = inputs.itemById('shapeName').value
         pathInput = inputs.itemById('pathType')
         profileInput = inputs.itemById('profileType')
-        methodInput = inputs.itemById('bodyMethod')
         self.pathType = pathInput.selectedItem.name if pathInput and pathInput.selectedItem else defaultPathType
         self.profileType = profileInput.selectedItem.name if profileInput and profileInput.selectedItem else defaultProfileType
-        self.bodyMethod = methodInput.selectedItem.name if methodInput and methodInput.selectedItem else defaultBodyMethod
         self.diameter = unitsMgr.evaluateExpression(inputs.itemById('diameter').expression, 'cm')
         self.zStretch = unitsMgr.evaluateExpression(inputs.itemById('zStretch').expression, 'cm')
         self.profileRadius = unitsMgr.evaluateExpression(inputs.itemById('profileRadius').expression, 'cm')
@@ -1051,39 +961,28 @@ class ShapeGenerator:
             if not self.generateSolid:
                 return
 
-            body = None
-            if self.bodyMethod == 'Loft Sections':
-                body = self.createLoftSectionBody(targetComp, frames)
-                if not body:
-                    ui.messageBox('Failed to create body with Loft Sections method.')
-                    return
-            else:
-                _, sweepPath = self.createSweepPath(targetComp, path_points)
-                if not sweepPath:
-                    ui.messageBox('Failed to create a continuous closed sweep path.')
-                    return
+            _, sweepPath = self.createSweepPath(targetComp, path_points)
+            if not sweepPath:
+                ui.messageBox('Failed to create a continuous closed sweep path.')
+                return
 
-                tangentVec = subtract_points(path_points[1], path_points[0])
-                if vector_length(tangentVec) < 1e-9 and len(path_points) > 2:
-                    tangentVec = subtract_points(path_points[2], path_points[0])
+            tangentVec = subtract_points(path_points[1], path_points[0])
+            if vector_length(tangentVec) < 1e-9 and len(path_points) > 2:
+                tangentVec = subtract_points(path_points[2], path_points[0])
 
-                startPlane = self.createPerpendicularPlane(targetComp, path_points[0], tangentVec, 'Start')
-                if not startPlane:
-                    ui.messageBox('Failed to create start plane for sweep profile.')
-                    return
+            startPlane = self.createPerpendicularStartPlane(targetComp, path_points[0], tangentVec)
+            if not startPlane:
+                ui.messageBox('Failed to create start plane for sweep profile.')
+                return
 
-                _, profile = self.createProfileSketchOnPlane(targetComp, startPlane, frames[0], 'Start')
-                if not profile:
-                    ui.messageBox('Failed to create a closed sweep profile.')
-                    return
+            _, profile = self.createSweepProfileSketch(targetComp, startPlane, frames[0])
+            if not profile:
+                ui.messageBox('Failed to create a closed sweep profile.')
+                return
 
-                body = self.createSweptBody(targetComp, profile, sweepPath)
-                if not body:
-                    ui.messageBox('Failed to create swept body.')
-                    return
-
-            body.name = self.shapeName + ' Body'
-            self.cleanupHelperGeometry(targetComp)
+            body = self.createSweptBody(targetComp, profile, sweepPath)
+            if not body:
+                ui.messageBox('Failed to create swept body.')
         except:
             if ui:
                 ui.messageBox('Failed to create shape.\n\n{}'.format(traceback.format_exc()))
@@ -1104,7 +1003,7 @@ def run(context):
             cmdDef = commandDefinitions.addButtonDefinition(
                 'SegmentedSweepShapeGenerator',
                 'Segmented Sweep Shape Generator',
-                'Generate selectable base shapes along closed paths using Sweep or Loft Sections body creation.'
+                'Generate a selectable r(theta) base shape swept around selectable closed paths using a clean continuous sweep workflow.'
             )
 
         onCommandCreated = ShapeCommandCreatedHandler()
