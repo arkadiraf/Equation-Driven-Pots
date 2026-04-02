@@ -143,7 +143,7 @@
         const material = new THREE.MeshStandardMaterial({ color: 0xbc9b70, side: THREE.DoubleSide, roughness: 0.4 });
         currentMesh = new THREE.Mesh(geometry, material);
         scene.add(currentMesh);
-        document.getElementById('status').innerText = "Loaded Experiment: " + document.getElementById('presetSelect').value;
+        document.getElementById('status').innerText = "3d Model: " + document.getElementById('presetSelect').value;
     }
 
     function getConfig() {

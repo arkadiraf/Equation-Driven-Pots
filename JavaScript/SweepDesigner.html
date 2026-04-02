@@ -40,7 +40,7 @@
     </div>
 
     <div class="input-group">
-        <label>Profile Preset (Ø 6cm Base)</label>
+        <label>Profile Preset</label>
         <select id="profileSelect" onchange="applyProfilePreset()">
             <option value="Circle">Circle</option>
             <option value="DoublePetal">Double Petal</option>
@@ -68,7 +68,7 @@
 
     <div class="section-title">Fabrication Options</div>
     <div class="checkbox-group">
-        <input type="checkbox" id="enableHollow" onchange="updatePreview()" checked>
+        <input type="checkbox" id="enableHollow" onchange="updatePreview()" unchecked>
         <label for="enableHollow" style="margin:0; color:#d35400;">Enable Hollow Shell</label>
     </div>
     <div class="input-group">
@@ -228,7 +228,7 @@
         const geo = buildMesh(readCfg(), 1.0);
         currentMesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({color: 0xbc9b70, side: THREE.DoubleSide, roughness: 0.4}));
         scene.add(currentMesh);
-        document.getElementById('status').innerText = "Wide Profile Active (Ø 6cm).";
+        document.getElementById('status').innerText = "3D Model";
     }
 
     function exportOBJ() {
