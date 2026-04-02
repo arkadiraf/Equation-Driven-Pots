@@ -1,6 +1,6 @@
 # Equation-Driven Pots
 
-A Python project for generating functional 3D-printable plant pots from equations in cylindrical coordinates.
+A project for generating functional 3D-printable plant pots from equations in cylindrical coordinates.
 
 Instead of sculpting a pot manually, this project defines the surface mathematically with a radius function:
 
@@ -24,6 +24,17 @@ The result is a printable hollow vessel generated directly from an equation. By 
 
 ---
 
+## HTML tool previews
+
+### Pot Designer HTML
+
+![Pot Designer HTML](Images/PotDesignerHTML.jpg)
+
+### 3D Sweep Designer HTML
+
+![3D Sweep Designer HTML](Images/3DSweepDesignerHTML.jpg)
+
+---
 
 ## How it works
 
@@ -43,13 +54,15 @@ The mesh is then exported as an `.obj` file, ready for inspection, slicing, and 
 ## Features
 
 - Generate pots from mathematical equations
-- Export watertight OBJ meshes
+- Export printable OBJ meshes
 - Control wall thickness, bottom thickness, height, and drainage hole size
 - Explore different interfaces:
   - command-line generator
   - Tkinter GUI
   - Dash web GUI
   - PyVista preview GUI
+  - browser-based HTML pot designer
+  - browser-based HTML sweep designer
 
 ---
 
@@ -202,6 +215,30 @@ Then open the local Dash address shown in the terminal.
 
 ---
 
+## HTML / JavaScript tools
+
+### [`JavaScript/PotDesigner.html`](./JavaScript/PotDesigner.html)
+
+Browser-based pot designer for creating printable 3D pots directly in HTML and JavaScript.
+
+**Purpose**
+- Works similarly to the Python pot generator
+- Lets you adjust the pot equation and geometry in the browser
+- Exports the generated design as OBJ or STL
+
+---
+
+### [`JavaScript/SweepDesigner.html`](./JavaScript/SweepDesigner.html)
+
+Browser-based 3D sweep designer for creating guided swept forms.
+
+**Purpose**
+- Lets you build more complex 3D swept shapes interactively
+- Exports the generated design as OBJ or STL
+- Can be used as a starting point for more intricate pot designs with additional work
+
+---
+
 ## Example equation
 
 A pot is generated from a radial function such as:
@@ -259,7 +296,7 @@ Higher section counts produce smoother meshes, but also larger files and slower 
 
 ## Output
 
-The scripts export `.obj` files, which can be opened in tools such as:
+The scripts and HTML tools export `.obj` files, and the HTML tools can also export `.stl` files. These can be opened in tools such as:
 
 - Blender
 - MeshLab
@@ -286,32 +323,29 @@ For best results:
 Equation-Driven Pots turns mathematics into fabrication.  
 It treats equations not just as descriptions, but as design tools for producing real, usable objects.
 
-This makes it possible to explore procedural form, computational design, and digital fabrication in a simple Python workflow.
+This makes it possible to explore procedural form, computational design, digital fabrication, and browser-based interactive design in a simple workflow.
 
 ---
 
-* * *
-
 ## Optional AI-assisted direct generation
 
-In addition to the Python scripts in this repository, you can use the included prompt file to ask an AI model to generate a 3D pot mesh directly.
+In addition to the Python and HTML tools in this repository, you can also use AI to generate a 3D pot mesh directly.
 
-Prompt file:
+**AI workflows**
+- Feed the Python pot-generation scripts to a capable AI model
+- Use the included prompt file: [`3dPotGenerator.txt`](./3dPotGenerator.txt)
 
-- [`3dPotGenerator.txt`](./3dPotGenerator.txt)
-
-Tested with:
-
+**Tested with**
 - Gemini Thinking mode
 - ChatGPT Thinking mode
 
-The prompt instructs the model to generate and run Python code that creates a printable `.obj` file, produces a preview image, and returns a downloadable result.
+The prompt-based workflow instructs the model to generate and run Python code that creates a printable `.obj` file, produces a preview image, and returns a downloadable result.
 
 This is useful if you want a fast, portable workflow for one-off pot generation without manually editing the scripts first.
 
-> This prompt-based workflow is experimental and not consistent. Results may vary between models, versions, and runs.
+> This prompt-based workflow is experimental and may produce inconsistent results depending on the model, version, and run.
 
-* * *
+---
 
 ## License
 
