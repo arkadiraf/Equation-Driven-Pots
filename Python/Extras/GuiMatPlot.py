@@ -40,7 +40,7 @@ class EquationMeshExporter:
             raise ValueError(f"Equation Error: {e}")
 
     def build_and_save(self):
-        """Generates the high-resolution OBJ file for 3D printing/rendering."""
+        """Generates the high-resolution OBJ file."""
         ts, zs = self.cfg.theta_sections, self.cfg.z_sections
         vertices, faces = [], []
 
@@ -91,10 +91,37 @@ class EquationMeshExporter:
 
 # --- VISUALIZATION FUNCTIONS ---
 
+def save_high_res_plot(exporter, img_filename, dpi=300):
+    """
+    Generates and saves a high-resolution JPEG of the pot design.
+    """
+    fig = plt.figure(figsize=(10, 10))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # Use a slightly higher resolution for the plot than the preview
+    zs_count, ts_count = (40, 72) 
+    z_vals = np.linspace(0, exporter.cfg.z_length, zs_count)
+    theta_vals = np.linspace(0, 2 * np.pi, ts_count)
+    
+    for i in range(len(z_vals) - 1):
+        for j in range(len(theta_vals) - 1):
+            pts = []
+            for curr_z, curr_t in [(z_vals[i], theta_vals[j]), (z_vals[i], theta_vals[j+1]), 
+                                   (z_vals[i+1], theta_vals[j+1]), (z_vals[i+1], theta_vals[j])]:
+                r = exporter.eval_r(curr_z, curr_t)
+                pts.append([r * math.cos(curr_t), r * math.sin(curr_t), curr_z])
+            
+            poly = Poly3DCollection([pts], alpha=0.8, facecolor='tan', edgecolor='saddlebrown', linewidths=0.1)
+            ax.add_collection3d(poly)
+
+    ax.set_xlim(-7.5, 7.5); ax.set_ylim(-7.5, 7.5); ax.set_zlim(0, max(10, exporter.cfg.z_length))
+    ax.set_title(f"Design: {os.path.basename(img_filename)}")
+    
+    # Save as JPEG with high DPI
+    plt.savefig(img_filename, dpi=dpi, format='jpg', bbox_inches='tight')
+    plt.close(fig) # Close to free up memory
+
 def show_low_res_preview(exporter, preview_res=(20, 36)):
-    """
-    Generates a fast Matplotlib preview with fixed axes and a Reset button.
-    """
     fig = plt.figure(figsize=(9, 7))
     ax = fig.add_subplot(111, projection='3d')
     plt.subplots_adjust(bottom=0.2)
@@ -103,49 +130,36 @@ def show_low_res_preview(exporter, preview_res=(20, 36)):
     z_vals = np.linspace(0, exporter.cfg.z_length, zs_count)
     theta_vals = np.linspace(0, 2 * np.pi, ts_count)
     
-    # Draw the outer surface
     for i in range(len(z_vals) - 1):
         for j in range(len(theta_vals) - 1):
-            z0, z1 = z_vals[i], z_vals[i+1]
-            t0, t1 = theta_vals[j], theta_vals[j+1]
-            
             pts = []
-            for curr_z, curr_t in [(z0, t0), (z0, t1), (z1, t1), (z1, t0)]:
+            for curr_z, curr_t in [(z_vals[i], theta_vals[j]), (z_vals[i], theta_vals[j+1]), 
+                                   (z_vals[i+1], theta_vals[j+1]), (z_vals[i+1], theta_vals[j])]:
                 r = exporter.eval_r(curr_z, curr_t)
                 pts.append([r * math.cos(curr_t), r * math.sin(curr_t), curr_z])
-            
             poly = Poly3DCollection([pts], alpha=0.5, facecolor='tan', edgecolor='saddlebrown', linewidths=0.2)
             ax.add_collection3d(poly)
 
     def set_view_limits():
-        ax.set_xlim(-7.5, 7.5)
-        ax.set_ylim(-7.5, 7.5)
-        ax.set_zlim(0, max(10, exporter.cfg.z_length))
-        ax.set_title("Quick Preview (Fixed -7.5 to 7.5)")
-        ax.set_xlabel("X")
-        ax.set_ylabel("Y")
-        ax.set_zlabel("Z")
+        ax.set_xlim(-7.5, 7.5); ax.set_ylim(-7.5, 7.5); ax.set_zlim(0, max(10, exporter.cfg.z_length))
+        ax.set_xlabel("X"); ax.set_ylabel("Y"); ax.set_zlabel("Z")
 
     set_view_limits()
-
-    # Add the "Fit to Screen" (Reset) Button
     ax_button = plt.axes([0.4, 0.05, 0.2, 0.06]) 
     btn_reset = Button(ax_button, 'Fit to Screen', color='#ecf0f1', hovercolor='#bdc3c7')
 
     def reset_view(event):
         set_view_limits()
-        ax.view_init(elev=20, azim=-35) # Standard 3D angle
+        ax.view_init(elev=20, azim=-35)
         plt.draw()
 
     btn_reset.on_clicked(reset_view)
     plt.show()
 
 def show_with_pyvista(filename, z_max=10.0):
-    """High-quality inspection of the saved file."""
     mesh = pv.read(filename)
     plotter = pv.Plotter(title="PyVista High-Res Viewer")
     plotter.set_background("ghostwhite")
-    
     plotter.add_mesh(mesh, color="tan", smooth_shading=True, specular=0.5)
     plotter.show_grid(bounds=[-7.5, 7.5, -7.5, 7.5, 0, z_max])
     plotter.add_axes()
@@ -159,7 +173,6 @@ class EquationPotApp:
         self.root.title("Equation Pot Designer")
         self.root.geometry("550x600")
 
-        # Default complex equation
         default_eq = ("5 * (1 + (min(max((z-0.0)/2.5, 0), 1) * 0.18 * cos(3 * theta)) + "
                       "(min(max((z-2.5)/2.5, 0), 1) * 0.15 * cos(6 * theta)) + "
                       "(min(max((z-5.0)/2.5, 0), 1) * 0.10 * cos(12 * theta)) + "
@@ -183,11 +196,10 @@ class EquationPotApp:
             ent = tk.Entry(f); ent.insert(0, str(default)); ent.pack(side="right", expand=True, fill="x")
             self.entries[label] = ent
 
-        # Buttons
         tk.Button(root, text="1. QUICK PREVIEW (MATPLOTLIB)", command=lambda: self.run_process("mpl"), 
                   bg="#2980b9", fg="white", font=('Arial', 10, 'bold'), height=2).pack(pady=10, padx=20, fill="x")
 
-        tk.Button(root, text="2. BUILD & SAVE HIGH-RES (PYVISTA)", command=lambda: self.run_process("pv"), 
+        tk.Button(root, text="2. BUILD & SAVE HIGH-RES (PYVISTA + JPEG)", command=lambda: self.run_process("pv"), 
                   bg="#2c3e50", fg="white", font=('Arial', 10, 'bold'), height=2).pack(pady=5, padx=20, fill="x")
 
         self.status = tk.Label(root, text="Ready", fg="gray"); self.status.pack(pady=10)
@@ -196,6 +208,9 @@ class EquationPotApp:
         try:
             filename = self.entries["Output Filename"].get().strip()
             if not filename.lower().endswith(".obj"): filename += ".obj"
+            
+            # Image filename logic
+            img_filename = filename.rsplit('.', 1)[0] + ".jpg"
 
             cfg = MeshConfig(
                 output_path=filename,
@@ -216,10 +231,18 @@ class EquationPotApp:
                 show_low_res_preview(exporter)
                 self.status.config(text="Preview Closed", fg="gray")
             else:
-                self.status.config(text=f"Exporting {filename}...", fg="blue")
+                self.status.config(text=f"Exporting {filename} & {img_filename}...", fg="blue")
                 self.root.update()
+                
+                # 1. Generate OBJ
                 exporter.build_and_save()
-                self.status.config(text=f"SUCCESS: {filename} saved!", fg="green")
+                
+                # 2. Save High-Res JPEG
+                save_high_res_plot(exporter, img_filename, dpi=300)
+                
+                self.status.config(text=f"SUCCESS: Files saved!", fg="green")
+                
+                # 3. Open PyVista for inspection
                 show_with_pyvista(filename, z_max=cfg.z_length)
 
         except Exception as e:
