@@ -44,6 +44,10 @@ The result is a printable hollow vessel generated directly from an equation. By 
 
 ![Spherical Pot Designer HTML](Images/SphericalPotDesignerHTML.jpg)
 
+### Textured Unified Pot Designer HTML
+
+![Textured Unified Pot Designer](Images/TexturedPotDesigner.jpg)
+
 ---
 
 ## How it works
@@ -85,6 +89,7 @@ The mesh is then exported as an `.obj` file, ready for inspection, slicing, and 
   - browser-based HTML spherical pot designer
   - browser-based HTML sweep designer
   - Fusion 360 parametric sweep reconstruction script
+  - Includes a browser-based unified textured pot designer with cylindrical and spherical modes
 - Keep the repository lightweight by primarily hosting code and images, while example 3D models are hosted externally
 
 ---
@@ -330,6 +335,41 @@ Browser-based 3D sweep designer for creating guided swept forms.
 - Lets you build more complex 3D swept shapes interactively
 - Exports the generated design as OBJ or STL
 - Can be used as a starting point for more intricate pot designs with additional work
+
+---
+
+### [`JavaScript/TexturedPotDesigner.html`](./JavaScript/TexturedPotDesigner.html)
+
+Browser-based unified pot designer for creating printable pots from both cylindrical and spherical coordinate systems, with optional surface texture applied directly to the outer shell.
+
+**Purpose**
+
+- Combines cylindrical and spherical pot design into one interface
+- Lets you switch between equation systems in a single tool
+- Adds external texture displacement on top of the base pot form
+- Previews the generated shape directly in the browser
+- Exports the generated design as STL
+
+**Texture variables**
+
+The unified textured designer uses a base form equation together with a texture displacement equation.
+
+The base form defines the main pot shape, and the texture equation adds or subtracts small surface offsets on the outside of the pot.
+
+Common variables used in the tool:
+
+- `r` — final radius of the surface at a point
+- `T` — texture displacement amount; controls bumps, dimples, ridges, or engraving depth
+- `θ` — angular position around the pot; useful for petals, ribs, symmetry, and repeating radial patterns
+- `z` — height along the pot in cylindrical mode; useful for vertical transitions, rings, twists, and height-based shaping
+- `φ` — polar angle in spherical mode; useful for describing curved vertical distribution on spherical forms
+- `v` — normalized vertical position from `0.0` to `1.0`; useful for scaling textures consistently from bottom to top across both coordinate systems
+
+Conceptually, the textured version behaves like:
+
+`final radius = base radius + texture displacement`
+
+This allows the tool to keep the overall pot form and the surface texture separate, so one equation controls the vessel shape while another controls the outer relief pattern.
 
 ---
 
