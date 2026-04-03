@@ -112,6 +112,28 @@
         "Equatorial Flare (UFO)": { eq: "R * (1 + 0.4 * exp(-pow(phi-1.57, 2)*10))", desc: "A sleek, modern design that aggressively bulges outward precisely at the equator." },
         "Cellular Organic": { eq: "R * (1 + 0.06 * (sin(8*theta)*cos(10*phi) + sin(11*theta)*cos(5*phi)))", desc: "Mismatched overlapping frequencies simulate natural, erratic organic growth." },
         
+        // --- SOPHISTICATED TOPOLOGIES ---
+        "Fibonacci Spirals (Pinecone)": { 
+            eq: "R * (1 + 0.08 * pow(Math.max(0, sin(13*theta - 8*phi)), 2) + 0.08 * pow(Math.max(0, sin(8*theta + 13*phi)), 2))", 
+            desc: "Uses Fibonacci numbers (8, 13) to create deeply interlocking, directional spirals mimicking phyllotaxis in nature." 
+        },
+        "Crystalline Geode": { 
+            eq: "R * (1 + 0.08 * (abs(sin(5*theta)) + abs(cos(5*theta))) * (abs(sin(4*phi)) + abs(cos(4*phi))))", 
+            desc: "Utilizes absolute values of trigonometric functions to create sharp, brutalist facets rather than smooth curves." 
+        },
+        "Gravity Drip (Melting)": { 
+            eq: "R * (1 + 0.2 * exp(phi - 2.5) * cos(12 * theta) * sin(phi))", 
+            desc: "Amplitude is multiplied by an exponential function of phi, causing the ridges to become dramatically heavier and deeper towards the base." 
+        },
+        "Liquid Audio Interference": { 
+            eq: "R * (1 + 0.04 * sin(18*theta) * cos(22*phi) + 0.03 * sin(28*theta - 12*phi))", 
+            desc: "High-frequency overlapping carrier waves create a complex, chaotic micro-texture similar to cymatics (sound waves in liquid)." 
+        },
+        "Overlapping Armor Scales": {
+            eq: "R * (1 + 0.12 * pow(max(0, sin(10*theta - 6*phi)), 2) * sin(phi))",
+            desc: "Clamps negative sine values to zero using max(), creating distinct, raised teardrop scales that lay flat against the hull."
+        },
+
         // Classic Geometries
         "Perfect Sphere": { eq: "R", desc: "A smooth, uniform ball." },
         "Pumpkin Lobes": { eq: "R * (1 + 0.15 * cos(8 * theta))", desc: "8 deep vertical ridges like a pumpkin." },
