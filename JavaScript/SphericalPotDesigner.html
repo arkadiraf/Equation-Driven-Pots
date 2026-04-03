@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Spherical Form Designer - Advanced</title>
+    <style>
+        :root { --bg: #f4f7f6; --panel: #ffffff; --primary: #8e44ad; --secondary: #2c3e50; --success: #27ae60; }
+        
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            height: 100vh; 
+            background: var(--bg); 
+            overflow: hidden; 
+        }
+
+        #sidebar { 
+            width: 420px; 
+            background: var(--panel); 
+            padding: 20px; 
+            box-shadow: 2px 0 15px rgba(0,0,0,0.1); 
+            overflow-y: auto; 
+            z-index: 100; 
+            flex-shrink: 0;
+        }
+
+        #viewer-container { flex-grow: 1; background: #ffffff; position: relative; }
+
+        /* --- COMPACT MOBILE OVERRIDES --- */
+        @media (max-width: 768px) {
+            #sidebar { width: 40vw; padding: 8px; }
+            h2 { font-size: 0.9rem !important; margin: 0 0 5px 0 !important; }
+            .input-group { margin-bottom: 4px !important; }
+            label { font-size: 0.6rem; margin-bottom: 1px !important; line-height: 1; }
+            input, select { padding: 4px !important; font-size: 0.75rem !important; height: 24px; }
+            textarea { height: 40px !important; font-size: 0.65rem !important; margin-bottom: 5px; }
+            button { padding: 8px 2px !important; font-size: 0.65rem !important; margin-top: 4px !important; }
+            #logic-info { font-size: 0.55rem; margin-top: 2px; line-height: 1.1; padding-left: 4px; }
+            #status { font-size: 9px; padding: 4px 10px; bottom: 10px; left: 10px; }
+            .grid-inputs { gap: 5px; }
+            .grid-3 { gap: 3px !important; }
+        }
+
+        /* Base Styles */
+        .input-group { margin-bottom: 15px; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        input, textarea, select { width: 100%; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        textarea { font-family: 'Courier New', monospace; background: #fafafa; line-height: 1.2; }
+        button { width: 100%; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; transition: opacity 0.2s; }
+        button:active { opacity: 0.7; }
+        .btn-preview { background: var(--primary); }
+        .btn-export { background: var(--secondary); }
+        .btn-stl { background: var(--success); }
+        #status { position: absolute; bottom: 15px; left: 15px; background: rgba(0,0,0,0.7); color: white; padding: 6px 14px; border-radius: 20px; font-size: 11px; pointer-events: none; }
+        #logic-info { font-size: 0.8rem; color: #666; font-style: italic; border-left: 3px solid var(--primary); padding-left: 10px; margin-top: 5px;}
+    </style>
+</head>
+<body>
+
+<div id="sidebar">
+    <h2 style="color:var(--secondary)">Spherical Designer</h2>
+    
+    <div class="input-group">
+        <label>Base Topography</label>
+        <select id="presetSelect" onchange="applyPreset()"></select>
+        <div id="logic-info">Select a shape...</div>
+    </div>
+
+    <div class="input-group">
+        <label>Equation: r(θ, φ)</label>
+        <textarea id="equation"></textarea>
+    </div>
+
+    <div class="grid-inputs">
+        <div class="input-group"><label>Base Radius</label><input type="number" id="baseRadius" value="5" step="0.1"></div>
+        <div class="input-group"><label>Wall (cm)</label><input type="number" id="wall" value="0.35" step="0.01"></div>
+    </div>
+    
+    <div class="grid-3">
+        <div class="input-group" title="Top Opening"><label>Top Cut (°)</label><input type="number" id="topCut" value="25" step="1" max="89"></div>
+        <div class="input-group" title="Starts the flat bed"><label>Bot Flat (°)</label><input type="number" id="botFlatten" value="150" step="1" min="90" max="179"></div>
+        <div class="input-group" title="Ends the mesh (hole)"><label>Bot Cut (°)</label><input type="number" id="botCut" value="175" step="1" min="91" max="180"></div>
+    </div>
+    
+    <button class="btn-preview" onclick="updatePreview()">RENDER PREVIEW</button>
+    <button class="btn-stl" onclick="exportSTL()">DOWNLOAD STL</button>
+    <button class="btn-export" onclick="exportOBJ()">DOWNLOAD OBJ</button>
+</div>
+
+<div id="viewer-container">
+    <div id="status">Initializing...</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+    let scene, camera, renderer, controls, currentMesh;
+
+    // ADVANCED SPHERICAL LIBRARY
+    const library = {
+        
+        
+        // Advanced Math Topologies
+        "Dragon Egg (Diamond)": { eq: "R * (1 + 0.08 * cos(10*theta + 8*phi) + 0.08 * cos(10*theta - 8*phi))", desc: "Intersecting diagonal waves create a 3D-printable scale texture." },
+        "Twisted Hex Vortex": { eq: "R * (1 + 0.15 * cos(6 * (theta + phi*2)))", desc: "A 6-sided base that dynamically twists as it rises toward the rim." },
+        "Ribbed Art Deco": { eq: "R * (1 + 0.15 * pow(cos(8*theta), 4) * sin(phi))", desc: "Sharp, pronounced vertical fins that taper smoothly at the poles." },
+        "Equatorial Flare (UFO)": { eq: "R * (1 + 0.4 * exp(-pow(phi-1.57, 2)*10))", desc: "A sleek, modern design that aggressively bulges outward precisely at the equator." },
+        "Cellular Organic": { eq: "R * (1 + 0.06 * (sin(8*theta)*cos(10*phi) + sin(11*theta)*cos(5*phi)))", desc: "Mismatched overlapping frequencies simulate natural, erratic organic growth." },
+        
+        // Classic Geometries
+        "Perfect Sphere": { eq: "R", desc: "A smooth, uniform ball." },
+        "Pumpkin Lobes": { eq: "R * (1 + 0.15 * cos(8 * theta))", desc: "8 deep vertical ridges like a pumpkin." },
+        "Woven Basket": { eq: "R * (1 + 0.05 * sin(12 * theta) * cos(8 * phi))", desc: "Interlocking frequency grid." },
+        "Starfruit": { eq: "R * (1 + 0.25 * cos(5 * theta) * sin(phi))", desc: "Deep 5-point star extrusions, softening at poles." },
+        "Hourglass / Peanut": { eq: "R * (1 - 0.25 * sin(2 * phi))", desc: "Pinched in the middle equator." },
+        "Coral Brain": { eq: "R * (1 + 0.08 * sin(10 * theta + 5*phi) * sin(8 * phi))", desc: "Organic, rippling surface." }
+    };
+
+    function populateDropdown() {
+        const select = document.getElementById('presetSelect');
+        Object.keys(library).forEach(key => {
+            const opt = document.createElement('option');
+            opt.value = key; opt.innerText = key;
+            select.appendChild(opt);
+        });
+    }
+
+    function applyPreset() {
+        const key = document.getElementById('presetSelect').value;
+        const data = library[key];
+        document.getElementById('equation').value = data.eq;
+        document.getElementById('logic-info').innerText = data.desc;
+        updatePreview();
+    }
+
+    window.onload = function() {
+        initThree();
+        populateDropdown();
+        applyPreset();
+        window.addEventListener('resize', onWindowResize);
+    };
+
+    function onWindowResize() {
+        const container = document.getElementById('viewer-container');
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+    }
+
+    function initThree() {
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xecf0f1);
+        const container = document.getElementById('viewer-container');
+        camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(18, 15, 18);
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        
+        controls.target.set(0, 4, 0); 
+
+        scene.add(new THREE.GridHelper(20, 20, 0xbdc3c7, 0xecf0f1));
+        
+        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(10, 20, 10);
+        scene.add(dirLight);
+        
+        function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
+        animate();
+    }
+
+    function updatePreview() {
+        if (currentMesh) scene.remove(currentMesh);
+        const cfg = getConfig();
+        const meshData = generateSphericalGeometry(cfg, 1.0); 
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(meshData.vertices.flat(), 3));
+        geometry.setIndex(meshData.indices);
+        geometry.computeVertexNormals();
+        
+        const material = new THREE.MeshStandardMaterial({ color: 0x8e44ad, side: THREE.DoubleSide, roughness: 0.5 });
+        currentMesh = new THREE.Mesh(geometry, material);
+        
+        scene.add(currentMesh);
+        document.getElementById('status').innerText = "Sphere: " + document.getElementById('presetSelect').value;
+    }
+
+    function getConfig() {
+        return {
+            eq: document.getElementById('equation').value,
+            baseR: parseFloat(document.getElementById('baseRadius').value) || 5.0,
+            w: parseFloat(document.getElementById('wall').value) || 0.35,
+            topCutRad: (parseFloat(document.getElementById('topCut').value) || 0) * (Math.PI / 180),
+            botFlattenRad: (parseFloat(document.getElementById('botFlatten').value) || 150) * (Math.PI / 180), // Updated Default
+            botCutRad: (parseFloat(document.getElementById('botCut').value) || 175) * (Math.PI / 180),
+            resP: 80, // Slightly higher res to render complex textures well
+            resT: 140 
+        };
+    }
+
+    function generateSphericalGeometry(cfg, scale) {
+        const vertices = [], indices = [];
+        
+        const evalR = (theta, phi, R) => { 
+            try { 
+                const pi = Math.PI, sin = Math.sin, cos = Math.cos, pow = Math.pow, 
+                      min = Math.min, max = Math.max, abs = Math.abs, sqrt = Math.sqrt,
+                      exp = Math.exp; // Added exp for the UFO flare
+                return eval(cfg.eq); 
+            } catch(e) { return R; } 
+        };
+
+        let oRings = [], iRings = [];
+        let minZ = Infinity;
+        
+        let flatBottomZ = cfg.baseR * Math.cos(cfg.botFlattenRad);
+
+        for (let ip = 0; ip <= cfg.resP; ip++) {
+            let phi = cfg.topCutRad + (cfg.botCutRad - cfg.topCutRad) * (ip / cfg.resP);
+            let oR = [], iR = [];
+            
+            for (let it = 0; it < cfg.resT; it++) {
+                let theta = (2 * Math.PI * it) / cfg.resT;
+                let rOut = evalR(theta, phi, cfg.baseR);
+                let rIn = Math.max(0.1, rOut - cfg.w);
+
+                let oX = rOut * Math.sin(phi) * Math.cos(theta);
+                let oY = rOut * Math.sin(phi) * Math.sin(theta);
+                let oZ = rOut * Math.cos(phi);
+
+                let iX = rIn * Math.sin(phi) * Math.cos(theta);
+                let iY = rIn * Math.sin(phi) * Math.sin(theta);
+                let iZ = rIn * Math.cos(phi);
+
+                if (phi >= cfg.botFlattenRad || oZ < flatBottomZ) {
+                    oZ = flatBottomZ;
+                    iZ = flatBottomZ + cfg.w; 
+                }
+
+                if (oZ < minZ) minZ = oZ;
+
+                oR.push({x: oX, y: oY, z: oZ});
+                iR.push({x: iX, y: iY, z: iZ});
+            }
+            oRings.push(oR); iRings.push(iR);
+        }
+
+        const addV = (pt) => {
+            let shiftedZ = pt.z - minZ;
+            vertices.push(pt.x * scale, shiftedZ * scale, -pt.y * scale);
+            return (vertices.length / 3) - 1;
+        };
+
+        let oIndices = [], iIndices = [];
+        for (let ip = 0; ip <= cfg.resP; ip++) {
+            let oRingIdx = [], iRingIdx = [];
+            for (let it = 0; it < cfg.resT; it++) {
+                oRingIdx.push(addV(oRings[ip][it]));
+                iRingIdx.push(addV(iRings[ip][it]));
+            }
+            oIndices.push(oRingIdx);
+            iIndices.push(iRingIdx);
+        }
+
+        for (let it = 0; it < cfg.resT; it++) {
+            let it1 = (it + 1) % cfg.resT;
+            
+            for (let ip = 0; ip < cfg.resP; ip++) {
+                indices.push(oIndices[ip][it], oIndices[ip+1][it], oIndices[ip+1][it1], 
+                             oIndices[ip][it], oIndices[ip+1][it1], oIndices[ip][it1]);
+                indices.push(iIndices[ip][it], iIndices[ip][it1], iIndices[ip+1][it1], 
+                             iIndices[ip][it], iIndices[ip+1][it1], iIndices[ip+1][it]);
+            }
+            
+            indices.push(oIndices[0][it], oIndices[0][it1], iIndices[0][it1], 
+                         oIndices[0][it], iIndices[0][it1], iIndices[0][it]);
+            
+            indices.push(oIndices[cfg.resP][it], iIndices[cfg.resP][it], iIndices[cfg.resP][it1], 
+                         oIndices[cfg.resP][it], iIndices[cfg.resP][it1], oIndices[cfg.resP][it1]);
+        }
+        
+        return { vertices, indices };
+    }
+
+    function exportOBJ() {
+        const cfg = getConfig();
+        const meshData = generateSphericalGeometry(cfg, 10.0); 
+        let obj = "# Spherical Pot Advanced Export\n";
+        meshData.vertices.forEach((v, i) => {
+            if (i % 3 === 0) obj += `v ${meshData.vertices[i].toFixed(4)} ${meshData.vertices[i+1].toFixed(4)} ${meshData.vertices[i+2].toFixed(4)}\n`;
+        });
+        for(let i=0; i<meshData.indices.length; i+=3) { obj += `f ${meshData.indices[i]+1} ${meshData.indices[i+1]+1} ${meshData.indices[i+2]+1}\n`; }
+        downloadFile(obj, "sphere_advanced.obj", "text/plain");
+    }
+
+    function exportSTL() {
+        const cfg = getConfig();
+        const meshData = generateSphericalGeometry(cfg, 10.0); 
+        const iLen = meshData.indices.length;
+        
+        const buffer = new ArrayBuffer(84 + (iLen / 3) * 50);
+        const view = new DataView(buffer);
+        view.setUint32(80, iLen / 3, true);
+        
+        let offset = 84;
+        for (let i = 0; i < iLen; i += 3) {
+            view.setFloat32(offset, 0, true); offset += 12; 
+            
+            let idx1 = meshData.indices[i] * 3;
+            let idx2 = meshData.indices[i+1] * 3;
+            let idx3 = meshData.indices[i+2] * 3;
+            
+            [idx1, idx2, idx3].forEach(idx => {
+                view.setFloat32(offset, meshData.vertices[idx], true);
+                view.setFloat32(offset+4, meshData.vertices[idx+1], true);
+                view.setFloat32(offset+8, meshData.vertices[idx+2], true);
+                offset += 12;
+            });
+            view.setUint16(offset, 0, true); offset += 2;
+        }
+        downloadFile(buffer, "sphere_advanced.stl", "application/octet-stream");
+    }
+
+    function downloadFile(data, name, type) {
+        const blob = new Blob([data], { type: type });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = name;
+        link.click();
+    }
+</script>
+</body>
+</html>
