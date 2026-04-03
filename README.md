@@ -48,6 +48,12 @@ The result is a printable hollow vessel generated directly from an equation. By 
 
 ![Textured Unified Pot Designer](Images/TexturedPotDesigner.jpg)
 
+### Multi-Color Pot Designer HTML
+
+[Multi-Color Pot Designer GUI](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/JavaScript/MultiColorPotDesigner.html)
+
+![Multi-Color Pot Designer GUI](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/Images/MultiColorPotDesigner.jpg?raw=true)
+
 ---
 
 ## How it works
@@ -90,6 +96,9 @@ The mesh is then exported as an `.obj` file, ready for inspection, slicing, and 
   - browser-based HTML sweep designer
   - Fusion 360 parametric sweep reconstruction script
   - Includes a browser-based unified textured pot designer with cylindrical and spherical modes
+  - Includes a browser-based multi-color pot designer with cylindrical and spherical modes
+  - Supports separable color pattern bodies for multi-color 3D printing workflows
+  - Exports multi-part `.3mf` assemblies in addition to `.stl`
 - Keep the repository lightweight by primarily hosting code and images, while example 3D models are hosted externally
 
 ---
@@ -370,6 +379,62 @@ Conceptually, the textured version behaves like:
 `final radius = base radius + texture displacement`
 
 This allows the tool to keep the overall pot form and the surface texture separate, so one equation controls the vessel shape while another controls the outer relief pattern.
+
+
+### [`JavaScript/MultiColorPotDesigner.html`](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/JavaScript/MultiColorPotDesigner.html)
+
+Browser-based multi-color pot designer for creating printable pots with equation-driven base geometry, external texture, and separable color regions.
+
+**Purpose**
+
+- Combine cylindrical and spherical pot generation into one browser-based tool
+- Preview equation-driven pot geometry live in 3D
+- Generate multi-color pots by splitting the model into a base body and a pattern body
+- Export a slicer-friendly multi-part `.3mf` assembly for color assignment in supported slicers
+- Export `.stl` for single-mesh workflows
+
+**Capabilities**
+
+- Supports both coordinate systems in one interface:
+  - cylindrical extrusion using `r(θ, z, v)`
+  - spherical wrapping using `r(θ, φ, v)`
+- Includes preset libraries for:
+  - base scaffold equations
+  - external surface texture equations
+  - color pattern masks
+- Lets you define:
+  - base form equations
+  - texture displacement equations
+  - pattern mask equations
+- Supports functional pot geometry such as:
+  - wall thickness
+  - flat or thickened bottom regions
+  - drainage holes
+- Includes color controls for:
+  - base color
+  - pattern color
+  - pattern depth
+- Includes separate resolution controls for:
+  - mesh resolution
+  - pattern resolution
+- Includes mobile-friendly GUI scaling while preserving the normal desktop layout
+
+**Pattern logic**
+
+The Multi-Color Pot Designer separates the object into a base body and a pattern body using a mathematical pattern mask. This makes it possible to turn selected parts of the outer surface into a second printable part for multi-color slicing workflows.
+
+The pattern system supports:
+- texture-based selection using the raised share of the external texture
+- outer-envelope selection using a simple cylindrical or spherical reference envelope
+- direct custom equations written in the pattern mask field
+
+**Output**
+
+The tool supports:
+- `.3mf` export for multi-part color workflows
+- `.stl` export for standard mesh export
+
+The multi-part workflow is intended for slicers that can import multiple parts as one object and let the user assign each part to a different filament.
 
 ---
 
