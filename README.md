@@ -1,20 +1,20 @@
 # Equation-Driven Pots
 
-A project for generating functional 3D-printable plant pots from equations in cylindrical and spherical coordinates.
+**Equation-Driven Pots** is a design and fabrication project for generating functional, 3D-printable plant pots from mathematical equations.
 
-Instead of sculpting a pot manually, this project defines the surface mathematically through radius functions such as:
+Instead of sculpting a vessel manually, this project defines the outer surface through radius functions such as:
 
-- `r(z, θ)` for cylindrical-coordinate pot generation
-- `r(θ, φ)` for spherical-coordinate pot generation
+- `r(z, θ)` for cylindrical-coordinate generation
+- `r(θ, φ)` for spherical-coordinate generation
 
 where:
 
-- `z` is the height along the vertical axis
-- `θ` is the angle around the axis
+- `z` is height along the vertical axis
+- `θ` is the angular position around the axis
 - `φ` is the polar angle in spherical coordinates
 - `r` is the radius at that position
 
-The result is a printable hollow vessel generated directly from an equation. By changing the equation, you can create twisted, rippled, lobed, symmetric, or highly organic pot shapes while keeping the object functional for 3D printing.
+This approach produces printable hollow vessels directly from equations. By changing the math, you can create twisted, ribbed, lobed, symmetric, or highly organic forms while preserving practical features needed for 3D printing.
 
 ---
 
@@ -58,7 +58,7 @@ The result is a printable hollow vessel generated directly from an equation. By 
 
 ## How it works
 
-The code evaluates a user-defined equation over a sampled grid and converts that surface into printable geometry.
+The tools evaluate a user-defined equation over a sampled grid and convert that surface into printable geometry.
 
 For cylindrical designs, the main form is defined by:
 
@@ -68,38 +68,37 @@ For spherical designs, the form is defined by:
 
 `r(θ, φ)`
 
-From that sampled surface, the tools generate printable geometry such as:
+From the sampled surface, the tools generate printable geometry such as:
 
 - an outer wall
 - an inner wall
 - a bottom surface
-- a drainage hole
-- a closed manifold mesh
+- drainage holes
+- closed manifold meshes for export
 
-The mesh is then exported as an `.obj` file, ready for inspection, slicing, and 3D printing.
+Depending on the tool, the resulting geometry can be exported as `.obj`, `.stl`, or multi-part `.3mf` for inspection, slicing, and fabrication.
 
 ---
 
 ## Features
 
-- Generate pots from mathematical equations
-- Support cylindrical and spherical equation-driven workflows
-- Export printable OBJ meshes
-- Control wall thickness, bottom thickness, height, and drainage hole size
-- Explore different interfaces:
+- Generate printable pots directly from mathematical equations
+- Support both cylindrical and spherical equation-driven workflows
+- Control wall thickness, bottom thickness, height, and drainage-hole size
+- Explore multiple interfaces for different workflows:
   - command-line generator
-  - Tkinter GUI
+  - Tkinter desktop GUI
   - Dash web GUI
   - PyVista preview GUI
   - browser-based HTML pot designer
-  - browser-based HTML spherical pot designer
-  - browser-based HTML sweep designer
+  - browser-based spherical pot designer
+  - browser-based sweep designer
   - Fusion 360 parametric sweep reconstruction script
-  - Includes a browser-based unified textured pot designer with cylindrical and spherical modes
-  - Includes a browser-based multi-color pot designer with cylindrical and spherical modes
-  - Supports separable color pattern bodies for multi-color 3D printing workflows
-  - Exports multi-part `.3mf` assemblies in addition to `.stl`
-- Keep the repository lightweight by primarily hosting code and images, while example 3D models are hosted externally
+  - unified textured pot designer
+  - multi-color pot designer
+- Export printable geometry in `.obj` and `.stl`
+- Export multi-part `.3mf` assemblies for color-separated workflows
+- Keep the repository lightweight while hosting representative previews and tools in one place
 
 ---
 
@@ -114,7 +113,7 @@ cd Equation-Driven-Pots
 
 ### 2. Create a Python environment
 
-Recommended: Python 3.10 or newer
+Recommended: Python 3.10 or newer.
 
 #### Windows
 
@@ -132,14 +131,14 @@ source .venv/bin/activate
 
 ### 3. Install packages
 
-If you want everything installed:
+If you want the main Python tools available in one environment:
 
 ```bash
 pip install numpy dash plotly pyvista
 ```
 
 > `tkinter` is usually included with standard Python installations.  
-> On some Linux systems, you may need to install it separately with your package manager.
+> On some Linux systems, you may need to install it separately through your package manager.
 
 ---
 
@@ -157,7 +156,7 @@ Basic command-line OBJ generator.
 **Required packages**
 
 - No external packages
-- Uses Python standard library only:
+- Uses only the Python standard library:
   - `math`
   - `dataclasses`
 
@@ -175,13 +174,13 @@ Simple desktop GUI built with Tkinter.
 
 **Purpose**
 
-- Lets you enter the equation and dimensions in a form
+- Lets you enter the equation and dimensions through a form
 - Exports the generated pot as an OBJ file
 
 **Required packages**
 
 - No external pip packages
-- Uses Python standard library only:
+- Uses the Python standard library:
   - `math`
   - `tkinter`
   - `dataclasses`
@@ -201,7 +200,7 @@ Desktop GUI with PyVista-based 3D preview.
 
 **Purpose**
 
-- Generate the OBJ mesh
+- Generate an OBJ mesh
 - Open a rendered preview in a PyVista viewer
 
 **Required packages**
@@ -274,9 +273,9 @@ Fusion 360 script for reconstructing equation-driven swept geometry directly ins
 
 - Rebuild a 3D swept form in Fusion 360 from a mathematical path and a base profile
 - Make the design easier to inspect, edit, and continue modeling as native Fusion geometry
-- Provide a more CAD-friendly workflow than importing a mesh generated from the sweep designer
+- Provide a more CAD-friendly workflow than importing a mesh from the sweep designer
 
-This tool is useful when the designer wants to reconstruct the 3D shape directly in Fusion 360 instead of importing the mesh file exported by the sweep designer. Working natively in Fusion makes it easier to continue editing, combining features, and adapting the result for downstream CAD work.
+This tool is useful when the goal is to continue working with editable CAD geometry instead of a lightweight imported mesh.
 
 **How to add it in Fusion 360**
 
@@ -292,7 +291,7 @@ This tool is useful when the designer wants to reconstruct the 3D shape directly
 
 - The script is heavier on Fusion 360 than the mesh-based workflow
 - More complex profiles and higher section counts can noticeably slow generation
-- The Fusion workflow is best when you want editable CAD geometry rather than a lightweight imported mesh
+- The Fusion workflow is best when editable CAD geometry is more important than speed
 
 **Required packages**
 
@@ -341,9 +340,9 @@ Browser-based 3D sweep designer for creating guided swept forms.
 
 **Purpose**
 
-- Lets you build more complex 3D swept shapes interactively
-- Exports the generated design as OBJ or STL
-- Can be used as a starting point for more intricate pot designs with additional work
+- Build more complex 3D swept shapes interactively
+- Export the generated design as OBJ or STL
+- Use the output as a starting point for more intricate pot designs
 
 ---
 
@@ -353,33 +352,34 @@ Browser-based unified pot designer for creating printable pots from both cylindr
 
 **Purpose**
 
-- Combines cylindrical and spherical pot design into one interface
-- Lets you switch between equation systems in a single tool
-- Adds external texture displacement on top of the base pot form
-- Previews the generated shape directly in the browser
-- Exports the generated design as STL
+- Combine cylindrical and spherical pot design in one interface
+- Switch between equation systems within a single tool
+- Add external texture displacement on top of the base pot form
+- Preview the generated shape directly in the browser
+- Export the generated design as STL
 
 **Texture variables**
 
-The unified textured designer uses a base form equation together with a texture displacement equation.
+The unified textured designer uses a base-form equation together with a texture displacement equation.
 
 The base form defines the main pot shape, and the texture equation adds or subtracts small surface offsets on the outside of the pot.
 
 Common variables used in the tool:
 
-- `r` — final radius of the surface at a point
-- `T` — texture displacement amount; controls bumps, dimples, ridges, or engraving depth
-- `θ` — angular position around the pot; useful for petals, ribs, symmetry, and repeating radial patterns
-- `z` — height along the pot in cylindrical mode; useful for vertical transitions, rings, twists, and height-based shaping
-- `φ` — polar angle in spherical mode; useful for describing curved vertical distribution on spherical forms
-- `v` — normalized vertical position from `0.0` to `1.0`; useful for scaling textures consistently from bottom to top across both coordinate systems
+- `r` — final radius at a point on the surface
+- `T` — texture displacement amount
+- `θ` — angular position around the pot
+- `z` — height in cylindrical mode
+- `φ` — polar angle in spherical mode
+- `v` — normalized vertical position from `0.0` to `1.0`
 
 Conceptually, the textured version behaves like:
 
 `final radius = base radius + texture displacement`
 
-This allows the tool to keep the overall pot form and the surface texture separate, so one equation controls the vessel shape while another controls the outer relief pattern.
+This keeps the vessel form and the surface relief separate, allowing one equation to control the overall shape while another controls the visible texture.
 
+---
 
 ### [`JavaScript/MultiColorPotDesigner.html`](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/JavaScript/MultiColorPotDesigner.html)
 
@@ -387,7 +387,7 @@ Browser-based multi-color pot designer for creating printable pots with equation
 
 **Purpose**
 
-- Combine cylindrical and spherical pot generation into one browser-based tool
+- Combine cylindrical and spherical pot generation in one browser-based tool
 - Preview equation-driven pot geometry live in 3D
 - Generate multi-color pots by splitting the model into a base body and a pattern body
 - Export a slicer-friendly multi-part `.3mf` assembly for color assignment in supported slicers
@@ -403,38 +403,39 @@ Browser-based multi-color pot designer for creating printable pots with equation
   - external surface texture equations
   - color pattern masks
 - Lets you define:
-  - base form equations
-  - texture displacement equations
-  - pattern mask equations
+  - base-form equations
+  - texture-displacement equations
+  - pattern-mask equations
 - Supports functional pot geometry such as:
   - wall thickness
   - flat or thickened bottom regions
   - drainage holes
-- Includes color controls for:
+- Includes controls for:
   - base color
   - pattern color
   - pattern depth
-- Includes separate resolution controls for:
   - mesh resolution
   - pattern resolution
-- Includes mobile-friendly GUI scaling while preserving the normal desktop layout
+- Includes responsive mobile scaling while preserving the desktop layout
 
 **Pattern logic**
 
 The Multi-Color Pot Designer separates the object into a base body and a pattern body using a mathematical pattern mask. This makes it possible to turn selected parts of the outer surface into a second printable part for multi-color slicing workflows.
 
 The pattern system supports:
+
 - texture-based selection using the raised share of the external texture
-- outer-envelope selection using a simple cylindrical or spherical reference envelope
+- outer-envelope selection using a cylindrical or spherical reference envelope
 - direct custom equations written in the pattern mask field
 
 **Output**
 
 The tool supports:
-- `.3mf` export for multi-part color workflows
-- `.stl` export for standard mesh export
 
-The multi-part workflow is intended for slicers that can import multiple parts as one object and let the user assign each part to a different filament.
+- `.3mf` export for multi-part color workflows
+- `.stl` export for standard mesh workflows
+
+The multi-part workflow is intended for slicers that can import multiple parts as one object and allow each part to be assigned to a different filament.
 
 ---
 
@@ -446,9 +447,9 @@ A cylindrical pot can be generated from a radial function such as:
 5 * (1 + 0.22 * cos(5 * theta + pi * z / 10))
 ```
 
-This defines the radius at each point along height and angle, producing a patterned surface that varies as the pot rises.
+This defines the radius at each point along height and angle, producing a patterned surface that changes as the pot rises.
 
-You can also build more layered forms using piecewise or frequency-mixed expressions such as:
+You can also build layered forms using piecewise or frequency-mixed expressions such as:
 
 ```python
 5 * (
@@ -505,18 +506,20 @@ The generators expose several parameters that affect both geometry and printabil
 - **Bottom Thickness** — thickness of the floor
 - **Drainage Hole Radius** — size of the bottom hole
 - **Z Sections** — vertical mesh resolution
-- **Theta Sections** — angular mesh resolution / smoothness
+- **Theta Sections** — angular mesh resolution and smoothness
 - **Phi Sections** — polar sampling resolution for spherical designs
 
-Higher section counts produce smoother meshes, but also larger files and slower generation.
+Higher section counts produce smoother meshes, but they also increase file size and generation time.
 
 ---
 
 ## Output
 
-The scripts and HTML tools export `.obj` files, and the HTML tools can also export `.stl` files.
+The scripts and HTML tools export `.obj` files, and the HTML tools also support `.stl` output.
 
-These can be opened in tools such as:
+The Multi-Color Pot Designer additionally supports multi-part `.3mf` export for color-separated workflows.
+
+These files can be opened in tools such as:
 
 - Blender
 - MeshLab
@@ -533,15 +536,16 @@ For best results:
 - keep wall thickness large enough for your nozzle and material
 - avoid equations that produce negative or near-zero radii
 - use higher angular resolution for sharp ripples or high-frequency patterns
-- inspect the OBJ before slicing
-- test small versions first before printing full-size pots
+- inspect the mesh before slicing
+- test small versions before printing full-size pots
 
 ---
 
 ## Why this project?
 
-Equation-Driven Pots turns mathematics into fabrication.  
-It treats equations not just as descriptions, but as design tools for producing real, usable objects. This makes it possible to explore procedural form, computational design, digital fabrication, browser-based interactive design, and CAD reconstruction in a simple workflow.
+Equation-Driven Pots turns mathematics into fabrication.
+
+It treats equations not only as descriptions, but as design tools for producing real, usable objects. The project brings together procedural form, computational design, digital fabrication, browser-based interactive design, and CAD reconstruction in a practical workflow.
 
 ---
 
@@ -551,8 +555,8 @@ In addition to the Python and HTML tools in this repository, you can also use AI
 
 **AI workflows**
 
-- Feed the Python pot-generation scripts to a capable AI model
-- Use the included prompt file: [`3dPotGenerator.txt`](./3dPotGenerator.txt)
+- feed the Python pot-generation scripts to a capable AI model
+- use the included prompt file: [`3dPotGenerator.txt`](./3dPotGenerator.txt)
 
 **Tested with**
 
@@ -561,9 +565,9 @@ In addition to the Python and HTML tools in this repository, you can also use AI
 
 The prompt-based workflow instructs the model to generate and run Python code that creates a printable `.obj` file, produces a preview image, and returns a downloadable result.
 
-This is useful if you want a fast, portable workflow for one-off pot generation without manually editing the scripts first.
+This is useful when you want a fast, portable workflow for one-off pot generation without manually editing the scripts first.
 
-> This prompt-based workflow is experimental and may produce inconsistent results depending on the model, version, and run.
+> This workflow is experimental and may produce inconsistent results depending on the model, version, and run.
 
 ---
 
