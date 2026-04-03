@@ -45,12 +45,12 @@
 
         /* Base Styles */
         .input-group { margin-bottom: 15px; }
-        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;}
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
         label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         input, textarea, select { width: 100%; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         textarea { font-family: 'Courier New', monospace; background: #fafafa; line-height: 1.2; }
-        button { width: 100%; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; transition: opacity 0.2s; }
+        button { width: 100%; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; transition: opacity 0.2s; margin-bottom: 8px;}
         button:active { opacity: 0.7; }
         .btn-preview { background: var(--primary); }
         .btn-export { background: var(--secondary); }
@@ -85,6 +85,17 @@
         <div class="input-group" title="Starts the flat bed"><label>Bot Flat (°)</label><input type="number" id="botFlatten" value="150" step="1" min="90" max="179"></div>
         <div class="input-group" title="Ends the mesh (hole)"><label>Bot Cut (°)</label><input type="number" id="botCut" value="175" step="1" min="91" max="180"></div>
     </div>
+
+    <div class="grid-inputs">
+        <div class="input-group" title="Vertical density">
+            <label>Vertical Res (P)</label>
+            <input type="number" id="resP" value="80" step="10" min="20" max="300">
+        </div>
+        <div class="input-group" title="Radial density">
+            <label>Radial Res (T)</label>
+            <input type="number" id="resT" value="140" step="10" min="20" max="500">
+        </div>
+    </div>
     
     <button class="btn-preview" onclick="updatePreview()">RENDER PREVIEW</button>
     <button class="btn-stl" onclick="exportSTL()">DOWNLOAD STL</button>
@@ -101,20 +112,33 @@
 <script>
     let scene, camera, renderer, controls, currentMesh;
 
-    // ADVANCED SPHERICAL LIBRARY
+// ADVANCED SPHERICAL LIBRARY
     const library = {
-        
-        
-        // Advanced Math Topologies
-        "Dragon Egg (Diamond)": { eq: "R * (1 + 0.08 * cos(10*theta + 8*phi) + 0.08 * cos(10*theta - 8*phi))", desc: "Intersecting diagonal waves create a 3D-printable scale texture." },
-        "Twisted Hex Vortex": { eq: "R * (1 + 0.15 * cos(6 * (theta + phi*2)))", desc: "A 6-sided base that dynamically twists as it rises toward the rim." },
-        "Ribbed Art Deco": { eq: "R * (1 + 0.15 * pow(cos(8*theta), 4) * sin(phi))", desc: "Sharp, pronounced vertical fins that taper smoothly at the poles." },
-        "Equatorial Flare (UFO)": { eq: "R * (1 + 0.4 * exp(-pow(phi-1.57, 2)*10))", desc: "A sleek, modern design that aggressively bulges outward precisely at the equator." },
-        "Cellular Organic": { eq: "R * (1 + 0.06 * (sin(8*theta)*cos(10*phi) + sin(11*theta)*cos(5*phi)))", desc: "Mismatched overlapping frequencies simulate natural, erratic organic growth." },
-        
+        // --- INTERDISCIPLINARY PHYSICS TOPOLOGIES ---
+        "Aerospace Isogrid (Structural)": { 
+            eq: "R * (1 + 0.08 * max(cos(12*theta + 10*phi), cos(12*theta - 10*phi)))", 
+            desc: "Uses max() on intersecting waves to create a diagrid of sharp, raised ribs. Used in rocket hulls for high strength-to-weight ratios." 
+        },
+        "Crown Splash (Fluid Dynamics)": { 
+            eq: "R * (1 + 0.35 * exp(-pow(phi - 0.4, 2) * 20) * max(0, cos(14 * theta)) + 0.05 * sin(phi * 8))", 
+            desc: "Applies a Gaussian exponential mask near the top rim to isolate high-frequency spikes, mimicking a high-speed photo of a liquid drop impact." 
+        },
+        "Phased Array Lobe (Radio)": { 
+            eq: "R * (1 + 0.25 * pow(sin(phi), 4) * pow(cos(4*theta), 6) + 0.03 * sin(16*theta)*sin(phi))", 
+            desc: "Raises a cosine to the 6th power to narrow the peaks, simulating the highly directional primary radiation lobes of a radar antenna." 
+        },
+        "Wind Shear Ripples (Aerodynamics)": { 
+            eq: "R * (1 + 0.08 * sin(12*theta) * pow(sin(phi), 2) + 0.04 * sin(24*theta - 12*phi) * sin(phi))", 
+            desc: "Models Kelvin-Helmholtz instability. A low-frequency base wave is sheared by a high-frequency diagonal wave, like wind blowing over water." 
+        },
+        "Electron Cloud (Quantum)": { 
+            eq: "R * (1 + 0.3 * abs(pow(sin(phi), 3) * cos(phi) * sin(3*theta)))", 
+            desc: "Derived from Spherical Harmonic equations. Visualizes the probability density of an f-orbital electron around an atomic nucleus." 
+        },
+
         // --- SOPHISTICATED TOPOLOGIES ---
         "Fibonacci Spirals (Pinecone)": { 
-            eq: "R * (1 + 0.08 * pow(Math.max(0, sin(13*theta - 8*phi)), 2) + 0.08 * pow(Math.max(0, sin(8*theta + 13*phi)), 2))", 
+            eq: "R * (1 + 0.08 * pow(max(0, sin(13*theta - 8*phi)), 2) + 0.08 * pow(max(0, sin(8*theta + 13*phi)), 2))", 
             desc: "Uses Fibonacci numbers (8, 13) to create deeply interlocking, directional spirals mimicking phyllotaxis in nature." 
         },
         "Crystalline Geode": { 
@@ -134,13 +158,53 @@
             desc: "Clamps negative sine values to zero using max(), creating distinct, raised teardrop scales that lay flat against the hull."
         },
 
-        // Classic Geometries
-        "Perfect Sphere": { eq: "R", desc: "A smooth, uniform ball." },
-        "Pumpkin Lobes": { eq: "R * (1 + 0.15 * cos(8 * theta))", desc: "8 deep vertical ridges like a pumpkin." },
-        "Woven Basket": { eq: "R * (1 + 0.05 * sin(12 * theta) * cos(8 * phi))", desc: "Interlocking frequency grid." },
-        "Starfruit": { eq: "R * (1 + 0.25 * cos(5 * theta) * sin(phi))", desc: "Deep 5-point star extrusions, softening at poles." },
-        "Hourglass / Peanut": { eq: "R * (1 - 0.25 * sin(2 * phi))", desc: "Pinched in the middle equator." },
-        "Coral Brain": { eq: "R * (1 + 0.08 * sin(10 * theta + 5*phi) * sin(8 * phi))", desc: "Organic, rippling surface." }
+        // --- ADVANCED MATH TOPOLOGIES ---
+        "Dragon Egg (Diamond)": { 
+            eq: "R * (1 + 0.08 * cos(10*theta + 8*phi) + 0.08 * cos(10*theta - 8*phi))", 
+            desc: "Intersecting diagonal waves create a 3D-printable scale texture." 
+        },
+        "Twisted Hex Vortex": { 
+            eq: "R * (1 + 0.15 * cos(6 * (theta + phi*2)))", 
+            desc: "A 6-sided base that dynamically twists as it rises toward the rim." 
+        },
+        "Ribbed Art Deco": { 
+            eq: "R * (1 + 0.15 * pow(cos(8*theta), 4) * sin(phi))", 
+            desc: "Sharp, pronounced vertical fins that taper smoothly at the poles." 
+        },
+        "Equatorial Flare (UFO)": { 
+            eq: "R * (1 + 0.4 * exp(-pow(phi-1.57, 2)*10))", 
+            desc: "A sleek, modern design that aggressively bulges outward precisely at the equator." 
+        },
+        "Cellular Organic": { 
+            eq: "R * (1 + 0.06 * (sin(8*theta)*cos(10*phi) + sin(11*theta)*cos(5*phi)))", 
+            desc: "Mismatched overlapping frequencies simulate natural, erratic organic growth." 
+        },
+
+        // --- CLASSIC GEOMETRIES ---
+        "Perfect Sphere": { 
+            eq: "R", 
+            desc: "A smooth, uniform ball." 
+        },
+        "Pumpkin Lobes": { 
+            eq: "R * (1 + 0.15 * cos(8 * theta))", 
+            desc: "8 deep vertical ridges like a pumpkin." 
+        },
+        "Woven Basket": { 
+            eq: "R * (1 + 0.05 * sin(12 * theta) * cos(8 * phi))", 
+            desc: "Interlocking frequency grid." 
+        },
+        "Starfruit": { 
+            eq: "R * (1 + 0.25 * cos(5 * theta) * sin(phi))", 
+            desc: "Deep 5-point star extrusions, softening at poles." 
+        },
+        "Hourglass / Peanut": { 
+            eq: "R * (1 - 0.25 * sin(2 * phi))", 
+            desc: "Pinched in the middle equator." 
+        },
+        "Coral Brain": { 
+            eq: "R * (1 + 0.08 * sin(10 * theta + 5*phi) * sin(8 * phi))", 
+            desc: "Organic, rippling surface." 
+        }
     };
 
     function populateDropdown() {
@@ -157,6 +221,9 @@
         const data = library[key];
         document.getElementById('equation').value = data.eq;
         document.getElementById('logic-info').innerText = data.desc;
+        
+        // Removed the resolution overwrite logic here so your custom values stay exactly as you set them.
+
         updatePreview();
     }
 
@@ -212,7 +279,7 @@
         currentMesh = new THREE.Mesh(geometry, material);
         
         scene.add(currentMesh);
-        document.getElementById('status').innerText = "Sphere: " + document.getElementById('presetSelect').value;
+        document.getElementById('status').innerText = "Sphere: " + document.getElementById('presetSelect').value + ` (Res: ${cfg.resP}x${cfg.resT})`;
     }
 
     function getConfig() {
@@ -221,10 +288,10 @@
             baseR: parseFloat(document.getElementById('baseRadius').value) || 5.0,
             w: parseFloat(document.getElementById('wall').value) || 0.35,
             topCutRad: (parseFloat(document.getElementById('topCut').value) || 0) * (Math.PI / 180),
-            botFlattenRad: (parseFloat(document.getElementById('botFlatten').value) || 150) * (Math.PI / 180), // Updated Default
+            botFlattenRad: (parseFloat(document.getElementById('botFlatten').value) || 150) * (Math.PI / 180),
             botCutRad: (parseFloat(document.getElementById('botCut').value) || 175) * (Math.PI / 180),
-            resP: 80, // Slightly higher res to render complex textures well
-            resT: 140 
+            resP: parseInt(document.getElementById('resP').value) || 80, 
+            resT: parseInt(document.getElementById('resT').value) || 140 
         };
     }
 
@@ -235,7 +302,7 @@
             try { 
                 const pi = Math.PI, sin = Math.sin, cos = Math.cos, pow = Math.pow, 
                       min = Math.min, max = Math.max, abs = Math.abs, sqrt = Math.sqrt,
-                      exp = Math.exp; // Added exp for the UFO flare
+                      exp = Math.exp;
                 return eval(cfg.eq); 
             } catch(e) { return R; } 
         };
