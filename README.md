@@ -1,15 +1,17 @@
 # Equation-Driven Pots
 
-A Python project for generating functional 3D-printable plant pots from equations in cylindrical coordinates.
+A project for generating functional 3D-printable plant pots from equations in cylindrical and spherical coordinates.
 
-Instead of sculpting a pot manually, this project defines the surface mathematically with a radius function:
+Instead of sculpting a pot manually, this project defines the surface mathematically through radius functions such as:
 
-`r(z, θ)`
+- `r(z, θ)` for cylindrical-coordinate pot generation
+- `r(θ, φ)` for spherical-coordinate pot generation
 
 where:
 
 - `z` is the height along the vertical axis
 - `θ` is the angle around the axis
+- `φ` is the polar angle in spherical coordinates
 - `r` is the radius at that position
 
 The result is a printable hollow vessel generated directly from an equation. By changing the equation, you can create twisted, rippled, lobed, symmetric, or highly organic pot shapes while keeping the object functional for 3D printing.
@@ -38,12 +40,25 @@ The result is a printable hollow vessel generated directly from an equation. By 
 
 ![3D Sweep Designer HTML](Images/3DSweepDesignerHTML.jpg)
 
+### Spherical Pot Designer HTML
+
+![Spherical Pot Designer HTML](Images/SphericalPotDesignerHTML.jpg)
+
 ---
 
 ## How it works
 
-The code evaluates a user-defined equation `r(z, θ)` over a sampled grid of height and angle values.
-From that sampled surface, it generates:
+The code evaluates a user-defined equation over a sampled grid and converts that surface into printable geometry.
+
+For cylindrical designs, the main form is defined by:
+
+`r(z, θ)`
+
+For spherical designs, the form is defined by:
+
+`r(θ, φ)`
+
+From that sampled surface, the tools generate printable geometry such as:
 
 - an outer wall
 - an inner wall
@@ -58,6 +73,7 @@ The mesh is then exported as an `.obj` file, ready for inspection, slicing, and 
 ## Features
 
 - Generate pots from mathematical equations
+- Support cylindrical and spherical equation-driven workflows
 - Export printable OBJ meshes
 - Control wall thickness, bottom thickness, height, and drainage hole size
 - Explore different interfaces:
@@ -66,8 +82,10 @@ The mesh is then exported as an `.obj` file, ready for inspection, slicing, and 
   - Dash web GUI
   - PyVista preview GUI
   - browser-based HTML pot designer
+  - browser-based HTML spherical pot designer
   - browser-based HTML sweep designer
   - Fusion 360 parametric sweep reconstruction script
+- Keep the repository lightweight by primarily hosting code and images, while example 3D models are hosted externally
 
 ---
 
@@ -106,7 +124,7 @@ If you want everything installed:
 pip install numpy dash plotly pyvista
 ```
 
-> `tkinter` is usually included with standard Python installations.
+> `tkinter` is usually included with standard Python installations.  
 > On some Linux systems, you may need to install it separately with your package manager.
 
 ---
@@ -248,19 +266,19 @@ This tool is useful when the designer wants to reconstruct the 3D shape directly
 
 **How to add it in Fusion 360**
 
-1. Open **Fusion 360**.
-2. Go to **Utilities**.
-3. Open **Add-Ins**.
-4. Open **Scripts and Add-Ins**.
-5. Click **+ New Script**.
-6. Copy or place `3d MathSweep Studio.py` into the created script folder.
-7. Return to **Scripts and Add-Ins**, select the script, and run it.
+1. Open **Fusion 360**
+2. Go to **Utilities**
+3. Open **Add-Ins**
+4. Open **Scripts and Add-Ins**
+5. Click **+ New Script**
+6. Copy or place `3d MathSweep Studio.py` into the created script folder
+7. Return to **Scripts and Add-Ins**, select the script, and run it
 
 **Notes**
 
-- The script is heavier on Fusion 360 than the mesh-based workflow.
-- More complex profiles and higher section counts can noticeably slow generation.
-- The Fusion workflow is best when you want editable CAD geometry rather than a lightweight imported mesh.
+- The script is heavier on Fusion 360 than the mesh-based workflow
+- More complex profiles and higher section counts can noticeably slow generation
+- The Fusion workflow is best when you want editable CAD geometry rather than a lightweight imported mesh
 
 **Required packages**
 
@@ -288,6 +306,21 @@ Browser-based pot designer for creating printable 3D pots directly in HTML and J
 
 ---
 
+### [`JavaScript/SphericalPotDesigner.html`](./JavaScript/SphericalPotDesigner.html)
+
+Browser-based spherical-coordinate pot designer for creating printable pots from equations of the form `r(θ, φ)`.
+
+**Purpose**
+
+- Design pots using spherical coordinates instead of cylindrical coordinates
+- Explore forms that are easier to describe with `r(θ, φ)` than with `r(z, θ)`
+- Preview the generated shape directly in the browser
+- Export the generated design for downstream 3D modeling and printing workflows
+
+This tool extends the project beyond height-based radial pot design and opens up a broader design space for equation-driven vessels.
+
+---
+
 ### [`JavaScript/SweepDesigner.html`](./JavaScript/SweepDesigner.html)
 
 Browser-based 3D sweep designer for creating guided swept forms.
@@ -300,9 +333,9 @@ Browser-based 3D sweep designer for creating guided swept forms.
 
 ---
 
-## Example equation
+## Example equations
 
-A pot is generated from a radial function such as:
+A cylindrical pot can be generated from a radial function such as:
 
 ```python
 5 * (1 + 0.22 * cos(5 * theta + pi * z / 10))
@@ -321,22 +354,39 @@ You can also build more layered forms using piecewise or frequency-mixed express
 )
 ```
 
+A spherical pot can be generated from an equation of the form:
+
+```python
+r(theta, phi)
+```
+
+which defines the radius as a function of azimuthal angle and polar angle.
+
 ---
 
 ## Pot equations
 
-A collection of pot equations is available here:
+A collection of equations is available here:
 
 [Pot Equations Spreadsheet](https://docs.google.com/spreadsheets/d/e/2PACX-1vRYxQRyGNsDuxl4WaNONKAniyfK-77zSTJY7q4plz88dK7fTNcIbU8814u9wOJ2o2BI10GwCpFbcP3U/pubhtml?widget=true&headers=false)
+
+The spreadsheet includes both cylindrical and spherical equations.
 
 ---
 
 ## Gallery
 
-Below is a collection of the designs generated using the provided equations.
-Each model is exported as a high-resolution `.obj` file and a 3D preview.
+### Cylindrical pot designs
 
 ![Pot Designs Grid](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/Images/pot_designs_3xn_grid.jpg?raw=true)
+
+### Spherical design summary
+
+![Spherical Design Summary](Images/spherical_design_summary.jpg)
+
+Example 3D models for the spherical designer are hosted on Thingiverse to keep the repository lightweight:
+
+[Equation-Driven Pots on Thingiverse](https://www.thingiverse.com/thing:7327538)
 
 ---
 
@@ -351,6 +401,7 @@ The generators expose several parameters that affect both geometry and printabil
 - **Drainage Hole Radius** — size of the bottom hole
 - **Z Sections** — vertical mesh resolution
 - **Theta Sections** — angular mesh resolution / smoothness
+- **Phi Sections** — polar sampling resolution for spherical designs
 
 Higher section counts produce smoother meshes, but also larger files and slower generation.
 
@@ -384,8 +435,8 @@ For best results:
 
 ## Why this project?
 
-Equation-Driven Pots turns mathematics into fabrication.
-It treats equations not just as descriptions, but as design tools for producing real, usable objects. This makes it possible to explore procedural form, computational design, digital fabrication, and browser-based interactive design in a simple workflow.
+Equation-Driven Pots turns mathematics into fabrication.  
+It treats equations not just as descriptions, but as design tools for producing real, usable objects. This makes it possible to explore procedural form, computational design, digital fabrication, browser-based interactive design, and CAD reconstruction in a simple workflow.
 
 ---
 
