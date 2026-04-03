@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Textured Pot Designer</title>
+    <style>
+        :root {
+            --bg: #f4f7f6;
+            --panel: #ffffff;
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --success: #27ae60;
+            --highlight: #9b59b6;
+            --danger: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            background: var(--bg);
+            overflow: hidden;
+        }
+
+        #sidebar {
+            width: 440px;
+            background: var(--panel);
+            padding: 25px;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            z-index: 100;
+            flex-shrink: 0;
+        }
+
+        #viewer-container {
+            flex-grow: 1;
+            background: #ffffff;
+            position: relative;
+            min-width: 0;
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            color: var(--secondary);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group { margin-bottom: 10px; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #555;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        input[type="number"], select, textarea {
+            width: 100%;
+            padding: 7px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 0.85rem;
+        }
+
+        textarea {
+            height: 70px;
+            font-family: 'Courier New', monospace;
+            background: #fafafa;
+            line-height: 1.4;
+            resize: vertical;
+        }
+
+        .tex-area {
+            border-color: var(--highlight);
+            background: #fdfafef0;
+        }
+
+        .desc-text {
+            font-size: 0.75rem;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-top: -6px;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .pot-toggle {
+            background: #e8f4f8;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #bce0ee;
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            margin-top: 15px;
+        }
+
+        .pot-toggle input {
+            width: auto;
+            margin-right: 10px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .pot-toggle label {
+            margin-bottom: 0;
+            font-size: 0.9rem;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .pot-settings {
+            display: none;
+            background: #fff8e1;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ffe082;
+            margin-bottom: 15px;
+        }
+
+        .pot-settings.active { display: block; }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            transition: opacity 0.2s;
+            font-size: 0.9rem;
+        }
+
+        button:active { opacity: 0.8; }
+        .btn-preview { background: var(--secondary); }
+        .btn-stl { background: var(--success); }
+
+        #status {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 12px;
+            pointer-events: none;
+            max-width: calc(100% - 40px);
+            box-sizing: border-box;
+        }
+
+        .status-error { background: rgba(231, 76, 60, 0.9) !important; }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- COMPACT MOBILE OVERRIDES, SAME METHOD AS YOUR EXAMPLE --- */
+        @media (max-width: 768px) {
+            #sidebar {
+                width: 40vw;
+                padding: 8px;
+            }
+
+            h2 {
+                font-size: 0.9rem !important;
+                margin: 0 0 6px 0 !important;
+            }
+
+            .section-title {
+                font-size: 0.62rem;
+                margin-top: 8px;
+                margin-bottom: 5px;
+                padding-bottom: 3px;
+                letter-spacing: 0.3px;
+            }
+
+            .input-group {
+                margin-bottom: 4px !important;
+            }
+
+            .grid-inputs {
+                gap: 4px;
+                margin-bottom: 4px;
+            }
+
+            .grid-3 {
+                gap: 3px;
+                margin-bottom: 4px;
+            }
+
+            label {
+                font-size: 0.58rem;
+                margin-bottom: 1px !important;
+                line-height: 1;
+            }
+
+            input[type="number"], select, textarea {
+                padding: 4px !important;
+                font-size: 0.72rem !important;
+            }
+
+            input[type="number"], select {
+                height: 24px;
+            }
+
+            textarea {
+                height: 40px !important;
+                font-size: 0.62rem !important;
+                margin-bottom: 4px;
+                line-height: 1.15;
+            }
+
+            .desc-text {
+                font-size: 0.53rem;
+                margin-top: -2px;
+                margin-bottom: 4px;
+                line-height: 1.1;
+            }
+
+            .pot-toggle {
+                padding: 6px;
+                margin-top: 6px;
+                margin-bottom: 6px;
+            }
+
+            .pot-toggle input {
+                margin-right: 6px;
+                transform: scale(1.0);
+            }
+
+            .pot-toggle label {
+                font-size: 0.62rem;
+            }
+
+            .pot-settings {
+                padding: 6px;
+                margin-bottom: 6px;
+            }
+
+            button {
+                padding: 8px 2px !important;
+                font-size: 0.62rem !important;
+                margin-top: 4px !important;
+            }
+
+            #status {
+                font-size: 9px;
+                padding: 4px 10px;
+                bottom: 10px;
+                left: 10px;
+                max-width: calc(100% - 20px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="sidebar">
+    <h2 style="margin-top:0; color:var(--secondary)">Textured Pot Designer</h2>
+
+    <div class="section-title">1. Base Scaffold</div>
+    <div class="input-group">
+        <select id="coordSystem" onchange="switchSystem()">
+            <option value="cylindrical">Cylindrical Extrusion (r, θ, z)</option>
+            <option value="spherical">Spherical Wrap (r, θ, φ)</option>
+        </select>
+    </div>
+    <div class="input-group">
+        <select id="presetSelect" onchange="applyPreset()"></select>
+    </div>
+    <div id="baseDesc" class="desc-text"></div>
+    <div class="input-group">
+        <label>Form Equation: r(θ, <span class="varLabel">z</span>, v)</label>
+        <textarea id="equation" oninput="updatePreview()"></textarea>
+    </div>
+    <div class="grid-inputs">
+        <div class="input-group"><label>Base Radius (R)</label><input type="number" id="baseRadius" value="5" step="0.1" oninput="updatePreview()"></div>
+        <div class="input-group" id="heightGroup"><label>Height (cm)</label><input type="number" id="height" value="10" step="0.5" oninput="updatePreview()"></div>
+    </div>
+
+    <div class="section-title" style="color: var(--highlight)">2. Surface Texture (External)</div>
+    <div class="input-group">
+        <select id="texPresetSelect" onchange="applyTexturePreset()"></select>
+    </div>
+    <div id="texDesc" class="desc-text"></div>
+    <div class="input-group">
+        <label style="color: var(--highlight)">Displacement: T(θ, <span class="varLabel">z</span>, v)</label>
+        <textarea id="texEquation" class="tex-area" oninput="updatePreview()"></textarea>
+    </div>
+    <div class="input-group">
+        <label>Texture Intensity (Multiplier)</label>
+        <input type="number" id="texIntensity" value="0.15" step="0.05" oninput="updatePreview()">
+    </div>
+
+    <div class="section-title">3. Structural Geometry</div>
+    <div class="input-group"><label>Wall Thick (cm) [Smooth Inside]</label><input type="number" id="wall" value="0.35" step="0.05" oninput="updatePreview()"></div>
+
+    <div class="pot-toggle">
+        <input type="checkbox" id="isPot" onchange="onPotToggle()">
+        <label for="isPot">Enable Functional Pot Gen</label>
+    </div>
+
+    <div id="cylindricalPotSettings" class="pot-settings">
+        <div class="grid-inputs">
+            <div class="input-group"><label>Base Thick (cm)</label><input type="number" id="cylBase" value="0.5" step="0.1" oninput="updatePreview()"></div>
+            <div class="input-group"><label>Drain Radius (cm)</label><input type="number" id="cylDrain" value="0.5" step="0.1" oninput="updatePreview()"></div>
+        </div>
+    </div>
+
+    <div id="sphericalPotSettings" class="pot-settings">
+        <div class="grid-3">
+            <div class="input-group" title="Top Opening"><label>Top Cut (°)</label><input type="number" id="sphTopCut" value="25" step="1" min="0" max="89" oninput="updatePreview()"></div>
+            <div class="input-group" title="Flat bed start"><label>Bot Flat (°)</label><input type="number" id="sphBotFlatten" value="150" step="1" min="90" max="179" oninput="updatePreview()"></div>
+            <div class="input-group" title="Mesh hole end"><label>Bot Cut (°)</label><input type="number" id="sphBotCut" value="175" step="1" min="91" max="180" oninput="updatePreview()"></div>
+        </div>
+    </div>
+
+    <div class="section-title">Mesh Resolution</div>
+    <div class="grid-inputs">
+        <div class="input-group"><label>Vertical Nodes</label><input type="number" id="resV" value="150" step="10" min="20" oninput="updatePreview()"></div>
+        <div class="input-group"><label>Radial Nodes (θ)</label><input type="number" id="resT" value="200" step="10" min="20" oninput="updatePreview()"></div>
+    </div>
+
+    <button class="btn-preview" onclick="updatePreview()">RENDER PREVIEW</button>
+    <button class="btn-stl" onclick="exportSTL()">DOWNLOAD .STL</button>
+</div>
+
+<div id="viewer-container">
+    <div id="status">Ready.</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+    let scene, camera, renderer, controls, currentMesh;
+    let renderTimeout = null;
+
+    const libraries = {
+        cylindrical: {
+            "Circle (Pure Base)": { eq: "R", desc: "Simple cylindrical scaffold." },
+            "Rounded Square": { eq: "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125)", desc: "Rounded-square plan profile." },
+            "Ellipse": { eq: "R / sqrt(pow(cos(theta), 2) + 2.5 * pow(sin(theta), 2))", desc: "Elliptical cross-section." },
+            "Square Ripple": { eq: "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125) * (1 + 0.05 * sin(10 * z))", desc: "Rounded square with vertical ripple." },
+            "Elliptical Twist": { eq: "R / sqrt(pow(cos(theta + z/3), 2) + 2.5 * pow(sin(theta + z/3), 2))", desc: "Ellipse twisting as it rises." },
+            "5-Petal Flower": { eq: "R * (1 + 0.25 * cos(5 * theta))", desc: "Five-petal profile." },
+            "Gear-like": { eq: "R * (1 + 0.08 * cos(12 * theta))", desc: "Fine radial teeth." },
+            "Soft Gourd": { eq: "R * (1 + 0.10 * cos(4 * theta) + 0.05 * sin(2 * theta))", desc: "Organic gourd section." },
+            "Wavy Ceramic": { eq: "R * (1 + 0.08 * cos(3 * theta) + 0.06 * sin(5 * theta))", desc: "Gentle ceramic waviness." },
+            "Pumpkin Rib": { eq: "R * (1 + 0.14 * cos(8 * theta))", desc: "Classic pumpkin ribbing." },
+            "Turbine Blade": { eq: "R * (1 + 0.18 * cos(5 * theta + 0.35 * sin(theta)))", desc: "Directional blade-like sweep." },
+            "Column Fluting": { eq: "R * (1 + 0.10 * cos(12 * theta))", desc: "Architectural fluting scaffold." },
+            "Islamic Rosette": { eq: "R * (1 + 0.14 * cos(8 * theta) + 0.06 * cos(4 * theta))", desc: "Rosette-like section." },
+            "Opening Flower": { eq: "R * (1 + 0.25 * cos(5 * theta)) * (1 + 0.35 * sin(pi * z / 10))", desc: "Profile blossoms toward the middle." },
+            "Sharpening Top": { eq: "R * (1 + (0.10 + 0.18 * z / 10) * cos(6 * theta))", desc: "Ridges intensify upward." },
+            "Twisted Blossom": { eq: "R * (1 + 0.22 * cos(5 * theta + pi * z / 10))", desc: "Rotating floral ridges." },
+            "3-to-6 Petal Morph (Bulged)": { eq: "R * (1 + 0.35 * sin(pi * z / 10)) * (1 + 0.25 * (((10 - z) / 10) * cos(3 * theta) + (z / 10) * cos(6 * theta)))", desc: "Cross-section morphs along height." },
+            "3-to-6 Morph (Twisted)": { eq: "R * (1 + 0.35 * sin(pi * z / 10)) * (1 + 0.25 * (((10 - z) / 10) * cos(3 * (theta + (2*pi*z/30))) + (z / 10) * cos(6 * (theta + (2*pi*z/30)))))", desc: "Morph + twist." },
+            "Accelerated Turbulence": { eq: "R * (1 + 0.25 * pow(z / 10.0, 1.1) * (cos(5 * theta + (pi * z / 4.0)) + 0.8 * sin(11 * theta - (pi * z / 8.0))))", desc: "High-energy profile growth." },
+            "Fractal Growth": { eq: "R * (1 + (min(max((z-0.0)/2.5, 0), 1) * 0.18 * cos(3 * theta)) + (min(max((z-2.5)/2.5, 0), 1) * 0.15 * cos(6 * theta)) + (min(max((z-5.0)/2.5, 0), 1) * 0.10 * cos(12 * theta)) + (min(max((z-7.5)/2.5, 0), 1) * 0.08 * cos(24 * theta)))", desc: "Layered harmonic complexity." },
+            "Antenna Migration": { eq: "R * (1 + 0.4 * pow(z / 10.0, 1.5) * abs(cos((2 + 6 * (z / 10.0)) * theta / 2.0)))", desc: "Frequency increases along height." },
+            "Harmonic Oscillator": { eq: "R * (1 + 0.25 * abs(cos(pi * 1.0 * z / 10.0)) * cos(7 * theta))", desc: "AM-like modulation." },
+            "Harmonic Beats (AM)": { eq: "R * (1 + 0.3 * abs(cos(pi * 1.5 * z / 10.0)) * cos(8 * (theta + (pi * z / 20.0))))", desc: "Beating pattern." },
+            "Harmonic Beats (Inv)": { eq: "R * (1 + 0.3 * abs(cos(pi * 1.5 * (10-z) / 10.0)) * cos(8 * (theta + (pi * (10-z)/ 20.0))))", desc: "Inverted beating pattern." },
+            "DNA Helix (S-Curve)": { eq: "R * (1 + 0.4 * cos(2 * (theta + (1.2 * sin(2 * pi * z / 10.0)))))", desc: "Helix-like lateral flow." },
+            "Harmonic Strata Modeling": { eq: "R + 1 * (min(max(1-abs(z-1),0),1)*cos(3*theta) + min(max(1-abs(z-3),0),1)*cos(5*theta) + min(max(1-abs(z-5),0),1)*cos(7*theta) + min(max(1-abs(z-7),0),1)*cos(9*theta) + min(max(1-abs(z-9),0),1)*cos(11*theta))", desc: "Stratified harmonic bands." },
+            "Spiral Triple-Helix": { eq: "(R + 2.0 * sin(pi * z / 10.0)) * (1 + 0.20 * cos(3 * theta + pi * z / 10.0))", desc: "Bulged helical scaffold." },
+            "Bloomfold Vase": { eq: "(R-1.0)+1.2*sin(pi*z/10.0)+(0.34+0.42*sin(pi*z/10.0))*(pow(cos(0.5*pi*z/10.0),2)*cos(3*theta)+1.55*pow(sin(pi*z/10.0),2)*cos(6*theta))", desc: "High-quality vase scaffold." },
+            "Trifold Bloom Vase": { eq: "(R-1.0)+1.2*sin(pi*z/10.0)+(0.34+0.42*sin(pi*z/10.0))*(pow(cos(pi*z/10.0),2)*cos(3*theta)+1.55*pow(sin(pi*z/10.0),2)*cos(6*theta))", desc: "Threefold bloom with higher-frequency crown." },
+            "Twisted Trifold Bloom": { eq: "(R-1.0)+1.2*sin(pi*z/10.0)+(0.34+0.42*sin(pi*z/10.0))*(pow(cos(pi*z/10.0),2)*cos(3*(theta-pi*z/15.0))+1.55*pow(sin(pi*z/10.0),2)*cos(6*(theta-pi*z/15.0)))", desc: "Twisted bloom form." },
+            "DNA Double Helix": { eq: "R + 0.5 * sin(4 * theta + z) + 0.5 * cos(4 * theta - z)", desc: "Double-helix profile." }
+        },
+        spherical: {
+            "Dragon Egg": { eq: "R * (1 + 0.08 * cos(10*theta + 8*phi) + 0.08 * cos(10*theta - 8*phi))", desc: "Diamond-scale scaffold." },
+            "Perfect Sphere": { eq: "R", desc: "Simple spherical scaffold." },
+            "Aerospace Isogrid": { eq: "R * (1 + 0.08 * max(cos(12*theta + 10*phi), cos(12*theta - 10*phi)))", desc: "Structural diagrid." },
+            "Crown Splash": { eq: "R * (1 + 0.35 * exp(-pow(phi - 0.4, 2) * 20) * max(0, cos(14 * theta)) + 0.05 * sin(phi * 8))", desc: "Splash-like crown near top." },
+            "Phased Array Lobe": { eq: "R * (1 + 0.25 * pow(sin(phi), 4) * pow(cos(4*theta), 6) + 0.03 * sin(16*theta)*sin(phi))", desc: "Antenna-lobe inspired." },
+            "Wind Shear Ripples": { eq: "R * (1 + 0.08 * sin(12*theta) * pow(sin(phi), 2) + 0.04 * sin(24*theta - 12*phi) * sin(phi))", desc: "Sheared wave pattern." },
+            "Electron Cloud": { eq: "R * (1 + 0.3 * abs(pow(sin(phi), 3) * cos(phi) * sin(3*theta)))", desc: "Orbital-inspired bulges." },
+            "Fibonacci Spirals": { eq: "R * (1 + 0.08 * pow(max(0, sin(13*theta - 8*phi)), 2) + 0.08 * pow(max(0, sin(8*theta + 13*phi)), 2))", desc: "Phyllotaxis-style spirals." },
+            "Crystalline Geode": { eq: "R * (1 + 0.08 * (abs(sin(5*theta)) + abs(cos(5*theta))) * (abs(sin(4*phi)) + abs(cos(4*phi))))", desc: "Faceted crystalline surface." },
+            "Gravity Drip": { eq: "R * (1 + 0.2 * exp(phi - 2.5) * cos(12 * theta) * sin(phi))", desc: "Dripping lower region." },
+            "Liquid Audio Interference": { eq: "R * (1 + 0.04 * sin(18*theta) * cos(22*phi) + 0.03 * sin(28*theta - 12*phi))", desc: "Interference micro-topography." },
+            "Overlapping Armor Scales": { eq: "R * (1 + 0.12 * pow(max(0, sin(10*theta - 6*phi)), 2) * sin(phi))", desc: "Scale-like outer pattern." },
+            "Twisted Hex Vortex": { eq: "R * (1 + 0.15 * cos(6 * (theta + phi*2)))", desc: "Hex form with rotational drift." },
+            "Ribbed Art Deco": { eq: "R * (1 + 0.15 * pow(cos(8*theta), 4) * sin(phi))", desc: "Art Deco finning." },
+            "Equatorial Flare": { eq: "R * (1 + 0.4 * exp(-pow(phi-1.57, 2)*10))", desc: "Bulges near equator." },
+            "Cellular Organic": { eq: "R * (1 + 0.06 * (sin(8*theta)*cos(10*phi) + sin(11*theta)*cos(5*phi)))", desc: "Organic, cellular modulation." },
+            "Pumpkin Lobes": { eq: "R * (1 + 0.15 * cos(8 * theta))", desc: "Rounded lobes." },
+            "Woven Basket": { eq: "R * (1 + 0.05 * sin(12 * theta) * cos(8 * phi))", desc: "Woven cross-pattern." },
+            "Starfruit": { eq: "R * (1 + 0.25 * cos(5 * theta) * sin(phi))", desc: "Five-point spherical ridges." },
+            "Hourglass / Peanut": { eq: "R * (1 - 0.25 * sin(2 * phi))", desc: "Pinched midsection." },
+            "Coral Brain": { eq: "R * (1 + 0.08 * sin(10 * theta + 5*phi) * sin(8 * phi))", desc: "Dense brain-coral pattern." }
+        }
+    };
+
+    const texturePresets = {
+        "None (Flat Surface)": { eq: "0", desc: "No additional texture displacement." },
+        "Fine Vertical Ribs": { eq: "cos(16*theta)", desc: "Classic vertical ribbing that works well on most forms." },
+        "Twisted Vertical Ribs": { eq: "cos(14*theta + 4*pi*v)", desc: "Ribs twist as the surface rises." },
+        "Diamond Weave": { eq: "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)", desc: "Crossing diagonals for a diamond weave." },
+        "Hex-ish Facets": { eq: "abs(cos(6*theta))*0.7 + 0.3*cos(10*pi*v)", desc: "Faceted vertical texture." },
+        "Wave Bands": { eq: "sin(3*theta + 10*pi*v)", desc: "Broad flowing helical bands." },
+        "Armor Scales": { eq: "pow(max(0, sin(12*theta - 10*pi*v)), 2)", desc: "Raised overlapping scales." },
+        "Dragon Dimples": { eq: "0.7*cos(10*theta + 8*pi*v) * cos(10*theta - 8*pi*v)", desc: "Diamond-aligned dimples that pair well with dragon-egg scaffolds." },
+        "Pebble Dimples": { eq: "0.7*sin(14*theta)*sin(10*pi*v) + 0.3*sin(23*theta + 7*pi*v)", desc: "Soft rounded dimples for pebbled ceramic surfaces." },
+        "Stipple Noise": { eq: "sin(18*theta)*sin(14*pi*v) + 0.35*sin(31*theta + 9*pi*v)", desc: "Dense stippled micro-relief." },
+        "Cymatic Ripples": { eq: "sin(20*theta)*cos(18*pi*v)", desc: "Interference-style ripples." },
+        "Rosette Engraving": { eq: "cos(8*theta) + 0.4*cos(4*theta + 6*pi*v)", desc: "Floral engraving pattern." },
+        "Braided Spiral": { eq: "sin(6*theta + 8*pi*v) + 0.65*sin(6*theta - 8*pi*v)", desc: "Braided double-helix surface." },
+        "Topographic Rings": { eq: "sin(24*pi*v)", desc: "Horizontal contour rings." },
+        "Lotus Scallops": { eq: "pow(max(0, cos(8*theta)), 2) * sin(pi*v)", desc: "Soft scalloped petals around the body." }
+    };
+
+    function populateTexturePresets() {
+        const select = document.getElementById('texPresetSelect');
+        select.innerHTML = '';
+        Object.keys(texturePresets).forEach(key => {
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.innerText = key;
+            select.appendChild(opt);
+        });
+    }
+
+    function switchSystem(targetPreset = null) {
+        const sys = document.getElementById('coordSystem').value;
+        const select = document.getElementById('presetSelect');
+        select.innerHTML = '';
+
+        Object.keys(libraries[sys]).forEach(key => {
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.innerText = key;
+            select.appendChild(opt);
+        });
+
+        const varLabels = document.querySelectorAll('.varLabel');
+        varLabels.forEach(el => el.innerText = sys === 'cylindrical' ? 'z' : 'φ');
+
+        document.getElementById('heightGroup').style.display = sys === 'cylindrical' ? 'block' : 'none';
+
+        togglePotUI();
+
+        if (targetPreset && libraries[sys][targetPreset]) {
+            select.value = targetPreset;
+        } else {
+            select.value = Object.keys(libraries[sys])[0];
+        }
+
+        document.getElementById('equation').value = libraries[sys][select.value].eq;
+        document.getElementById('baseDesc').innerText = libraries[sys][select.value].desc;
+
+        const texKey = document.getElementById('texPresetSelect').value;
+        document.getElementById('texEquation').value = texturePresets[texKey].eq;
+        document.getElementById('texDesc').innerText = texturePresets[texKey].desc;
+
+        updatePreview();
+    }
+
+    function togglePotUI() {
+        const sys = document.getElementById('coordSystem').value;
+        const isPot = document.getElementById('isPot').checked;
+
+        document.getElementById('cylindricalPotSettings').classList.remove('active');
+        document.getElementById('sphericalPotSettings').classList.remove('active');
+
+        if (isPot) {
+            if (sys === 'cylindrical') document.getElementById('cylindricalPotSettings').classList.add('active');
+            if (sys === 'spherical') document.getElementById('sphericalPotSettings').classList.add('active');
+        }
+    }
+
+    function onPotToggle() {
+        togglePotUI();
+        updatePreview();
+    }
+
+    function applyPreset() {
+        const sys = document.getElementById('coordSystem').value;
+        const key = document.getElementById('presetSelect').value;
+        document.getElementById('equation').value = libraries[sys][key].eq;
+        document.getElementById('baseDesc').innerText = libraries[sys][key].desc;
+        updatePreview();
+    }
+
+    function applyTexturePreset() {
+        const key = document.getElementById('texPresetSelect').value;
+        document.getElementById('texEquation').value = texturePresets[key].eq;
+        document.getElementById('texDesc').innerText = texturePresets[key].desc;
+        updatePreview();
+    }
+
+    window.onload = function() {
+        initThree();
+        populateTexturePresets();
+
+        document.getElementById('coordSystem').value = 'spherical';
+        document.getElementById('isPot').checked = true;
+        document.getElementById('texPresetSelect').value = 'Dragon Dimples';
+
+        switchSystem('Dragon Egg');
+
+        window.addEventListener('resize', onWindowResize);
+    };
+
+    function onWindowResize() {
+        const container = document.getElementById('viewer-container');
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+    }
+
+    function initThree() {
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xeef2f3);
+
+        const container = document.getElementById('viewer-container');
+        camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(22, 18, 22);
+
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, 4, 0);
+        controls.enableDamping = true;
+
+        scene.add(new THREE.GridHelper(25, 25, 0xbdc3c7, 0xffffff));
+        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(10, 20, 10);
+        scene.add(dirLight);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+    }
+
+    function getConfig() {
+        return {
+            sys: document.getElementById('coordSystem').value,
+            eq: document.getElementById('equation').value,
+            texEq: document.getElementById('texEquation').value,
+            texInt: parseFloat(document.getElementById('texIntensity').value) || 0,
+            R: parseFloat(document.getElementById('baseRadius').value) || 5.0,
+            w: parseFloat(document.getElementById('wall').value) || 0.35,
+            h: parseFloat(document.getElementById('height').value) || 10.0,
+            resV: parseInt(document.getElementById('resV').value) || 150,
+            resT: parseInt(document.getElementById('resT').value) || 200,
+            isPot: document.getElementById('isPot').checked,
+            cylBase: parseFloat(document.getElementById('cylBase').value) || 0.5,
+            cylDrain: parseFloat(document.getElementById('cylDrain').value) || 0.5,
+            sphTopCut: (parseFloat(document.getElementById('sphTopCut').value) || 25) * (Math.PI / 180),
+            sphBotFlatten: (parseFloat(document.getElementById('sphBotFlatten').value) || 150) * (Math.PI / 180),
+            sphBotCut: (parseFloat(document.getElementById('sphBotCut').value) || 175) * (Math.PI / 180)
+        };
+    }
+
+    function secureEval(eq, theta, z, phi, v, R, isTexture = false) {
+        try {
+            const pi = Math.PI, sin = Math.sin, cos = Math.cos, pow = Math.pow,
+                  min = Math.min, max = Math.max, abs = Math.abs, exp = Math.exp, sqrt = Math.sqrt;
+            let result = eval(eq);
+            let fallback = isTexture ? 0 : R;
+            return (typeof result !== 'number' || isNaN(result) || !isFinite(result)) ? fallback : result;
+        } catch (e) {
+            return isTexture ? 0 : R;
+        }
+    }
+
+    function updatePreview() {
+        if (renderTimeout) clearTimeout(renderTimeout);
+
+        const statusEl = document.getElementById('status');
+        statusEl.classList.remove('status-error');
+        statusEl.innerText = "Generating complex surface...";
+
+        renderTimeout = setTimeout(() => {
+            try {
+                if (currentMesh) {
+                    scene.remove(currentMesh);
+                    if (currentMesh.geometry) currentMesh.geometry.dispose();
+                    if (currentMesh.material) currentMesh.material.dispose();
+                    currentMesh = null;
+                }
+
+                const cfg = getConfig();
+                const meshData = cfg.sys === 'cylindrical' ? generateCylindrical(cfg) : generateSpherical(cfg);
+
+                if (!meshData || meshData.vertices.length === 0) throw new Error("Geometry returned empty.");
+
+                const geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(meshData.vertices, 3));
+                geometry.setIndex(meshData.indices);
+                geometry.computeVertexNormals();
+
+                const matColor = cfg.sys === 'cylindrical' ? 0x9b59b6 : 0x2980b9;
+                const material = new THREE.MeshStandardMaterial({
+                    color: matColor,
+                    side: THREE.DoubleSide,
+                    roughness: 0.7,
+                    metalness: 0.1
+                });
+
+                currentMesh = new THREE.Mesh(geometry, material);
+                scene.add(currentMesh);
+
+                statusEl.innerText = `System: ${cfg.sys.toUpperCase()} | Nodes: ${cfg.resV}x${cfg.resT} | Pot: ${cfg.isPot ? 'ON' : 'OFF'}`;
+            } catch (err) {
+                console.error(err);
+                statusEl.classList.add('status-error');
+                statusEl.innerText = `Error: Invalid equation or geometry failure.`;
+            }
+        }, 30);
+    }
+
+    function generateCylindrical(cfg) {
+        const vertices = [], indices = [];
+        const addV = (x, y, z) => { vertices.push(x, y, z); return (vertices.length / 3) - 1; };
+
+        let oRings = [], iRings = [];
+        let actualBase = cfg.isPot ? cfg.cylBase : 0;
+        let actualDrain = cfg.isPot ? cfg.cylDrain : 0;
+
+        for (let iv = 0; iv <= cfg.resV; iv++) {
+            let zO = cfg.h * (iv / cfg.resV);
+            let zI = actualBase + (cfg.h - actualBase) * (iv / cfg.resV);
+            let v = iv / cfg.resV;
+
+            let oR = [], iR = [];
+
+            for (let it = 0; it < cfg.resT; it++) {
+                let theta = (2 * Math.PI * it) / cfg.resT;
+
+                let rBaseOuter = secureEval(cfg.eq, theta, zO, 0, v, cfg.R, false);
+                let rBaseInner = secureEval(cfg.eq, theta, zI, 0, v, cfg.R, false);
+
+                let texDisp = secureEval(cfg.texEq, theta, zO, 0, v, 0, true);
+
+                let rOut = rBaseOuter + (texDisp * cfg.texInt);
+                let rIn = Math.max(0.1, rBaseInner - cfg.w);
+
+                oR.push(addV(rOut * Math.cos(theta), zO, -rOut * Math.sin(theta)));
+                iR.push(addV(rIn * Math.cos(theta), zI, -rIn * Math.sin(theta)));
+            }
+
+            oRings.push(oR);
+            iRings.push(iR);
+        }
+
+        let hB = [], hT = [];
+        for (let it = 0; it < cfg.resT; it++) {
+            let theta = (2 * Math.PI * it) / cfg.resT;
+            hB.push(addV(actualDrain * Math.cos(theta), 0, -actualDrain * Math.sin(theta)));
+            hT.push(addV(actualDrain * Math.cos(theta), actualBase, -actualDrain * Math.sin(theta)));
+        }
+
+        for (let it = 0; it < cfg.resT; it++) {
+            let it1 = (it + 1) % cfg.resT;
+
+            for (let iv = 0; iv < cfg.resV; iv++) {
+                indices.push(oRings[iv][it], oRings[iv+1][it], oRings[iv+1][it1], oRings[iv][it], oRings[iv+1][it1], oRings[iv][it1]);
+                indices.push(iRings[iv][it], iRings[iv][it1], iRings[iv+1][it1], iRings[iv][it], iRings[iv+1][it1], iRings[iv+1][it]);
+            }
+
+            indices.push(oRings[cfg.resV][it], iRings[cfg.resV][it], iRings[cfg.resV][it1], oRings[cfg.resV][it], iRings[cfg.resV][it1], oRings[cfg.resV][it1]);
+
+            if (cfg.isPot && cfg.cylDrain > 0) {
+                indices.push(oRings[0][it], hB[it1], hB[it], oRings[0][it], oRings[0][it1], hB[it1]);
+                indices.push(iRings[0][it], hT[it], hT[it1], iRings[0][it], hT[it1], iRings[0][it1]);
+                indices.push(hB[it], hB[it1], hT[it1], hB[it], hT[it1], hT[it]);
+            } else {
+                indices.push(oRings[0][it], oRings[0][it1], iRings[0][it1], oRings[0][it], iRings[0][it1], iRings[0][it]);
+            }
+        }
+
+        return { vertices, indices };
+    }
+
+    function generateSpherical(cfg) {
+        const vertices = [], indices = [];
+        let minY = Infinity;
+
+        let phiStart = cfg.isPot ? cfg.sphTopCut : 0.001;
+        let phiEnd = cfg.isPot ? cfg.sphBotCut : Math.PI - 0.001;
+        let flatBottomZ = cfg.R * Math.cos(cfg.sphBotFlatten);
+
+        let oRings = [], iRings = [];
+        for (let iv = 0; iv <= cfg.resV; iv++) {
+            let phi = phiStart + (phiEnd - phiStart) * (iv / cfg.resV);
+            let v = (phi - phiEnd) / (phiStart - phiEnd);
+
+            let oR = [], iR = [];
+
+            for (let it = 0; it < cfg.resT; it++) {
+                let theta = (2 * Math.PI * it) / cfg.resT;
+
+                let rBaseOuter = secureEval(cfg.eq, theta, 0, phi, v, cfg.R, false);
+                let texDisp = secureEval(cfg.texEq, theta, 0, phi, v, 0, true);
+
+                let rOut = rBaseOuter + (texDisp * cfg.texInt);
+                let rIn = Math.max(0.1, rBaseOuter - cfg.w);
+
+                let oX = rOut * Math.sin(phi) * Math.cos(theta);
+                let oZ = rOut * Math.sin(phi) * Math.sin(theta);
+                let oY = rOut * Math.cos(phi);
+
+                let iX = rIn * Math.sin(phi) * Math.cos(theta);
+                let iZ = rIn * Math.sin(phi) * Math.sin(theta);
+                let iY = rIn * Math.cos(phi);
+
+                if (cfg.isPot && (phi >= cfg.sphBotFlatten || oY < flatBottomZ)) {
+                    oY = flatBottomZ;
+                    iY = flatBottomZ + cfg.w;
+                }
+
+                if (!isNaN(oY) && oY < minY) minY = oY;
+                oR.push({x: oX, y: oY, z: -oZ});
+                iR.push({x: iX, y: iY, z: -iZ});
+            }
+
+            oRings.push(oR);
+            iRings.push(iR);
+        }
+
+        if (minY === Infinity) minY = -cfg.R;
+
+        const addV = (pt) => { vertices.push(pt.x, pt.y - minY, pt.z); return (vertices.length / 3) - 1; };
+
+        let oIdx = [], iIdx = [];
+        for (let iv = 0; iv <= cfg.resV; iv++) {
+            let oRow = [], iRow = [];
+            for (let it = 0; it < cfg.resT; it++) {
+                oRow.push(addV(oRings[iv][it]));
+                iRow.push(addV(iRings[iv][it]));
+            }
+            oIdx.push(oRow);
+            iIdx.push(iRow);
+        }
+
+        for (let it = 0; it < cfg.resT; it++) {
+            let it1 = (it + 1) % cfg.resT;
+            for (let iv = 0; iv < cfg.resV; iv++) {
+                indices.push(oIdx[iv][it], oIdx[iv+1][it], oIdx[iv+1][it1], oIdx[iv][it], oIdx[iv+1][it1], oIdx[iv][it1]);
+                indices.push(iIdx[iv][it], iIdx[iv][it1], iIdx[iv+1][it1], iIdx[iv][it], iIdx[iv+1][it1], iIdx[iv+1][it]);
+            }
+            indices.push(oIdx[0][it], oIdx[0][it1], iIdx[0][it1], oIdx[0][it], iIdx[0][it1], iIdx[0][it]);
+            indices.push(oIdx[cfg.resV][it], iIdx[cfg.resV][it], iIdx[cfg.resV][it1], oIdx[cfg.resV][it], iIdx[cfg.resV][it1], oIdx[cfg.resV][it1]);
+        }
+        return { vertices, indices };
+    }
+
+    function exportSTL() {
+        const cfg = getConfig();
+        const meshData = cfg.sys === 'cylindrical' ? generateCylindrical(cfg) : generateSpherical(cfg);
+        const v = meshData.vertices;
+        const idx = meshData.indices;
+        const numTriangles = idx.length / 3;
+
+        const buffer = new ArrayBuffer(84 + numTriangles * 50);
+        const view = new DataView(buffer);
+        view.setUint32(80, numTriangles, true);
+
+        let offset = 84;
+        for (let i = 0; i < idx.length; i += 3) {
+            view.setFloat32(offset, 0, true); offset += 12;
+            for (let j = 0; j < 3; j++) {
+                let vIdx = idx[i+j] * 3;
+                view.setFloat32(offset, v[vIdx] * 10, true);
+                view.setFloat32(offset+4, v[vIdx+1] * 10, true);
+                view.setFloat32(offset+8, v[vIdx+2] * 10, true);
+                offset += 12;
+            }
+            view.setUint16(offset, 0, true); offset += 2;
+        }
+
+        const blob = new Blob([buffer], { type: 'application/octet-stream' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        const prefix = cfg.isPot ? "Pot_" : "Mesh_";
+        link.download = `${prefix}${cfg.sys}.stl`;
+        link.click();
+    }
+</script>
+</body>
+</html>
