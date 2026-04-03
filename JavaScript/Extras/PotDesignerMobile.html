@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pot Designer - Compact UI</title>
+    <style>
+        :root { --bg: #f4f7f6; --panel: #ffffff; --primary: #e67e22; --secondary: #2c3e50; --success: #27ae60; }
+        
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            height: 100vh; 
+            background: var(--bg); 
+            overflow: hidden; 
+        }
+
+        #sidebar { 
+            width: 420px; 
+            background: var(--panel); 
+            padding: 20px; 
+            box-shadow: 2px 0 15px rgba(0,0,0,0.1); 
+            overflow-y: auto; 
+            z-index: 100; 
+            flex-shrink: 0;
+        }
+
+        #viewer-container { flex-grow: 1; background: #ffffff; position: relative; }
+
+        /* --- VERTICAL SHRINK FOR MOBILE --- */
+        @media (max-width: 768px) {
+            #sidebar { 
+                width: 38vw; 
+                padding: 8px; /* Tighten edges */
+            }
+            
+            h2 { font-size: 0.9rem !important; margin: 0 0 8px 0 !important; }
+            
+            .input-group { 
+                margin-bottom: 4px !important; /* Minimal gap between settings */
+            }
+            
+            label { 
+                font-size: 0.6rem; 
+                margin-bottom: 1px !important; 
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+            }
+            
+            input, select { 
+                padding: 4px 6px !important; 
+                font-size: 0.7rem !important; 
+                height: 24px; /* Force low profile */
+            }
+            
+            textarea { 
+                height: 40px !important; /* Drastically shorter equation box */
+                font-size: 0.65rem !important;
+                padding: 4px !important;
+            }
+            
+            button { 
+                padding: 6px 2px !important; 
+                font-size: 0.6rem !important; 
+                margin-top: 3px !important; 
+                letter-spacing: 0px;
+            }
+
+            #logic-info { 
+                font-size: 0.55rem; 
+                margin-top: 2px;
+                line-height: 1.1;
+                padding-left: 4px;
+            }
+        }
+
+        /* Base Styles */
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: #444; }
+        input, textarea, select { width: 100%; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        textarea { font-family: 'Courier New', monospace; background: #fafafa; line-height: 1.2; }
+        button { width: 100%; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; transition: opacity 0.2s; }
+        button:active { opacity: 0.7; }
+        .btn-preview { background: var(--primary); }
+        .btn-export { background: var(--secondary); }
+        .btn-stl { background: var(--success); }
+        #status { position: absolute; bottom: 15px; left: 15px; background: rgba(0,0,0,0.7); color: white; padding: 6px 14px; border-radius: 20px; font-size: 11px; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+<div id="sidebar">
+    <h2 style="color:var(--secondary)">Pot Designer</h2>
+    
+    <div class="input-group">
+        <label>Preset</label>
+        <select id="presetSelect" onchange="applyPreset()"></select>
+        <div id="logic-info">Select design...</div>
+    </div>
+
+    <div class="input-group">
+        <label>Equation</label>
+        <textarea id="equation"></textarea>
+    </div>
+
+    <div class="input-group"><label>Height (cm)</label><input type="number" id="height" value="10" step="0.1"></div>
+    <div class="input-group"><label>Wall (cm)</label><input type="number" id="wall" value="0.35" step="0.01"></div>
+    <div class="input-group"><label>Base (cm)</label><input type="number" id="base" value="0.5" step="0.1"></div>
+    <div class="input-group"><label>Drain (cm)</label><input type="number" id="drain" value="0.5" step="0.1"></div>
+    
+    <button class="btn-preview" onclick="updatePreview()">RENDER</button>
+    <button class="btn-stl" onclick="exportSTL()">STL (PRINT)</button>
+    <button class="btn-export" onclick="exportOBJ()">OBJ</button>
+</div>
+
+<div id="viewer-container">
+    <div id="status">Initializing...</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+    let scene, camera, renderer, controls, currentMesh;
+
+    const library = {
+        "Accelerated Turbulence": { eq: "5 * (1 + 0.25 * pow(z / 10.0, 1.1) * (cos(5 * theta + (pi * z / 4.0)) + 0.8 * sin(11 * theta - (pi * z / 8.0))))", desc: "Laminar flow to turbulent vortex." },
+        "Circle": { eq: "5", desc: "Pure base." },
+        "5-Petal Flower": { eq: "5 * (1 + 0.25 * cos(5 * theta))", desc: "Classic floral." },
+        "Twisted Blossom": { eq: "5 * (1 + 0.22 * cos(5 * theta + pi * z / 10))", desc: "Helical design." }
+    };
+
+    function populateDropdown() {
+        const select = document.getElementById('presetSelect');
+        Object.keys(library).forEach(key => {
+            const opt = document.createElement('option');
+            opt.value = key; opt.innerText = key;
+            select.appendChild(opt);
+        });
+    }
+
+    function applyPreset() {
+        const key = document.getElementById('presetSelect').value;
+        const data = library[key];
+        document.getElementById('equation').value = data.eq;
+        document.getElementById('logic-info').innerText = data.desc;
+        updatePreview();
+    }
+
+    window.onload = function() {
+        initThree();
+        populateDropdown();
+        applyPreset();
+        window.addEventListener('resize', onWindowResize);
+    };
+
+    function onWindowResize() {
+        const container = document.getElementById('viewer-container');
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+    }
+
+    function initThree() {
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xfafafa);
+        const container = document.getElementById('viewer-container');
+        camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(20, 22, 20);
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        scene.add(new THREE.GridHelper(20, 20, 0xbbbbbb, 0xeeeeee));
+        scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+        const light = new THREE.PointLight(0xffffff, 1);
+        light.position.set(20, 30, 10);
+        scene.add(light);
+        function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
+        animate();
+    }
+
+    function updatePreview() {
+        if (currentMesh) scene.remove(currentMesh);
+        const cfg = getConfig();
+        const meshData = generateGeometry(cfg, 1.0, false);
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(meshData.vertices.flat(), 3));
+        geometry.setIndex(meshData.indices);
+        geometry.computeVertexNormals();
+        currentMesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color: 0xbc9b70, side: THREE.DoubleSide, roughness: 0.4 }));
+        scene.add(currentMesh);
+        document.getElementById('status').innerText = "Model: " + document.getElementById('presetSelect').value;
+    }
+
+    function getConfig() {
+        return {
+            eq: document.getElementById('equation').value,
+            h: parseFloat(document.getElementById('height').value) || 10,
+            w: parseFloat(document.getElementById('wall').value) || 0.3,
+            b: parseFloat(document.getElementById('base').value) || 0.5,
+            d: parseFloat(document.getElementById('drain').value) || 0.5,
+            resZ: 50, resT: 80 // Lower res for faster preview response
+        };
+    }
+
+    function generateGeometry(cfg, scale, isExport) {
+        const vertices = [], indices = [];
+        const evalR = (z, theta) => { 
+            try { 
+                const pi = Math.PI, sin = Math.sin, cos = Math.cos, pow = Math.pow, 
+                      min = Math.min, max = Math.max, abs = Math.abs, sqrt = Math.sqrt;
+                return eval(cfg.eq); 
+            } catch(e) { return 5; } 
+        };
+        const addV = (x, y, z) => {
+            if (isExport) vertices.push([x * scale, y * scale, z * scale]); 
+            else vertices.push([x * scale, z * scale, -y * scale]); 
+            return vertices.length - 1;
+        };
+        let oRings = [], iRings = [];
+        for (let iz = 0; iz <= cfg.resZ; iz++) {
+            let zO = cfg.h * (iz/cfg.resZ), zI = cfg.b + (cfg.h-cfg.b)*(iz/cfg.resZ);
+            let oR = [], iR = [];
+            for (let it = 0; it < cfg.resT; it++) {
+                let t = (2*Math.PI*it)/cfg.resT;
+                let rO = evalR(zO, t), rI = evalR(zI, t) - cfg.w;
+                oR.push(addV(rO*Math.cos(t), rO*Math.sin(t), zO));
+                iR.push(addV(rI*Math.cos(t), rI*Math.sin(t), zI));
+            }
+            oRings.push(oR); iRings.push(iR);
+        }
+        let hB = [], hT = [];
+        for (let it = 0; it < cfg.resT; it++) {
+            let t = (2*Math.PI*it)/cfg.resT;
+            hB.push(addV(cfg.d*Math.cos(t), cfg.d*Math.sin(t), 0));
+            hT.push(addV(cfg.d*Math.cos(t), cfg.d*Math.sin(t), cfg.b));
+        }
+        for (let it = 0; it < cfg.resT; it++) {
+            let it1 = (it + 1) % cfg.resT;
+            for (let iz = 0; iz < cfg.resZ; iz++) {
+                indices.push(oRings[iz][it], oRings[iz+1][it], oRings[iz+1][it1], oRings[iz][it], oRings[iz+1][it1], oRings[iz][it1]);
+                indices.push(iRings[iz][it], iRings[iz][it1], iRings[iz+1][it1], iRings[iz][it], iRings[iz+1][it1], iRings[iz+1][it]);
+            }
+            indices.push(oRings[cfg.resZ][it], iRings[cfg.resZ][it], iRings[cfg.resZ][it1], oRings[cfg.resZ][it], iRings[cfg.resZ][it1], oRings[cfg.resZ][it1]);
+            indices.push(oRings[0][it], hB[it1], hB[it], oRings[0][it], oRings[0][it1], hB[it1]);
+            indices.push(iRings[0][it], hT[it], hT[it1], iRings[0][it], hT[it1], iRings[0][it1]);
+            indices.push(hB[it], hB[it1], hT[it1], hB[it], hT[it1], hT[it]);
+        }
+        return { vertices, indices };
+    }
+
+    function exportOBJ() {
+        const cfg = getConfig();
+        const meshData = generateGeometry(cfg, 10.0, true);
+        let obj = "# Export\n";
+        meshData.vertices.forEach(v => obj += `v ${v[0].toFixed(4)} ${v[1].toFixed(4)} ${v[2].toFixed(4)}\n`);
+        for(let i=0; i<meshData.indices.length; i+=3) { obj += `f ${meshData.indices[i]+1} ${meshData.indices[i+1]+1} ${meshData.indices[i+2]+1}\n`; }
+        downloadFile(obj, "pot.obj", "text/plain");
+    }
+
+    function exportSTL() {
+        const cfg = getConfig();
+        const meshData = generateGeometry(cfg, 10.0, true);
+        const buffer = new ArrayBuffer(84 + (meshData.indices.length / 3) * 50);
+        const view = new DataView(buffer);
+        view.setUint32(80, meshData.indices.length / 3, true);
+        let offset = 84;
+        for (let i = 0; i < meshData.indices.length; i += 3) {
+            view.setFloat32(offset, 0, true); offset += 12;
+            [meshData.vertices[meshData.indices[i]], meshData.vertices[meshData.indices[i+1]], meshData.vertices[meshData.indices[i+2]]].forEach(v => {
+                view.setFloat32(offset, v[0], true); view.setFloat32(offset+4, v[1], true); view.setFloat32(offset+8, v[2], true);
+                offset += 12;
+            });
+            view.setUint16(offset, 0, true); offset += 2;
+        }
+        downloadFile(buffer, "pot.stl", "application/octet-stream");
+    }
+
+    function downloadFile(data, name, type) {
+        const blob = new Blob([data], { type: type });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = name;
+        link.click();
+    }
+</script>
+</body>
+</html>
