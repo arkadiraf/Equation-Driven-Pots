@@ -215,6 +215,128 @@ The prompt is especially useful as a starting point before fine-tuning the equat
 
 ---
 
+
+## Experimental math for 3D design
+
+In addition to the more stable pot workflows, the project also explores **experimental mathematical design layers** that change how fields are sampled, not just what equations are used.
+
+### [Field Modifier Pot Designer](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/JavaScript/FieldModifierPotDesigner.html)
+
+The **Field Modifier Pot Designer** extends the equation-driven pot workflow by introducing a modifier field that remaps the sampled coordinates before the main equations are evaluated.
+
+Instead of only defining a base radius field such as:
+
+```text
+r = f(theta, z, v, R)
+```
+
+the field modifier workflow adds an intermediate remapping step and then evaluates the selected field using the modified coordinates.
+
+### Core modifier idea
+
+For angular remapping, the workflow behaves like:
+
+```text
+theta' = theta + strength * M(theta, z, v)
+r = f(theta', z, v, R)
+```
+
+This is the most pot-safe modifier mode and is still the best default when the goal is to preserve a printable vessel silhouette while making the surface logic drift, rotate, or fold.
+
+The current tool now also supports remapping other sampled coordinates:
+
+#### Cylindrical coordinate mode
+
+```text
+theta' = theta + strength * M(theta, z, v)
+z' = z + strength * H(theta, z, v)
+v' = v + strength * Q(theta, z, v)
+```
+
+#### Spherical coordinate mode
+
+```text
+theta' = theta + strength * M(theta, phi, v)
+phi' = phi + strength * H(theta, phi, v)
+v' = v + strength * Q(theta, phi, v)
+```
+
+This means the modifier is no longer limited to angular drift. It can now change:
+- the angular sampling
+- the sampled height or polar angle
+- the normalized vertical progression through the form
+
+### What this means in 3D design
+
+The earlier tools mainly change the **value** of a field:
+- the base equation changes the overall silhouette
+- the texture equation changes the surface displacement
+- the pattern equations change the selected color regions
+
+The field modifier changes the **sampling location** of those fields.
+
+That makes it possible to create:
+- drifting ribs
+- migrating petals
+- twisting crowns
+- rim-focused folds
+- angular shearing
+- vertical timing shifts
+- feature motion that changes along the height of the pot
+
+without abandoning the pot-oriented structure of the model.
+
+### Field target logic
+
+The current Field Modifier Pot Designer supports both a **modified coordinate** and a **field target**.
+
+The modifier can be applied to:
+- base shape only
+- texture only
+- patterns only
+- all supported fields
+
+This makes it possible to keep the pot silhouette stable while shifting only the texture or pattern logic, or to push the entire form through the modifier field when a more dramatic result is desired.
+
+### Practical examples
+
+Two good examples from the current modifier presets are:
+
+- **Crown Rotation**  
+  concentrates the modifier near the upper body, making the crown region drift and rotate more strongly than the lower body.
+
+- **Rim Fold**  
+  localizes the modifier near the rim, producing a folded or pulled upper edge while keeping most of the pot calmer and more printable.
+
+These examples show why field modifiers are useful: the math can become spatially expressive without forcing the whole form into chaos.
+
+### Why this matters
+
+Field modifiers are a natural next step after nonlinear math.
+
+Nonlinear math changes the field itself through operations such as saturation, wrapping, stepped phase behavior, or logarithmic compression. Field modifiers change **where** the field is sampled. That produces a different kind of complexity: not just stronger equations, but moving equations.
+
+This opens up a richer design space while still keeping:
+- cylindrical and spherical pot workflows
+- functional pot generation
+- texture and pattern logic
+- grouped export workflows
+- a math-first modeling approach
+
+### Experimental status
+
+The field modifier workflow is intentionally experimental.
+
+It is designed to explore how mathematical coordinate remapping can become a practical 3D design method for printable objects. It is more controlled than a general deformation system, but it still opens a more exploratory branch of the project than the main textured and quad-color tools.
+
+As this branch develops, it will likely become the foundation for further work in:
+- regional field activity
+- modifier stacks
+- field-specific targeting
+- more expressive but still printable math-based form generation
+
+---
+
 ## Gallery
 
 ### Cylindrical designs
