@@ -1,5 +1,7 @@
 # Equation-Driven Pots
 
+[**Online tools available here**](https://arkadiraf.github.io/Equation-Driven-Pots-App/)
+
 **Equation-Driven Pots** is a design and fabrication project for generating functional, 3D-printable plant pots from mathematical equations.
 
 Instead of sculpting a vessel manually, this project defines the outer surface through radius functions such as:
@@ -54,6 +56,12 @@ This approach produces printable hollow vessels directly from equations. By chan
 
 ![Multi-Color Pot Designer GUI](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/Images/MultiColorPotDesigner.jpg?raw=true)
 
+### QuadColorPotDesigner HTML
+
+[QuadColorPotDesigner GUI](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/JavaScript/QuadColorPotDesigner.html)
+
+![QuadColorPotDesigner GUI](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/Images/QuadColorPotDesigner.jpg?raw=true)
+
 ---
 
 ## How it works
@@ -96,6 +104,7 @@ Depending on the tool, the resulting geometry can be exported as `.obj`, `.stl`,
   - Fusion 360 parametric sweep reconstruction script
   - unified textured pot designer
   - multi-color pot designer
+  - quad-color pot designer
 - Export printable geometry in `.obj` and `.stl`
 - Export multi-part `.3mf` assemblies for color-separated workflows
 - Keep the repository lightweight while hosting representative previews and tools in one place
@@ -439,6 +448,68 @@ The multi-part workflow is intended for slicers that can import multiple parts a
 
 ---
 
+### [`JavaScript/QuadColorPotDesigner.html`](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/JavaScript/QuadColorPotDesigner.html)
+
+Browser-based quad-color pot designer for creating printable pots with equation-driven geometry, external texture, and two interacting color-pattern masks.
+
+**Purpose**
+
+- Extend the multi-color workflow with two independent pattern masks
+- Define four printable surface states: base, pattern A only, pattern B only, and A+B overlap
+- Preview the quad-color split directly in the browser
+- Export slicer-friendly grouped multi-part `.3mf` assemblies for color assignment
+- Export `.stl` for single-mesh workflows
+
+**Capabilities**
+
+- Supports both coordinate systems in one interface:
+  - cylindrical extrusion using `r(θ, z, v)`
+  - spherical wrapping using `r(θ, φ, v)`
+- Includes preset libraries for:
+  - base scaffold equations
+  - external surface texture equations
+  - dual pattern-mask equations
+- Lets you define:
+  - base-form equations
+  - texture-displacement equations
+  - pattern A mask equations
+  - pattern B mask equations
+- Supports functional pot geometry such as:
+  - wall thickness
+  - flat or thickened bottom regions
+  - drainage holes
+- Includes controls for:
+  - base color
+  - pattern A color
+  - pattern B color
+  - overlap color
+  - color-layer depth
+  - mesh resolution
+  - pattern resolution
+- Includes a responsive mobile-friendly interface for GitHub Pages deployment
+
+**Pattern logic**
+
+QuadColorPotDesigner evaluates two mathematical masks on the outer shell. Their interaction creates four grouped color regions:
+
+- neither mask active
+- pattern A only
+- pattern B only
+- overlap between A and B
+
+This makes it possible to generate richer multi-filament surface logic while keeping the printable shell grouped into slicer-friendly color parts.
+
+**Output**
+
+The tool supports:
+
+- grouped multi-part `.3mf` export for quad-color workflows
+- `.stl` export for standard mesh workflows
+
+The `.3mf` workflow is intended for slicers that can import multiple grouped parts as one object and assign each part to a different filament.
+
+---
+
 ## Example equations
 
 A cylindrical pot can be generated from a radial function such as:
@@ -517,7 +588,7 @@ Higher section counts produce smoother meshes, but they also increase file size 
 
 The scripts and HTML tools export `.obj` files, and the HTML tools also support `.stl` output.
 
-The Multi-Color Pot Designer additionally supports multi-part `.3mf` export for color-separated workflows.
+The Multi-Color Pot Designer and QuadColorPotDesigner additionally support multi-part `.3mf` export for color-separated workflows.
 
 These files can be opened in tools such as:
 
