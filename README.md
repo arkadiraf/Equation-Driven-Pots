@@ -203,6 +203,16 @@ A larger collection of cylindrical and spherical equations is available here:
 
 [Pot Equations Spreadsheet](https://docs.google.com/spreadsheets/d/e/2PACX-1vRYxQRyGNsDuxl4WaNONKAniyfK-77zSTJY7q4plz88dK7fTNcIbU8814u9wOJ2o2BI10GwCpFbcP3U/pubhtml?widget=true&headers=false)
 
+## AI equation generator prompt
+
+If you already know the kind of pot or surface behavior you want, you can also use the project’s equation generator prompt:
+
+[Equation Generator Prompt](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/EquationGeneratorPrompt.txt)
+
+This prompt helps turn a natural-language design idea into implementation-ready equations for the project tools. It is useful when you want to describe a form such as a twisted flower vase, a ribbed shell, a nonlinear crown, or a color-separated patterned pot and quickly get equations that fit the selected GUI.
+
+The prompt is especially useful as a starting point before fine-tuning the equations directly inside the browser tools.
+
 ---
 
 ## Gallery
