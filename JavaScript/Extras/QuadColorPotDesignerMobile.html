@@ -260,12 +260,20 @@
 
 const libraries = {
         cylindrical: {
-            "Circle (Pure Base)": { eq: "R", desc: "Simple cylindrical scaffold." },
-            "Rounded Square": { eq: "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125)", desc: "Rounded-square plan profile." },
-            "Ellipse": { eq: "R / sqrt(pow(cos(theta), 2) + 2.5 * pow(sin(theta), 2))", desc: "Elliptical cross-section." },
-            "Square Ripple": { eq: "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125) * (1 + 0.05 * sin(10 * z))", desc: "Rounded square with vertical ripple." },
             "Elliptical Twist": { eq: "R / sqrt(pow(cos(theta + z/3), 2) + 2.5 * pow(sin(theta + z/3), 2))", desc: "Ellipse twisting as it rises." },
+            "Circle (Pure Base)": { eq: "R", desc: "Simple cylindrical scaffold." },
+            "Triangle": { eq: "R * cos(pi/3) / cos((theta % (2*pi/3)) - pi/3)", desc: "Regular triangular cross-section." },
+            "Square": { eq: "R * cos(pi/4) / cos((theta % (pi/2)) - pi/4)", desc: "Regular square cross-section." },
+            "Pentagon": { eq: "R * cos(pi/5) / cos((theta % (2*pi/5)) - pi/5)", desc: "Regular pentagonal cross-section." },
+            "Hexagon": { eq: "R * cos(pi/6) / cos((theta % (pi/3)) - pi/6)", desc: "Regular hexagonal cross-section." },
+            "Ellipse": { eq: "R / sqrt(pow(cos(theta), 2) + 2.5 * pow(sin(theta), 2))", desc: "Elliptical cross-section." },
+            "Dipole (Two Petals)": { eq: "R * (1 + 0.28 * cos(2 * theta))", desc: "Two-petal / dipole profile." },
+            "3-Petal Flower": { eq: "R * (1 + 0.24 * cos(3 * theta))", desc: "Three-petal floral profile." },
+            "4-Petal Flower": { eq: "R * (1 + 0.22 * cos(4 * theta))", desc: "Four-petal floral profile." },
             "5-Petal Flower": { eq: "R * (1 + 0.25 * cos(5 * theta))", desc: "Five-petal profile." },
+
+            "Rounded Square": { eq: "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125)", desc: "Rounded-square plan profile." },
+            "Square Ripple": { eq: "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125) * (1 + 0.05 * sin(10 * z))", desc: "Rounded square with vertical ripple." },
             "Gear-like": { eq: "R * (1 + 0.08 * cos(12 * theta))", desc: "Fine radial teeth." },
             "Soft Gourd": { eq: "R * (1 + 0.10 * cos(4 * theta) + 0.05 * sin(2 * theta))", desc: "Organic gourd section." },
             "Wavy Ceramic": { eq: "R * (1 + 0.08 * cos(3 * theta) + 0.06 * sin(5 * theta))", desc: "Gentle ceramic waviness." },
@@ -293,8 +301,14 @@ const libraries = {
             "DNA Double Helix": { eq: "R + 0.5 * sin(4 * theta + z) + 0.5 * cos(4 * theta - z)", desc: "Double-helix profile." }
         },
         spherical: {
-            "Dragon Egg": { eq: "R * (1 + 0.08 * cos(10*theta + 8*phi) + 0.08 * cos(10*theta - 8*phi))", desc: "Diamond-scale scaffold." },
             "Perfect Sphere": { eq: "R", desc: "Simple spherical scaffold." },
+            "Ellipse": { eq: "R * (1 + 0.18 * cos(2 * theta) * pow(sin(phi), 1.8))", desc: "Elliptical spherical modulation around the equator." },
+            "Dipole (Two Petals)": { eq: "R * (1 + 0.24 * cos(2 * theta) * pow(sin(phi), 1.5))", desc: "Two-petal / dipole spherical form." },
+            "3-Petal Flower": { eq: "R * (1 + 0.22 * cos(3 * theta) * pow(sin(phi), 1.5))", desc: "Three-petal spherical modulation." },
+            "4-Petal Flower": { eq: "R * (1 + 0.20 * cos(4 * theta) * pow(sin(phi), 1.5))", desc: "Four-petal spherical modulation." },
+            "5-Petal Flower": { eq: "R * (1 + 0.20 * cos(5 * theta) * pow(sin(phi), 1.5))", desc: "Five-petal spherical modulation." },
+
+            "Dragon Egg": { eq: "R * (1 + 0.08 * cos(10*theta + 8*phi) + 0.08 * cos(10*theta - 8*phi))", desc: "Diamond-scale scaffold." },
             "Aerospace Isogrid": { eq: "R * (1 + 0.08 * max(cos(12*theta + 10*phi), cos(12*theta - 10*phi)))", desc: "Structural diagrid." },
             "Crown Splash": { eq: "R * (1 + 0.35 * exp(-pow(phi - 0.4, 2) * 20) * max(0, cos(14 * theta)) + 0.05 * sin(phi * 8))", desc: "Splash-like crown near top." },
             "Phased Array Lobe": { eq: "R * (1 + 0.25 * pow(sin(phi), 4) * pow(cos(4*theta), 6) + 0.03 * sin(16*theta)*sin(phi))", desc: "Antenna-lobe inspired." },
@@ -305,48 +319,95 @@ const libraries = {
             "Gravity Drip": { eq: "R * (1 + 0.2 * exp(phi - 2.5) * cos(12 * theta) * sin(phi))", desc: "Dripping lower region." },
             "Liquid Audio Interference": { eq: "R * (1 + 0.04 * sin(18*theta) * cos(22*phi) + 0.03 * sin(28*theta - 12*phi))", desc: "Interference micro-topography." },
             "Overlapping Armor Scales": { eq: "R * (1 + 0.12 * pow(max(0, sin(10*theta - 6*phi)), 2) * sin(phi))", desc: "Scale-like outer pattern." },
-            "Twisted Hex Vortex": { eq: "R * (1 + 0.15 * cos(6 * (theta + phi*2)))", desc: "Hex form with rotational drift." },
             "Ribbed Art Deco": { eq: "R * (1 + 0.15 * pow(cos(8*theta), 4) * sin(phi))", desc: "Art Deco finning." },
             "Equatorial Flare": { eq: "R * (1 + 0.4 * exp(-pow(phi-1.57, 2)*10))", desc: "Bulges near equator." },
             "Cellular Organic": { eq: "R * (1 + 0.06 * (sin(8*theta)*cos(10*phi) + sin(11*theta)*cos(5*phi)))", desc: "Organic, cellular modulation." },
             "Pumpkin Lobes": { eq: "R * (1 + 0.15 * cos(8 * theta))", desc: "Rounded lobes." },
             "Woven Basket": { eq: "R * (1 + 0.05 * sin(12 * theta) * cos(8 * phi))", desc: "Woven cross-pattern." },
-            "Starfruit": { eq: "R * (1 + 0.25 * cos(5 * theta) * sin(phi))", desc: "Five-point spherical ridges." },
             "Hourglass / Peanut": { eq: "R * (1 - 0.25 * sin(2 * phi))", desc: "Pinched midsection." },
             "Coral Brain": { eq: "R * (1 + 0.08 * sin(10 * theta + 5*phi) * sin(8 * phi))", desc: "Dense brain-coral pattern." }
         }
     };
 
 const patternPresets = {
-        "Surface Texture Top %": { eq: "textureFill(texPosNorm, 65)", desc: "Selects the top raised share of the external texture. 0 selects none of the raised texture; 100 selects all of it." },
-        "Outer Radius Deviation": { eq: "outerDeviation(0.25)", desc: "Colors regions where the live outer surface extends beyond a simple reference envelope built at R plus the requested deviation in centimeters. In cylindrical mode this behaves like a reference cylinder, and in spherical mode like a reference sphere." },
-        "None (Solid Base Color)": { eq: "-1", desc: "No colored overlay; the whole pot uses the base color." },
-        "Vertical Stripes": { eq: "cos(10*theta)", desc: "Alternating vertical color bands." },
-        "Checkerboard": { eq: "sin(10*theta) * sin(10*pi*v)", desc: "Checker-style color blocking over height." },
-        "Diamond Lattice": { eq: "cos(10*theta + 8*pi*v) * cos(10*theta - 8*pi*v)", desc: "Diamond color lattice." },
-        "Helical Wrap": { eq: "sin(6*theta + 10*pi*v)", desc: "Single helical color ribbon." },
-        "Dragon Scale Color": { eq: "max(cos(10*theta + 8*pi*v), cos(10*theta - 8*pi*v)) - 0.2", desc: "Scale-like color zoning for egg or sphere forms." },
-        "Top Bands": { eq: "sin(16*pi*v) - 0.2", desc: "Horizontal color bands that stack upward." },
-        "Petal Highlights": { eq: "cos(5*theta) * sin(pi*v)", desc: "Petal-based highlight pattern." }
-    };
+    "Surface Texture Top %": { eq: "textureFill(texPosNorm, 65)", desc: "Selects the top raised share of the external texture. 0 selects none of the raised texture; 100 selects all of it." },
+    "Outer Radius Deviation": { eq: "outerDeviation(0.25)", desc: "Colors regions where the live outer surface extends beyond a simple reference envelope built at R plus the requested deviation in centimeters. In cylindrical mode this behaves like a reference cylinder, and in spherical mode like a reference sphere." },
+    "None (Solid Base Color)": { eq: "-1", desc: "No colored overlay; the whole pot uses the base color." },
+    "Vertical Stripes": { eq: "cos(10*theta)", desc: "Alternating vertical color bands." },
+    "Checkerboard": { eq: "sin(10*theta) * sin(10*pi*v)", desc: "Checker-style color blocking over height." },
+    "Diamond Lattice": { eq: "cos(10*theta + 8*pi*v) * cos(10*theta - 8*pi*v)", desc: "Diamond color lattice." },
+    "Helical Wrap": { eq: "sin(6*theta + 10*pi*v)", desc: "Single helical color ribbon." },
+    "Dragon Scale Color": { eq: "max(cos(10*theta + 8*pi*v), cos(10*theta - 8*pi*v)) - 0.2", desc: "Scale-like color zoning for egg or sphere forms." },
+    "Top Bands": { eq: "sin(16*pi*v) - 0.2", desc: "Horizontal color bands that stack upward." },
+    "Petal Highlights": { eq: "cos(5*theta) * sin(pi*v)", desc: "Petal-based highlight pattern." },
+    "Double Helix": { eq: "sin(2*theta + 10*pi*v)", desc: "Two-strand helical wrap running around the surface." },
+    "Triple Helix": { eq: "sin(3*theta + 10*pi*v)", desc: "Three-strand helical color flow." },
+    "Braided Helix": { eq: "sin(6*theta + 8*pi*v) + 0.65*sin(6*theta - 8*pi*v)", desc: "Interwoven double-helix style braid." },
+    "Diagonal Ribbons": { eq: "sin(8*theta + 6*pi*v)", desc: "Clean diagonal ribbon bands." },
+    "Crosshatch": { eq: "sin(8*theta + 8*pi*v) * sin(8*theta - 8*pi*v)", desc: "Dense crossed diagonal hatch." },
+    "Chevron Bands": { eq: "cos(10*theta) * sin(8*pi*v)", desc: "Chevron-like zigzag bands across the height." },
+    "Zigzag Wrap": { eq: "sin(6*theta + 10*pi*v) * cos(2*theta)", desc: "Helical wrap with a zigzag modulation." },
+    "Honeycomb": { eq: "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v)) - 0.15", desc: "Hex-like honeycomb style color cells." },
+    "Scale Rows": { eq: "max(0, sin(10*theta - 8*pi*v)) * sin(pi*v) - 0.2", desc: "Stacked overlapping scale rows." },
+    "Fishbone": { eq: "sin(10*theta) * cos(6*pi*v) + 0.5*sin(20*theta + 6*pi*v)", desc: "Fishbone / herringbone directional pattern." },
+    "Moire Waves": { eq: "sin(11*theta + 8*pi*v) + sin(12*theta - 7*pi*v)", desc: "Interference-based moire wave field." },
+    "Sunburst": { eq: "cos(18*theta) * pow(sin(pi*v), 0.7)", desc: "Radial sunburst strongest through the mid-body." },
+    "Equatorial Belt": { eq: "exp(-pow(v - 0.5, 2) * 40) - 0.25", desc: "A concentrated horizontal belt around the middle." },
+    "Hourglass Bands": { eq: "sin(14*pi*v) * pow(sin(pi*v), 1.5) - 0.15", desc: "Bands that intensify toward the center body." },
+    "Petal Rosette": { eq: "cos(6*theta) * sin(pi*v) + 0.35*cos(12*theta) * pow(sin(pi*v), 2)", desc: "Layered rosette-like floral zoning." },
+    "Crown Petals": { eq: "cos(8*theta) * exp(-pow(v - 0.9, 2) * 45)", desc: "Petal highlights concentrated near the top rim." },
+    "Rim Accent": { eq: "v - 0.82", desc: "Simple accent zone near the upper rim." },
+    "Base Accent": { eq: "0.18 - v", desc: "Simple accent zone near the lower body." },
+    "Spiral Interference": { eq: "sin(7*theta + 10*pi*v) * cos(5*theta - 8*pi*v)", desc: "Interfering spiral bands with complex crossings." },
+    "Lobed Windows": { eq: "cos(4*theta) * sin(3*pi*v)", desc: "Large lobed windows distributed over the surface." }
+};
 
 const texturePresets = {
-        "None (Flat Surface)": { eq: "0", desc: "No additional texture displacement." },
-        "Fine Vertical Ribs": { eq: "cos(16*theta)", desc: "Classic vertical ribbing that works well on most forms." },
-        "Twisted Vertical Ribs": { eq: "cos(14*theta + 4*pi*v)", desc: "Ribs twist as the surface rises." },
-        "Diamond Weave": { eq: "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)", desc: "Crossing diagonals for a diamond weave." },
-        "Hex-ish Facets": { eq: "abs(cos(6*theta))*0.7 + 0.3*cos(10*pi*v)", desc: "Faceted vertical texture." },
-        "Wave Bands": { eq: "sin(3*theta + 10*pi*v)", desc: "Broad flowing helical bands." },
-        "Armor Scales": { eq: "pow(max(0, sin(12*theta - 10*pi*v)), 2)", desc: "Raised overlapping scales." },
-        "Dragon Dimples": { eq: "0.7*cos(10*theta + 8*pi*v) * cos(10*theta - 8*pi*v)", desc: "Diamond-aligned dimples that pair well with dragon-egg scaffolds." },
-        "Pebble Dimples": { eq: "0.7*sin(14*theta)*sin(10*pi*v) + 0.3*sin(23*theta + 7*pi*v)", desc: "Soft rounded dimples for pebbled ceramic surfaces." },
-        "Stipple Noise": { eq: "sin(18*theta)*sin(14*pi*v) + 0.35*sin(31*theta + 9*pi*v)", desc: "Dense stippled micro-relief." },
-        "Cymatic Ripples": { eq: "sin(20*theta)*cos(18*pi*v)", desc: "Interference-style ripples." },
-        "Rosette Engraving": { eq: "cos(8*theta) + 0.4*cos(4*theta + 6*pi*v)", desc: "Floral engraving pattern." },
-        "Braided Spiral": { eq: "sin(6*theta + 8*pi*v) + 0.65*sin(6*theta - 8*pi*v)", desc: "Braided double-helix surface." },
-        "Topographic Rings": { eq: "sin(24*pi*v)", desc: "Horizontal contour rings." },
-        "Lotus Scallops": { eq: "pow(max(0, cos(8*theta)), 2) * sin(pi*v)", desc: "Soft scalloped petals around the body." }
-    };
+    "None (Flat Surface)": { eq: "0", desc: "No additional texture displacement." },
+    "Fine Vertical Ribs": { eq: "cos(16*theta)", desc: "Classic vertical ribbing that works well on most forms." },
+    "Twisted Vertical Ribs": { eq: "cos(14*theta + 4*pi*v)", desc: "Ribs twist as the surface rises." },
+    "Topographic Rings": { eq: "sin(24*pi*v)", desc: "Horizontal contour rings." },
+    "Diagonal Corduroy": { eq: "cos(14*theta + 10*pi*v)", desc: "Fine diagonal corduroy-style ridges." },
+    "Diamond Weave": { eq: "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)", desc: "Crossing diagonals for a diamond weave." },
+    "Chevron Weave": { eq: "abs(sin(8*theta)) * cos(10*pi*v)", desc: "Chevron-like woven relief with alternating vertical rhythm." },
+    "Spiral Lattice": { eq: "cos(8*theta + 10*pi*v) + cos(8*theta - 10*pi*v)", desc: "Open spiral lattice relief from crossing helices." },
+    "Hex-ish Facets": { eq: "abs(cos(6*theta))*0.7 + 0.3*cos(10*pi*v)", desc: "Faceted vertical texture." },
+    "Honeycomb Relief": { eq: "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v))", desc: "Hex-cell inspired honeycomb relief." },
+    "Triangular Facets": { eq: "abs(cos(3*theta)) + 0.35*cos(12*pi*v)", desc: "Angular triangular faceting along the surface." },
+    "Prismatic Flutes": { eq: "pow(abs(cos(10*theta)), 1.5)", desc: "Sharp flute-like prism ridges around the form." },
+    "Sunray Flutes": { eq: "cos(24*theta) * pow(sin(pi*v), 0.6)", desc: "Radiating sunray flutes strongest toward the mid-body." },
+    "Wave Bands": { eq: "sin(3*theta + 10*pi*v)", desc: "Broad flowing helical bands." },
+    "Wave Interference": { eq: "sin(6*theta + 10*pi*v) + 0.6*sin(11*theta - 7*pi*v)", desc: "Layered crossing waves with broad and fine frequencies." },
+    "Cymatic Ripples": { eq: "sin(20*theta)*cos(18*pi*v)", desc: "Interference-style ripples." },
+    "Moire Interference": { eq: "sin(18*theta + 12*pi*v) + sin(19*theta - 11*pi*v)", desc: "Fine moire interference ripples with a shifting beat pattern." },
+    "Sand Dunes": { eq: "sin(2*theta + 8*pi*v) + 0.4*sin(5*theta + 14*pi*v)", desc: "Soft dune-like ridges drifting across the body." },
+    "Armor Scales": { eq: "pow(max(0, sin(12*theta - 10*pi*v)), 2)", desc: "Raised overlapping scales." },
+    "Fish Scale Relief": { eq: "pow(max(0, sin(10*theta - 8*pi*v)), 2) + 0.25*pow(max(0, sin(10*theta + 8*pi*v)), 2)", desc: "Overlapping fish-scale relief with directional layering." },
+    "Dragon Dimples": { eq: "0.7*cos(10*theta + 8*pi*v) * cos(10*theta - 8*pi*v)", desc: "Diamond-aligned dimples that pair well with dragon-egg scaffolds." },
+    "Pebble Dimples": { eq: "0.7*sin(14*theta)*sin(10*pi*v) + 0.3*sin(23*theta + 7*pi*v)", desc: "Soft rounded dimples for pebbled ceramic surfaces." },
+    "Spiral Dimples": { eq: "cos(14*theta + 10*pi*v) * sin(10*theta - 8*pi*v)", desc: "Spiraling dimples with rotational drift." },
+    "Pineapple Skin": { eq: "cos(12*theta + 10*pi*v) * cos(12*theta - 10*pi*v) + 0.2*cos(24*theta)", desc: "Dense pineapple-like skin with layered diamond bumps." },
+    "Stipple Noise": { eq: "sin(18*theta)*sin(14*pi*v) + 0.35*sin(31*theta + 9*pi*v)", desc: "Dense stippled micro-relief." },
+    "Hammered Metal": { eq: "sin(17*theta)*sin(13*pi*v) + 0.45*sin(29*theta + 11*pi*v) + 0.25*cos(23*theta - 9*pi*v)", desc: "Irregular hammered-metal dimples and bumps." },
+    "Braided Spiral": { eq: "sin(6*theta + 8*pi*v) + 0.65*sin(6*theta - 8*pi*v)", desc: "Braided double-helix surface." },
+    "Helix Grooves": { eq: "sin(5*theta + 14*pi*v) + 0.5*sin(5*theta - 14*pi*v)", desc: "Twin helical grooves wrapping around the vessel." },
+    "Rope Twist": { eq: "sin(3*theta + 12*pi*v) + 0.8*sin(3*theta - 12*pi*v)", desc: "Rope-like twisted strands around the surface." },
+    "Herringbone": { eq: "sin(10*theta + 8*pi*v) * sin(10*theta - 8*pi*v) + 0.35*cos(20*theta)", desc: "Herringbone texture with a tight directional weave." },
+    "Knurled Grip": { eq: "cos(14*theta + 10*pi*v) * cos(14*theta - 10*pi*v)", desc: "Cross-knurled grip texture with crisp diamond facets." },
+    "Basket Crossweave": { eq: "abs(sin(10*theta))*abs(cos(8*pi*v)) + 0.35*cos(20*theta)*sin(4*pi*v)", desc: "Basket-style over-under crossweave texture." },
+    "Rosette Engraving": { eq: "cos(8*theta) + 0.4*cos(4*theta + 6*pi*v)", desc: "Floral engraving pattern." },
+    "Lotus Scallops": { eq: "pow(max(0, cos(8*theta)), 2) * sin(pi*v)", desc: "Soft scalloped petals around the body." },
+    "Petal Carving": { eq: "pow(max(0, cos(6*theta)), 2) * sin(pi*v) + 0.3*cos(12*theta)*pow(sin(pi*v), 2)", desc: "Layered floral carving with petal-like pockets." },
+    "Crown Scallops": { eq: "pow(max(0, cos(10*theta)), 2) * exp(-pow(v - 0.85, 2) * 28)", desc: "Scalloped relief concentrated near the upper rim." },
+    "Rim Ripples": { eq: "sin(24*theta) * exp(-pow(v - 0.92, 2) * 40)", desc: "Tight ripple band near the top edge." },
+    "Base Strata": { eq: "sin(18*pi*v) * exp(-pow(v - 0.12, 2) * 30)", desc: "Layered strata texture concentrated near the base." },
+    "Equatorial Facets": { eq: "abs(cos(12*theta)) * exp(-pow(v - 0.5, 2) * 18)", desc: "Faceted belt concentrated around the equator." },
+    "Art Deco Panels": { eq: "pow(cos(8*theta), 4) * (0.6 + 0.4*cos(6*pi*v))", desc: "Structured Art Deco panel rhythm with vertical emphasis." },
+    "Coral Channels": { eq: "sin(9*theta + 6*pi*v) + 0.5*sin(13*theta - 8*pi*v)", desc: "Coral-like branching channels across the shell." },
+    "Brain Coral": { eq: "sin(10*theta + 5*pi*v) * cos(8*theta - 7*pi*v)", desc: "Dense maze-like brain-coral texture." },
+    "Cracked Clay": { eq: "abs(sin(7*theta + 9*pi*v)) + abs(cos(11*theta - 8*pi*v)) - 0.9", desc: "Crack-network texture reminiscent of dried clay." },
+    "Lobed Undercut": { eq: "cos(4*theta) * sin(3*pi*v)", desc: "Large lobed texture with broad sculptural undulations." }
+};
 
     function populateTexturePresets() {
         const select = document.getElementById('texPresetSelect');
@@ -559,6 +620,39 @@ const texturePresets = {
             sphBotFlatten: (parseFloat(document.getElementById('sphBotFlatten').value) || 150) * (Math.PI / 180),
             sphBotCut: (parseFloat(document.getElementById('sphBotCut').value) || 175) * (Math.PI / 180)
         };
+    }
+
+
+    function slugifyName(value) {
+        return String(value || '')
+            .replace(/\s+/g, '_')
+            .replace(/[^a-zA-Z0-9_-]/g, '')
+            .replace(/_+/g, '_')
+            .replace(/^_+|_+$/g, '') || 'Custom';
+    }
+
+    function selectedOptionText(selectId, fallback = 'Custom') {
+        const el = document.getElementById(selectId);
+        if (!el || el.selectedIndex < 0) return fallback;
+        return el.options[el.selectedIndex]?.text || fallback;
+    }
+
+    function buildExportStem(cfg, includePatterns = false) {
+        const parts = [
+            cfg.isPot ? 'Pot' : 'Mesh',
+            slugifyName(cfg.sys),
+            slugifyName(selectedOptionText('presetSelect', 'Shape')),
+            slugifyName(selectedOptionText('texPresetSelect', 'Texture'))
+        ];
+
+        if (includePatterns) {
+            parts.push(
+                slugifyName(selectedOptionText('patternPresetSelect1', 'PatternA')),
+                slugifyName(selectedOptionText('patternPresetSelect2', 'PatternB'))
+            );
+        }
+
+        return parts.join('_');
     }
 
     function secureEval(eq, theta, z, phi, v, R, isTexture = false) {
@@ -883,10 +977,17 @@ const texturePresets = {
             for (let it = 0; it < sample.resT; it++) {
                 const surfaceActive = depthActive && sample.surfaceEligible[iv][it];
                 const state = (sample.cellMaskA[iv][it] ? 1 : 0) + (sample.cellMaskB[iv][it] ? 2 : 0);
+
                 if (surfaceActive) {
-                    coreOcc[1][iv][it] = true;
-                    surfaceOccs[state][0][iv][it] = true;
-                    stateCounts[state]++;
+                    if (state === 0) {
+                        coreOcc[0][iv][it] = true;
+                        coreOcc[1][iv][it] = true;
+                        stateCounts[0]++;
+                    } else {
+                        coreOcc[1][iv][it] = true;
+                        surfaceOccs[state][0][iv][it] = true;
+                        stateCounts[state]++;
+                    }
                 } else {
                     coreOcc[0][iv][it] = true;
                     coreOcc[1][iv][it] = true;
@@ -894,7 +995,12 @@ const texturePresets = {
             }
         }
 
-        return { coreOcc, surfaceOccs, stateCounts, hasSurface: stateCounts.some(count => count > 0) };
+        return {
+            coreOcc,
+            surfaceOccs,
+            stateCounts,
+            hasSurface: stateCounts[1] > 0 || stateCounts[2] > 0 || stateCounts[3] > 0
+        };
     }
 
     function splitOccupancyComponents(occ, resV, resT) {
@@ -1328,9 +1434,13 @@ const texturePresets = {
         });
         if (skipDrainBottom) coreMesh = appendCylindricalDrainClosure(coreMesh, sample, cfg);
 
-        const stateNames = ['Surface Base', 'Pattern A', 'Pattern B', 'Overlap'];
+        const stateNames = {
+            1: 'Pattern A',
+            2: 'Pattern B',
+            3: 'Overlap'
+        };
         const surfaceGroups = [];
-        for (let state = 0; state < 4; state++) {
+        for (let state = 1; state <= 3; state++) {
             if (occ.stateCounts[state] <= 0) continue;
 
             const componentOccs = splitOccupancyComponents(occ.surfaceOccs[state], sample.resV, sample.resT);
@@ -1362,7 +1472,8 @@ const texturePresets = {
             coreMesh,
             coreValidation: validateMesh(coreMesh),
             surfaceGroups,
-            hasSurface: occ.hasSurface
+            hasSurface: occ.hasSurface,
+            stateCounts: occ.stateCounts ? occ.stateCounts.slice() : [0, 0, 0, 0]
         };
     }
 
@@ -1652,8 +1763,7 @@ const texturePresets = {
             const blob = new Blob([buffer], { type: 'application/octet-stream' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            const prefix = cfg.isPot ? "Pot_" : "Mesh_";
-            link.download = `${prefix}${cfg.sys}.stl`;
+            link.download = `${buildExportStem(cfg, false)}.stl`;
             link.click();
             setStatus("STL exported. STL carries geometry only, not multi-part assembly.", 'warn');
         } catch (err) {
@@ -1662,7 +1772,16 @@ const texturePresets = {
         }
     }
 
-    function meshTo3mfObjectXml(id, name, mesh) {
+    function to3mfDisplayColor(hex) {
+        const clean = String(hex || '#000000').trim().replace('#', '').toUpperCase();
+        return `#${(clean.length >= 6 ? clean.slice(0, 6) : clean.padEnd(6, '0'))}`;
+    }
+
+    function materialBaseXml(name, colorHex) {
+        return `<m:base name="${name}" displaycolor="${to3mfDisplayColor(colorHex)}" />`;
+    }
+
+    function meshTo3mfObjectXml(id, name, mesh, pid = null, pindex = null) {
         const verticesXml = [];
         for (let i = 0; i < mesh.positions.length; i += 3) {
             verticesXml.push(`<vertex x="${(mesh.positions[i] * 10).toFixed(5)}" y="${(mesh.positions[i + 1] * 10).toFixed(5)}" z="${(mesh.positions[i + 2] * 10).toFixed(5)}" />`);
@@ -1673,8 +1792,10 @@ const texturePresets = {
             trianglesXml.push(`<triangle v1="${mesh.indices[i]}" v2="${mesh.indices[i + 1]}" v3="${mesh.indices[i + 2]}" />`);
         }
 
+        const propertyAttrs = (pid !== null && pindex !== null) ? ` pid="${pid}" pindex="${pindex}"` : '';
+
         return `
-  <object id="${id}" type="model" name="${name}">
+  <object id="${id}" type="model" name="${name}"${propertyAttrs}>
     <mesh>
       <vertices>
         ${verticesXml.join('')}
@@ -1690,8 +1811,19 @@ const texturePresets = {
         try {
             const cfg = getConfig();
             const parts = buildMultipartMeshes(cfg);
+            const cleanSurfaceGroups = parts.surfaceGroups.every(part =>
+                part.validations.every(v => !v.boundaryEdges && !v.nonManifoldEdges) &&
+                !part.mergedValidation.boundaryEdges &&
+                !part.mergedValidation.nonManifoldEdges
+            );
+
+            const allowCoreEdgeCase =
+                parts.coreValidation.boundaryEdges === 0 &&
+                parts.coreValidation.nonManifoldEdges > 0 &&
+                cleanSurfaceGroups;
+
             const blockingIssues = [];
-            if (parts.coreValidation.boundaryEdges || parts.coreValidation.nonManifoldEdges) {
+            if (parts.coreValidation.boundaryEdges || (parts.coreValidation.nonManifoldEdges && !allowCoreEdgeCase)) {
                 blockingIssues.push(`Core B:${parts.coreValidation.boundaryEdges} N:${parts.coreValidation.nonManifoldEdges}`);
             }
             parts.surfaceGroups.forEach(part => {
@@ -1710,14 +1842,26 @@ const texturePresets = {
             }
 
             const resources = [];
-            let nextObjectId = 1;
-            resources.push(meshTo3mfObjectXml(nextObjectId, 'Core', parts.coreMesh));
+            const materialResourceId = 1;
+            resources.push(`
+  <m:basematerials id="${materialResourceId}">
+    ${materialBaseXml('Base', cfg.baseColor)}
+    ${materialBaseXml('Pattern A', cfg.patternColor1)}
+    ${materialBaseXml('Pattern B', cfg.patternColor2)}
+    ${materialBaseXml('Overlap', cfg.overlapColor)}
+  </m:basematerials>`);
+
+            const stateToMaterialIndex = { 1: 1, 2: 2, 3: 3 };
+
+            let nextObjectId = 2;
+            resources.push(meshTo3mfObjectXml(nextObjectId, 'Base', parts.coreMesh, materialResourceId, 0));
             const componentIds = [nextObjectId];
             nextObjectId += 1;
 
             parts.surfaceGroups.forEach(part => {
                 if (!part.mergedMesh.indices.length) return;
-                resources.push(meshTo3mfObjectXml(nextObjectId, part.name, part.mergedMesh));
+                const materialIndex = Object.prototype.hasOwnProperty.call(stateToMaterialIndex, part.state) ? stateToMaterialIndex[part.state] : null;
+                resources.push(meshTo3mfObjectXml(nextObjectId, part.name, part.mergedMesh, materialResourceId, materialIndex));
                 componentIds.push(nextObjectId);
                 nextObjectId += 1;
             });
@@ -1732,7 +1876,10 @@ const texturePresets = {
   </object>`);
 
             const modelXml = `<?xml version="1.0" encoding="UTF-8"?>
-<model unit="millimeter" xml:lang="en-US" xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">
+<model unit="millimeter" xml:lang="en-US"
+       xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"
+       xmlns:m="http://schemas.microsoft.com/3dmanufacturing/material/2015/02"
+       requiredextensions="m">
   <resources>
     ${resources.join('')}
   </resources>
@@ -1761,13 +1908,14 @@ const texturePresets = {
             const blob = await zip.generateAsync({ type: 'blob', mimeType: 'model/3mf' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `Pot_${cfg.sys}_dual_pattern_multipart.3mf`;
+            link.download = `${buildExportStem(cfg, true)}_multipart.3mf`;
             link.click();
 
             const groupSummary = parts.surfaceGroups.map(part => `${part.name} ${part.meshes.length}`).join(' | ');
             const summaryBits = [`Core ${parts.coreValidation.triangles} tris`];
             if (groupSummary) summaryBits.push(groupSummary);
-            setStatus(`3MF exported | ${summaryBits.join(' | ')} | manifold check passed`);
+            const exportNote = allowCoreEdgeCase ? 'edge-case export allowed' : 'manifold check passed';
+            setStatus(`3MF exported | ${summaryBits.join(' | ')} | ${exportNote}`, allowCoreEdgeCase ? 'warn' : '');
         } catch (err) {
             console.error(err);
             setStatus("3MF export failed.", 'error');

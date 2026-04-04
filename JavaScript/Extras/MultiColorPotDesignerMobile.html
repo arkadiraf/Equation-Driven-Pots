@@ -530,6 +530,36 @@ const texturePresets = {
         };
     }
 
+
+    function slugifyName(value) {
+        return String(value || '')
+            .replace(/\s+/g, '_')
+            .replace(/[^a-zA-Z0-9_-]/g, '')
+            .replace(/_+/g, '_')
+            .replace(/^_+|_+$/g, '') || 'Custom';
+    }
+
+    function selectedOptionText(selectId, fallback = 'Custom') {
+        const el = document.getElementById(selectId);
+        if (!el || el.selectedIndex < 0) return fallback;
+        return el.options[el.selectedIndex]?.text || fallback;
+    }
+
+    function buildExportStem(cfg, includePattern = false) {
+        const parts = [
+            cfg.isPot ? 'Pot' : 'Mesh',
+            slugifyName(cfg.sys),
+            slugifyName(selectedOptionText('presetSelect', 'Shape')),
+            slugifyName(selectedOptionText('texPresetSelect', 'Texture'))
+        ];
+
+        if (includePattern) {
+            parts.push(slugifyName(selectedOptionText('patternPresetSelect', 'Pattern')));
+        }
+
+        return parts.join('_');
+    }
+
     function secureEval(eq, theta, z, phi, v, R, isTexture = false) {
         try {
             const pi = Math.PI, sin = Math.sin, cos = Math.cos, pow = Math.pow,
@@ -1473,8 +1503,7 @@ const texturePresets = {
             const blob = new Blob([buffer], { type: 'application/octet-stream' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            const prefix = cfg.isPot ? "Pot_" : "Mesh_";
-            link.download = `${prefix}${cfg.sys}.stl`;
+            link.download = `${buildExportStem(cfg, false)}.stl`;
             link.click();
             setStatus("STL exported. STL carries geometry only, not multi-part assembly.", 'warn');
         } catch (err) {
@@ -1483,7 +1512,16 @@ const texturePresets = {
         }
     }
 
-    function meshTo3mfObjectXml(id, name, mesh) {
+    function to3mfDisplayColor(hex) {
+        const clean = String(hex || '#000000').trim().replace('#', '').toUpperCase();
+        return `#${(clean.length >= 6 ? clean.slice(0, 6) : clean.padEnd(6, '0'))}`;
+    }
+
+    function materialBaseXml(name, colorHex) {
+        return `<m:base name="${name}" displaycolor="${to3mfDisplayColor(colorHex)}" />`;
+    }
+
+    function meshTo3mfObjectXml(id, name, mesh, pid = null, pindex = null) {
         const verticesXml = [];
         for (let i = 0; i < mesh.positions.length; i += 3) {
             verticesXml.push(`<vertex x="${(mesh.positions[i] * 10).toFixed(5)}" y="${(mesh.positions[i + 1] * 10).toFixed(5)}" z="${(mesh.positions[i + 2] * 10).toFixed(5)}" />`);
@@ -1494,8 +1532,10 @@ const texturePresets = {
             trianglesXml.push(`<triangle v1="${mesh.indices[i]}" v2="${mesh.indices[i + 1]}" v3="${mesh.indices[i + 2]}" />`);
         }
 
+        const propertyAttrs = (pid !== null && pindex !== null) ? ` pid="${pid}" pindex="${pindex}"` : '';
+
         return `
-  <object id="${id}" type="model" name="${name}">
+  <object id="${id}" type="model" name="${name}"${propertyAttrs}>
     <mesh>
       <vertices>
         ${verticesXml.join('')}
@@ -1518,28 +1558,38 @@ const texturePresets = {
             }
 
             const resources = [];
-            resources.push(meshTo3mfObjectXml(1, 'Base', parts.baseMesh));
+            const materialResourceId = 1;
+            resources.push(`
+  <m:basematerials id="${materialResourceId}">
+    ${materialBaseXml('Base', cfg.baseColor)}
+    ${materialBaseXml('Pattern', cfg.patternColor)}
+  </m:basematerials>`);
 
-            let componentsXml = `<component objectid="1" />`;
+            resources.push(meshTo3mfObjectXml(2, 'Base', parts.baseMesh, materialResourceId, 0));
+
+            let componentsXml = `<component objectid="2" />`;
             if (parts.hasPattern && parts.patternMesh.indices.length > 0) {
-                resources.push(meshTo3mfObjectXml(2, 'Pattern', parts.patternMesh));
-                componentsXml += `<component objectid="2" />`;
+                resources.push(meshTo3mfObjectXml(3, 'Pattern', parts.patternMesh, materialResourceId, 1));
+                componentsXml += `<component objectid="3" />`;
             }
 
             resources.push(`
-  <object id="3" type="model" name="Pot Assembly">
+  <object id="4" type="model" name="Pot Assembly">
     <components>
       ${componentsXml}
     </components>
   </object>`);
 
             const modelXml = `<?xml version="1.0" encoding="UTF-8"?>
-<model unit="millimeter" xml:lang="en-US" xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">
+<model unit="millimeter" xml:lang="en-US"
+       xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"
+       xmlns:m="http://schemas.microsoft.com/3dmanufacturing/material/2015/02"
+       requiredextensions="m">
   <resources>
     ${resources.join('')}
   </resources>
   <build>
-    <item objectid="3" />
+    <item objectid="4" />
   </build>
 </model>`;
 
@@ -1563,7 +1613,7 @@ const texturePresets = {
             const blob = await zip.generateAsync({ type: 'blob', mimeType: 'model/3mf' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `Pot_${cfg.sys}_multipart.3mf`;
+            link.download = `${buildExportStem(cfg, true)}_multipart.3mf`;
             link.click();
 
             setStatus(`3MF exported | Base ${parts.baseValidation.triangles} tris | Pattern ${parts.patternValidation.triangles} tris | manifold check passed`);
