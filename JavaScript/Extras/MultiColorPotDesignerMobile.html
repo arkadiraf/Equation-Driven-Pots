@@ -1517,8 +1517,8 @@ const texturePresets = {
         return `#${(clean.length >= 6 ? clean.slice(0, 6) : clean.padEnd(6, '0'))}`;
     }
 
-    function materialBaseXml(name, colorHex) {
-        return `<m:base name="${name}" displaycolor="${to3mfDisplayColor(colorHex)}" />`;
+    function colorGroupColorXml(colorHex) {
+        return `<m:color color="${to3mfDisplayColor(colorHex)}" />`;
     }
 
     function meshTo3mfObjectXml(id, name, mesh, pid = null, pindex = null) {
@@ -1528,14 +1528,18 @@ const texturePresets = {
         }
 
         const trianglesXml = [];
+        const propertyAttrs = (pid !== null && pindex !== null)
+            ? ` pid="${pid}" p1="${pindex}" p2="${pindex}" p3="${pindex}"`
+            : '';
+
         for (let i = 0; i < mesh.indices.length; i += 3) {
-            trianglesXml.push(`<triangle v1="${mesh.indices[i]}" v2="${mesh.indices[i + 1]}" v3="${mesh.indices[i + 2]}" />`);
+            trianglesXml.push(
+                `<triangle v1="${mesh.indices[i]}" v2="${mesh.indices[i + 1]}" v3="${mesh.indices[i + 2]}"${propertyAttrs} />`
+            );
         }
 
-        const propertyAttrs = (pid !== null && pindex !== null) ? ` pid="${pid}" pindex="${pindex}"` : '';
-
         return `
-  <object id="${id}" type="model" name="${name}"${propertyAttrs}>
+  <object id="${id}" type="model" name="${name}">
     <mesh>
       <vertices>
         ${verticesXml.join('')}
@@ -1558,18 +1562,18 @@ const texturePresets = {
             }
 
             const resources = [];
-            const materialResourceId = 1;
+            const colorGroupId = 1;
             resources.push(`
-  <m:basematerials id="${materialResourceId}">
-    ${materialBaseXml('Base', cfg.baseColor)}
-    ${materialBaseXml('Pattern', cfg.patternColor)}
-  </m:basematerials>`);
+  <m:colorgroup id="${colorGroupId}">
+    ${colorGroupColorXml(cfg.baseColor)}
+    ${colorGroupColorXml(cfg.patternColor)}
+  </m:colorgroup>`);
 
-            resources.push(meshTo3mfObjectXml(2, 'Base', parts.baseMesh, materialResourceId, 0));
+            resources.push(meshTo3mfObjectXml(2, 'Base', parts.baseMesh, colorGroupId, 0));
 
             let componentsXml = `<component objectid="2" />`;
             if (parts.hasPattern && parts.patternMesh.indices.length > 0) {
-                resources.push(meshTo3mfObjectXml(3, 'Pattern', parts.patternMesh, materialResourceId, 1));
+                resources.push(meshTo3mfObjectXml(3, 'Pattern', parts.patternMesh, colorGroupId, 1));
                 componentsXml += `<component objectid="3" />`;
             }
 
@@ -1616,7 +1620,7 @@ const texturePresets = {
             link.download = `${buildExportStem(cfg, true)}_multipart.3mf`;
             link.click();
 
-            setStatus(`3MF exported | Base ${parts.baseValidation.triangles} tris | Pattern ${parts.patternValidation.triangles} tris | manifold check passed`);
+            setStatus(`3MF exported | ColorGroup mode | Base ${parts.baseValidation.triangles} tris | Pattern ${parts.patternValidation.triangles} tris | manifold check passed`);
         } catch (err) {
             console.error(err);
             setStatus("3MF export failed.", 'error');

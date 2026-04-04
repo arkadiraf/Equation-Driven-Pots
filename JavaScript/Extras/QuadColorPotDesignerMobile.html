@@ -1777,8 +1777,8 @@ const texturePresets = {
         return `#${(clean.length >= 6 ? clean.slice(0, 6) : clean.padEnd(6, '0'))}`;
     }
 
-    function materialBaseXml(name, colorHex) {
-        return `<m:base name="${name}" displaycolor="${to3mfDisplayColor(colorHex)}" />`;
+    function colorGroupColorXml(colorHex) {
+        return `<m:color color="${to3mfDisplayColor(colorHex)}" />`;
     }
 
     function meshTo3mfObjectXml(id, name, mesh, pid = null, pindex = null) {
@@ -1788,14 +1788,16 @@ const texturePresets = {
         }
 
         const trianglesXml = [];
+        const propertyAttrs = (pid !== null && pindex !== null)
+            ? ` pid="${pid}" p1="${pindex}" p2="${pindex}" p3="${pindex}"`
+            : '';
+
         for (let i = 0; i < mesh.indices.length; i += 3) {
-            trianglesXml.push(`<triangle v1="${mesh.indices[i]}" v2="${mesh.indices[i + 1]}" v3="${mesh.indices[i + 2]}" />`);
+            trianglesXml.push(`<triangle v1="${mesh.indices[i]}" v2="${mesh.indices[i + 1]}" v3="${mesh.indices[i + 2]}"${propertyAttrs} />`);
         }
 
-        const propertyAttrs = (pid !== null && pindex !== null) ? ` pid="${pid}" pindex="${pindex}"` : '';
-
         return `
-  <object id="${id}" type="model" name="${name}"${propertyAttrs}>
+  <object id="${id}" type="model" name="${name}">
     <mesh>
       <vertices>
         ${verticesXml.join('')}
@@ -1842,26 +1844,26 @@ const texturePresets = {
             }
 
             const resources = [];
-            const materialResourceId = 1;
+            const colorGroupId = 1;
             resources.push(`
-  <m:basematerials id="${materialResourceId}">
-    ${materialBaseXml('Base', cfg.baseColor)}
-    ${materialBaseXml('Pattern A', cfg.patternColor1)}
-    ${materialBaseXml('Pattern B', cfg.patternColor2)}
-    ${materialBaseXml('Overlap', cfg.overlapColor)}
-  </m:basematerials>`);
+  <m:colorgroup id="${colorGroupId}">
+    ${colorGroupColorXml(cfg.baseColor)}
+    ${colorGroupColorXml(cfg.patternColor1)}
+    ${colorGroupColorXml(cfg.patternColor2)}
+    ${colorGroupColorXml(cfg.overlapColor)}
+  </m:colorgroup>`);
 
-            const stateToMaterialIndex = { 1: 1, 2: 2, 3: 3 };
+            const stateToColorIndex = { 1: 1, 2: 2, 3: 3 };
 
             let nextObjectId = 2;
-            resources.push(meshTo3mfObjectXml(nextObjectId, 'Base', parts.coreMesh, materialResourceId, 0));
+            resources.push(meshTo3mfObjectXml(nextObjectId, 'Base', parts.coreMesh, colorGroupId, 0));
             const componentIds = [nextObjectId];
             nextObjectId += 1;
 
             parts.surfaceGroups.forEach(part => {
                 if (!part.mergedMesh.indices.length) return;
-                const materialIndex = Object.prototype.hasOwnProperty.call(stateToMaterialIndex, part.state) ? stateToMaterialIndex[part.state] : null;
-                resources.push(meshTo3mfObjectXml(nextObjectId, part.name, part.mergedMesh, materialResourceId, materialIndex));
+                const colorIndex = Object.prototype.hasOwnProperty.call(stateToColorIndex, part.state) ? stateToColorIndex[part.state] : null;
+                resources.push(meshTo3mfObjectXml(nextObjectId, part.name, part.mergedMesh, colorGroupId, colorIndex));
                 componentIds.push(nextObjectId);
                 nextObjectId += 1;
             });
