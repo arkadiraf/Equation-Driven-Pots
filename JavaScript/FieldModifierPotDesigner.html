@@ -160,13 +160,17 @@
     </div>
     <div id="modifierDesc" class="desc-text"></div>
     <div class="input-group">
-        <label style="color: var(--highlight)">Modifier: M(θ, <span class="varLabel">z</span>, v) → θ' = θ + strength · M(θ, <span class="varLabel">z</span>, v)</label>
+        <label id="modifierEquationLabel" style="color: var(--highlight)">Modifier: M(θ, z, v) → θ' = θ + strength · M(θ, z, v)</label>
         <textarea id="modifierEquation" class="tex-area" oninput="updatePreview()"></textarea>
     </div>
-    <div class="grid-inputs">
+    <div class="grid-3">
         <div class="input-group"><label>Modifier Strength</label><input type="number" id="modifierStrength" value="0" step="0.05" oninput="updatePreview()"></div>
         <div class="input-group">
-            <label>Modifier Target</label>
+            <label>Modified Coordinate</label>
+            <select id="modifierVariable" onchange="onModifierVariableChange()"></select>
+        </div>
+        <div class="input-group">
+            <label>Field Target</label>
             <select id="modifierTarget" onchange="updatePreview()">
                 <option value="texture">Texture Only</option>
                 <option value="base">Base Only</option>
@@ -175,7 +179,7 @@
             </select>
         </div>
     </div>
-    <div class="desc-text">Field modifiers remap the sampled coordinates before evaluating the selected target. This first version warps angular sampling only, which keeps the form pot-oriented and printable by default.</div>
+    <div class="desc-text">Field modifiers remap the sampled coordinates before evaluating the selected field. Try Crown Rotation for upper-body drift or Rim Fold for localized rim behavior. You can now remap θ, z / φ, or v depending on the active coordinate system.</div>
 
     <div class="section-title" style="color: var(--highlight)">3. Surface Texture (External)</div>
     <div class="input-group">
@@ -358,11 +362,36 @@ const texturePresets = {
 const modifierPresets = {
     "None (No Modifier)": { eq: "0", desc: "No field modification. Base, texture, and patterns are evaluated from the raw coordinates." },
     "Twist Drift": { eq: "sin(3*pi*v)", desc: "Smooth angular drift through the height of the form." },
+    "Gentle Torsion": { eq: "0.6*sin(pi*v)", desc: "A milder twist modifier that stays very pot-safe." },
     "Crown Rotation": { eq: "exp(-pow(v - 0.85, 2)*40) * sin(2*pi*v)", desc: "Rotation concentrated near the upper body and rim." },
-    "Ripple Shear": { eq: "sin(8*theta) * sin(pi*v)", desc: "Angular shear that is strongest through the middle of the vessel." },
-    "Petal Migration": { eq: "sin(2*pi*v) + 0.25*sin(5*theta)", desc: "Features drift upward while petals shift around the circumference." },
     "Rim Fold": { eq: "exp(-pow(v - 0.9, 2)*50) * sin(6*theta)", desc: "A rim-focused fold that keeps the lower body calm." },
-    "Gentle Torsion": { eq: "0.6*sin(pi*v)", desc: "A milder twist modifier that stays very pot-safe." }
+    "Ripple Shear": { eq: "sin(8*theta) * sin(pi*v)", desc: "Angular shear strongest through the middle of the vessel." },
+    "Petal Migration": { eq: "sin(2*pi*v) + 0.25*sin(5*theta)", desc: "Features drift upward while petals shift around the circumference." },
+
+    "Diagonal Drift": { eq: "sin(5*theta + 2*pi*v)", desc: "Clean diagonal motion across the form, useful for helical drift." },
+    "Counter-Diagonal Drift": { eq: "sin(5*theta - 2*pi*v)", desc: "Diagonal drift in the opposite direction for mirrored motion." },
+    "Cross-Diagonal Weave": { eq: "0.7*sin(5*theta + 2*pi*v) + 0.7*sin(5*theta - 2*pi*v)", desc: "Two diagonal directions interfere to create woven directional motion." },
+    "Braided Drift": { eq: "sin(6*theta + 3*pi*v) + 0.5*sin(6*theta - 3*pi*v)", desc: "Braided double-direction modifier with a rope-like drift." },
+
+    "Petal Lift": { eq: "pow(sin(pi*v), 1.2) * sin(5*theta)", desc: "Petal-like lift strongest through the middle and upper body." },
+    "Petal Fold": { eq: "exp(-pow(v - 0.78, 2)*22) * sin(6*theta)", desc: "Upper-body petal folding with a more floral crown behavior." },
+    "Lotus Crown": { eq: "exp(-pow(v - 0.88, 2)*55) * sin(8*theta)", desc: "Tight rim-localized petal motion for lotus-like openings." },
+    "Petal Ripple": { eq: "sin(5*theta) * sin(2*pi*v) + 0.35*sin(10*theta) * pow(sin(pi*v), 1.5)", desc: "Layered petal motion with secondary ripples between the main lobes." },
+
+    "Multi-Direction Flower": { eq: "sin(4*theta + 2*pi*v) + 0.6*sin(7*theta - 3*pi*v)", desc: "Two directional fields combine into a more organic floral drift." },
+    "Diagonal Petal Sweep": { eq: "sin(5*theta + 3*pi*v) * pow(sin(pi*v), 1.3)", desc: "Petal-like directional sweep that rises diagonally through the vessel." },
+    "Chevron Drift": { eq: "abs(sin(4*theta + 2*pi*v)) - abs(sin(4*theta - 2*pi*v))", desc: "Opposed diagonals create a chevron-style directional modifier." },
+    "Feather Sweep": { eq: "sin(6*theta + 2*pi*v) + 0.3*sin(12*theta - pi*v)", desc: "Primary diagonal sweep with fine secondary directional barbs." },
+
+    "Body Swirl": { eq: "exp(-pow(v - 0.55, 2)*14) * sin(4*theta + 2*pi*v)", desc: "Mid-body swirl that leaves the base and rim calmer." },
+    "Shoulder Drift": { eq: "exp(-pow(v - 0.7, 2)*20) * sin(5*theta + 1.5*pi*v)", desc: "Directional drift concentrated around the shoulder region." },
+    "Rim Spiral Fold": { eq: "exp(-pow(v - 0.9, 2)*60) * sin(6*theta + 3*pi*v)", desc: "A spiral-fold effect concentrated near the rim." },
+    "Upper Bloom Twist": { eq: "exp(-pow(v - 0.82, 2)*28) * (sin(5*theta) + 0.4*sin(5*theta + 2*pi*v))", desc: "Bloom-like modifier with layered upper-body twist." },
+
+    "Interference Drift": { eq: "sin(4*theta + 2*pi*v) + 0.5*sin(9*theta - 3*pi*v)", desc: "Mixed directional interference for more complex surface motion." },
+    "Quasi Drift": { eq: "sin(5*theta + 2*pi*v) + 0.45*sin(8*theta - 2*pi*sqrt(2)*v)", desc: "Less repetitive directional drift using irrational phase mixing." },
+    "Cymatic Sweep": { eq: "sin(7*theta) * sin(3*pi*v) + 0.4*sin(11*theta - 2*pi*v)", desc: "Wave-like standing interference with a directional sweep." },
+    "Rosette Drift": { eq: "sin(6*theta) * pow(sin(pi*v), 1.4) + 0.25*sin(12*theta + 2*pi*v)", desc: "Rosette-style modifier with layered floral rotation." }
 };
 
     function populateModifierPresets() {
@@ -405,6 +434,62 @@ const modifierPresets = {
         populatePatternPresetSelect('patternPresetSelect2');
     }
 
+    function getModifierVariableOptions(sys) {
+        if (sys === 'spherical') {
+            return [
+                { value: 'theta', label: 'θ (Angle)' },
+                { value: 'phi', label: 'φ (Polar Angle)' },
+                { value: 'v', label: 'v (Normalized Height)' }
+            ];
+        }
+        return [
+            { value: 'theta', label: 'θ (Angle)' },
+            { value: 'z', label: 'z (Height Sample)' },
+            { value: 'v', label: 'v (Normalized Height)' }
+        ];
+    }
+
+    function getModifierVariableMeta(sys, variable) {
+        const coordName = sys === 'spherical' ? 'φ' : 'z';
+        if (variable === 'z') return { fn: 'H', args: `θ, z, v`, out: 'z' };
+        if (variable === 'phi') return { fn: 'H', args: `θ, φ, v`, out: 'φ' };
+        if (variable === 'v') return { fn: 'Q', args: `θ, ${coordName}, v`, out: 'v' };
+        return { fn: 'M', args: `θ, ${coordName}, v`, out: 'θ' };
+    }
+
+    function populateModifierVariableSelect(preferred = null) {
+        const sys = document.getElementById('coordSystem').value;
+        const select = document.getElementById('modifierVariable');
+        if (!select) return;
+        const current = preferred || select.value || 'theta';
+        const mapped = (sys === 'spherical' && current === 'z') ? 'phi' : ((sys === 'cylindrical' && current === 'phi') ? 'z' : current);
+        const options = getModifierVariableOptions(sys);
+        select.innerHTML = '';
+        options.forEach(optData => {
+            const opt = document.createElement('option');
+            opt.value = optData.value;
+            opt.innerText = optData.label;
+            select.appendChild(opt);
+        });
+        const validValues = new Set(options.map(o => o.value));
+        select.value = validValues.has(mapped) ? mapped : 'theta';
+        updateModifierTitle();
+    }
+
+    function updateModifierTitle() {
+        const sys = document.getElementById('coordSystem').value;
+        const variable = document.getElementById('modifierVariable')?.value || 'theta';
+        const label = document.getElementById('modifierEquationLabel');
+        if (!label) return;
+        const meta = getModifierVariableMeta(sys, variable);
+        label.innerHTML = `Modifier: ${meta.fn}(${meta.args}) → ${meta.out}' = ${meta.out} + strength · ${meta.fn}(${meta.args})`;
+    }
+
+    function onModifierVariableChange() {
+        updateModifierTitle();
+        updatePreview();
+    }
+
     function switchSystem(targetPreset = null) {
         const sys = document.getElementById('coordSystem').value;
         const select = document.getElementById('presetSelect');
@@ -417,9 +502,12 @@ const modifierPresets = {
             select.appendChild(opt);
         });
 
+        const modifierVariableValue = document.getElementById('modifierVariable')?.value || 'theta';
+
         const varLabels = document.querySelectorAll('.varLabel');
         varLabels.forEach(el => el.innerText = sys === 'cylindrical' ? 'z' : 'φ');
 
+        populateModifierVariableSelect(modifierVariableValue);
         document.getElementById('heightGroup').style.display = sys === 'cylindrical' ? 'block' : 'none';
         togglePotUI();
 
@@ -486,6 +574,7 @@ const modifierPresets = {
         const key = document.getElementById('modifierPresetSelect').value;
         document.getElementById('modifierEquation').value = modifierPresets[key].eq;
         document.getElementById('modifierDesc').innerText = modifierPresets[key].desc;
+        updateModifierTitle();
         updatePreview();
     }
 
@@ -506,9 +595,11 @@ const modifierPresets = {
         populatePatternPresets();
 
         document.getElementById('coordSystem').value = 'cylindrical';
+        populateModifierVariableSelect('theta');
         document.getElementById('isPot').checked = true;
-        document.getElementById('modifierPresetSelect').value = 'Twist Drift';
+        document.getElementById('modifierPresetSelect').value = 'Crown Rotation';
         document.getElementById('modifierStrength').value = '0.5';
+        document.getElementById('modifierVariable').value = 'theta';
         document.getElementById('modifierTarget').value = 'base';
         document.getElementById('texPresetSelect').value = 'None (Flat Surface)';
         document.getElementById('patternPresetSelect1').value = 'None (Solid Base Color)';
@@ -521,6 +612,8 @@ const modifierPresets = {
         document.getElementById('overlapColor').value = '#8ab04d';
 
         switchSystem('Triangle');
+        updateModifierTitle();
+        applyModifierPreset();
         window.addEventListener('resize', onWindowResize);
     };
 
@@ -581,6 +674,7 @@ const modifierPresets = {
             eq: document.getElementById('equation').value,
             modifierEq: document.getElementById('modifierEquation').value,
             modifierStrength: parseFloat(document.getElementById('modifierStrength').value) || 0,
+            modifierVariable: document.getElementById('modifierVariable').value || 'theta',
             modifierTarget: document.getElementById('modifierTarget').value || 'texture',
             texEq: document.getElementById('texEquation').value,
             texInt: parseFloat(document.getElementById('texIntensity').value) || 0,
@@ -620,11 +714,42 @@ const modifierPresets = {
 
     function getModifiedCoords(cfg, theta, z, phi, v, target = 'all') {
         const delta = getModifierAmount(cfg, theta, z, phi, v, target);
+        const variable = cfg.modifierVariable || 'theta';
+
+        const clamp = (x, a, b) => Math.min(Math.max(x, a), b);
+        let thetaOut = theta;
+        let zOut = z;
+        let phiOut = phi;
+        let vOut = v;
+
+        if (variable === 'theta') {
+            thetaOut = mod(theta + delta, 2 * Math.PI);
+        } else if (variable === 'z') {
+            const maxH = Math.max(cfg.h || 0, 1e-9);
+            zOut = clamp(z + delta, 0, maxH);
+            vOut = clamp(zOut / maxH, 0, 1);
+        } else if (variable === 'phi') {
+            const phiMin = cfg.isPot ? cfg.sphTopCut : 0.001;
+            const phiMax = cfg.isPot ? cfg.sphBotCut : Math.PI - 0.001;
+            phiOut = clamp(phi + delta, phiMin, phiMax);
+            const denom = (phiMin - phiMax);
+            vOut = Math.abs(denom) > 1e-9 ? clamp((phiOut - phiMax) / denom, 0, 1) : v;
+        } else if (variable === 'v') {
+            vOut = clamp(v + delta, 0, 1);
+            if (cfg.sys === 'cylindrical') {
+                zOut = (cfg.h || 0) * vOut;
+            } else {
+                const phiMin = cfg.isPot ? cfg.sphTopCut : 0.001;
+                const phiMax = cfg.isPot ? cfg.sphBotCut : Math.PI - 0.001;
+                phiOut = phiMax + vOut * (phiMin - phiMax);
+            }
+        }
+
         return {
-            theta: mod(theta + delta, 2 * Math.PI),
-            z,
-            phi,
-            v,
+            theta: thetaOut,
+            z: zOut,
+            phi: phiOut,
+            v: vOut,
             delta
         };
     }
