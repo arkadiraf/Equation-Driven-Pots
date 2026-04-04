@@ -222,7 +222,7 @@ In addition to the more stable pot workflows, the project also explores **experi
 
 ### [Field Modifier Pot Designer](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/JavaScript/FieldModifierPotDesigner.html)
 
-The **Field Modifier Pot Designer** extends the equation-driven pot workflow by introducing a modifier field that remaps the angular sampling of the design before the main equations are evaluated.
+The **Field Modifier Pot Designer** extends the equation-driven pot workflow by introducing a modifier field that remaps the sampled coordinates before the main equations are evaluated.
 
 Instead of only defining a base radius field such as:
 
@@ -230,25 +230,45 @@ Instead of only defining a base radius field such as:
 r = f(theta, z, v, R)
 ```
 
-the field modifier workflow introduces an intermediate step:
+the field modifier workflow adds an intermediate remapping step and then evaluates the selected field using the modified coordinates.
+
+### Core modifier idea
+
+For angular remapping, the workflow behaves like:
 
 ```text
 theta' = theta + strength * M(theta, z, v)
-```
-
-and then evaluates the selected field using the modified coordinate:
-
-```text
 r = f(theta', z, v, R)
 ```
 
-In spherical mode, the same idea applies, but the field is sampled as a function of `theta`, `phi`, and `v`.
+This is the most pot-safe modifier mode and is still the best default when the goal is to preserve a printable vessel silhouette while making the surface logic drift, rotate, or fold.
+
+The current tool now also supports remapping other sampled coordinates:
+
+#### Cylindrical coordinate mode
+
+```text
+theta' = theta + strength * M(theta, z, v)
+z' = z + strength * H(theta, z, v)
+v' = v + strength * Q(theta, z, v)
+```
+
+#### Spherical coordinate mode
+
+```text
+theta' = theta + strength * M(theta, phi, v)
+phi' = phi + strength * H(theta, phi, v)
+v' = v + strength * Q(theta, phi, v)
+```
+
+This means the modifier is no longer limited to angular drift. It can now change:
+- the angular sampling
+- the sampled height or polar angle
+- the normalized vertical progression through the form
 
 ### What this means in 3D design
 
-This changes the design process in an important way.
-
-The earlier tools mainly change the **value** of the field:
+The earlier tools mainly change the **value** of a field:
 - the base equation changes the overall silhouette
 - the texture equation changes the surface displacement
 - the pattern equations change the selected color regions
@@ -261,28 +281,14 @@ That makes it possible to create:
 - twisting crowns
 - rim-focused folds
 - angular shearing
+- vertical timing shifts
 - feature motion that changes along the height of the pot
 
 without abandoning the pot-oriented structure of the model.
 
-Because the current version modifies angular sampling only, it stays much closer to a printable vessel workflow than a fully freeform deformation system.
+### Field target logic
 
-### Why this matters
-
-Field modifiers are a natural next step after nonlinear math.
-
-Nonlinear math changes the field itself through operations such as saturation, wrapping, or stepped phase changes. Field modifiers change **where** the field is sampled. That produces a different kind of complexity: not just stronger equations, but moving equations.
-
-This opens up a richer design space while still keeping:
-- cylindrical and spherical pot workflows
-- functional pot generation
-- texture and pattern logic
-- grouped export workflows
-- a math-first modeling approach
-
-### Current modifier logic
-
-The current Field Modifier Pot Designer supports a modifier field `M(...)`, a modifier strength, and a modifier target.
+The current Field Modifier Pot Designer supports both a **modified coordinate** and a **field target**.
 
 The modifier can be applied to:
 - base shape only
@@ -291,6 +297,31 @@ The modifier can be applied to:
 - all supported fields
 
 This makes it possible to keep the pot silhouette stable while shifting only the texture or pattern logic, or to push the entire form through the modifier field when a more dramatic result is desired.
+
+### Practical examples
+
+Two good examples from the current modifier presets are:
+
+- **Crown Rotation**  
+  concentrates the modifier near the upper body, making the crown region drift and rotate more strongly than the lower body.
+
+- **Rim Fold**  
+  localizes the modifier near the rim, producing a folded or pulled upper edge while keeping most of the pot calmer and more printable.
+
+These examples show why field modifiers are useful: the math can become spatially expressive without forcing the whole form into chaos.
+
+### Why this matters
+
+Field modifiers are a natural next step after nonlinear math.
+
+Nonlinear math changes the field itself through operations such as saturation, wrapping, stepped phase behavior, or logarithmic compression. Field modifiers change **where** the field is sampled. That produces a different kind of complexity: not just stronger equations, but moving equations.
+
+This opens up a richer design space while still keeping:
+- cylindrical and spherical pot workflows
+- functional pot generation
+- texture and pattern logic
+- grouped export workflows
+- a math-first modeling approach
 
 ### Experimental status
 
