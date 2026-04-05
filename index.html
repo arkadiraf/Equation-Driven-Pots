@@ -1083,32 +1083,41 @@ const distortionPresets = {
         populateModifierPresets('None (No Modifier)');
         populateDistortionPresets('all', 'None (No Distortion)');
         updateDistortionTitle();
-        populateBaseTypes('all');
-        populateBasePresets('Circle (Pure Base)');
+
+        populateBaseTypes('floral');
+        populateBasePresets('3-to-6 Petal Morph (Bulged)');
+
         populateTextureTypes();
-        populateTexturePresets('None (Flat Surface)');
+        populateTexturePresets('Honeycomb Relief');
+
         populatePatternPresets();
         initCollapsibleSections();
 
         document.getElementById('coordSystem').value = 'cylindrical';
         populateModelModeOptions('potplate');
         document.getElementById('modelMode').value = 'potplate';
-        document.getElementById('baseTypeSelect').value = 'primitive';
+
+        document.getElementById('baseTypeSelect').value = 'floral';
+
         document.getElementById('modifierTypeSelect').value = 'utility';
         populateModifierPresets('None (No Modifier)');
         document.getElementById('modifierPresetSelect').value = 'None (No Modifier)';
         document.getElementById('modifierStrength').value = '0';
         document.getElementById('modifierTarget').value = 'base';
+
         document.getElementById('bottomThickness').value = '0.5';
+
         document.getElementById('distortionType').value = 'utility';
         populateDistortionPresets('utility', 'None (No Distortion)');
         document.getElementById('distortionPresetSelect').value = 'None (No Distortion)';
         document.getElementById('distortionStrength').value = '0';
         document.getElementById('distortionRegion').value = 'all';
         document.getElementById('distortionAnchor').value = 'none';
-        document.getElementById('texTypeSelect').value = 'utility';
-        populateTexturePresets('None (Flat Surface)');
-        document.getElementById('texPresetSelect').value = 'None (Flat Surface)';
+
+        document.getElementById('texTypeSelect').value = 'weave';
+        populateTexturePresets('Honeycomb Relief');
+        document.getElementById('texPresetSelect').value = 'Honeycomb Relief';
+
         document.getElementById('patternPresetSelect1').value = 'None (Solid Base Color)';
         document.getElementById('patternPresetSelect2').value = 'None (Solid Base Color)';
         document.getElementById('patternResV').value = '120';
@@ -1121,9 +1130,11 @@ const distortionPresets = {
         document.getElementById('plateRadiusExtra').value = '0.5';
         document.getElementById('overlapColor').value = '#8ab04d';
 
-        switchSystem('Circle (Pure Base)');
-        document.getElementById('baseTypeSelect').value = 'primitive';
-        populateBasePresets('Circle (Pure Base)');
+        switchSystem('3-to-6 Petal Morph (Bulged)');
+        document.getElementById('baseTypeSelect').value = 'floral';
+        populateBasePresets('3-to-6 Petal Morph (Bulged)');
+        document.getElementById('presetSelect').value = '3-to-6 Petal Morph (Bulged)';
+
         applyDistortionPreset(false);
         applyTexturePreset();
         applyPatternPreset(1);
