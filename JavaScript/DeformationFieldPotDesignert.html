@@ -1,0 +1,2320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DeformationFieldPotDesigner</title>
+    <style>
+        :root {
+            --bg: #f4f7f6;
+            --panel: #ffffff;
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --success: #27ae60;
+            --highlight: #9b59b6;
+            --danger: #e74c3c;
+            --export3mf: #8e44ad;
+        }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: var(--bg); overflow: hidden; }
+        #sidebar {
+            width: 460px; background: var(--panel); padding: 25px;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.1); overflow-y: auto; z-index: 100; flex-shrink: 0;
+        }
+        #viewer-container { flex-grow: 1; background: #ffffff; position: relative; }
+        .section-title { font-size: 0.95rem; color: var(--secondary); border-bottom: 2px solid #eee; padding-bottom: 5px; margin-top: 20px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-group { margin-bottom: 10px; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .color-row { grid-template-columns: 1fr 1fr; gap: 14px; }
+        label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        input[type="number"], select, textarea { width: 100%; padding: 7px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 0.85rem; }
+        textarea { height: 72px; font-family: 'Courier New', monospace; background: #fafafa; line-height: 1.4; resize: vertical; }
+        .tex-area { border-color: var(--highlight); background: #fdfafef0; }
+        .desc-text { font-size: 0.75rem; color: #7f8c8d; font-style: italic; margin-top: -6px; margin-bottom: 10px; line-height: 1.25; }
+        .pot-toggle { background: #e8f4f8; padding: 10px; border-radius: 6px; border: 1px solid #bce0ee; display: flex; align-items: center; margin-bottom: 15px; margin-top: 15px; }
+        .pot-toggle input { width: auto; margin-right: 10px; transform: scale(1.2); cursor: pointer; }
+        .pot-toggle label { margin-bottom: 0; font-size: 0.9rem; color: var(--primary); cursor: pointer; font-weight: bold; }
+        .pot-settings { display: none; background: #fff8e1; padding: 12px; border-radius: 6px; border: 1px solid #ffe082; margin-bottom: 15px; }
+        .pot-settings.active { display: block; }
+        .color-chip { height: 46px; padding: 4px; width: 100%; }
+        button { width: 100%; padding: 12px; margin-top: 8px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; transition: opacity 0.2s; font-size: 0.9rem; }
+        button:active { opacity: 0.8; }
+        .btn-preview { background: var(--secondary); }
+        .btn-stl { background: var(--success); }
+        .btn-3mf { background: var(--export3mf); }
+        #status { position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.74); color: white; padding: 8px 18px; border-radius: 20px; font-size: 12px; pointer-events: none; max-width: calc(100% - 40px); }
+        .status-error { background: rgba(231, 76, 60, 0.92) !important; }
+        .status-warn { background: rgba(230, 126, 34, 0.92) !important; }
+
+        @media (max-width: 768px) {
+            body { height: 100dvh; }
+            #sidebar {
+                width: clamp(160px, 42vw, 230px);
+                padding: 8px;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+            #viewer-container { min-width: 0; }
+            h2 { font-size: 0.92rem !important; margin: 0 0 6px 0 !important; }
+            .section-title {
+                font-size: 0.64rem;
+                margin-top: 10px;
+                margin-bottom: 6px;
+                padding-bottom: 3px;
+                letter-spacing: 0.35px;
+            }
+            .input-group { margin-bottom: 4px; }
+            .grid-inputs, .grid-3 { gap: 4px; margin-bottom: 4px; }
+            .color-row { gap: 6px; }
+            label {
+                font-size: 0.58rem;
+                margin-bottom: 1px;
+                line-height: 1.05;
+            }
+            input[type="number"], select, textarea {
+                padding: 4px;
+                font-size: 0.72rem;
+            }
+            textarea {
+                height: 40px;
+                font-size: 0.62rem;
+                line-height: 1.15;
+                margin-bottom: 4px;
+            }
+            .desc-text {
+                font-size: 0.52rem;
+                margin-top: -2px;
+                margin-bottom: 5px;
+                line-height: 1.15;
+            }
+            .pot-toggle {
+                padding: 6px;
+                margin-top: 8px;
+                margin-bottom: 8px;
+            }
+            .pot-toggle input {
+                margin-right: 6px;
+                transform: scale(1.0);
+            }
+            .pot-toggle label { font-size: 0.7rem; }
+            .pot-settings {
+                padding: 6px;
+                margin-bottom: 8px;
+            }
+            .color-chip {
+                height: 28px;
+                padding: 2px;
+            }
+            button {
+                padding: 8px 2px;
+                font-size: 0.64rem;
+                margin-top: 4px;
+            }
+            #status {
+                font-size: 9px;
+                padding: 4px 10px;
+                bottom: 10px;
+                left: 10px;
+                max-width: calc(100% - 20px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            #sidebar { width: clamp(150px, 44vw, 210px); }
+            .section-title { font-size: 0.6rem; }
+            label { font-size: 0.55rem; }
+            input[type="number"], select, textarea { font-size: 0.68rem; }
+            textarea { height: 36px; font-size: 0.58rem; }
+            button { font-size: 0.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="sidebar">
+    <h2 style="margin-top:0; color:var(--secondary)">DeformationFieldPotDesigner</h2>
+
+    <div class="section-title">1. Base Scaffold</div>
+    <div class="input-group">
+        <select id="coordSystem" onchange="switchSystem()">
+            <option value="cylindrical">Cylindrical Extrusion (r, θ, z)</option>
+            <option value="spherical">Spherical Wrap (r, θ, φ)</option>
+        </select>
+    </div>
+    <div class="input-group">
+        <select id="presetSelect" onchange="applyPreset()"></select>
+    </div>
+    <div id="baseDesc" class="desc-text"></div>
+    <div class="input-group">
+        <label>Form Equation: r(θ, <span class="varLabel">z</span>, v)</label>
+        <textarea id="equation" oninput="updatePreview()"></textarea>
+    </div>
+    <div class="grid-inputs">
+        <div class="input-group"><label>Base Radius (R)</label><input type="number" id="baseRadius" value="5" step="0.1" oninput="updatePreview()"></div>
+        <div class="input-group" id="heightGroup"><label>Height (cm)</label><input type="number" id="height" value="10" step="0.5" oninput="updatePreview()"></div>
+    </div>
+
+    <div class="section-title" style="color: var(--highlight)">2. Field Modifier</div>
+    <div class="grid-inputs">
+        <div class="input-group">
+            <label>Modifier Type</label>
+            <select id="modifierTypeSelect" onchange="onModifierTypeChange()"></select>
+        </div>
+        <div class="input-group">
+            <label>Modifier Preset</label>
+            <select id="modifierPresetSelect" onchange="applyModifierPreset()"></select>
+        </div>
+    </div>
+    <div id="modifierDesc" class="desc-text"></div>
+    <div class="input-group">
+        <label style="color: var(--highlight)">Modifier: M(θ, <span class="varLabel">z</span>, v) → θ' = θ + strength · M(θ, <span class="varLabel">z</span>, v)</label>
+        <textarea id="modifierEquation" class="tex-area" oninput="updatePreview()"></textarea>
+    </div>
+    <div class="grid-inputs">
+        <div class="input-group"><label>Modifier Strength</label><input type="number" id="modifierStrength" value="0" step="0.05" oninput="updatePreview()"></div>
+        <div class="input-group">
+            <label>Modifier Target</label>
+            <select id="modifierTarget" onchange="updatePreview()">
+                <option value="texture">Texture Only</option>
+                <option value="base">Base Only</option>
+                <option value="pattern">Patterns Only</option>
+                <option value="all">All Fields</option>
+            </select>
+        </div>
+    </div>
+    <div class="desc-text">Field modifiers remap the sampled coordinates before evaluating the selected target. This first version warps angular sampling only, which keeps the form pot-oriented and printable by default.</div>
+
+        <div class="section-title" style="color: var(--highlight)">3. Distortion Field</div>
+    <div class="input-group">
+        <select id="distortionType" onchange="applyDistortionType()">
+            <option value="all">All Distortion Types</option>
+            <option value="utility">Utility / None</option>
+            <option value="wind">Wind</option>
+            <option value="gravity">Gravity / Sag</option>
+            <option value="swirl">Swirl / Vortex</option>
+            <option value="torsion">Torsion / Crown Rotation</option>
+            <option value="pressure">Pressure / Dent</option>
+            <option value="custom">Custom</option>
+        </select>
+    </div>
+    <div class="input-group">
+        <select id="distortionPresetSelect" onchange="applyDistortionPreset()"></select>
+    </div>
+    <div id="distortionDesc" class="desc-text"></div>
+    <div class="grid-inputs">
+        <div class="input-group"><label>Distortion Strength</label><input type="number" id="distortionStrength" value="0" step="0.05" oninput="updatePreview()"></div>
+        <div class="input-group">
+            <label>Target Region</label>
+            <select id="distortionRegion" onchange="updatePreview()">
+                <option value="all">All</option>
+                <option value="lower">Lower Body</option>
+                <option value="body">Main Body</option>
+                <option value="shoulder">Shoulder</option>
+                <option value="rim">Rim</option>
+            </select>
+        </div>
+    </div>
+    <div class="grid-inputs">
+        <div class="input-group">
+            <label>Anchor Behavior</label>
+            <select id="distortionAnchor" onchange="updatePreview()">
+                <option value="none">None</option>
+                <option value="baseAnchored">Base Anchored</option>
+                <option value="bottomHalfStiff">Bottom Half Stiff</option>
+                <option value="rimFree">Rim Free</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Distortion Space</label>
+            <select id="distortionSpace" onchange="updatePreview()">
+                <option value="xyz">World XYZ (Dx,Dy,Dz)</option>
+            </select>
+        </div>
+    </div>
+    <div class="input-group">
+        <label id="distortionEquationTitle" style="color: var(--highlight); white-space: normal; overflow: visible; text-overflow: initial; line-height: 1.15;">Distortion Math:<br>D(x, y, z, θ, <span class="varLabel">z</span>, v) → x' = x + strength·Dx, y' = y + strength·Dy, z' = z + strength·Dz</label>
+    </div>
+    <div class="grid-inputs">
+        <div class="input-group">
+            <label style="color: var(--highlight)">Dx(x, y, z, θ, <span class="varLabel">z</span>, v)</label>
+            <textarea id="distortionDx" class="tex-area" oninput="updatePreview()"></textarea>
+        </div>
+        <div class="input-group">
+            <label style="color: var(--highlight)">Dy(x, y, z, θ, <span class="varLabel">z</span>, v)</label>
+            <textarea id="distortionDy" class="tex-area" oninput="updatePreview()"></textarea>
+        </div>
+    </div>
+    <div class="input-group">
+        <label style="color: var(--highlight)">Dz(x, y, z, θ, <span class="varLabel">z</span>, v)</label>
+        <textarea id="distortionDz" class="tex-area" oninput="updatePreview()"></textarea>
+    </div>
+    <div class="desc-text">Distortion fields act after the base and texture fields are sampled, displacing the generated body in world XYZ space. Use wind, gravity, swirl, or pressure presets as starting points, then tune region and anchor behavior.</div>
+
+    <div class="section-title" style="color: var(--highlight)">4. Surface Texture (External)</div>
+    <div class="input-group">
+        <select id="texPresetSelect" onchange="applyTexturePreset()"></select>
+    </div>
+    <div id="texDesc" class="desc-text"></div>
+    <div class="input-group">
+        <label style="color: var(--highlight)">Displacement: T(θ, <span class="varLabel">z</span>, v)</label>
+        <textarea id="texEquation" class="tex-area" oninput="updatePreview()"></textarea>
+    </div>
+    <div class="input-group">
+        <label>Texture Intensity (Multiplier)</label>
+        <input type="number" id="texIntensity" value="0.15" step="0.05" oninput="updatePreview()">
+    </div>
+
+    <div class="section-title">5. Structural Geometry</div>
+    <div class="input-group"><label>Wall Thick (cm) [Smooth Inside]</label><input type="number" id="wall" value="0.35" step="0.05" oninput="updatePreview()"></div>
+
+    <div class="pot-toggle">
+        <input type="checkbox" id="isPot" onchange="onPotToggle()">
+        <label for="isPot">Enable Functional Pot Gen</label>
+    </div>
+
+    <div id="cylindricalPotSettings" class="pot-settings">
+        <div class="grid-inputs">
+            <div class="input-group"><label>Base Thick (cm)</label><input type="number" id="cylBase" value="0.5" step="0.1" oninput="updatePreview()"></div>
+            <div class="input-group"><label>Drain Radius (cm)</label><input type="number" id="cylDrain" value="0.5" step="0.1" oninput="updatePreview()"></div>
+        </div>
+    </div>
+
+    <div id="sphericalPotSettings" class="pot-settings">
+        <div class="grid-3">
+            <div class="input-group" title="Top Opening"><label>Top Cut (°)</label><input type="number" id="sphTopCut" value="25" step="1" min="0" max="89" oninput="updatePreview()"></div>
+            <div class="input-group" title="Flat bed start"><label>Bot Flat (°)</label><input type="number" id="sphBotFlatten" value="150" step="1" min="90" max="179" oninput="updatePreview()"></div>
+            <div class="input-group" title="Mesh hole end"><label>Bot Cut (°)</label><input type="number" id="sphBotCut" value="175" step="1" min="91" max="180" oninput="updatePreview()"></div>
+        </div>
+    </div>
+
+    <div class="section-title" style="color: var(--highlight)">6. Dual Pattern Color Layer</div>
+    <div class="grid-inputs">
+        <div class="input-group">
+            <label>Pattern A Preset</label>
+            <select id="patternPresetSelect1" onchange="applyPatternPreset(1)"></select>
+        </div>
+        <div class="input-group">
+            <label>Pattern B Preset</label>
+            <select id="patternPresetSelect2" onchange="applyPatternPreset(2)"></select>
+        </div>
+    </div>
+    <div class="grid-inputs">
+        <div id="patternDesc1" class="desc-text">Primary mask description.</div>
+        <div id="patternDesc2" class="desc-text">Secondary mask description.</div>
+    </div>
+    <div class="grid-inputs">
+        <div class="input-group">
+            <label style="color: var(--highlight)">Pattern A Mask: P₁(θ, <span class="varLabel">z</span>, v)</label>
+            <textarea id="patternEquation1" class="tex-area" oninput="updatePreview()"></textarea>
+        </div>
+        <div class="input-group">
+            <label style="color: var(--highlight)">Pattern B Mask: P₂(θ, <span class="varLabel">z</span>, v)</label>
+            <textarea id="patternEquation2" class="tex-area" oninput="updatePreview()"></textarea>
+        </div>
+    </div>
+    <div class="grid-inputs color-row">
+        <div class="input-group"><label>Neither / Base</label><input type="color" id="baseColor" class="color-chip" value="#0f4d80" oninput="updatePreview()"></div>
+        <div class="input-group"><label>Pattern A Only</label><input type="color" id="patternColor1" class="color-chip" value="#ff7062" oninput="updatePreview()"></div>
+    </div>
+    <div class="grid-inputs color-row">
+        <div class="input-group"><label>Pattern B Only</label><input type="color" id="patternColor2" class="color-chip" value="#5f4a8b" oninput="updatePreview()"></div>
+        <div class="input-group"><label>Overlap (A + B)</label><input type="color" id="overlapColor" class="color-chip" value="#8ab04d" oninput="updatePreview()"></div>
+    </div>
+    <div class="desc-text">Two masks define four surface color states: neither, A only, B only, and A+B overlap.</div>
+    <div class="input-group">
+        <label>Color Layer Depth (mm)</label>
+        <input type="number" id="patternDepthMm" value="1.2" step="0.1" min="0" oninput="updatePreview()">
+    </div>
+
+    <div class="section-title">Mesh Resolution</div>
+    <div class="grid-inputs">
+        <div class="input-group"><label>Vertical Nodes</label><input type="number" id="resV" value="120" step="10" min="20" oninput="updatePreview()"></div>
+        <div class="input-group"><label>Radial Nodes (θ)</label><input type="number" id="resT" value="180" step="10" min="20" oninput="updatePreview()"></div>
+    </div>
+    <div class="grid-inputs">
+        <div class="input-group"><label>Pattern Vertical Nodes</label><input type="number" id="patternResV" value="120" step="10" min="20" oninput="updatePreview()"></div>
+        <div class="input-group"><label>Pattern Radial Nodes (θ)</label><input type="number" id="patternResT" value="180" step="10" min="20" oninput="updatePreview()"></div>
+    </div>
+
+    <button class="btn-preview" onclick="updatePreview()">RENDER PREVIEW</button>
+    <button class="btn-3mf" onclick="exportMultiPart3MF()">DOWNLOAD MULTI-PART .3MF</button>
+    <button class="btn-stl" onclick="exportSTL()">DOWNLOAD .STL</button>
+    <div class="desc-text"></div>
+</div>
+
+<div id="viewer-container">
+    <div id="status">Ready.</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script>
+    let scene, camera, renderer, controls, currentObject = null;
+    let renderTimeout = null;
+
+const libraries = {
+    cylindrical: {
+        "Circle (Pure Base)": { eq: "R", desc: "Simple cylindrical base field." },
+        "Triangle": { eq: "R * cos(pi/3) / cos((theta % (2*pi/3)) - pi/3)", desc: "Regular triangular cross-section." },
+        "Square": { eq: "R * cos(pi/4) / cos((theta % (pi/2)) - pi/4)", desc: "Regular square cross-section." },
+        "Pentagon": { eq: "R * cos(pi/5) / cos((theta % (2*pi/5)) - pi/5)", desc: "Regular pentagonal cross-section." },
+        "Hexagon": { eq: "R * cos(pi/6) / cos((theta % (pi/3)) - pi/6)", desc: "Regular hexagonal cross-section." },
+        "Ellipse": { eq: "R / sqrt(pow(cos(theta), 2) + 2.5 * pow(sin(theta), 2))", desc: "Elliptical plan profile." },
+        "Rounded Square": { eq: "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125)", desc: "Superellipse / rounded-square base." },
+        "3-Petal Flower": { eq: "R * (1 + 0.24 * cos(3 * theta))", desc: "Simple 3-lobed floral base." },
+        "5-Petal Flower": { eq: "R * (1 + 0.25 * cos(5 * theta))", desc: "Simple 5-lobed floral base." },
+        "ATan Fluting": { eq: "R * (1 + 0.16 * atan(6 * cos(10 * theta + 2*pi*v)))", desc: "Saturated flutes with flatter faces and sharper groove transitions." },
+        "Arc-Petal Crown": { eq: "R * (1 + 0.10 * asin(0.98 * sin(7 * theta + pi*v)))", desc: "Inverse-trig petals with clean arc-like lobes." },
+        "Folded Mod Panels": { eq: "R * (1 + 0.18 * cos(8 * abs(mod(theta + pi*v, pi/4) - pi/8)))", desc: "Wrapped angular domain creates folded, paneled symmetry." },
+        "Fourier Bloom": { eq: "R * (1 + 0.18 * (cos(3*theta) + 0.45*cos(7*theta + pi*v) + 0.20*cos(13*theta - 2*pi*v)))", desc: "Layered harmonic bloom with decaying Fourier detail." },
+        "Quasi-Crystal Helix": { eq: "R * (1 + 0.10*cos(5*theta + 2*pi*v) + 0.07*cos(8*theta - 2*pi*sqrt(2)*v) + 0.05*cos(13*theta + pi*sqrt(3)*v))", desc: "Irrational phase mixing reduces obvious repetition." },
+        "Stepped Crown Phase": { eq: "R * (1 + (0.05 + 0.16*exp(-pow(v - 0.85, 2)*60)) * cos(6*theta + floor(8*v)*pi/8))", desc: "Discrete phase jumps create a terraced crown effect." },
+        "Nested Warp Blossom": { eq: "R * (1 + 0.22 * cos(5 * (theta + 0.18*sin(3*pi*v) + 0.07*sin(11*theta))))", desc: "Domain-warped blossom with nested internal phase motion." },
+        "Compressed Wave Stack": { eq: "R * (1 + 0.12 * atan(5 * (sin(4*theta + 3*pi*v) + 0.6*sin(9*theta - 2*pi*v))))", desc: "Nonlinear compression turns layered waves into sculptural terraces." }
+    },
+    spherical: {
+        "Perfect Sphere": { eq: "R", desc: "Pure spherical base field." },
+        "Ellipse": { eq: "R * (1 + 0.18 * cos(2 * theta) * pow(sin(phi), 1.8))", desc: "Elliptical modulation around the equator." },
+        "Dipole (Two Petals)": { eq: "R * (1 + 0.24 * cos(2 * theta) * pow(sin(phi), 1.5))", desc: "Two-lobed spherical base." },
+        "3-Petal Flower": { eq: "R * (1 + 0.22 * cos(3 * theta) * pow(sin(phi), 1.5))", desc: "Three-petal spherical modulation." },
+        "5-Petal Flower": { eq: "R * (1 + 0.20 * cos(5 * theta) * pow(sin(phi), 1.5))", desc: "Five-petal spherical modulation." },
+        "Pumpkin Lobes": { eq: "R * (1 + 0.15 * cos(8 * theta))", desc: "Simple rounded lobes." },
+        "Arc-Lobed Shell": { eq: "R * (1 + 0.12 * pow(sin(phi), 1.8) * asin(0.96 * sin(7*theta)) + 0.03*cos(5*phi))", desc: "Arc-shaped lobes concentrated around the equator." },
+        "ATan Geode": { eq: "R * (1 + 0.08 * atan(8 * (cos(10*theta + 7*phi) + cos(10*theta - 7*phi))))", desc: "Nonlinear ridge compression for geode-like faceting." },
+        "Modulo Meridians": { eq: "R * (1 + 0.10 * cos(10 * abs(mod(theta, pi/5) - pi/10)) * pow(sin(phi), 1.5))", desc: "Wrapped meridian wedges with strong rotational order." },
+        "Quasi-Spiral Shell": { eq: "R * (1 + 0.08*cos(13*theta - 8*phi) + 0.08*cos(8*theta + 13*phi) + 0.04*cos(21*theta - 5*phi))", desc: "Quasi-periodic spiral shell with less repetitive interference." },
+        "Equatorial Saturation": { eq: "R * (1 + 0.16 * exp(-pow(phi - pi/2, 2) * 8) * atan(6 * cos(8*theta)))", desc: "Compressed nonlinear lobes focused into the equatorial belt." },
+        "Irrational Weave Orb": { eq: "R * (1 + 0.06*cos(9*theta + sqrt(2)*7*phi) + 0.06*cos(14*theta - sqrt(3)*5*phi))", desc: "Irrational angular weave for a woven-but-nonrepeating shell." }
+    }
+};
+
+const patternPresets = {
+    "None (Solid Base Color)": { eq: "-1", desc: "No colored overlay; the whole shell uses the base color." },
+    "Surface Texture Top %": { eq: "textureFill(texPosNorm, 65)", desc: "Colors the top raised share of the texture field." },
+    "Outer Radius Deviation": { eq: "outerDeviation(0.25)", desc: "Marks regions that exceed a simple reference envelope." },
+    "Vertical Stripes": { eq: "cos(10*theta)", desc: "Clean alternating vertical bands." },
+    "Checkerboard": { eq: "sin(10*theta) * sin(10*pi*v)", desc: "Classic checker-style blocking." },
+    "Diamond Lattice": { eq: "cos(10*theta + 8*pi*v) * cos(10*theta - 8*pi*v)", desc: "Crossed diagonal lattice." },
+    "Helical Wrap": { eq: "sin(6*theta + 10*pi*v)", desc: "Simple helical ribbon." },
+    "Modulo Panels Mask": { eq: "0.35 - abs(mod(theta + pi*v, pi/3) - pi/6)", desc: "Paneled sectors from wrapped angular domains." },
+    "Stepped Phase Bands": { eq: "cos(8*theta + floor(10*v)*pi/5) - 0.1", desc: "Band-by-band phase switching with discrete steps." },
+    "Crisp Interference Windows": { eq: "smoothstep(0.18, 0.22, sin(6*theta + 8*pi*v) + 0.55*sin(11*theta - 5*pi*v)) - 0.5", desc: "Sharp-edged windows carved from a continuous interference field." },
+    "ATan Gate Bands": { eq: "atan(7 * (sin(7*theta + 8*pi*v) + 0.35*cos(3*theta - 6*pi*v)))", desc: "Nonlinear mask compression creates bold gated bands." },
+    "Arc Petal Mask": { eq: "asin(0.98 * sin(6*theta)) * sin(pi*v)", desc: "Arc-shaped petals strongest through the body." },
+    "Quasi Helix Windows": { eq: "cos(5*theta + 8*pi*v) + 0.7*cos(8*theta - sqrt(2)*7*pi*v) - 0.25", desc: "Quasi-periodic helical windows with less obvious repeat." },
+    "Threshold Lattice": { eq: "smoothstep(0.35, 0.45, cos(10*theta + 8*pi*v) * cos(10*theta - 8*pi*v)) - 0.5", desc: "Crispened lattice with more defined cells." },
+    "Equatorial Arc Belt": { eq: "asin(0.98 * sin(8*theta)) * exp(-pow(v - 0.5, 2) * 30)", desc: "Arc-belt mask concentrated around the equator / mid-body." }
+};
+
+const texturePresets = {
+    "None (Flat Surface)": { eq: "0", desc: "No additional surface displacement." },
+    "Fine Vertical Ribs": { eq: "cos(16*theta)", desc: "Classic vertical ribbing." },
+    "Topographic Rings": { eq: "sin(24*pi*v)", desc: "Horizontal contour rings." },
+    "Diamond Weave": { eq: "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)", desc: "Crossing diagonals for a woven diamond field." },
+    "Honeycomb Relief": { eq: "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v))", desc: "Hex-cell inspired relief." },
+    "ATan Braid": { eq: "atan(8 * (sin(6*theta + 8*pi*v) + 0.6*sin(11*theta - 7*pi*v)))", desc: "Braided relief with compressed plateaus and crisp grooves." },
+    "Modulo Tile Relief": { eq: "cos(10 * abs(mod(theta + pi*v, pi/4) - pi/8))", desc: "Folded tiled relief from wrapped angular domains." },
+    "Stepped Weave": { eq: "cos(8*theta + floor(10*v)*pi/5)", desc: "Discrete vertical phase shifts create a stepped weave." },
+    "Log Ripple Compression": { eq: "log(1 + 4*abs(sin(12*theta + 10*pi*v)))", desc: "Compressed ripple field with dense nonlinear ridges." },
+    "Arc Shell Carving": { eq: "asin(0.98*sin(8*theta + 6*pi*v))", desc: "Arc-shaped carved channels with inverse-trig wall shaping." },
+    "Quasi Interference": { eq: "sin(7*theta + 9*pi*v) + 0.55*sin(11*theta - sqrt(2)*8*pi*v) + 0.35*cos(13*theta + sqrt(3)*5*pi*v)", desc: "Quasi-periodic interference texture with reduced repetition." },
+    "Folded Chevron": { eq: "abs(sin(6*theta + 8*pi*v)) - 0.45*abs(sin(6*theta - 8*pi*v))", desc: "Folded chevron relief with mirrored directional structure." },
+    "Domain Warp Ribs": { eq: "cos(12*(theta + 0.12*sin(6*pi*v) + 0.05*sin(9*theta)))", desc: "Ribs warped in-domain rather than just amplitude-modulated." },
+    "Saturated Moire": { eq: "atan(5 * (sin(18*theta + 12*pi*v) + sin(19*theta - 11*pi*v)))", desc: "Moire interference pushed through nonlinear saturation." },
+    "Terraced Contours": { eq: "floor(6 * (0.5 + 0.5*sin(16*pi*v))) / 6", desc: "Stepped contour bands with terraced relief." },
+    "Compressed Wave Stack": { eq: "atan(6 * (sin(4*theta + 10*pi*v) + 0.6*sin(9*theta - 6*pi*v)))", desc: "Layered waves compressed into stronger sculptural strata." }
+};
+
+
+const modifierPresets = {
+    "None (No Modifier)": { type: "utility", eq: "0", desc: "No field modification. Base, texture, and patterns are evaluated from the raw coordinates." },
+
+    "Twist Drift": { type: "twist", eq: "sin(3*pi*v)", desc: "Smooth angular drift through the height of the form." },
+    "Gentle Torsion": { type: "twist", eq: "0.6*sin(pi*v)", desc: "A milder twist modifier that stays very pot-safe." },
+    "Crown Rotation": { type: "twist", eq: "exp(-pow(v - 0.85, 2)*40) * sin(2*pi*v)", desc: "Rotation concentrated near the upper body and rim." },
+    "Body Swirl": { type: "twist", eq: "exp(-pow(v - 0.55, 2)*14) * sin(4*theta + 2*pi*v)", desc: "Mid-body swirl that leaves the base and rim calmer." },
+    "Rim Spiral Fold": { type: "twist", eq: "exp(-pow(v - 0.9, 2)*60) * sin(6*theta + 3*pi*v)", desc: "A spiral-fold effect concentrated near the rim." },
+
+    "Rim Fold": { type: "fold", eq: "exp(-pow(v - 0.9, 2)*50) * sin(6*theta)", desc: "A rim-focused fold that keeps the lower body calm." },
+    "Ripple Shear": { type: "fold", eq: "sin(8*theta) * sin(pi*v)", desc: "Angular shear strongest through the middle of the vessel." },
+    "Petal Fold": { type: "fold", eq: "exp(-pow(v - 0.78, 2)*22) * sin(6*theta)", desc: "Upper-body petal folding with a more floral crown behavior." },
+    "Lotus Crown": { type: "fold", eq: "exp(-pow(v - 0.88, 2)*55) * sin(8*theta)", desc: "Tight rim-localized petal motion for lotus-like openings." },
+    "Chevron Drift": { type: "fold", eq: "abs(sin(4*theta + 2*pi*v)) - abs(sin(4*theta - 2*pi*v))", desc: "Opposed diagonals create a chevron-style directional modifier." },
+
+    "Petal Migration": { type: "petal", eq: "sin(2*pi*v) + 0.25*sin(5*theta)", desc: "Features drift upward while petals shift around the circumference." },
+    "Petal Lift": { type: "petal", eq: "pow(sin(pi*v), 1.2) * sin(5*theta)", desc: "Petal-like lift strongest through the middle and upper body." },
+    "Petal Ripple": { type: "petal", eq: "sin(5*theta) * sin(2*pi*v) + 0.35*sin(10*theta) * pow(sin(pi*v), 1.5)", desc: "Layered petal motion with secondary ripples between the main lobes." },
+    "Diagonal Petal Sweep": { type: "petal", eq: "sin(5*theta + 3*pi*v) * pow(sin(pi*v), 1.3)", desc: "Petal-like directional sweep that rises diagonally through the vessel." },
+    "Upper Bloom Twist": { type: "petal", eq: "exp(-pow(v - 0.82, 2)*28) * (sin(5*theta) + 0.4*sin(5*theta + 2*pi*v))", desc: "Bloom-like modifier with layered upper-body twist." },
+    "Rosette Drift": { type: "petal", eq: "sin(6*theta) * pow(sin(pi*v), 1.4) + 0.25*sin(12*theta + 2*pi*v)", desc: "Rosette-style modifier with layered floral rotation." },
+
+    "Diagonal Drift": { type: "diagonal", eq: "sin(5*theta + 2*pi*v)", desc: "Clean diagonal motion across the form, useful for helical drift." },
+    "Counter-Diagonal Drift": { type: "diagonal", eq: "sin(5*theta - 2*pi*v)", desc: "Diagonal drift in the opposite direction for mirrored motion." },
+    "Cross-Diagonal Weave": { type: "diagonal", eq: "0.7*sin(5*theta + 2*pi*v) + 0.7*sin(5*theta - 2*pi*v)", desc: "Two diagonal directions interfere to create woven directional motion." },
+    "Braided Drift": { type: "diagonal", eq: "sin(6*theta + 3*pi*v) + 0.5*sin(6*theta - 3*pi*v)", desc: "Braided double-direction modifier with a rope-like drift." },
+    "Feather Sweep": { type: "diagonal", eq: "sin(6*theta + 2*pi*v) + 0.3*sin(12*theta - pi*v)", desc: "Primary diagonal sweep with fine secondary directional barbs." },
+
+    "Shoulder Drift": { type: "regional", eq: "exp(-pow(v - 0.7, 2)*20) * sin(5*theta + 1.5*pi*v)", desc: "Directional drift concentrated around the shoulder region." },
+    "Body Swirl Window": { type: "regional", eq: "exp(-pow(v - 0.55, 2)*14) * sin(4*theta)", desc: "A concentrated mid-body modifier window for safer localized edits." },
+    "Rim Window": { type: "regional", eq: "exp(-pow(v - 0.9, 2)*55)", desc: "A rim-only activity window, useful for localized remapping." },
+    "Shoulder Window": { type: "regional", eq: "exp(-pow(v - 0.68, 2)*22)", desc: "A shoulder-focused activity window for localized distortion." },
+
+    "Multi-Direction Flower": { type: "interference", eq: "sin(4*theta + 2*pi*v) + 0.6*sin(7*theta - 3*pi*v)", desc: "Two directional fields combine into a more organic floral drift." },
+    "Interference Drift": { type: "interference", eq: "sin(4*theta + 2*pi*v) + 0.5*sin(9*theta - 3*pi*v)", desc: "Mixed directional interference for more complex surface motion." },
+    "Quasi Drift": { type: "interference", eq: "sin(5*theta + 2*pi*v) + 0.45*sin(8*theta - 2*pi*sqrt(2)*v)", desc: "Less repetitive directional drift using irrational phase mixing." },
+    "Cymatic Sweep": { type: "interference", eq: "sin(7*theta) * sin(3*pi*v) + 0.4*sin(11*theta - 2*pi*v)", desc: "Wave-like standing interference with a directional sweep." }
+};
+
+
+const distortionPresets = {
+    "None (No Distortion)": { type: "utility", dx: "0", dy: "0", dz: "0", desc: "No XYZ-space distortion. The body stays at its generated coordinates." },
+
+    "Wind Lean": { type: "wind", dx: "pow(v, 1.6)", dy: "0", dz: "0", desc: "A simple one-direction wind push that increases toward the top." },
+    "Gradual Crosswind": { type: "wind", dx: "pow(v, 2.0)", dy: "0", dz: "0", desc: "A smoother, stronger crosswind that gradually increases through the height." },
+    "Gusted Wind": { type: "wind", dx: "pow(v, 1.8) * (0.7 + 0.3*sin(4*theta))", dy: "0", dz: "0", desc: "Wind distortion with circumferential gust variation." },
+    "Layered Crosswind": { type: "wind", dx: "pow(v, 1.6) * (0.55 + 0.25*sin(2*pi*v) + 0.2*sin(5*theta))", dy: "0", dz: "0", desc: "Crosswind that grows upward and varies through height and around the body." },
+    "Diagonal Wind Sweep": { type: "wind", dx: "pow(v, 1.7) * (0.7 + 0.3*sin(5*theta + 2*pi*v))", dy: "0", dz: "0.25*pow(v, 1.5)*sin(3*theta + pi*v)", desc: "A directional wind sweep with diagonal side drift." },
+    "Top Gust Bend": { type: "wind", dx: "exp(-pow(v - 0.85, 2)*18) + 0.25*pow(v, 1.4)", dy: "0", dz: "0", desc: "A broad crosswind with extra bend concentrated near the crown." },
+
+    "Shoulder Sag": { type: "gravity", dx: "0", dy: "-exp(-pow(v - 0.65, 2)*18)", dz: "0", desc: "A soft gravity-like sag centered around the shoulder." },
+    "Heavy Crown": { type: "gravity", dx: "0", dy: "-pow(v, 2.2)", dz: "0", desc: "Downward distortion that increases with height, like a heavy upper body." },
+
+    "Swirl Pull": { type: "swirl", dx: "-0.12*z*exp(-pow(v - 0.7, 2)*10)", dy: "0", dz: "0.12*x*exp(-pow(v - 0.7, 2)*10)", desc: "A simple swirling pull around the upper body." },
+    "Rim Vortex": { type: "swirl", dx: "-0.18*pow(v, 1.6)*sin(theta)", dy: "0", dz: "0.18*pow(v, 1.6)*cos(theta)", desc: "A vortex-like tangential distortion that intensifies toward the rim." },
+
+    "Torsion Twist": { type: "torsion", dx: "x*cos(0.35*sin(pi*v)) - z*sin(0.35*sin(pi*v)) - x", dy: "0", dz: "x*sin(0.35*sin(pi*v)) + z*cos(0.35*sin(pi*v)) - z", desc: "A smooth x-z plane torsion that twists the body through height." },
+    "Crown Rotation XYZ": { type: "torsion", dx: "x*cos(0.5*exp(-pow(v - 0.85, 2)*30)) - z*sin(0.5*exp(-pow(v - 0.85, 2)*30)) - x", dy: "0", dz: "x*sin(0.5*exp(-pow(v - 0.85, 2)*30)) + z*cos(0.5*exp(-pow(v - 0.85, 2)*30)) - z", desc: "Upper-body rotation in the x-z plane, ideal for crown turning." },
+    "Fluid Twist XYZ": { type: "torsion", dx: "x*cos(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) - z*sin(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) - x", dy: "0", dz: "x*sin(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) + z*cos(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) - z", desc: "A flowing twist in world x-z space with changing torsion through height." },
+    "Vortex Turn": { type: "torsion", dx: "x*cos(0.2*pow(v, 1.7)) - z*sin(0.2*pow(v, 1.7)) - x", dy: "0", dz: "x*sin(0.2*pow(v, 1.7)) + z*cos(0.2*pow(v, 1.7)) - z", desc: "A vortex-like turn that gradually increases toward the top." },
+
+    "Side Pressure Dent": { type: "pressure", dx: "-0.6 * exp(-pow(theta - 0, 2)*8) * exp(-pow(v - 0.6, 2)*20)", dy: "0", dz: "0", desc: "A localized side dent as if pressed from one direction." },
+    "Pressed Shoulder": { type: "pressure", dx: "-0.5 * exp(-pow(theta - pi/8, 2)*10) * exp(-pow(v - 0.72, 2)*24)", dy: "-0.08 * exp(-pow(v - 0.72, 2)*18)", dz: "0", desc: "A shoulder-focused pressure field with slight downward collapse." },
+    "Palm Press": { type: "pressure", dx: "-0.45 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)", dy: "-0.05 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)", dz: "0", desc: "A hand-pressed asymmetry with slight downward collapse." },
+
+    "Custom XYZ": { type: "custom", dx: "0", dy: "0", dz: "0", desc: "Start here for a custom world-space deformation field." }
+};
+
+
+    function getModifierTypeOptions() {
+        return [
+            { value: 'all', label: 'All Modifiers' },
+            { value: 'twist', label: 'Twist / Rotation' },
+            { value: 'fold', label: 'Fold / Shear' },
+            { value: 'petal', label: 'Petal / Bloom' },
+            { value: 'diagonal', label: 'Diagonal / Braid' },
+            { value: 'regional', label: 'Regional / Window' },
+            { value: 'interference', label: 'Interference / Quasi' },
+            { value: 'utility', label: 'Utility / None' }
+        ];
+    }
+
+    function populateModifierTypes() {
+        const select = document.getElementById('modifierTypeSelect');
+        if (!select) return;
+        const current = select.value || 'all';
+        select.innerHTML = '';
+        getModifierTypeOptions().forEach(optData => {
+            const opt = document.createElement('option');
+            opt.value = optData.value;
+            opt.innerText = optData.label;
+            select.appendChild(opt);
+        });
+        select.value = current;
+    }
+
+    function populateModifierPresets(preferred = null) {
+        const select = document.getElementById('modifierPresetSelect');
+        const type = document.getElementById('modifierTypeSelect')?.value || 'all';
+        if (!select) return;
+        const current = preferred || select.value || 'None (No Modifier)';
+        select.innerHTML = '';
+        const keys = Object.keys(modifierPresets).filter(key => type === 'all' || modifierPresets[key].type === type);
+        keys.forEach(key => {
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.innerText = key;
+            select.appendChild(opt);
+        });
+        if (!keys.length) return;
+        select.value = keys.includes(current) ? current : keys[0];
+    }
+
+    function onModifierTypeChange() {
+        populateModifierPresets();
+        applyModifierPreset();
+    }
+
+    function populateDistortionPresets(filterType = null, preferred = null) {
+        const type = filterType || document.getElementById('distortionType')?.value || 'all';
+        const select = document.getElementById('distortionPresetSelect');
+        if (!select) return;
+        const previous = preferred || select.value || 'None (No Distortion)';
+        select.innerHTML = '';
+        Object.keys(distortionPresets).forEach(key => {
+            const preset = distortionPresets[key];
+            if (type !== 'all' && preset.type !== type) return;
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.innerText = key;
+            select.appendChild(opt);
+        });
+        const valid = Array.from(select.options).map(o => o.value);
+        select.value = valid.includes(previous) ? previous : (valid[0] || '');
+        applyDistortionPreset(false);
+    }
+
+    function getDistortionMathTitle() {
+        const type = document.getElementById('distortionType')?.value || 'all';
+        if (type === 'torsion') return "Torsion Math:<br>x' = x*cos(s) - z*sin(s)<br>z' = x*sin(s) + z*cos(s)";
+        if (type === 'pressure') return "Pressure Math:<br>Local force field in world XYZ space";
+        if (type === 'wind') return "Wind Math:<br>Directional XYZ displacement growing through the body";
+        if (type === 'gravity') return "Gravity Math:<br>Downward XYZ displacement and sag";
+        if (type === 'swirl') return "Swirl Math:<br>Vortex-like turning in world XYZ space";
+        if (type === 'custom') return "Custom Distortion Math:<br>D(x, y, z, θ, zs, v) → x',<br>y', z'";
+        return "Distortion Math:<br>D(x, y, z, θ, zs, v) → x' = x + strength·Dx,<br>y' = y + strength·Dy, z' = z + strength·Dz";
+    }
+
+    function updateDistortionTitle() {
+        const title = document.getElementById('distortionEquationTitle');
+        if (title) title.innerHTML = getDistortionMathTitle();
+    }
+
+    function applyDistortionType() {
+        populateDistortionPresets();
+        updateDistortionTitle();
+        applyDistortionPreset();
+    }
+
+    function applyDistortionPreset(triggerPreview = true) {
+        const key = document.getElementById('distortionPresetSelect')?.value;
+        const preset = distortionPresets[key];
+        if (!preset) return;
+        document.getElementById('distortionDx').value = preset.dx;
+        document.getElementById('distortionDy').value = preset.dy;
+        document.getElementById('distortionDz').value = preset.dz;
+        document.getElementById('distortionDesc').innerText = preset.desc;
+        updateDistortionTitle();
+        if (triggerPreview) updatePreview();
+    }
+
+    function populateTexturePresets() {
+        const select = document.getElementById('texPresetSelect');
+        select.innerHTML = '';
+        Object.keys(texturePresets).forEach(key => {
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.innerText = key;
+            select.appendChild(opt);
+        });
+    }
+
+    function populatePatternPresetSelect(selectId) {
+        const select = document.getElementById(selectId);
+        if (!select) return;
+        select.innerHTML = '';
+        Object.keys(patternPresets).forEach(key => {
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.innerText = key;
+            select.appendChild(opt);
+        });
+    }
+
+    function populatePatternPresets() {
+        populatePatternPresetSelect('patternPresetSelect1');
+        populatePatternPresetSelect('patternPresetSelect2');
+    }
+
+    function switchSystem(targetPreset = null) {
+        const sys = document.getElementById('coordSystem').value;
+        const select = document.getElementById('presetSelect');
+        select.innerHTML = '';
+
+        Object.keys(libraries[sys]).forEach(key => {
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.innerText = key;
+            select.appendChild(opt);
+        });
+
+        const varLabels = document.querySelectorAll('.varLabel');
+        varLabels.forEach(el => el.innerText = sys === 'cylindrical' ? 'z' : 'φ');
+
+        document.getElementById('heightGroup').style.display = sys === 'cylindrical' ? 'block' : 'none';
+        togglePotUI();
+
+        if (targetPreset && libraries[sys][targetPreset]) {
+            select.value = targetPreset;
+        } else {
+            select.value = Object.keys(libraries[sys])[0];
+        }
+
+        document.getElementById('equation').value = libraries[sys][select.value].eq;
+        document.getElementById('baseDesc').innerText = libraries[sys][select.value].desc;
+
+        const modifierKey = document.getElementById('modifierPresetSelect').value;
+        document.getElementById('modifierEquation').value = modifierPresets[modifierKey].eq;
+        document.getElementById('modifierDesc').innerText = modifierPresets[modifierKey].desc;
+
+        const texKey = document.getElementById('texPresetSelect').value;
+        document.getElementById('texEquation').value = texturePresets[texKey].eq;
+        document.getElementById('texDesc').innerText = texturePresets[texKey].desc;
+
+        const patternKey1 = document.getElementById('patternPresetSelect1').value;
+        const patternKey2 = document.getElementById('patternPresetSelect2').value;
+        document.getElementById('patternEquation1').value = patternPresets[patternKey1].eq;
+        document.getElementById('patternDesc1').innerText = patternPresets[patternKey1].desc;
+        document.getElementById('patternEquation2').value = patternPresets[patternKey2].eq;
+        document.getElementById('patternDesc2').innerText = patternPresets[patternKey2].desc;
+
+        updatePreview();
+    }
+
+    function togglePotUI() {
+        const sys = document.getElementById('coordSystem').value;
+        const isPot = document.getElementById('isPot').checked;
+        document.getElementById('cylindricalPotSettings').classList.remove('active');
+        document.getElementById('sphericalPotSettings').classList.remove('active');
+
+        if (isPot) {
+            if (sys === 'cylindrical') document.getElementById('cylindricalPotSettings').classList.add('active');
+            if (sys === 'spherical') document.getElementById('sphericalPotSettings').classList.add('active');
+        }
+    }
+
+    function onPotToggle() {
+        togglePotUI();
+        updatePreview();
+    }
+
+    function applyPreset() {
+        const sys = document.getElementById('coordSystem').value;
+        const key = document.getElementById('presetSelect').value;
+        document.getElementById('equation').value = libraries[sys][key].eq;
+        document.getElementById('baseDesc').innerText = libraries[sys][key].desc;
+        updatePreview();
+    }
+
+    function applyTexturePreset() {
+        const key = document.getElementById('texPresetSelect').value;
+        document.getElementById('texEquation').value = texturePresets[key].eq;
+        document.getElementById('texDesc').innerText = texturePresets[key].desc;
+        updatePreview();
+    }
+
+    function applyModifierPreset() {
+        const key = document.getElementById('modifierPresetSelect').value;
+        document.getElementById('modifierEquation').value = modifierPresets[key].eq;
+        document.getElementById('modifierDesc').innerText = modifierPresets[key].desc;
+        updatePreview();
+    }
+
+    function applyPatternPreset(slot) {
+        const select = document.getElementById(`patternPresetSelect${slot}`);
+        const equation = document.getElementById(`patternEquation${slot}`);
+        const desc = document.getElementById(`patternDesc${slot}`);
+        const key = select.value;
+        equation.value = patternPresets[key].eq;
+        desc.innerText = patternPresets[key].desc;
+        updatePreview();
+    }
+
+    window.onload = function() {
+        initThree();
+        populateModifierTypes();
+        populateModifierPresets('None (No Modifier)');
+        populateDistortionPresets('all', 'None (No Distortion)');
+        updateDistortionTitle();
+        populateTexturePresets();
+        populatePatternPresets();
+
+        document.getElementById('coordSystem').value = 'spherical';
+        document.getElementById('isPot').checked = true;
+        document.getElementById('modifierTypeSelect').value = 'utility';
+        populateModifierPresets('None (No Modifier)');
+        document.getElementById('modifierPresetSelect').value = 'None (No Modifier)';
+        document.getElementById('modifierStrength').value = '0';
+        document.getElementById('modifierTarget').value = 'base';
+        document.getElementById('distortionType').value = 'torsion';
+        populateDistortionPresets('torsion', 'Fluid Twist XYZ');
+        document.getElementById('distortionStrength').value = '5';
+        document.getElementById('distortionRegion').value = 'all';
+        document.getElementById('distortionAnchor').value = 'baseAnchored';
+        document.getElementById('texPresetSelect').value = 'None (Flat Surface)';
+        document.getElementById('patternPresetSelect1').value = 'None (Solid Base Color)';
+        document.getElementById('patternPresetSelect2').value = 'None (Solid Base Color)';
+        document.getElementById('patternResV').value = '120';
+        document.getElementById('patternResT').value = '180';
+        document.getElementById('baseColor').value = '#0f4d80';
+        document.getElementById('patternColor1').value = '#ff7062';
+        document.getElementById('patternColor2').value = '#5f4a8b';
+        document.getElementById('overlapColor').value = '#8ab04d';
+
+        switchSystem('3-Petal Flower');
+        window.addEventListener('resize', onWindowResize);
+    };
+
+    function onWindowResize() {
+        const container = document.getElementById('viewer-container');
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+    }
+
+    function initThree() {
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xeef2f3);
+
+        const container = document.getElementById('viewer-container');
+        camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(22, 18, 22);
+
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, 4, 0);
+        controls.enableDamping = true;
+
+        scene.add(new THREE.GridHelper(25, 25, 0xbdc3c7, 0xffffff));
+        scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
+        dirLight.position.set(10, 20, 10);
+        scene.add(dirLight);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+    }
+
+    function setStatus(msg, kind = '') {
+        const statusEl = document.getElementById('status');
+        statusEl.classList.remove('status-error', 'status-warn');
+        if (kind === 'error') statusEl.classList.add('status-error');
+        if (kind === 'warn') statusEl.classList.add('status-warn');
+        statusEl.innerText = msg;
+    }
+
+    function getConfig() {
+        const wall = parseFloat(document.getElementById('wall').value) || 0.35;
+        const requestedDepthCm = Math.max(0, (parseFloat(document.getElementById('patternDepthMm').value) || 0) / 10);
+        const maxDepthCm = Math.max(0, wall - 0.02);
+        const patternDepthCm = Math.min(requestedDepthCm, maxDepthCm);
+
+        return {
+            sys: document.getElementById('coordSystem').value,
+            eq: document.getElementById('equation').value,
+            modifierEq: document.getElementById('modifierEquation').value,
+            modifierStrength: parseFloat(document.getElementById('modifierStrength').value) || 0,
+            modifierTarget: document.getElementById('modifierTarget').value || 'texture',
+            distortionType: document.getElementById('distortionType').value || 'all',
+            distortionDx: document.getElementById('distortionDx').value || '0',
+            distortionDy: document.getElementById('distortionDy').value || '0',
+            distortionDz: document.getElementById('distortionDz').value || '0',
+            distortionStrength: parseFloat(document.getElementById('distortionStrength').value) || 0,
+            distortionRegion: document.getElementById('distortionRegion').value || 'all',
+            distortionAnchor: document.getElementById('distortionAnchor').value || 'none',
+            distortionSpace: document.getElementById('distortionSpace').value || 'xyz',
+            texEq: document.getElementById('texEquation').value,
+            texInt: parseFloat(document.getElementById('texIntensity').value) || 0,
+            patternEq1: document.getElementById('patternEquation1').value,
+            patternEq2: document.getElementById('patternEquation2').value,
+            baseColor: document.getElementById('baseColor').value || '#0f4d80',
+            patternColor1: document.getElementById('patternColor1').value || '#ff7062',
+            patternColor2: document.getElementById('patternColor2').value || '#5f4a8b',
+            overlapColor: document.getElementById('overlapColor').value || '#8ab04d',
+            requestedPatternDepthCm: requestedDepthCm,
+            patternDepthCm: patternDepthCm,
+            R: parseFloat(document.getElementById('baseRadius').value) || 5.0,
+            w: wall,
+            h: parseFloat(document.getElementById('height').value) || 10.0,
+            resV: parseInt(document.getElementById('resV').value) || 120,
+            resT: parseInt(document.getElementById('resT').value) || 180,
+            patternResV: parseInt(document.getElementById('patternResV').value) || 120,
+            patternResT: parseInt(document.getElementById('patternResT').value) || 180,
+            isPot: document.getElementById('isPot').checked,
+            cylBase: parseFloat(document.getElementById('cylBase').value) || 0.5,
+            cylDrain: parseFloat(document.getElementById('cylDrain').value) || 0.5,
+            sphTopCut: (parseFloat(document.getElementById('sphTopCut').value) || 25) * (Math.PI / 180),
+            sphBotFlatten: (parseFloat(document.getElementById('sphBotFlatten').value) || 150) * (Math.PI / 180),
+            sphBotCut: (parseFloat(document.getElementById('sphBotCut').value) || 175) * (Math.PI / 180)
+        };
+    }
+
+
+    function getModifierAmount(cfg, theta, z, phi, v, target = 'all') {
+        const strength = parseFloat(cfg.modifierStrength) || 0;
+        if (!cfg.modifierEq || Math.abs(strength) < 1e-9) return 0;
+        const targetMode = cfg.modifierTarget || 'texture';
+        if (targetMode !== 'all' && targetMode !== target) return 0;
+        const raw = secureEval(cfg.modifierEq, theta, z, phi, v, 0, true);
+        return strength * raw;
+    }
+
+    function getModifiedCoords(cfg, theta, z, phi, v, target = 'all') {
+        const delta = getModifierAmount(cfg, theta, z, phi, v, target);
+        return {
+            theta: mod(theta + delta, 2 * Math.PI),
+            z,
+            phi,
+            v,
+            delta
+        };
+    }
+
+    function evalFieldWithModifier(eq, cfg, theta, z, phi, v, R, isTexture, target) {
+        const coords = getModifiedCoords(cfg, theta, z, phi, v, target);
+        return secureEval(eq, coords.theta, coords.z, coords.phi, coords.v, R, isTexture);
+    }
+
+    function smoothStep(a, b, x) {
+        const t = Math.min(Math.max((x - a) / (b - a), 0), 1);
+        return t * t * (3 - 2 * t);
+    }
+
+    function getDistortionRegionFactor(region, v) {
+        if (region === 'lower') return 1 - smoothStep(0.35, 0.7, v);
+        if (region === 'body') return smoothStep(0.18, 0.35, v) * (1 - smoothStep(0.78, 0.92, v));
+        if (region === 'shoulder') return smoothStep(0.55, 0.68, v) * (1 - smoothStep(0.82, 0.94, v));
+        if (region === 'rim') return Math.exp(-Math.pow(v - 0.9, 2) * 60);
+        return 1;
+    }
+
+    function getDistortionAnchorFactor(anchor, v) {
+        if (anchor === 'baseAnchored') return smoothStep(0.02, 0.25, v);
+        if (anchor === 'bottomHalfStiff') return 0.25 + 0.75 * smoothStep(0.45, 1.0, v);
+        if (anchor === 'rimFree') return smoothStep(0.35, 1.0, v);
+        return 1;
+    }
+
+    function evalDistortionExpr(eq, theta, zs, phi, v, R, x, y, z) {
+        try {
+            const pi = Math.PI,
+                sin = Math.sin,
+                cos = Math.cos,
+                tan = Math.tan,
+                asin = Math.asin,
+                acos = Math.acos,
+                atan = Math.atan,
+                pow = Math.pow,
+                min = Math.min,
+                max = Math.max,
+                abs = Math.abs,
+                exp = Math.exp,
+                sqrt = Math.sqrt,
+                log = Math.log,
+                floor = Math.floor,
+                ceil = Math.ceil,
+                round = Math.round,
+                sign = Math.sign;
+            const clamp = (n, a, b) => min(max(n, a), b);
+            const fract = n => n - floor(n);
+            const mod = (n, m) => ((n % m) + m) % m;
+            const smoothstep = (a, b, n) => {
+                const t = clamp((n - a) / (b - a), 0, 1);
+                return t * t * (3 - 2 * t);
+            };
+            const wx = x, wy = y, wz = z;
+            const result = eval(eq);
+            return (typeof result === 'number' && isFinite(result)) ? result : 0;
+        } catch (e) {
+            return 0;
+        }
+    }
+
+    function applyDistortionPoint(cfg, pt, theta, z, phi, v) {
+        const strength = parseFloat(cfg.distortionStrength) || 0;
+        if (Math.abs(strength) < 1e-9) return pt;
+        const regionFactor = getDistortionRegionFactor(cfg.distortionRegion || 'all', v);
+        const anchorFactor = getDistortionAnchorFactor(cfg.distortionAnchor || 'none', v);
+        const factor = strength * regionFactor * anchorFactor;
+        if (Math.abs(factor) < 1e-9) return pt;
+        const dx = evalDistortionExpr(cfg.distortionDx || '0', theta, z, phi, v, cfg.R || 0, pt.x, pt.y, pt.z);
+        const dy = evalDistortionExpr(cfg.distortionDy || '0', theta, z, phi, v, cfg.R || 0, pt.x, pt.y, pt.z);
+        const dz = evalDistortionExpr(cfg.distortionDz || '0', theta, z, phi, v, cfg.R || 0, pt.x, pt.y, pt.z);
+        return { x: pt.x + factor * dx, y: pt.y + factor * dy, z: pt.z + factor * dz };
+    }
+
+
+    function slugifyName(value) {
+        return String(value || '')
+            .replace(/\s+/g, '_')
+            .replace(/[^a-zA-Z0-9_-]/g, '')
+            .replace(/_+/g, '_')
+            .replace(/^_+|_+$/g, '') || 'Custom';
+    }
+
+    function selectedOptionText(selectId, fallback = 'Custom') {
+        const el = document.getElementById(selectId);
+        if (!el || el.selectedIndex < 0) return fallback;
+        return el.options[el.selectedIndex]?.text || fallback;
+    }
+
+    function buildExportStem(cfg, includePatterns = false) {
+        const parts = [
+            cfg.isPot ? 'Pot' : 'Mesh',
+            slugifyName(cfg.sys),
+            slugifyName(selectedOptionText('presetSelect', 'Shape')),
+            slugifyName(selectedOptionText('texPresetSelect', 'Texture'))
+        ];
+
+        if (includePatterns) {
+            parts.push(
+                slugifyName(selectedOptionText('patternPresetSelect1', 'PatternA')),
+                slugifyName(selectedOptionText('patternPresetSelect2', 'PatternB'))
+            );
+        }
+
+        return parts.join('_');
+    }
+
+    function secureEval(eq, theta, z, phi, v, R, isTexture = false) {
+        try {
+            const pi = Math.PI,
+                sin = Math.sin,
+                cos = Math.cos,
+                tan = Math.tan,
+                asin = Math.asin,
+                acos = Math.acos,
+                atan = Math.atan,
+                pow = Math.pow,
+                min = Math.min,
+                max = Math.max,
+                abs = Math.abs,
+                exp = Math.exp,
+                sqrt = Math.sqrt,
+                log = Math.log,
+                floor = Math.floor,
+                ceil = Math.ceil,
+                round = Math.round,
+                sign = Math.sign;
+
+            const clamp = (x, a, b) => min(max(x, a), b);
+            const fract = x => x - floor(x);
+            const mod = (n, m) => ((n % m) + m) % m;
+            const smoothstep = (a, b, x) => {
+                const t = clamp((x - a) / (b - a), 0, 1);
+                return t * t * (3 - 2 * t);
+            };
+
+            let result = eval(eq);
+            let fallback = isTexture ? 0 : R;
+            return (typeof result !== 'number' || isNaN(result) || !isFinite(result)) ? fallback : result;
+        } catch (e) {
+            return isTexture ? 0 : R;
+        }
+    }
+
+    function hexToRgb01(hex) {
+        const n = parseInt((hex || "#000000").replace('#', ''), 16);
+        return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+    }
+
+    function mod(n, m) {
+        return ((n % m) + m) % m;
+    }
+
+    function clonePt(p) { return { x: p.x, y: p.y, z: p.z }; }
+
+    function lerpPt(a, b, t) {
+        return {
+            x: a.x + (b.x - a.x) * t,
+            y: a.y + (b.y - a.y) * t,
+            z: a.z + (b.z - a.z) * t
+        };
+    }
+
+    function distPt(a, b) {
+        const dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z;
+        return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
+    function averagePoints(points) {
+        let x = 0, y = 0, z = 0;
+        for (const p of points) { x += p.x; y += p.y; z += p.z; }
+        const inv = 1 / points.length;
+        return { x: x * inv, y: y * inv, z: z * inv };
+    }
+
+    function subPt(a, b) { return { x: a.x - b.x, y: a.y - b.y, z: a.z - b.z }; }
+
+    function cross(a, b) {
+        return {
+            x: a.y * b.z - a.z * b.y,
+            y: a.z * b.x - a.x * b.z,
+            z: a.x * b.y - a.y * b.x
+        };
+    }
+
+    function dot(a, b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+
+    function triArea2(a, b, c) {
+        const ab = subPt(b, a);
+        const ac = subPt(c, a);
+        const cr = cross(ab, ac);
+        return Math.sqrt(dot(cr, cr));
+    }
+
+    function supportsMultipart(cfg) {
+        return true;
+    }
+
+    function evaluatePatternValue(patternEq, cfg, theta, z, phi, v, outerRadius, baseFormRadius, texRaw, stats) {
+        try {
+            const pi = Math.PI,
+                sin = Math.sin,
+                cos = Math.cos,
+                tan = Math.tan,
+                asin = Math.asin,
+                acos = Math.acos,
+                atan = Math.atan,
+                pow = Math.pow,
+                min = Math.min,
+                max = Math.max,
+                abs = Math.abs,
+                exp = Math.exp,
+                sqrt = Math.sqrt,
+                log = Math.log,
+                floor = Math.floor,
+                ceil = Math.ceil,
+                round = Math.round,
+                sign = Math.sign;
+
+            const clamp = (x, a, b) => min(max(x, a), b);
+            const fract = x => x - floor(x);
+            const mod = (n, m) => ((n % m) + m) % m;
+            const smoothstep = (a, b, x) => {
+                const t = clamp((x - a) / (b - a), 0, 1);
+                return t * t * (3 - 2 * t);
+            };
+
+            const R = cfg.R || 0;
+            const texMin = stats ? stats.texMin : 0;
+            const texMax = stats ? stats.texMax : 0;
+            const texRange = Math.max(1e-9, texMax - texMin);
+            const texNorm = (texRaw - texMin) / texRange;
+            const texPosMax = stats ? stats.texPosMax : 0;
+            const texPosNorm = texPosMax > 1e-9 ? Math.max(0, texRaw) / texPosMax : 0;
+            const radiusMin = stats ? stats.radiusMin : 0;
+            const radiusMax = stats ? stats.radiusMax : 0;
+            const radiusRange = Math.max(1e-9, radiusMax - radiusMin);
+            const radiusNorm = (outerRadius - radiusMin) / radiusRange;
+            const localBaseRadius = Math.max(0, baseFormRadius || 0);
+            const localRadiusDev = Math.max(0, outerRadius - localBaseRadius);
+            const radiusDev = Math.max(0, outerRadius - R);
+            const absRadiusDev = radiusDev;
+
+            function outerDeviation(dev) { return outerRadius - (R + dev); }
+            function textureFill(value, pct) {
+                const p = Math.max(0, Math.min(100, pct));
+                if (p <= 0) return -1;
+                if (p >= 100) return value > 0 ? 1 : -1;
+                const threshold = 1 - (p / 100);
+                return value - threshold;
+            }
+
+            const coords = getModifiedCoords(cfg, theta, z, phi, v, 'pattern');
+            theta = coords.theta;
+            z = coords.z;
+            phi = coords.phi;
+            v = coords.v;
+
+            const result = eval(patternEq);
+            return (typeof result === 'number' && isFinite(result)) ? result : -1;
+        } catch (e) {
+            return -1;
+        }
+    }
+
+    function buildParametricShell(cfg) {
+        const shellCfg = Object.assign({}, cfg, {
+            resV: Math.max(cfg.resV || 0, cfg.patternResV || 0, 20),
+            resT: Math.max(cfg.resT || 0, cfg.patternResT || 0, 20)
+        });
+        return shellCfg.sys === 'cylindrical' ? buildCylindricalShell(shellCfg) : buildSphericalShell(shellCfg);
+    }
+
+    function buildCylindricalShell(cfg) {
+        const outer = [], inner = [], cellMaskA = [], cellMaskB = [], surfaceEligible = [];
+        const actualBase = cfg.isPot ? Math.max(0, Math.min(cfg.h, cfg.cylBase)) : 0;
+
+        const rawZNodes = [];
+        for (let iv = 0; iv <= cfg.resV; iv++) rawZNodes.push(cfg.h * (iv / cfg.resV));
+        if (cfg.isPot && actualBase > 1e-8 && actualBase < cfg.h - 1e-8) rawZNodes.push(actualBase);
+        rawZNodes.sort((a, b) => a - b);
+
+        const zNodes = [];
+        for (const z of rawZNodes) {
+            if (!zNodes.length || Math.abs(z - zNodes[zNodes.length - 1]) > 1e-8) zNodes.push(z);
+        }
+
+        const shellResV = Math.max(1, zNodes.length - 1);
+
+        for (let iv = 0; iv <= shellResV; iv++) {
+            const zO = zNodes[iv];
+            const v = cfg.h > 1e-8 ? zO / cfg.h : 0;
+            const zI = actualBase + (cfg.h - actualBase) * v;
+            const oRow = [], iRow = [];
+
+            for (let it = 0; it < cfg.resT; it++) {
+                const theta = (2 * Math.PI * it) / cfg.resT;
+                const rBaseOuter = evalFieldWithModifier(cfg.eq, cfg, theta, zO, 0, v, cfg.R, false, 'base');
+                const rBaseInner = evalFieldWithModifier(cfg.eq, cfg, theta, zI, 0, v, cfg.R, false, 'base');
+                const texDisp = evalFieldWithModifier(cfg.texEq, cfg, theta, zO, 0, v, 0, true, 'texture');
+
+                const rOut = Math.max(0.1, rBaseOuter + (texDisp * cfg.texInt));
+                const rIn = Math.max(0.08, rBaseInner - cfg.w);
+
+                const outerPt = applyDistortionPoint(cfg, { x: rOut * Math.cos(theta), y: zO, z: -rOut * Math.sin(theta) }, theta, zO, 0, v);
+                const innerPt = applyDistortionPoint(cfg, { x: rIn * Math.cos(theta), y: zI, z: -rIn * Math.sin(theta) }, theta, zI, 0, v);
+                oRow.push(outerPt);
+                iRow.push(innerPt);
+            }
+            outer.push(oRow);
+            inner.push(iRow);
+        }
+
+        const cellFields = [];
+        const stats = { texMin: Infinity, texMax: -Infinity, texPosMax: 0, radiusMin: Infinity, radiusMax: -Infinity };
+        for (let iv = 0; iv < shellResV; iv++) {
+            const row = [];
+            const z0 = zNodes[iv];
+            const z1 = zNodes[iv + 1];
+            const zMid = 0.5 * (z0 + z1);
+            const vMid = cfg.h > 1e-8 ? zMid / cfg.h : 0;
+            for (let it = 0; it < cfg.resT; it++) {
+                const thetaMid = (2 * Math.PI * (it + 0.5)) / cfg.resT;
+                const texRaw = evalFieldWithModifier(cfg.texEq, cfg, thetaMid, zMid, 0, vMid, 0, true, 'texture');
+                const rBaseOuter = evalFieldWithModifier(cfg.eq, cfg, thetaMid, zMid, 0, vMid, cfg.R, false, 'base');
+                const outerRadius = Math.max(0.1, rBaseOuter + (texRaw * cfg.texInt));
+                stats.texMin = Math.min(stats.texMin, texRaw);
+                stats.texMax = Math.max(stats.texMax, texRaw);
+                stats.texPosMax = Math.max(stats.texPosMax, Math.max(0, texRaw));
+                stats.radiusMin = Math.min(stats.radiusMin, outerRadius);
+                stats.radiusMax = Math.max(stats.radiusMax, outerRadius);
+                row.push({ thetaMid, zMid, phiMid: 0, vMid, texRaw, outerRadius, baseFormRadius: rBaseOuter });
+            }
+            cellFields.push(row);
+        }
+        if (!isFinite(stats.texMin)) { stats.texMin = 0; stats.texMax = 0; stats.radiusMin = 0; stats.radiusMax = 0; }
+        for (let iv = 0; iv < shellResV; iv++) {
+            const rowA = [];
+            const rowB = [];
+            const rowEligible = [];
+            for (let it = 0; it < cfg.resT; it++) {
+                const f = cellFields[iv][it];
+                const allowPattern = !(cfg.isPot && f.zMid <= actualBase + 1e-6);
+                rowEligible.push(allowPattern);
+                rowA.push(allowPattern && evaluatePatternValue(cfg.patternEq1, cfg, f.thetaMid, f.zMid, 0, f.vMid, f.outerRadius, f.baseFormRadius, f.texRaw, stats) > 0);
+                rowB.push(allowPattern && evaluatePatternValue(cfg.patternEq2, cfg, f.thetaMid, f.zMid, 0, f.vMid, f.outerRadius, f.baseFormRadius, f.texRaw, stats) > 0);
+            }
+            cellMaskA.push(rowA);
+            cellMaskB.push(rowB);
+            surfaceEligible.push(rowEligible);
+        }
+
+        return { outer, inner, cellMaskA, cellMaskB, surfaceEligible, resV: shellResV, resT: cfg.resT, yShift: 0 };
+    }
+
+    function buildSphericalShell(cfg) {
+        const outer = [], inner = [], cellMaskA = [], cellMaskB = [], surfaceEligible = [];
+        let minY = Infinity;
+
+        const phiStart = cfg.isPot ? cfg.sphTopCut : 0.001;
+        const phiEnd = cfg.isPot ? cfg.sphBotCut : Math.PI - 0.001;
+        const flatBottomY = cfg.R * Math.cos(cfg.sphBotFlatten);
+
+        for (let iv = 0; iv <= cfg.resV; iv++) {
+            const phi = phiStart + (phiEnd - phiStart) * (iv / cfg.resV);
+            const v = (phi - phiEnd) / (phiStart - phiEnd);
+            const oRow = [], iRow = [];
+
+            for (let it = 0; it < cfg.resT; it++) {
+                const theta = (2 * Math.PI * it) / cfg.resT;
+                const rBaseOuter = evalFieldWithModifier(cfg.eq, cfg, theta, 0, phi, v, cfg.R, false, 'base');
+                const texDisp = evalFieldWithModifier(cfg.texEq, cfg, theta, 0, phi, v, 0, true, 'texture');
+
+                const rOut = Math.max(0.1, rBaseOuter + (texDisp * cfg.texInt));
+                const rIn = Math.max(0.08, rBaseOuter - cfg.w);
+
+                let oX = rOut * Math.sin(phi) * Math.cos(theta);
+                let oZ = rOut * Math.sin(phi) * Math.sin(theta);
+                let oY = rOut * Math.cos(phi);
+
+                let iX = rIn * Math.sin(phi) * Math.cos(theta);
+                let iZ = rIn * Math.sin(phi) * Math.sin(theta);
+                let iY = rIn * Math.cos(phi);
+
+                if (cfg.isPot && (phi >= cfg.sphBotFlatten || oY < flatBottomY)) {
+                    oY = flatBottomY;
+                    iY = flatBottomY + cfg.w;
+                }
+
+                const outerPt = applyDistortionPoint(cfg, { x: oX, y: oY, z: -oZ }, theta, 0, phi, v);
+                const innerPt = applyDistortionPoint(cfg, { x: iX, y: iY, z: -iZ }, theta, 0, phi, v);
+
+                if (outerPt.y < minY) minY = outerPt.y;
+                oRow.push(outerPt);
+                iRow.push(innerPt);
+            }
+            outer.push(oRow);
+            inner.push(iRow);
+        }
+
+        if (!isFinite(minY)) minY = -cfg.R;
+
+        for (let iv = 0; iv <= cfg.resV; iv++) {
+            for (let it = 0; it < cfg.resT; it++) {
+                outer[iv][it].y -= minY;
+                inner[iv][it].y -= minY;
+            }
+        }
+
+        const cellFields = [];
+        const stats = { texMin: Infinity, texMax: -Infinity, texPosMax: 0, radiusMin: Infinity, radiusMax: -Infinity };
+        for (let iv = 0; iv < cfg.resV; iv++) {
+            const row = [];
+            const phiMid = phiStart + (phiEnd - phiStart) * ((iv + 0.5) / cfg.resV);
+            const vMid = (phiMid - phiEnd) / (phiStart - phiEnd);
+            for (let it = 0; it < cfg.resT; it++) {
+                const thetaMid = (2 * Math.PI * (it + 0.5)) / cfg.resT;
+                const texRaw = evalFieldWithModifier(cfg.texEq, cfg, thetaMid, 0, phiMid, vMid, 0, true, 'texture');
+                const rBaseOuter = evalFieldWithModifier(cfg.eq, cfg, thetaMid, 0, phiMid, vMid, cfg.R, false, 'base');
+                const outerRadius = Math.max(0.1, rBaseOuter + (texRaw * cfg.texInt));
+                stats.texMin = Math.min(stats.texMin, texRaw);
+                stats.texMax = Math.max(stats.texMax, texRaw);
+                stats.texPosMax = Math.max(stats.texPosMax, Math.max(0, texRaw));
+                stats.radiusMin = Math.min(stats.radiusMin, outerRadius);
+                stats.radiusMax = Math.max(stats.radiusMax, outerRadius);
+                row.push({ thetaMid, zMid: 0, phiMid, vMid, texRaw, outerRadius, baseFormRadius: rBaseOuter });
+            }
+            cellFields.push(row);
+        }
+        if (!isFinite(stats.texMin)) { stats.texMin = 0; stats.texMax = 0; stats.radiusMin = 0; stats.radiusMax = 0; }
+        for (let iv = 0; iv < cfg.resV; iv++) {
+            const rowA = [];
+            const rowB = [];
+            const rowEligible = [];
+            for (let it = 0; it < cfg.resT; it++) {
+                const f = cellFields[iv][it];
+                rowEligible.push(true);
+                rowA.push(evaluatePatternValue(cfg.patternEq1, cfg, f.thetaMid, 0, f.phiMid, f.vMid, f.outerRadius, f.baseFormRadius, f.texRaw, stats) > 0);
+                rowB.push(evaluatePatternValue(cfg.patternEq2, cfg, f.thetaMid, 0, f.phiMid, f.vMid, f.outerRadius, f.baseFormRadius, f.texRaw, stats) > 0);
+            }
+            cellMaskA.push(rowA);
+            cellMaskB.push(rowB);
+            surfaceEligible.push(rowEligible);
+        }
+
+        return { outer, inner, cellMaskA, cellMaskB, surfaceEligible, resV: cfg.resV, resT: cfg.resT, yShift: minY };
+    }
+
+    function buildLayeredSample(cfg) {
+        const shell = buildParametricShell(cfg);
+        const layers = [
+            Array.from({ length: shell.resV + 1 }, () => Array(shell.resT)),
+            Array.from({ length: shell.resV + 1 }, () => Array(shell.resT)),
+            Array.from({ length: shell.resV + 1 }, () => Array(shell.resT))
+        ];
+
+        for (let iv = 0; iv <= shell.resV; iv++) {
+            for (let it = 0; it < shell.resT; it++) {
+                const pOut = shell.outer[iv][it];
+                const pIn = shell.inner[iv][it];
+                const thickness = distPt(pOut, pIn);
+                let requestedDepth = cfg.patternDepthCm;
+                if (cfg.sys === 'cylindrical' && cfg.isPot && pOut.y <= cfg.cylBase + 1e-6) requestedDepth = 0;
+                const safeDepth = Math.min(requestedDepth, Math.max(0, thickness - 0.001));
+                const t = thickness > 1e-8 ? safeDepth / thickness : 0;
+                layers[0][iv][it] = clonePt(pOut);
+                layers[1][iv][it] = lerpPt(pOut, pIn, t);
+                layers[2][iv][it] = clonePt(pIn);
+            }
+        }
+
+        return {
+            layers,
+            cellMaskA: shell.cellMaskA,
+            cellMaskB: shell.cellMaskB,
+            surfaceEligible: shell.surfaceEligible,
+            resV: shell.resV,
+            resT: shell.resT,
+            yShift: shell.yShift
+        };
+    }
+
+    function buildOccupancies(sample, cfg) {
+        const coreOcc = Array.from({ length: 2 }, () => Array.from({ length: sample.resV }, () => Array(sample.resT).fill(false)));
+        const surfaceOccs = Array.from({ length: 4 }, () => Array.from({ length: 2 }, () => Array.from({ length: sample.resV }, () => Array(sample.resT).fill(false))));
+        const stateCounts = [0, 0, 0, 0];
+
+        const depthActive = cfg.patternDepthCm > 0.0001;
+        for (let iv = 0; iv < sample.resV; iv++) {
+            for (let it = 0; it < sample.resT; it++) {
+                const surfaceActive = depthActive && sample.surfaceEligible[iv][it];
+                const state = (sample.cellMaskA[iv][it] ? 1 : 0) + (sample.cellMaskB[iv][it] ? 2 : 0);
+
+                if (surfaceActive) {
+                    if (state === 0) {
+                        coreOcc[0][iv][it] = true;
+                        coreOcc[1][iv][it] = true;
+                        stateCounts[0]++;
+                    } else {
+                        coreOcc[1][iv][it] = true;
+                        surfaceOccs[state][0][iv][it] = true;
+                        stateCounts[state]++;
+                    }
+                } else {
+                    coreOcc[0][iv][it] = true;
+                    coreOcc[1][iv][it] = true;
+                }
+            }
+        }
+
+        return {
+            coreOcc,
+            surfaceOccs,
+            stateCounts,
+            hasSurface: stateCounts[1] > 0 || stateCounts[2] > 0 || stateCounts[3] > 0
+        };
+    }
+
+    function splitOccupancyComponents(occ, resV, resT) {
+        const seen = new Set();
+        const components = [];
+        const directions = [
+            [1, 0, 0], [-1, 0, 0],
+            [0, 1, 0], [0, -1, 0],
+            [0, 0, 1], [0, 0, -1]
+        ];
+
+        function cellKey(k, iv, it) {
+            return `${k}|${iv}|${mod(it, resT)}`;
+        }
+
+        function inBounds(k, iv) {
+            return k >= 0 && k < 2 && iv >= 0 && iv < resV;
+        }
+
+        for (let k = 0; k < 2; k++) {
+            for (let iv = 0; iv < resV; iv++) {
+                for (let it = 0; it < resT; it++) {
+                    if (!occ[k][iv][it]) continue;
+                    const seedKey = cellKey(k, iv, it);
+                    if (seen.has(seedKey)) continue;
+
+                    const queue = [[k, iv, it]];
+                    const cells = [];
+                    seen.add(seedKey);
+
+                    while (queue.length) {
+                        const [ck, civ, cit] = queue.pop();
+                        cells.push([ck, civ, cit]);
+
+                        for (const [dk, div, dit] of directions) {
+                            const nk = ck + dk;
+                            const niv = civ + div;
+                            const nit = mod(cit + dit, resT);
+                            if (!inBounds(nk, niv) || !occ[nk][niv][nit]) continue;
+                            const nextKey = cellKey(nk, niv, nit);
+                            if (seen.has(nextKey)) continue;
+                            seen.add(nextKey);
+                            queue.push([nk, niv, nit]);
+                        }
+                    }
+
+                    const componentOcc = Array.from({ length: 2 }, () => Array.from({ length: resV }, () => Array(resT).fill(false)));
+                    cells.forEach(([ck, civ, cit]) => {
+                        componentOcc[ck][civ][cit] = true;
+                    });
+                    components.push(componentOcc);
+                }
+            }
+        }
+
+        return components;
+    }
+
+    function buildOccupancyMesh(sample, occ, options = {}) {
+        const positions = [];
+        const indices = [];
+        const vertexMap = new Map();
+        const resV = sample.resV;
+        const resT = sample.resT;
+        const layers = sample.layers;
+        const skipMinusIVFace = options.skipMinusIVFace || (() => false);
+
+        function getNode(layer, iv, it) {
+            return layers[layer][iv][mod(it, resT)];
+        }
+
+        function getIndex(layer, iv, it) {
+            const key = `${layer}_${iv}_${mod(it, resT)}`;
+            if (vertexMap.has(key)) return vertexMap.get(key);
+            const p = getNode(layer, iv, it);
+            const idx = positions.length / 3;
+            positions.push(p.x, p.y, p.z);
+            vertexMap.set(key, idx);
+            return idx;
+        }
+
+        function addTriangle(ai, bi, ci, pa, pb, pc) {
+            if (ai === bi || bi === ci || ai === ci) return;
+            if (triArea2(pa, pb, pc) < 1e-7) return;
+            indices.push(ai, bi, ci);
+        }
+
+        function addQuad(corners, cellCenter) {
+            const pts = corners.map(c => getNode(c.layer, c.iv, c.it));
+            const faceCenter = averagePoints(pts);
+            const e1 = subPt(pts[1], pts[0]);
+            const e2 = subPt(pts[2], pts[0]);
+            const n = cross(e1, e2);
+            const outward = subPt(faceCenter, cellCenter);
+            let ordered = corners.slice();
+
+            if (dot(n, outward) < 0) {
+                ordered = [corners[0], corners[3], corners[2], corners[1]];
+            }
+
+            const orderedPts = ordered.map(c => getNode(c.layer, c.iv, c.it));
+            const compact = [];
+            const compactPts = [];
+
+            for (let i = 0; i < ordered.length; i++) {
+                const p = orderedPts[i];
+                const prev = compactPts.length ? compactPts[compactPts.length - 1] : null;
+                if (prev && distPt(prev, p) < 1e-7) continue;
+                compact.push(ordered[i]);
+                compactPts.push(p);
+            }
+
+            if (compactPts.length > 2 && distPt(compactPts[0], compactPts[compactPts.length - 1]) < 1e-7) {
+                compact.pop();
+                compactPts.pop();
+            }
+
+            if (compact.length < 3) return;
+
+            const ids = compact.map(c => getIndex(c.layer, c.iv, c.it));
+
+            if (compact.length === 3) {
+                addTriangle(ids[0], ids[1], ids[2], compactPts[0], compactPts[1], compactPts[2]);
+                return;
+            }
+
+            if (compact.length === 4) {
+                const areaA = triArea2(compactPts[0], compactPts[1], compactPts[2]) + triArea2(compactPts[0], compactPts[2], compactPts[3]);
+                const areaB = triArea2(compactPts[0], compactPts[1], compactPts[3]) + triArea2(compactPts[1], compactPts[2], compactPts[3]);
+
+                if (areaA >= areaB) {
+                    addTriangle(ids[0], ids[1], ids[2], compactPts[0], compactPts[1], compactPts[2]);
+                    addTriangle(ids[0], ids[2], ids[3], compactPts[0], compactPts[2], compactPts[3]);
+                } else {
+                    addTriangle(ids[0], ids[1], ids[3], compactPts[0], compactPts[1], compactPts[3]);
+                    addTriangle(ids[1], ids[2], ids[3], compactPts[1], compactPts[2], compactPts[3]);
+                }
+                return;
+            }
+
+            for (let i = 1; i < compact.length - 1; i++) {
+                addTriangle(ids[0], ids[i], ids[i + 1], compactPts[0], compactPts[i], compactPts[i + 1]);
+            }
+        }
+
+        function isOcc(k, iv, it) {
+            if (k < 0 || k > 1) return false;
+            if (iv < 0 || iv >= resV) return false;
+            return occ[k][iv][mod(it, resT)];
+        }
+
+        for (let k = 0; k < 2; k++) {
+            for (let iv = 0; iv < resV; iv++) {
+                for (let it = 0; it < resT; it++) {
+                    if (!occ[k][iv][it]) continue;
+
+                    const it1 = mod(it + 1, resT);
+                    const corners = {
+                        A: { layer: k, iv: iv, it: it },
+                        B: { layer: k, iv: iv, it: it1 },
+                        C: { layer: k, iv: iv + 1, it: it1 },
+                        D: { layer: k, iv: iv + 1, it: it },
+                        E: { layer: k + 1, iv: iv, it: it },
+                        F: { layer: k + 1, iv: iv, it: it1 },
+                        G: { layer: k + 1, iv: iv + 1, it: it1 },
+                        H: { layer: k + 1, iv: iv + 1, it: it }
+                    };
+
+                    const cellCenter = averagePoints([
+                        getNode(k, iv, it), getNode(k, iv, it1), getNode(k, iv + 1, it1), getNode(k, iv + 1, it),
+                        getNode(k + 1, iv, it), getNode(k + 1, iv, it1), getNode(k + 1, iv + 1, it1), getNode(k + 1, iv + 1, it)
+                    ]);
+
+                    if (!isOcc(k - 1, iv, it)) addQuad([corners.A, corners.B, corners.C, corners.D], cellCenter);
+                    if (!isOcc(k + 1, iv, it)) addQuad([corners.E, corners.H, corners.G, corners.F], cellCenter);
+
+                    if (!isOcc(k, iv - 1, it) && !skipMinusIVFace(k, iv, it)) addQuad([corners.A, corners.E, corners.F, corners.B], cellCenter);
+                    if (!isOcc(k, iv + 1, it)) addQuad([corners.D, corners.C, corners.G, corners.H], cellCenter);
+
+                    if (!isOcc(k, iv, it - 1)) addQuad([corners.A, corners.D, corners.H, corners.E], cellCenter);
+                    if (!isOcc(k, iv, it + 1)) addQuad([corners.B, corners.F, corners.G, corners.C], cellCenter);
+                }
+            }
+        }
+
+        return cleanupMesh({ positions, indices });
+    }
+
+    function cleanupMesh(mesh) {
+        const inPos = mesh.positions;
+        const inIdx = mesh.indices;
+        const weldedPositions = [];
+        const remap = new Map();
+        const vertMap = new Map();
+        const eps = 1e-6;
+
+        function keyFor(x, y, z) {
+            return `${Math.round(x / eps)}_${Math.round(y / eps)}_${Math.round(z / eps)}`;
+        }
+
+        for (let i = 0; i < inPos.length; i += 3) {
+            const x = inPos[i], y = inPos[i + 1], z = inPos[i + 2];
+            const key = keyFor(x, y, z);
+            let idx = vertMap.get(key);
+            if (idx === undefined) {
+                idx = weldedPositions.length / 3;
+                weldedPositions.push(x, y, z);
+                vertMap.set(key, idx);
+            }
+            remap.set(i / 3, idx);
+        }
+
+        const cleaned = [];
+        const triSeen = new Set();
+
+        for (let i = 0; i < inIdx.length; i += 3) {
+            const a = remap.get(inIdx[i]);
+            const b = remap.get(inIdx[i + 1]);
+            const c = remap.get(inIdx[i + 2]);
+            if (a === b || b === c || a === c) continue;
+
+            const ax = weldedPositions[a * 3], ay = weldedPositions[a * 3 + 1], az = weldedPositions[a * 3 + 2];
+            const bx = weldedPositions[b * 3], by = weldedPositions[b * 3 + 1], bz = weldedPositions[b * 3 + 2];
+            const cx = weldedPositions[c * 3], cy = weldedPositions[c * 3 + 1], cz = weldedPositions[c * 3 + 2];
+
+            const abx = bx - ax, aby = by - ay, abz = bz - az;
+            const acx = cx - ax, acy = cy - ay, acz = cz - az;
+            const nx = aby * acz - abz * acy;
+            const ny = abz * acx - abx * acz;
+            const nz = abx * acy - aby * acx;
+            const area2 = Math.sqrt(nx * nx + ny * ny + nz * nz);
+            if (area2 < 1e-8) continue;
+
+            const key = [a, b, c].slice().sort((m, n) => m - n).join('_');
+            if (triSeen.has(key)) continue;
+            triSeen.add(key);
+            cleaned.push(a, b, c);
+        }
+
+        return orientMeshConsistently({ positions: weldedPositions, indices: cleaned });
+    }
+
+
+    function orientMeshConsistently(mesh) {
+        const faces = [];
+        for (let i = 0; i < mesh.indices.length; i += 3) {
+            faces.push([mesh.indices[i], mesh.indices[i + 1], mesh.indices[i + 2]]);
+        }
+        if (!faces.length) return mesh;
+
+        const edgeMap = new Map();
+        function addFaceEdge(faceIndex, a, b) {
+            const key = a < b ? `${a}_${b}` : `${b}_${a}`;
+            let list = edgeMap.get(key);
+            if (!list) {
+                list = [];
+                edgeMap.set(key, list);
+            }
+            list.push({ faceIndex, a, b });
+        }
+
+        for (let fi = 0; fi < faces.length; fi++) {
+            const tri = faces[fi];
+            addFaceEdge(fi, tri[0], tri[1]);
+            addFaceEdge(fi, tri[1], tri[2]);
+            addFaceEdge(fi, tri[2], tri[0]);
+        }
+
+        const visited = new Array(faces.length).fill(false);
+        const flipped = new Array(faces.length).fill(false);
+
+        function faceVolume(face) {
+            const a = face[0] * 3, b = face[1] * 3, c = face[2] * 3;
+            const ax = mesh.positions[a], ay = mesh.positions[a + 1], az = mesh.positions[a + 2];
+            const bx = mesh.positions[b], by = mesh.positions[b + 1], bz = mesh.positions[b + 2];
+            const cx = mesh.positions[c], cy = mesh.positions[c + 1], cz = mesh.positions[c + 2];
+            return (ax * (by * cz - bz * cy) + ay * (bz * cx - bx * cz) + az * (bx * cy - by * cx)) / 6.0;
+        }
+
+        for (let seed = 0; seed < faces.length; seed++) {
+            if (visited[seed]) continue;
+
+            const stack = [seed];
+            const component = [];
+            visited[seed] = true;
+            flipped[seed] = false;
+
+            while (stack.length) {
+                const fi = stack.pop();
+                component.push(fi);
+                const tri = faces[fi];
+
+                const triEdges = [
+                    [tri[0], tri[1]],
+                    [tri[1], tri[2]],
+                    [tri[2], tri[0]]
+                ];
+
+                for (const [a, b] of triEdges) {
+                    const key = a < b ? `${a}_${b}` : `${b}_${a}`;
+                    const shared = edgeMap.get(key) || [];
+                    for (const entry of shared) {
+                        const fj = entry.faceIndex;
+                        if (fj === fi) continue;
+
+                        const sameDirection = entry.a === a && entry.b === b;
+                        const requiredFlip = flipped[fi] ^ sameDirection;
+
+                        if (!visited[fj]) {
+                            visited[fj] = true;
+                            flipped[fj] = requiredFlip;
+                            stack.push(fj);
+                        }
+                    }
+                }
+            }
+
+            let signedVolume = 0;
+            for (const fi of component) {
+                const face = flipped[fi] ? [faces[fi][0], faces[fi][2], faces[fi][1]] : faces[fi];
+                signedVolume += faceVolume(face);
+            }
+
+            if (signedVolume < 0) {
+                for (const fi of component) flipped[fi] = !flipped[fi];
+            }
+        }
+
+        const outIndices = [];
+        for (let fi = 0; fi < faces.length; fi++) {
+            const face = flipped[fi] ? [faces[fi][0], faces[fi][2], faces[fi][1]] : faces[fi];
+            outIndices.push(face[0], face[1], face[2]);
+        }
+
+        return { positions: mesh.positions.slice(), indices: outIndices };
+    }
+
+    function validateMesh(mesh) {
+        const edges = new Map();
+        let signedVolume = 0;
+        for (let i = 0; i < mesh.indices.length; i += 3) {
+            const a = mesh.indices[i];
+            const b = mesh.indices[i + 1];
+            const c = mesh.indices[i + 2];
+            const tri = [a, b, c];
+            for (let e = 0; e < 3; e++) {
+                const u = tri[e];
+                const v = tri[(e + 1) % 3];
+                const key = u < v ? `${u}_${v}` : `${v}_${u}`;
+                edges.set(key, (edges.get(key) || 0) + 1);
+            }
+
+            const ax = mesh.positions[a * 3], ay = mesh.positions[a * 3 + 1], az = mesh.positions[a * 3 + 2];
+            const bx = mesh.positions[b * 3], by = mesh.positions[b * 3 + 1], bz = mesh.positions[b * 3 + 2];
+            const cx = mesh.positions[c * 3], cy = mesh.positions[c * 3 + 1], cz = mesh.positions[c * 3 + 2];
+            signedVolume += (ax * (by * cz - bz * cy) + ay * (bz * cx - bx * cz) + az * (bx * cy - by * cx)) / 6.0;
+        }
+        let boundaryEdges = 0;
+        let nonManifoldEdges = 0;
+        for (const count of edges.values()) {
+            if (count === 1) boundaryEdges++;
+            else if (count !== 2) nonManifoldEdges++;
+        }
+        return {
+            vertices: mesh.positions.length / 3,
+            triangles: mesh.indices.length / 3,
+            boundaryEdges,
+            nonManifoldEdges,
+            signedVolume
+        };
+    }
+
+    function appendCylindricalDrainClosure(mesh, sample, cfg) {
+        if (!(cfg.sys === 'cylindrical' && cfg.isPot && cfg.cylDrain > 0.0001)) return cleanupMesh(mesh);
+
+        const positions = mesh.positions.slice();
+        const indices = mesh.indices.slice();
+        const outerRing = [];
+        const innerRing = [];
+        const holeBottom = [];
+        const holeTop = [];
+        const drain = Math.max(0.01, cfg.cylDrain);
+        const baseY = Math.max(0, cfg.cylBase);
+
+        function addPoint(p) {
+            positions.push(p.x, p.y, p.z);
+            return (positions.length / 3) - 1;
+        }
+
+        for (let it = 0; it < sample.resT; it++) {
+            const theta = (2 * Math.PI * it) / sample.resT;
+            outerRing.push(addPoint(sample.layers[0][0][it]));
+            innerRing.push(addPoint(sample.layers[2][0][it]));
+            holeBottom.push(addPoint({ x: drain * Math.cos(theta), y: 0, z: -drain * Math.sin(theta) }));
+            holeTop.push(addPoint({ x: drain * Math.cos(theta), y: baseY, z: -drain * Math.sin(theta) }));
+        }
+
+        for (let it = 0; it < sample.resT; it++) {
+            const it1 = (it + 1) % sample.resT;
+            indices.push(outerRing[it], holeBottom[it1], holeBottom[it], outerRing[it], outerRing[it1], holeBottom[it1]);
+            indices.push(innerRing[it], holeTop[it], holeTop[it1], innerRing[it], holeTop[it1], innerRing[it1]);
+            indices.push(holeBottom[it], holeBottom[it1], holeTop[it1], holeBottom[it], holeTop[it1], holeTop[it]);
+        }
+
+        return cleanupMesh({ positions, indices });
+    }
+
+    function mergeMeshes(meshes) {
+        const positions = [];
+        const indices = [];
+        let vertexOffset = 0;
+
+        meshes.forEach(mesh => {
+            if (!mesh || !mesh.indices || !mesh.indices.length) return;
+            positions.push(...mesh.positions);
+            for (let i = 0; i < mesh.indices.length; i++) {
+                indices.push(mesh.indices[i] + vertexOffset);
+            }
+            vertexOffset += mesh.positions.length / 3;
+        });
+
+        return { positions, indices };
+    }
+
+    function buildMultipartMeshes(cfg) {
+        const sample = buildLayeredSample(cfg);
+        const occ = buildOccupancies(sample, cfg);
+        const skipDrainBottom = cfg.sys === 'cylindrical' && cfg.isPot && cfg.cylDrain > 0.0001;
+        let coreMesh = buildOccupancyMesh(sample, occ.coreOcc, {
+            skipMinusIVFace: (k, iv) => skipDrainBottom && iv === 0
+        });
+        if (skipDrainBottom) coreMesh = appendCylindricalDrainClosure(coreMesh, sample, cfg);
+
+        const stateNames = {
+            1: 'Pattern A',
+            2: 'Pattern B',
+            3: 'Overlap'
+        };
+        const surfaceGroups = [];
+        for (let state = 1; state <= 3; state++) {
+            if (occ.stateCounts[state] <= 0) continue;
+
+            const componentOccs = splitOccupancyComponents(occ.surfaceOccs[state], sample.resV, sample.resT);
+            const meshes = [];
+            const validations = [];
+            componentOccs.forEach((componentOcc, idx) => {
+                const mesh = buildOccupancyMesh(sample, componentOcc);
+                meshes.push({
+                    name: `${stateNames[state]} ${idx + 1}`,
+                    mesh
+                });
+                validations.push(validateMesh(mesh));
+            });
+
+            const mergedMesh = mergeMeshes(meshes.map(component => component.mesh));
+            const mergedValidation = validateMesh(mergedMesh);
+
+            surfaceGroups.push({
+                state,
+                name: stateNames[state],
+                meshes,
+                validations,
+                mergedMesh,
+                mergedValidation
+            });
+        }
+
+        return {
+            coreMesh,
+            coreValidation: validateMesh(coreMesh),
+            surfaceGroups,
+            hasSurface: occ.hasSurface,
+            stateCounts: occ.stateCounts ? occ.stateCounts.slice() : [0, 0, 0, 0]
+        };
+    }
+
+    function meshToThreeGeometry(mesh) {
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(mesh.positions, 3));
+        geometry.setIndex(mesh.indices);
+        geometry.computeVertexNormals();
+        return geometry;
+    }
+
+    function disposeObject(obj) {
+        if (!obj) return;
+        obj.traverse(child => {
+            if (child.geometry) child.geometry.dispose();
+            if (Array.isArray(child.material)) child.material.forEach(m => m && m.dispose && m.dispose());
+            else if (child.material) child.material.dispose();
+        });
+        scene.remove(obj);
+    }
+
+    function updatePreview() {
+        if (renderTimeout) clearTimeout(renderTimeout);
+        setStatus("Generating preview...");
+
+        renderTimeout = setTimeout(() => {
+            try {
+                if (currentObject) {
+                    disposeObject(currentObject);
+                    currentObject = null;
+                }
+
+                const cfg = getConfig();
+
+                if (supportsMultipart(cfg)) {
+                    const parts = buildMultipartMeshes(cfg);
+                    const group = new THREE.Group();
+
+                    const coreGeom = meshToThreeGeometry(parts.coreMesh);
+                    const coreMat = new THREE.MeshStandardMaterial({
+                        color: cfg.baseColor,
+                        roughness: 0.72,
+                        metalness: 0.08,
+                        transparent: parts.hasSurface,
+                        opacity: parts.hasSurface ? 0.62 : 1.0,
+                        side: THREE.DoubleSide
+                    });
+                    group.add(new THREE.Mesh(coreGeom, coreMat));
+
+                    const stateColors = [cfg.baseColor, cfg.patternColor1, cfg.patternColor2, cfg.overlapColor];
+                    parts.surfaceGroups.forEach(part => {
+                        const surfaceMat = new THREE.MeshStandardMaterial({
+                            color: stateColors[part.state],
+                            roughness: 0.55,
+                            metalness: 0.05,
+                            side: THREE.DoubleSide
+                        });
+                        part.meshes.forEach(component => {
+                            if (!component.mesh.indices.length) return;
+                            const surfaceGeom = meshToThreeGeometry(component.mesh);
+                            group.add(new THREE.Mesh(surfaceGeom, surfaceMat.clone()));
+                        });
+                        surfaceMat.dispose();
+                    });
+
+                    currentObject = group;
+                    scene.add(group);
+
+                    const warnBits = [];
+                    if (parts.coreValidation.boundaryEdges || parts.coreValidation.nonManifoldEdges) warnBits.push(`Core B:${parts.coreValidation.boundaryEdges} N:${parts.coreValidation.nonManifoldEdges}`);
+                    parts.surfaceGroups.forEach(part => {
+                        const totals = part.validations.reduce((acc, validation) => {
+                            acc.boundaryEdges += validation.boundaryEdges;
+                            acc.nonManifoldEdges += validation.nonManifoldEdges;
+                            return acc;
+                        }, { boundaryEdges: 0, nonManifoldEdges: 0 });
+                        if (totals.boundaryEdges || totals.nonManifoldEdges) {
+                            warnBits.push(`${part.name} B:${totals.boundaryEdges} N:${totals.nonManifoldEdges}`);
+                        }
+                    });
+                    if (cfg.requestedPatternDepthCm > cfg.patternDepthCm + 1e-6) warnBits.push(`Depth clamped to ${(cfg.patternDepthCm * 10).toFixed(1)} mm`);
+
+                    const activeStates = parts.surfaceGroups.map(part => `${part.name} (${part.meshes.length})`).join(', ') || 'Core only';
+                    const suffix = warnBits.length ? ` | ${warnBits.join(' | ')}` : ``;
+                    setStatus(`field+distortion preview | Depth ${(cfg.patternDepthCm * 10).toFixed(1)} mm | ${activeStates}${suffix}`, warnBits.length ? 'warn' : '');
+                } else {
+                    const meshData = cfg.sys === 'cylindrical' ? generateCylindrical(cfg) : generateSpherical(cfg);
+                    const geometry = new THREE.BufferGeometry();
+                    geometry.setAttribute('position', new THREE.Float32BufferAttribute(meshData.vertices, 3));
+                    if (meshData.colors && meshData.colors.length === meshData.vertices.length) {
+                        geometry.setAttribute('color', new THREE.Float32BufferAttribute(meshData.colors, 3));
+                    }
+                    geometry.setIndex(meshData.indices);
+                    geometry.computeVertexNormals();
+                    const material = new THREE.MeshStandardMaterial({ vertexColors: !!meshData.colors, side: THREE.DoubleSide, roughness: 0.7, metalness: 0.1 });
+                    currentObject = new THREE.Mesh(geometry, material);
+                    scene.add(currentObject);
+                    setStatus("Preview generated.", '');
+                }
+            } catch (err) {
+                console.error(err);
+                setStatus("Error: invalid equation or geometry failure.", 'error');
+            }
+        }, 30);
+    }
+
+    function chooseColor(cfg, theta, z, phi, v) {
+        const palette = [
+            hexToRgb01(cfg.baseColor),
+            hexToRgb01(cfg.patternColor1),
+            hexToRgb01(cfg.patternColor2),
+            hexToRgb01(cfg.overlapColor)
+        ];
+        if (cfg.sys === 'cylindrical' && cfg.isPot && z <= cfg.cylBase + 1e-6) {
+            return palette[0];
+        }
+        const coords = getModifiedCoords(cfg, theta, z, phi, v, 'pattern');
+        const maskA = secureEval(cfg.patternEq1, coords.theta, coords.z, coords.phi, coords.v, 0, true) > 0;
+        const maskB = secureEval(cfg.patternEq2, coords.theta, coords.z, coords.phi, coords.v, 0, true) > 0;
+        const state = (maskA ? 1 : 0) + (maskB ? 2 : 0);
+        return palette[state];
+    }
+
+    function generateCylindrical(cfg) {
+        const vertices = [], indices = [], colors = [];
+        const addV = (x, y, z, color) => {
+            vertices.push(x, y, z);
+            colors.push(color[0], color[1], color[2]);
+            return (vertices.length / 3) - 1;
+        };
+
+        let oRings = [], iRings = [];
+        const actualBase = cfg.isPot ? cfg.cylBase : 0;
+        const actualDrain = cfg.isPot ? cfg.cylDrain : 0;
+
+        for (let iv = 0; iv <= cfg.resV; iv++) {
+            const zO = cfg.h * (iv / cfg.resV);
+            const zI = actualBase + (cfg.h - actualBase) * (iv / cfg.resV);
+            const v = iv / cfg.resV;
+            let oR = [], iR = [];
+
+            for (let it = 0; it < cfg.resT; it++) {
+                const theta = (2 * Math.PI * it) / cfg.resT;
+                const rBaseOuter = evalFieldWithModifier(cfg.eq, cfg, theta, zO, 0, v, cfg.R, false, 'base');
+                const rBaseInner = evalFieldWithModifier(cfg.eq, cfg, theta, zI, 0, v, cfg.R, false, 'base');
+                const texDisp = evalFieldWithModifier(cfg.texEq, cfg, theta, zO, 0, v, 0, true, 'texture');
+
+                const rOut = rBaseOuter + (texDisp * cfg.texInt);
+                const rIn = Math.max(0.1, rBaseInner - cfg.w);
+
+                const outerColor = chooseColor(cfg, theta, zO, 0, v);
+                const outerPt = applyDistortionPoint(cfg, { x: rOut * Math.cos(theta), y: zO, z: -rOut * Math.sin(theta) }, theta, zO, 0, v);
+                const innerPt = applyDistortionPoint(cfg, { x: rIn * Math.cos(theta), y: zI, z: -rIn * Math.sin(theta) }, theta, zI, 0, v);
+                oR.push(addV(outerPt.x, outerPt.y, outerPt.z, outerColor));
+                iR.push(addV(innerPt.x, innerPt.y, innerPt.z, outerColor));
+            }
+            oRings.push(oR);
+            iRings.push(iR);
+        }
+
+        let hB = [], hT = [];
+        for (let it = 0; it < cfg.resT; it++) {
+            const theta = (2 * Math.PI * it) / cfg.resT;
+            const holeColor = hexToRgb01(cfg.baseColor);
+            const bottomPt = applyDistortionPoint(cfg, { x: actualDrain * Math.cos(theta), y: 0, z: -actualDrain * Math.sin(theta) }, theta, 0, 0, 0);
+            const topHoleV = cfg.h > 1e-9 ? actualBase / cfg.h : 0;
+            const topPt = applyDistortionPoint(cfg, { x: actualDrain * Math.cos(theta), y: actualBase, z: -actualDrain * Math.sin(theta) }, theta, actualBase, 0, topHoleV);
+            hB.push(addV(bottomPt.x, bottomPt.y, bottomPt.z, holeColor));
+            hT.push(addV(topPt.x, topPt.y, topPt.z, holeColor));
+        }
+
+        for (let it = 0; it < cfg.resT; it++) {
+            const it1 = (it + 1) % cfg.resT;
+
+            for (let iv = 0; iv < cfg.resV; iv++) {
+                indices.push(oRings[iv][it], oRings[iv + 1][it], oRings[iv + 1][it1], oRings[iv][it], oRings[iv + 1][it1], oRings[iv][it1]);
+                indices.push(iRings[iv][it], iRings[iv][it1], iRings[iv + 1][it1], iRings[iv][it], iRings[iv + 1][it1], iRings[iv + 1][it]);
+            }
+            indices.push(oRings[cfg.resV][it], iRings[cfg.resV][it], iRings[cfg.resV][it1], oRings[cfg.resV][it], iRings[cfg.resV][it1], oRings[cfg.resV][it1]);
+
+            if (cfg.isPot && cfg.cylDrain > 0) {
+                indices.push(oRings[0][it], hB[it1], hB[it], oRings[0][it], oRings[0][it1], hB[it1]);
+                indices.push(iRings[0][it], hT[it], hT[it1], iRings[0][it], hT[it1], iRings[0][it1]);
+                indices.push(hB[it], hB[it1], hT[it1], hB[it], hT[it1], hT[it]);
+            } else {
+                indices.push(oRings[0][it], oRings[0][it1], iRings[0][it1], oRings[0][it], iRings[0][it1], iRings[0][it]);
+            }
+        }
+        return { vertices, indices, colors };
+    }
+
+    function generateSpherical(cfg) {
+        const vertices = [], indices = [], colors = [];
+        let minY = Infinity;
+
+        const phiStart = cfg.isPot ? cfg.sphTopCut : 0.001;
+        const phiEnd = cfg.isPot ? cfg.sphBotCut : Math.PI - 0.001;
+        const flatBottomY = cfg.R * Math.cos(cfg.sphBotFlatten);
+
+        let oRings = [], iRings = [];
+        for (let iv = 0; iv <= cfg.resV; iv++) {
+            const phi = phiStart + (phiEnd - phiStart) * (iv / cfg.resV);
+            const v = (phi - phiEnd) / (phiStart - phiEnd);
+            const oR = [], iR = [];
+
+            for (let it = 0; it < cfg.resT; it++) {
+                const theta = (2 * Math.PI * it) / cfg.resT;
+                const rBaseOuter = evalFieldWithModifier(cfg.eq, cfg, theta, 0, phi, v, cfg.R, false, 'base');
+                const texDisp = evalFieldWithModifier(cfg.texEq, cfg, theta, 0, phi, v, 0, true, 'texture');
+
+                const rOut = rBaseOuter + (texDisp * cfg.texInt);
+                const rIn = Math.max(0.1, rBaseOuter - cfg.w);
+
+                let oX = rOut * Math.sin(phi) * Math.cos(theta);
+                let oZ = rOut * Math.sin(phi) * Math.sin(theta);
+                let oY = rOut * Math.cos(phi);
+
+                let iX = rIn * Math.sin(phi) * Math.cos(theta);
+                let iZ = rIn * Math.sin(phi) * Math.sin(theta);
+                let iY = rIn * Math.cos(phi);
+
+                if (cfg.isPot && (phi >= cfg.sphBotFlatten || oY < flatBottomY)) {
+                    oY = flatBottomY;
+                    iY = flatBottomY + cfg.w;
+                }
+
+                const outerColor = chooseColor(cfg, theta, 0, phi, v);
+                const outerPt = applyDistortionPoint(cfg, { x: oX, y: oY, z: -oZ }, theta, 0, phi, v);
+                const innerPt = applyDistortionPoint(cfg, { x: iX, y: iY, z: -iZ }, theta, 0, phi, v);
+
+                if (!isNaN(outerPt.y) && outerPt.y < minY) minY = outerPt.y;
+                oR.push({ x: outerPt.x, y: outerPt.y, z: outerPt.z, c: outerColor });
+                iR.push({ x: innerPt.x, y: innerPt.y, z: innerPt.z, c: outerColor });
+            }
+            oRings.push(oR);
+            iRings.push(iR);
+        }
+
+        if (minY === Infinity) minY = -cfg.R;
+
+        const addV = (pt) => {
+            vertices.push(pt.x, pt.y - minY, pt.z);
+            colors.push(pt.c[0], pt.c[1], pt.c[2]);
+            return (vertices.length / 3) - 1;
+        };
+
+        let oIdx = [], iIdx = [];
+        for (let iv = 0; iv <= cfg.resV; iv++) {
+            let oRow = [], iRow = [];
+            for (let it = 0; it < cfg.resT; it++) {
+                oRow.push(addV(oRings[iv][it]));
+                iRow.push(addV(iRings[iv][it]));
+            }
+            oIdx.push(oRow);
+            iIdx.push(iRow);
+        }
+
+        for (let it = 0; it < cfg.resT; it++) {
+            const it1 = (it + 1) % cfg.resT;
+            for (let iv = 0; iv < cfg.resV; iv++) {
+                indices.push(oIdx[iv][it], oIdx[iv + 1][it], oIdx[iv + 1][it1], oIdx[iv][it], oIdx[iv + 1][it1], oIdx[iv][it1]);
+                indices.push(iIdx[iv][it], iIdx[iv][it1], iIdx[iv + 1][it1], iIdx[iv][it], iIdx[iv + 1][it1], iIdx[iv + 1][it]);
+            }
+            indices.push(oIdx[0][it], oIdx[0][it1], iIdx[0][it1], oIdx[0][it], iIdx[0][it1], iIdx[0][it]);
+            indices.push(oIdx[cfg.resV][it], iIdx[cfg.resV][it], iIdx[cfg.resV][it1], oIdx[cfg.resV][it], iIdx[cfg.resV][it1], oIdx[cfg.resV][it1]);
+        }
+        return { vertices, indices, colors };
+    }
+
+    function exportSTL() {
+        try {
+            const cfg = getConfig();
+            const meshData = cfg.sys === 'cylindrical' ? generateCylindrical(cfg) : generateSpherical(cfg);
+            const v = meshData.vertices;
+            const idx = meshData.indices;
+            const numTriangles = idx.length / 3;
+
+            const buffer = new ArrayBuffer(84 + numTriangles * 50);
+            const view = new DataView(buffer);
+            view.setUint32(80, numTriangles, true);
+
+            let offset = 84;
+            for (let i = 0; i < idx.length; i += 3) {
+                view.setFloat32(offset, 0, true); offset += 12;
+                for (let j = 0; j < 3; j++) {
+                    const vIdx = idx[i + j] * 3;
+                    view.setFloat32(offset, v[vIdx] * 10, true);
+                    view.setFloat32(offset + 4, v[vIdx + 1] * 10, true);
+                    view.setFloat32(offset + 8, v[vIdx + 2] * 10, true);
+                    offset += 12;
+                }
+                view.setUint16(offset, 0, true); offset += 2;
+            }
+
+            const blob = new Blob([buffer], { type: 'application/octet-stream' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${buildExportStem(cfg, false)}.stl`;
+            link.click();
+            setStatus("STL exported. STL carries geometry only, not multi-part assembly.", 'warn');
+        } catch (err) {
+            console.error(err);
+            setStatus("STL export failed.", 'error');
+        }
+    }
+
+    function to3mfDisplayColor(hex) {
+        const clean = String(hex || '#000000').trim().replace('#', '').toUpperCase();
+        return `#${(clean.length >= 6 ? clean.slice(0, 6) : clean.padEnd(6, '0'))}`;
+    }
+
+    function colorGroupColorXml(colorHex) {
+        return `<m:color color="${to3mfDisplayColor(colorHex)}" />`;
+    }
+
+    function meshTo3mfObjectXml(id, name, mesh, pid = null, pindex = null) {
+        const verticesXml = [];
+        for (let i = 0; i < mesh.positions.length; i += 3) {
+            verticesXml.push(`<vertex x="${(mesh.positions[i] * 10).toFixed(5)}" y="${(mesh.positions[i + 1] * 10).toFixed(5)}" z="${(mesh.positions[i + 2] * 10).toFixed(5)}" />`);
+        }
+
+        const trianglesXml = [];
+        const propertyAttrs = (pid !== null && pindex !== null)
+            ? ` pid="${pid}" p1="${pindex}" p2="${pindex}" p3="${pindex}"`
+            : '';
+
+        for (let i = 0; i < mesh.indices.length; i += 3) {
+            trianglesXml.push(`<triangle v1="${mesh.indices[i]}" v2="${mesh.indices[i + 1]}" v3="${mesh.indices[i + 2]}"${propertyAttrs} />`);
+        }
+
+        return `
+  <object id="${id}" type="model" name="${name}">
+    <mesh>
+      <vertices>
+        ${verticesXml.join('')}
+      </vertices>
+      <triangles>
+        ${trianglesXml.join('')}
+      </triangles>
+    </mesh>
+  </object>`;
+    }
+
+    async function exportMultiPart3MF() {
+        try {
+            const cfg = getConfig();
+            const parts = buildMultipartMeshes(cfg);
+            const cleanSurfaceGroups = parts.surfaceGroups.every(part =>
+                part.validations.every(v => !v.boundaryEdges && !v.nonManifoldEdges) &&
+                !part.mergedValidation.boundaryEdges &&
+                !part.mergedValidation.nonManifoldEdges
+            );
+
+            const allowCoreEdgeCase =
+                parts.coreValidation.boundaryEdges === 0 &&
+                parts.coreValidation.nonManifoldEdges > 0 &&
+                cleanSurfaceGroups;
+
+            const blockingIssues = [];
+            if (parts.coreValidation.boundaryEdges || (parts.coreValidation.nonManifoldEdges && !allowCoreEdgeCase)) {
+                blockingIssues.push(`Core B:${parts.coreValidation.boundaryEdges} N:${parts.coreValidation.nonManifoldEdges}`);
+            }
+            parts.surfaceGroups.forEach(part => {
+                part.validations.forEach((validation, idx) => {
+                    if (validation.boundaryEdges || validation.nonManifoldEdges) {
+                        blockingIssues.push(`${part.name} ${idx + 1} B:${validation.boundaryEdges} N:${validation.nonManifoldEdges}`);
+                    }
+                });
+                if (part.mergedValidation.boundaryEdges || part.mergedValidation.nonManifoldEdges) {
+                    blockingIssues.push(`${part.name} merged B:${part.mergedValidation.boundaryEdges} N:${part.mergedValidation.nonManifoldEdges}`);
+                }
+            });
+            if (blockingIssues.length) {
+                setStatus(`Export stopped. ${blockingIssues.join(' | ')}`, 'error');
+                return;
+            }
+
+            const resources = [];
+            const colorGroupId = 1;
+            resources.push(`
+  <m:colorgroup id="${colorGroupId}">
+    ${colorGroupColorXml(cfg.baseColor)}
+    ${colorGroupColorXml(cfg.patternColor1)}
+    ${colorGroupColorXml(cfg.patternColor2)}
+    ${colorGroupColorXml(cfg.overlapColor)}
+  </m:colorgroup>`);
+
+            const stateToColorIndex = { 1: 1, 2: 2, 3: 3 };
+
+            let nextObjectId = 2;
+            resources.push(meshTo3mfObjectXml(nextObjectId, 'Base', parts.coreMesh, colorGroupId, 0));
+            const componentIds = [nextObjectId];
+            nextObjectId += 1;
+
+            parts.surfaceGroups.forEach(part => {
+                if (!part.mergedMesh.indices.length) return;
+                const colorIndex = Object.prototype.hasOwnProperty.call(stateToColorIndex, part.state) ? stateToColorIndex[part.state] : null;
+                resources.push(meshTo3mfObjectXml(nextObjectId, part.name, part.mergedMesh, colorGroupId, colorIndex));
+                componentIds.push(nextObjectId);
+                nextObjectId += 1;
+            });
+
+            const assemblyId = nextObjectId;
+            const componentsXml = componentIds.map(id => `<component objectid="${id}" />`).join('');
+            resources.push(`
+  <object id="${assemblyId}" type="model" name="Pot Assembly">
+    <components>
+      ${componentsXml}
+    </components>
+  </object>`);
+
+            const modelXml = `<?xml version="1.0" encoding="UTF-8"?>
+<model unit="millimeter" xml:lang="en-US"
+       xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"
+       xmlns:m="http://schemas.microsoft.com/3dmanufacturing/material/2015/02"
+       requiredextensions="m">
+  <resources>
+    ${resources.join('')}
+  </resources>
+  <build>
+    <item objectid="${assemblyId}" />
+  </build>
+</model>`;
+
+            const contentTypesXml = `<?xml version="1.0" encoding="UTF-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml" />
+  <Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml" />
+  <Override PartName="/3D/3dmodel.model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml" />
+</Types>`;
+
+            const relsXml = `<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Target="/3D/3dmodel.model" Id="rel0" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel" />
+</Relationships>`;
+
+            const zip = new JSZip();
+            zip.file('[Content_Types].xml', contentTypesXml);
+            zip.folder('_rels').file('.rels', relsXml);
+            zip.folder('3D').file('3dmodel.model', modelXml);
+
+            const blob = await zip.generateAsync({ type: 'blob', mimeType: 'model/3mf' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${buildExportStem(cfg, true)}_multipart.3mf`;
+            link.click();
+
+            const groupSummary = parts.surfaceGroups.map(part => `${part.name} ${part.meshes.length}`).join(' | ');
+            const summaryBits = [`Core ${parts.coreValidation.triangles} tris`];
+            if (groupSummary) summaryBits.push(groupSummary);
+            const exportNote = allowCoreEdgeCase ? 'edge-case export allowed' : 'manifold check passed';
+            setStatus(`3MF exported | ${summaryBits.join(' | ')} | ${exportNote}`, allowCoreEdgeCase ? 'warn' : '');
+        } catch (err) {
+            console.error(err);
+            setStatus("3MF export failed.", 'error');
+        }
+    }
+
+</script>
+</body>
+</html>
