@@ -142,14 +142,19 @@
         }
         .ai-modal-actions {
             display: flex;
-            justify-content: flex-end;
+            justify-content: stretch;
             gap: 10px;
             margin-top: 12px;
         }
         .ai-modal-actions button {
-            width: auto;
-            min-width: 120px;
+            flex: 1 1 0;
+            width: 100%;
+            min-width: 0;
             margin-top: 0;
+            background: var(--highlight);
+        }
+        .ai-json-feedback {
+            min-height: 1.15em;
         }
         #status { position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.74); color: white; padding: 8px 18px; border-radius: 20px; font-size: 12px; pointer-events: none; max-width: calc(100% - 40px); }
         #generationNotice {
@@ -563,12 +568,11 @@
             <label for="aiJsonInput">AI JSON Snippet</label>
             <textarea id="aiJsonInput" class="ai-json-input" placeholder="Paste the generated JSON here, drop a file above, then click Apply JSON..."></textarea>
         </div>
-        <div id="aiJsonFeedback" class="desc-text">Supported sections: name, base, structure, plate, texture, patterns, mesh, modifier, and distortion.</div>
+        <div id="aiJsonFeedback" class="desc-text ai-json-feedback"></div>
         <div class="ai-modal-actions">
-            <button type="button" class="btn-preview" onclick="downloadAIPrompt()">Download Prompt</button>
-            <button type="button" class="btn-preview" onclick="loadExampleAIJson()">Load Example</button>
             <button type="button" class="btn-ai" onclick="applyAIJson()">Apply JSON</button>
-            <button type="button" class="btn-reset" onclick="closeAIAssistanceWindow()">Close</button>
+            <button type="button" class="btn-ai" onclick="downloadCurrentSettingsJson()">Download Current Settings</button>
+            <button type="button" class="btn-ai" onclick="downloadAIPrompt()">Download Prompt</button>
         </div>
     </div>
 </div>
@@ -1245,7 +1249,7 @@ const distortionPresets = {
     const AI_PROMPT_SOURCE_URL = 'https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/EquationGeneratorPrompt.txt';
     const AI_PROMPT_RAW_URL = 'https://raw.githubusercontent.com/arkadiraf/Equation-Driven-Pots/main/EquationGeneratorPrompt.txt';
     const AI_JSON_EXAMPLE = JSON.stringify(AI_JSON_EXAMPLE_OBJECT, null, 2);
-    const AI_JSON_SUPPORT_TEXT = 'Supported sections: name, base, structure, plate, texture, patterns, mesh, modifier, and distortion.';
+    const AI_JSON_SUPPORT_TEXT = '';
 
     function setAIJsonFeedback(message, kind = '') {
         const feedback = document.getElementById('aiJsonFeedback');
@@ -1310,6 +1314,118 @@ const distortionPresets = {
         if (!input) return;
         input.value = AI_JSON_EXAMPLE;
         setAIJsonFeedback('Example JSON loaded. Click Apply JSON to populate the designer.', 'success');
+    }
+
+    function getFieldStringValue(id, fallback = '') {
+        const el = document.getElementById(id);
+        if (!el) return fallback;
+        const value = String(el.value ?? '').trim();
+        return value || fallback;
+    }
+
+    function getFieldNumberValue(id, fallback = 0) {
+        const rawValue = getFieldStringValue(id, '');
+        if (!rawValue) return fallback;
+        const numericValue = Number(rawValue);
+        return Number.isFinite(numericValue) ? numericValue : fallback;
+    }
+
+    function getCurrentPotDisplayName() {
+        return normalizePotName(
+            getConfiguredPotName()
+            || selectedOptionText('presetSelect', '')
+            || 'Current Pot'
+        ) || 'Current Pot';
+    }
+
+    function getCurrentDesignerConfig() {
+        const currentName = getCurrentPotDisplayName();
+        const coordSystem = getFieldStringValue('coordSystem', 'cylindrical');
+        const modelMode = getFieldStringValue('modelMode', 'pot');
+        return {
+            name: currentName,
+            base: {
+                coordSystem,
+                baseType: getFieldStringValue('baseTypeSelect', coordSystem === 'spherical' ? 'primitive' : 'primitive'),
+                preset: selectedOptionText('presetSelect', 'Circle (Pure Base)'),
+                equation: getFieldStringValue('equation', 'R'),
+                baseRadius: getFieldNumberValue('baseRadius', 5),
+                height: getFieldNumberValue('height', 10)
+            },
+            structure: {
+                modelMode,
+                wall: getFieldNumberValue('wall', 0.35),
+                bottomThickness: getFieldNumberValue('bottomThickness', 0.5),
+                cylDrain: getFieldNumberValue('cylDrain', 0.5),
+                sphTopCut: getFieldNumberValue('sphTopCut', 25),
+                sphBotFlatten: getFieldNumberValue('sphBotFlatten', 150),
+                sphBotCut: getFieldNumberValue('sphBotCut', 175)
+            },
+            plate: {
+                enabled: modelMode === 'plate' || modelMode === 'potplate',
+                plateHeight: getFieldNumberValue('plateHeight', 1.5),
+                plateOpeningAngle: getFieldNumberValue('plateOpeningAngle', 25),
+                plateRadiusExtra: getFieldNumberValue('plateRadiusExtra', 0.5)
+            },
+            texture: {
+                type: getFieldStringValue('texTypeSelect', 'utility'),
+                preset: selectedOptionText('texPresetSelect', 'None (Flat Surface)'),
+                equation: getFieldStringValue('texEquation', '0'),
+                intensity: getFieldNumberValue('texIntensity', 0.15)
+            },
+            patterns: {
+                preset1: selectedOptionText('patternPresetSelect1', 'None (Solid Base Color)'),
+                equation1: getFieldStringValue('patternEquation1', '-1'),
+                preset2: selectedOptionText('patternPresetSelect2', 'None (Solid Base Color)'),
+                equation2: getFieldStringValue('patternEquation2', '-1'),
+                baseColor: getFieldStringValue('baseColor', '#0f4d80'),
+                patternColor1: getFieldStringValue('patternColor1', '#ff7062'),
+                patternColor2: getFieldStringValue('patternColor2', '#5f4a8b'),
+                overlapColor: getFieldStringValue('overlapColor', '#8ab04d'),
+                depthMm: getFieldNumberValue('patternDepthMm', 1.2)
+            },
+            mesh: {
+                resV: getFieldNumberValue('resV', 120),
+                resT: getFieldNumberValue('resT', 180),
+                patternResV: getFieldNumberValue('patternResV', 120),
+                patternResT: getFieldNumberValue('patternResT', 180)
+            },
+            modifier: {
+                type: getFieldStringValue('modifierTypeSelect', 'utility'),
+                preset: selectedOptionText('modifierPresetSelect', 'None (No Modifier)'),
+                equation: getFieldStringValue('modifierEquation', '0'),
+                strength: getFieldNumberValue('modifierStrength', 0),
+                target: getFieldStringValue('modifierTarget', 'base')
+            },
+            distortion: {
+                type: getFieldStringValue('distortionType', 'utility'),
+                preset: selectedOptionText('distortionPresetSelect', 'None (No Distortion)'),
+                dx: getFieldStringValue('distortionDx', '0'),
+                dy: getFieldStringValue('distortionDy', '0'),
+                dz: getFieldStringValue('distortionDz', '0'),
+                strength: getFieldNumberValue('distortionStrength', 0),
+                region: getFieldStringValue('distortionRegion', 'all'),
+                anchor: getFieldStringValue('distortionAnchor', 'none'),
+                space: getFieldStringValue('distortionSpace', 'xyz')
+            }
+        };
+    }
+
+    function downloadCurrentSettingsJson() {
+        try {
+            const currentConfig = getCurrentDesignerConfig();
+            const jsonText = JSON.stringify(currentConfig, null, 2);
+            const input = document.getElementById('aiJsonInput');
+            if (input) input.value = jsonText;
+            const fileName = `${slugifyName(currentConfig.name || 'Current_Pot')}.json`;
+            downloadBlob(new Blob([jsonText], { type: 'application/json;charset=utf-8' }), fileName);
+            setAIJsonFeedback(`Current settings loaded into the JSON field and downloaded as ${fileName}.`, 'success');
+            setStatus(`Current settings downloaded | ${currentConfig.name}`, '');
+        } catch (error) {
+            console.error('Current settings JSON download failed:', error);
+            setAIJsonFeedback(`Could not download the current settings: ${error.message}`, 'error');
+            setStatus('Current settings could not be downloaded.', 'error');
+        }
     }
 
     function triggerAIFilePicker() {
@@ -1532,8 +1648,16 @@ const distortionPresets = {
         const mesh = getAIValue(config, ['mesh', 'resolution']) || {};
         const modifier = getAIValue(config, ['modifier', 'fieldModifier']) || {};
         const distortion = getAIValue(config, ['distortion', 'fieldDistortion']) || {};
-        const patternA = getAIValue(patterns, ['patternA', 'a', 'slot1']) || {};
-        const patternB = getAIValue(patterns, ['patternB', 'b', 'slot2']) || {};
+        const patternA = getAIValue(patterns, ['patternA', 'a', 'slot1']) || {
+            preset: getAIValue(patterns, ['preset1', 'patternPreset1']),
+            equation: getAIValue(patterns, ['equation1', 'patternEquation1']),
+            color: getAIValue(patterns, ['patternColor1', 'color1'])
+        };
+        const patternB = getAIValue(patterns, ['patternB', 'b', 'slot2']) || {
+            preset: getAIValue(patterns, ['preset2', 'patternPreset2']),
+            equation: getAIValue(patterns, ['equation2', 'patternEquation2']),
+            color: getAIValue(patterns, ['patternColor2', 'color2'])
+        };
 
         try {
             suppressPreviewUpdates = true;
