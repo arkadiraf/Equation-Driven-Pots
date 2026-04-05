@@ -110,6 +110,36 @@
             font-family: 'Courier New', monospace;
             background: #fbfcfe;
         }
+        .ai-file-dropzone {
+            margin: 0 0 12px 0;
+            padding: 14px 16px;
+            border: 2px dashed #c6d5e3;
+            border-radius: 12px;
+            background: #f8fbff;
+            color: #4d5966;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+        }
+        .ai-file-dropzone:hover,
+        .ai-file-dropzone.is-dragover {
+            border-color: var(--primary);
+            background: #eef6ff;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.08);
+        }
+        .ai-file-dropzone-title {
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 4px;
+        }
+        .ai-file-dropzone-subtitle {
+            font-size: 0.76rem;
+            line-height: 1.35;
+        }
+        .ai-file-input {
+            display: none;
+        }
         .ai-modal-actions {
             display: flex;
             justify-content: flex-end;
@@ -239,6 +269,13 @@
             .ai-modal-title { font-size: 0.9rem; }
             .ai-modal-message { font-size: 0.72rem; padding: 10px; }
             .ai-json-input { min-height: 160px; font-size: 0.66rem; }
+            .ai-file-dropzone {
+                padding: 10px 10px;
+                border-radius: 10px;
+                margin-bottom: 10px;
+            }
+            .ai-file-dropzone-title { font-size: 0.72rem; }
+            .ai-file-dropzone-subtitle { font-size: 0.62rem; }
             .ai-modal-close, .ai-modal-actions button {
                 font-size: 0.66rem;
                 padding: 8px 10px;
@@ -517,12 +554,18 @@
             <a href="https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/EquationGeneratorPrompt.txt" target="_blank" rel="noopener noreferrer">EquationGeneratorPrompt.txt</a>
             to generate the pot of your liking. When you have the generated JSON snippet, paste it into the field below.
         </p>
+        <div id="aiFileDropzone" class="ai-file-dropzone" tabindex="0" role="button" aria-label="Drop a JSON or text file here or click to browse" onclick="triggerAIFilePicker()">
+            <input id="aiJsonFileInput" class="ai-file-input" type="file" accept=".json,.jso,.txt,application/json,text/plain" onchange="handleAIFileSelection(event)">
+            <div class="ai-file-dropzone-title">Drop a .json, .jso, or .txt file here</div>
+            <div class="ai-file-dropzone-subtitle">Or click to browse. The file contents will load into the JSON field below.</div>
+        </div>
         <div class="input-group">
             <label for="aiJsonInput">AI JSON Snippet</label>
-            <textarea id="aiJsonInput" class="ai-json-input" placeholder="Paste the generated JSON here, then click Apply JSON..."></textarea>
+            <textarea id="aiJsonInput" class="ai-json-input" placeholder="Paste the generated JSON here, drop a file above, then click Apply JSON..."></textarea>
         </div>
-        <div id="aiJsonFeedback" class="desc-text">Supported sections: base, structure, texture, patterns, mesh, modifier, and distortion.</div>
+        <div id="aiJsonFeedback" class="desc-text">Supported sections: name, base, structure, plate, texture, patterns, mesh, modifier, and distortion.</div>
         <div class="ai-modal-actions">
+            <button type="button" class="btn-preview" onclick="downloadAIPrompt()">Download Prompt</button>
             <button type="button" class="btn-preview" onclick="loadExampleAIJson()">Load Example</button>
             <button type="button" class="btn-ai" onclick="applyAIJson()">Apply JSON</button>
             <button type="button" class="btn-reset" onclick="closeAIAssistanceWindow()">Close</button>
@@ -543,6 +586,7 @@
     let scene, camera, renderer, controls, currentObject = null;
     let renderTimeout = null;
     let suppressPreviewUpdates = false;
+    let aiConfiguredPotName = '';
 
 const libraries = {
     cylindrical: {
@@ -1141,12 +1185,15 @@ const distortionPresets = {
             wall: 0.38,
             bottomThickness: 0.55,
             cylDrain: 0.55,
-            plateHeight: 1.7,
-            plateOpeningAngle: 24,
-            plateRadiusExtra: 0.7,
             sphTopCut: 25,
             sphBotFlatten: 150,
             sphBotCut: 175
+        },
+        plate: {
+            enabled: true,
+            height: 1.7,
+            openingAngle: 24,
+            radiusExtra: 0.7
         },
         texture: {
             type: 'weave',
@@ -1195,12 +1242,15 @@ const distortionPresets = {
         }
     };
 
+    const AI_PROMPT_SOURCE_URL = 'https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/EquationGeneratorPrompt.txt';
+    const AI_PROMPT_RAW_URL = 'https://raw.githubusercontent.com/arkadiraf/Equation-Driven-Pots/main/EquationGeneratorPrompt.txt';
     const AI_JSON_EXAMPLE = JSON.stringify(AI_JSON_EXAMPLE_OBJECT, null, 2);
+    const AI_JSON_SUPPORT_TEXT = 'Supported sections: name, base, structure, plate, texture, patterns, mesh, modifier, and distortion.';
 
     function setAIJsonFeedback(message, kind = '') {
         const feedback = document.getElementById('aiJsonFeedback');
         if (!feedback) return;
-        feedback.innerText = message || 'Supported sections: base, structure, texture, patterns, mesh, modifier, and distortion.';
+        feedback.innerText = message || AI_JSON_SUPPORT_TEXT;
         feedback.style.color = kind === 'error' ? 'var(--danger)' : (kind === 'success' ? 'var(--success)' : '#7b8794');
         feedback.style.fontStyle = kind ? 'normal' : 'italic';
     }
@@ -1210,7 +1260,9 @@ const distortionPresets = {
         if (!overlay) return;
         overlay.classList.add('is-visible');
         document.body.style.overflow = 'hidden';
-        setAIJsonFeedback('Supported sections: base, structure, texture, patterns, mesh, modifier, and distortion.');
+        initAIFileDropzone();
+        setAIFileDropzoneState(false);
+        setAIJsonFeedback(AI_JSON_SUPPORT_TEXT);
         const input = document.getElementById('aiJsonInput');
         if (input) input.focus();
     }
@@ -1220,6 +1272,7 @@ const distortionPresets = {
         if (!overlay) return;
         overlay.classList.remove('is-visible');
         document.body.style.overflow = '';
+        setAIFileDropzoneState(false);
     }
 
     function handleAIAssistanceOverlayClick(event) {
@@ -1228,11 +1281,123 @@ const distortionPresets = {
         }
     }
 
+    async function downloadAIPrompt() {
+        setAIJsonFeedback('Fetching the AI prompt for download...');
+        setStatus('Fetching AI prompt...', '');
+        try {
+            const response = await fetch(AI_PROMPT_RAW_URL, { cache: 'no-store' });
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            const promptText = await response.text();
+            if (!String(promptText || '').trim()) {
+                throw new Error('The prompt file was empty.');
+            }
+            const normalizedText = String(promptText).replace(/\r\n/g, '\n');
+            downloadBlob(new Blob([normalizedText], { type: 'text/plain;charset=utf-8' }), 'EquationGeneratorPrompt.txt');
+            setAIJsonFeedback('Prompt downloaded as EquationGeneratorPrompt.txt.', 'success');
+            setStatus('AI prompt downloaded.', '');
+        } catch (error) {
+            console.error('AI prompt download failed:', error);
+            setAIJsonFeedback(`Could not download the prompt automatically: ${error.message}`, 'error');
+            setStatus('AI prompt download failed.', 'error');
+            window.open(AI_PROMPT_SOURCE_URL, '_blank', 'noopener,noreferrer');
+        }
+    }
+
     function loadExampleAIJson() {
         const input = document.getElementById('aiJsonInput');
         if (!input) return;
         input.value = AI_JSON_EXAMPLE;
         setAIJsonFeedback('Example JSON loaded. Click Apply JSON to populate the designer.', 'success');
+    }
+
+    function triggerAIFilePicker() {
+        const input = document.getElementById('aiJsonFileInput');
+        if (input) input.click();
+    }
+
+    function setAIFileDropzoneState(isDragOver) {
+        const dropzone = document.getElementById('aiFileDropzone');
+        if (!dropzone) return;
+        dropzone.classList.toggle('is-dragover', !!isDragOver);
+    }
+
+    function loadAIJsonText(rawText, sourceLabel = 'file') {
+        const input = document.getElementById('aiJsonInput');
+        if (!input) return;
+        const textValue = String(rawText || '').trim();
+        input.value = textValue;
+        if (!textValue) {
+            setAIJsonFeedback(`The selected ${sourceLabel} is empty.`, 'error');
+            setStatus('AI JSON file is empty.', 'error');
+            return;
+        }
+        const label = sourceLabel.charAt(0).toUpperCase() + sourceLabel.slice(1);
+        try {
+            JSON.parse(textValue);
+            setAIJsonFeedback(`${label} loaded. Click Apply JSON to populate the designer.`, 'success');
+            setStatus('AI JSON file loaded.', '');
+        } catch (error) {
+            setAIJsonFeedback(`${label} loaded, but it is not valid JSON yet: ${error.message}`, 'error');
+            setStatus('AI JSON file loaded with parse errors.', 'warn');
+        }
+    }
+
+    function readAIJsonFile(file) {
+        if (!file) return;
+        const fileName = String(file.name || 'file');
+        const lowerName = fileName.toLowerCase();
+        if (!(/\.(json|jso|txt)$/i.test(lowerName))) {
+            setAIJsonFeedback('Only .json, .jso, or .txt files are supported here.', 'error');
+            setStatus('Unsupported AI JSON file type.', 'error');
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+            loadAIJsonText(reader.result, `file "${fileName}"`);
+            const picker = document.getElementById('aiJsonFileInput');
+            if (picker) picker.value = '';
+        };
+        reader.onerror = () => {
+            setAIJsonFeedback(`Could not read ${fileName}. Please try again.`, 'error');
+            setStatus('AI JSON file could not be read.', 'error');
+        };
+        reader.readAsText(file);
+    }
+
+    function handleAIFileSelection(event) {
+        const files = event?.target?.files;
+        if (files && files[0]) readAIJsonFile(files[0]);
+    }
+
+    function handleAIFileDrop(event) {
+        event.preventDefault();
+        setAIFileDropzoneState(false);
+        const files = event?.dataTransfer?.files;
+        if (files && files[0]) readAIJsonFile(files[0]);
+    }
+
+    function initAIFileDropzone() {
+        const dropzone = document.getElementById('aiFileDropzone');
+        if (!dropzone || dropzone.dataset.dropInit === '1') return;
+        ['dragenter', 'dragover'].forEach((eventName) => {
+            dropzone.addEventListener(eventName, (event) => {
+                event.preventDefault();
+                setAIFileDropzoneState(true);
+            });
+        });
+        ['dragleave', 'dragend'].forEach((eventName) => {
+            dropzone.addEventListener(eventName, () => setAIFileDropzoneState(false));
+        });
+        dropzone.addEventListener('drop', handleAIFileDrop);
+        dropzone.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                triggerAIFilePicker();
+            }
+        });
+        dropzone.dataset.dropInit = '1';
     }
 
     function normalizeAIConfig(rawConfig) {
@@ -1275,6 +1440,19 @@ const distortionPresets = {
         const normalized = normalizeColorValue(value);
         if (!normalized) return false;
         return setFieldValue(id, normalized);
+    }
+
+    function normalizePotName(value) {
+        return String(value || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function setConfiguredPotName(value) {
+        aiConfiguredPotName = normalizePotName(value);
+        return aiConfiguredPotName;
+    }
+
+    function getConfiguredPotName() {
+        return normalizePotName(aiConfiguredPotName);
     }
 
     function setSelectValue(id, value) {
@@ -1348,6 +1526,7 @@ const distortionPresets = {
 
         const base = getAIValue(config, ['base']) || {};
         const structure = getAIValue(config, ['structure', 'geometry']) || {};
+        const plate = getAIValue(config, ['plate', 'optionalPlate', 'tray']) || getAIValue(structure, ['plate']) || {};
         const texture = getAIValue(config, ['texture', 'surfaceTexture']) || {};
         const patterns = getAIValue(config, ['patterns', 'colorLayer']) || {};
         const mesh = getAIValue(config, ['mesh', 'resolution']) || {};
@@ -1364,7 +1543,11 @@ const distortionPresets = {
             const coordSystem = getAIValue(base, ['coordSystem', 'system']) || getAIValue(config, ['coordSystem', 'system']);
             if (coordSystem) setSelectValue('coordSystem', coordSystem);
 
-            const modelMode = getAIValue(structure, ['modelMode', 'buildMode']) || getAIValue(config, ['modelMode', 'buildMode']);
+            const explicitModelMode = getAIValue(structure, ['modelMode', 'buildMode'])
+                || getAIValue(plate, ['modelMode', 'mode'])
+                || getAIValue(config, ['modelMode', 'buildMode']);
+            const includePlate = getAIValue(plate, ['enabled', 'include', 'includePlate', 'usePlate']);
+            const modelMode = explicitModelMode || (typeof includePlate === 'boolean' ? (includePlate ? 'potplate' : 'pot') : undefined);
             if (modelMode) {
                 populateModelModeOptions(modelMode);
                 setSelectValue('modelMode', modelMode);
@@ -1396,9 +1579,13 @@ const distortionPresets = {
             setFieldValue('sphTopCut', getAIValue(structure, ['sphTopCut', 'topCut']));
             setFieldValue('sphBotFlatten', getAIValue(structure, ['sphBotFlatten', 'botFlat', 'bottomFlatten']));
             setFieldValue('sphBotCut', getAIValue(structure, ['sphBotCut', 'botCut', 'bottomCut']));
-            setFieldValue('plateHeight', getAIValue(structure, ['plateHeight']));
-            setFieldValue('plateOpeningAngle', getAIValue(structure, ['plateOpeningAngle']));
-            setFieldValue('plateRadiusExtra', getAIValue(structure, ['plateRadiusExtra']));
+            const configuredName = getAIValue(config, ['name', 'title', 'potName', 'fileName', 'filename'])
+                || getAIValue(base, ['name', 'title']);
+            setConfiguredPotName(configuredName);
+
+            setFieldValue('plateHeight', getAIValue(plate, ['height', 'plateHeight']) ?? getAIValue(structure, ['plateHeight']));
+            setFieldValue('plateOpeningAngle', getAIValue(plate, ['openingAngle', 'plateOpeningAngle']) ?? getAIValue(structure, ['plateOpeningAngle']));
+            setFieldValue('plateRadiusExtra', getAIValue(plate, ['radiusExtra', 'plateRadiusExtra']) ?? getAIValue(structure, ['plateRadiusExtra']));
 
             const textureType = getAIValue(texture, ['type', 'textureType']);
             if (textureType) setSelectValue('texTypeSelect', textureType);
@@ -1465,9 +1652,11 @@ const distortionPresets = {
 
         suppressPreviewUpdates = false;
         updatePreview();
-        const configName = getAIValue(config, ['name', 'title']) || 'AI JSON';
-        setAIJsonFeedback(`Applied ${configName}. The form fields and equations have been updated.`, 'success');
+        const configName = getConfiguredPotName() || getAIValue(config, ['name', 'title']) || 'AI JSON';
+        const filenameNote = getConfiguredPotName() ? ` Export files will use "${getConfiguredPotName()}".` : '';
+        setAIJsonFeedback(`Applied ${configName}. The form fields and equations have been updated.${filenameNote}`, 'success');
         setStatus(`AI JSON applied | ${configName}`, '');
+        closeAIAssistanceWindow();
     }
 
     function initCollapsibleSections() {
@@ -1526,6 +1715,7 @@ const distortionPresets = {
     }
 
     function resetParameters() {
+        setConfiguredPotName('');
         document.getElementById('coordSystem').value = 'cylindrical';
         populateModelModeOptions('potplate');
         document.getElementById('modelMode').value = 'potplate';
@@ -1593,6 +1783,7 @@ const distortionPresets = {
 
     window.onload = function() {
         initThree();
+        initAIFileDropzone();
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') closeAIAssistanceWindow();
         });
@@ -1751,6 +1942,7 @@ const distortionPresets = {
             patternColor1: document.getElementById('patternColor1').value || '#ff7062',
             patternColor2: document.getElementById('patternColor2').value || '#5f4a8b',
             overlapColor: document.getElementById('overlapColor').value || '#8ab04d',
+            exportName: getConfiguredPotName(),
             requestedPatternDepthCm: requestedDepthCm,
             patternDepthCm: patternDepthCm,
             R: parseFloat(document.getElementById('baseRadius').value) || 5.0,
@@ -2304,6 +2496,13 @@ ${trianglesXml.join('\n')}
         const resolvedKind = kind === 'auto'
             ? (cfg.isPlate ? 'Plate' : ((cfg.isPot || cfg.includePlate) ? 'Pot' : 'Mesh'))
             : kind;
+
+        const rawConfiguredName = normalizePotName((cfg && (cfg.exportName || cfg.name)) || getConfiguredPotName());
+        if (rawConfiguredName) {
+            const configuredName = slugifyName(rawConfiguredName);
+            const needsKindSuffix = resolvedKind === 'Plate' || !!cfg.includePlate || kind !== 'auto';
+            return needsKindSuffix ? `${configuredName}_${slugifyName(resolvedKind)}` : configuredName;
+        }
 
         const parts = [
             resolvedKind,
