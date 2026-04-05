@@ -171,7 +171,7 @@
 <body>
 
 <div id="sidebar">
-    <h2 style="margin:0 0 8px 0; color:var(--secondary); font-size:1.15rem; line-height:1.15;">EquationDrivenPotDesigner</h2>
+    <h2 style="margin:0 0 8px 0; color:var(--secondary); font-size:1.15rem; line-height:1.15;">Equation Driven Pot Designer</h2>
 
     <div class="section-title">1. Base Scaffold</div>
     <div class="input-group">
@@ -440,30 +440,86 @@ const libraries = {
         "Hexagon": { type: "polygon", eq: "R * cos(pi/6) / cos((theta % (pi/3)) - pi/6)", desc: "Regular hexagonal cross-section." },
         "Ellipse": { type: "primitive", eq: "R / sqrt(pow(cos(theta), 2) + 2.5 * pow(sin(theta), 2))", desc: "Elliptical plan profile." },
         "Rounded Square": { type: "primitive", eq: "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125)", desc: "Superellipse / rounded-square base." },
+
         "3-Petal Flower": { type: "floral", eq: "R * (1 + 0.24 * cos(3 * theta))", desc: "Simple 3-lobed floral base." },
         "5-Petal Flower": { type: "floral", eq: "R * (1 + 0.25 * cos(5 * theta))", desc: "Simple 5-lobed floral base." },
-        "ATan Fluting": { type: "nonlinear", eq: "R * (1 + 0.16 * atan(6 * cos(10 * theta + 2*pi*v)))", desc: "Saturated flutes with flatter faces and sharper groove transitions." },
-        "Arc-Petal Crown": { type: "floral", eq: "R * (1 + 0.10 * asin(0.98 * sin(7 * theta + pi*v)))", desc: "Inverse-trig petals with clean arc-like lobes." },
+        "Soft Gourd": { type: "floral", eq: "R * (1 + 0.10 * cos(4 * theta) + 0.05 * sin(2 * theta))", desc: "Organic gourd-like section." },
+        "Pumpkin Rib": { type: "floral", eq: "R * (1 + 0.14 * cos(8 * theta))", desc: "Classic pumpkin-like ribbing." },
+        "Islamic Rosette": { type: "floral", eq: "R * (1 + 0.14 * cos(8 * theta) + 0.06 * cos(4 * theta))", desc: "Rosette-like radial section." },
+        "Opening Flower": { type: "floral", eq: "R * (1 + 0.25 * cos(5 * theta)) * (1 + 0.35 * sin(pi * z / 10))", desc: "Floral base that blossoms toward the middle." },
+        "Twisted Blossom": { type: "floral", eq: "R * (1 + 0.22 * cos(5 * theta + pi * z / 10))", desc: "Floral ridges rotating through the height." },
+        "3-to-6 Petal Morph (Bulged)": { type: "floral", eq: "R * (1 + 0.35 * sin(pi * z / 10)) * (1 + 0.25 * (((10 - z) / 10) * cos(3 * theta) + (z / 10) * cos(6 * theta)))", desc: "Cross-section morphs from 3 to 6 petals along the height." },
+        "3-to-6 Morph (Twisted)": { type: "floral", eq: "R * (1 + 0.35 * sin(pi * z / 10)) * (1 + 0.25 * (((10 - z) / 10) * cos(3 * (theta + (2*pi*z/30))) + (z / 10) * cos(6 * (theta + (2*pi*z/30)))))", desc: "3-to-6 petal morph with added twist." },
+        "Bloomfold Vase": { type: "floral", eq: "(R-1.0)+1.2*sin(pi*z/10.0)+(0.34+0.42*sin(pi*z/10.0))*(pow(cos(0.5*pi*z/10.0),2)*cos(3*theta)+1.55*pow(sin(pi*z/10.0),2)*cos(6*theta))", desc: "High-quality vase scaffold with bloomfold transitions." },
+        "Trifold Bloom Vase": { type: "floral", eq: "(R-1.0)+1.2*sin(pi*z/10.0)+(0.34+0.42*sin(pi*z/10.0))*(pow(cos(pi*z/10.0),2)*cos(3*theta)+1.55*pow(sin(pi*z/10.0),2)*cos(6*theta))", desc: "Threefold bloom with a higher-frequency crown." },
+        "Twisted Trifold Bloom": { type: "floral", eq: "(R-1.0)+1.2*sin(pi*z/10.0)+(0.34+0.42*sin(pi*z/10.0))*(pow(cos(pi*z/10.0),2)*cos(3*(theta-pi*z/15.0))+1.55*pow(sin(pi*z/10.0),2)*cos(6*(theta-pi*z/15.0)))", desc: "Twisted trifold bloom form." },
+
         "Folded Mod Panels": { type: "folded", eq: "R * (1 + 0.18 * cos(8 * abs(mod(theta + pi*v, pi/4) - pi/8)))", desc: "Wrapped angular domain creates folded, paneled symmetry." },
+        "Square Ripple": { type: "folded", eq: "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125) * (1 + 0.05 * sin(10 * z))", desc: "Rounded-square base with vertical ripple." },
+        "Gear-like": { type: "folded", eq: "R * (1 + 0.08 * cos(12 * theta))", desc: "Fine radial tooth pattern." },
+        "Column Fluting": { type: "folded", eq: "R * (1 + 0.10 * cos(12 * theta))", desc: "Architectural fluting scaffold." },
+
+        "ATan Fluting": { type: "nonlinear", eq: "R * (1 + 0.16 * atan(6 * cos(10 * theta + 2*pi*v)))", desc: "Saturated flutes with flatter faces and sharper groove transitions." },
+        "Elliptical Twist": { type: "nonlinear", eq: "R / sqrt(pow(cos(theta + z/3), 2) + 2.5 * pow(sin(theta + z/3), 2))", desc: "Elliptical base twisting through the height." },
+        "Turbine Blade": { type: "nonlinear", eq: "R * (1 + 0.18 * cos(5 * theta + 0.35 * sin(theta)))", desc: "Directional blade-like sweep." },
+        "Sharpening Top": { type: "nonlinear", eq: "R * (1 + (0.10 + 0.18 * z / 10) * cos(6 * theta))", desc: "Ridges intensify toward the top." },
+        "Antenna Migration": { type: "nonlinear", eq: "R * (1 + 0.4 * pow(z / 10.0, 1.5) * abs(cos((2 + 6 * (z / 10.0)) * theta / 2.0)))", desc: "Frequency increases along the height." },
+        "DNA Helix (S-Curve)": { type: "nonlinear", eq: "R * (1 + 0.4 * cos(2 * (theta + (1.2 * sin(2 * pi * z / 10.0)))))", desc: "Helix-like lateral flow with S-curve drift." },
+        "Compressed Wave Stack": { type: "nonlinear", eq: "R * (1 + 0.12 * atan(5 * (sin(4*theta + 3*pi*v) + 0.6*sin(9*theta - 2*pi*v))))", desc: "Nonlinear compression turns layered waves into sculptural terraces." },
+
+        "Arc-Petal Crown": { type: "floral", eq: "R * (1 + 0.10 * asin(0.98 * sin(7 * theta + pi*v)))", desc: "Inverse-trig petals with clean arc-like lobes." },
+        "Nested Warp Blossom": { type: "floral", eq: "R * (1 + 0.22 * cos(5 * (theta + 0.18*sin(3*pi*v) + 0.07*sin(11*theta))))", desc: "Domain-warped blossom with nested internal phase motion." },
+
         "Fourier Bloom": { type: "interference", eq: "R * (1 + 0.18 * (cos(3*theta) + 0.45*cos(7*theta + pi*v) + 0.20*cos(13*theta - 2*pi*v)))", desc: "Layered harmonic bloom with decaying Fourier detail." },
         "Quasi-Crystal Helix": { type: "interference", eq: "R * (1 + 0.10*cos(5*theta + 2*pi*v) + 0.07*cos(8*theta - 2*pi*sqrt(2)*v) + 0.05*cos(13*theta + pi*sqrt(3)*v))", desc: "Irrational phase mixing reduces obvious repetition." },
         "Stepped Crown Phase": { type: "folded", eq: "R * (1 + (0.05 + 0.16*exp(-pow(v - 0.85, 2)*60)) * cos(6*theta + floor(8*v)*pi/8))", desc: "Discrete phase jumps create a terraced crown effect." },
-        "Nested Warp Blossom": { type: "floral", eq: "R * (1 + 0.22 * cos(5 * (theta + 0.18*sin(3*pi*v) + 0.07*sin(11*theta))))", desc: "Domain-warped blossom with nested internal phase motion." },
-        "Compressed Wave Stack": { type: "nonlinear", eq: "R * (1 + 0.12 * atan(5 * (sin(4*theta + 3*pi*v) + 0.6*sin(9*theta - 2*pi*v))))", desc: "Nonlinear compression turns layered waves into sculptural terraces." }
+        "Wavy Ceramic": { type: "interference", eq: "R * (1 + 0.08 * cos(3 * theta) + 0.06 * sin(5 * theta))", desc: "Gentle ceramic waviness with mixed harmonics." },
+        "Accelerated Turbulence": { type: "interference", eq: "R * (1 + 0.25 * pow(z / 10.0, 1.1) * (cos(5 * theta + (pi * z / 4.0)) + 0.8 * sin(11 * theta - (pi * z / 8.0))))", desc: "High-energy profile growth through the height." },
+        "Fractal Growth": { type: "interference", eq: "R * (1 + (min(max((z-0.0)/2.5, 0), 1) * 0.18 * cos(3 * theta)) + (min(max((z-2.5)/2.5, 0), 1) * 0.15 * cos(6 * theta)) + (min(max((z-5.0)/2.5, 0), 1) * 0.10 * cos(12 * theta)) + (min(max((z-7.5)/2.5, 0), 1) * 0.08 * cos(24 * theta)))", desc: "Layered harmonic complexity that builds in strata." },
+        "Harmonic Oscillator": { type: "interference", eq: "R * (1 + 0.25 * abs(cos(pi * 1.0 * z / 10.0)) * cos(7 * theta))", desc: "AM-like harmonic modulation." },
+        "Harmonic Beats (AM)": { type: "interference", eq: "R * (1 + 0.3 * abs(cos(pi * 1.5 * z / 10.0)) * cos(8 * (theta + (pi * z / 20.0))))", desc: "Beating harmonic pattern with rotating phase." },
+        "Harmonic Beats (Inv)": { type: "interference", eq: "R * (1 + 0.3 * abs(cos(pi * 1.5 * (10-z) / 10.0)) * cos(8 * (theta + (pi * (10-z)/ 20.0))))", desc: "Inverted version of the beating harmonic pattern." },
+        "Harmonic Strata Modeling": { type: "interference", eq: "R + 1 * (min(max(1-abs(z-1),0),1)*cos(3*theta) + min(max(1-abs(z-3),0),1)*cos(5*theta) + min(max(1-abs(z-5),0),1)*cos(7*theta) + min(max(1-abs(z-7),0),1)*cos(9*theta) + min(max(1-abs(z-9),0),1)*cos(11*theta))", desc: "Stratified harmonic bands stacked through the height." },
+        "Spiral Triple-Helix": { type: "interference", eq: "(R + 2.0 * sin(pi * z / 10.0)) * (1 + 0.20 * cos(3 * theta + pi * z / 10.0))", desc: "Bulged helical scaffold with triple-phase motion." },
+        "DNA Double Helix": { type: "interference", eq: "R + 0.5 * sin(4 * theta + z) + 0.5 * cos(4 * theta - z)", desc: "Double-helix profile." }
     },
+
     spherical: {
         "Perfect Sphere": { type: "primitive", eq: "R", desc: "Pure spherical base field." },
         "Ellipse": { type: "primitive", eq: "R * (1 + 0.18 * cos(2 * theta) * pow(sin(phi), 1.8))", desc: "Elliptical modulation around the equator." },
+        "Equatorial Flare": { type: "primitive", eq: "R * (1 + 0.4 * exp(-pow(phi-1.57, 2)*10))", desc: "Bulges near the equator." },
+        "Hourglass / Peanut": { type: "primitive", eq: "R * (1 - 0.25 * sin(2 * phi))", desc: "Pinched midsection with peanut-like symmetry." },
+
         "Dipole (Two Petals)": { type: "floral", eq: "R * (1 + 0.24 * cos(2 * theta) * pow(sin(phi), 1.5))", desc: "Two-lobed spherical base." },
         "3-Petal Flower": { type: "floral", eq: "R * (1 + 0.22 * cos(3 * theta) * pow(sin(phi), 1.5))", desc: "Three-petal spherical modulation." },
         "5-Petal Flower": { type: "floral", eq: "R * (1 + 0.20 * cos(5 * theta) * pow(sin(phi), 1.5))", desc: "Five-petal spherical modulation." },
         "Pumpkin Lobes": { type: "floral", eq: "R * (1 + 0.15 * cos(8 * theta))", desc: "Simple rounded lobes." },
         "Arc-Lobed Shell": { type: "floral", eq: "R * (1 + 0.12 * pow(sin(phi), 1.8) * asin(0.96 * sin(7*theta)) + 0.03*cos(5*phi))", desc: "Arc-shaped lobes concentrated around the equator." },
-        "ATan Geode": { type: "nonlinear", eq: "R * (1 + 0.08 * atan(8 * (cos(10*theta + 7*phi) + cos(10*theta - 7*phi))))", desc: "Nonlinear ridge compression for geode-like faceting." },
+        "Starfruit": { type: "floral", eq: "R * (1 + 0.25 * cos(5 * theta) * sin(phi))", desc: "Five-point spherical ridges." },
+
+        "Dragon Egg": { type: "folded", eq: "R * (1 + 0.08 * cos(10*theta + 8*phi) + 0.08 * cos(10*theta - 8*phi))", desc: "Diamond-scale scaffold." },
+        "Aerospace Isogrid": { type: "folded", eq: "R * (1 + 0.08 * max(cos(12*theta + 10*phi), cos(12*theta - 10*phi)))", desc: "Structural diagrid shell." },
+        "Crystalline Geode": { type: "folded", eq: "R * (1 + 0.08 * (abs(sin(5*theta)) + abs(cos(5*theta))) * (abs(sin(4*phi)) + abs(cos(4*phi))))", desc: "Faceted crystalline surface." },
+        "Overlapping Armor Scales": { type: "folded", eq: "R * (1 + 0.12 * pow(max(0, sin(10*theta - 6*phi)), 2) * sin(phi))", desc: "Scale-like outer pattern." },
+        "Twisted Hex Vortex": { type: "folded", eq: "R * (1 + 0.15 * cos(6 * (theta + phi*2)))", desc: "Hex-like form with rotational drift." },
+        "Ribbed Art Deco": { type: "folded", eq: "R * (1 + 0.15 * pow(cos(8*theta), 4) * sin(phi))", desc: "Art Deco style finning." },
+        "Woven Basket": { type: "folded", eq: "R * (1 + 0.05 * sin(12 * theta) * cos(8 * phi))", desc: "Woven cross-pattern shell." },
         "Modulo Meridians": { type: "folded", eq: "R * (1 + 0.10 * cos(10 * abs(mod(theta, pi/5) - pi/10)) * pow(sin(phi), 1.5))", desc: "Wrapped meridian wedges with strong rotational order." },
-        "Quasi-Spiral Shell": { type: "interference", eq: "R * (1 + 0.08*cos(13*theta - 8*phi) + 0.08*cos(8*theta + 13*phi) + 0.04*cos(21*theta - 5*phi))", desc: "Quasi-periodic spiral shell with less repetitive interference." },
+
+        "ATan Geode": { type: "nonlinear", eq: "R * (1 + 0.08 * atan(8 * (cos(10*theta + 7*phi) + cos(10*theta - 7*phi))))", desc: "Nonlinear ridge compression for geode-like faceting." },
+        "Crown Splash": { type: "nonlinear", eq: "R * (1 + 0.35 * exp(-pow(phi - 0.4, 2) * 20) * max(0, cos(14 * theta)) + 0.05 * sin(phi * 8))", desc: "Splash-like crown concentrated near the top." },
+        "Phased Array Lobe": { type: "nonlinear", eq: "R * (1 + 0.25 * pow(sin(phi), 4) * pow(cos(4*theta), 6) + 0.03 * sin(16*theta)*sin(phi))", desc: "Antenna-lobe inspired shell." },
+        "Electron Cloud": { type: "nonlinear", eq: "R * (1 + 0.3 * abs(pow(sin(phi), 3) * cos(phi) * sin(3*theta)))", desc: "Orbital-inspired bulges." },
+        "Gravity Drip": { type: "nonlinear", eq: "R * (1 + 0.2 * exp(phi - 2.5) * cos(12 * theta) * sin(phi))", desc: "Dripping lower-region modulation." },
         "Equatorial Saturation": { type: "nonlinear", eq: "R * (1 + 0.16 * exp(-pow(phi - pi/2, 2) * 8) * atan(6 * cos(8*theta)))", desc: "Compressed nonlinear lobes focused into the equatorial belt." },
-        "Irrational Weave Orb": { type: "interference", eq: "R * (1 + 0.06*cos(9*theta + sqrt(2)*7*phi) + 0.06*cos(14*theta - sqrt(3)*5*phi))", desc: "Irrational angular weave for a woven-but-nonrepeating shell." }
+
+        "Quasi-Spiral Shell": { type: "interference", eq: "R * (1 + 0.08*cos(13*theta - 8*phi) + 0.08*cos(8*theta + 13*phi) + 0.04*cos(21*theta - 5*phi))", desc: "Quasi-periodic spiral shell with less repetitive interference." },
+        "Fibonacci Spirals": { type: "interference", eq: "R * (1 + 0.08 * pow(max(0, sin(13*theta - 8*phi)), 2) + 0.08 * pow(max(0, sin(8*theta + 13*phi)), 2))", desc: "Phyllotaxis-style spiral patterning." },
+        "Wind Shear Ripples": { type: "interference", eq: "R * (1 + 0.08 * sin(12*theta) * pow(sin(phi), 2) + 0.04 * sin(24*theta - 12*phi) * sin(phi))", desc: "Sheared wave interference pattern." },
+        "Liquid Audio Interference": { type: "interference", eq: "R * (1 + 0.04 * sin(18*theta) * cos(22*phi) + 0.03 * sin(28*theta - 12*phi))", desc: "Interference-driven micro-topography." },
+        "Cellular Organic": { type: "interference", eq: "R * (1 + 0.06 * (sin(8*theta)*cos(10*phi) + sin(11*theta)*cos(5*phi)))", desc: "Organic cellular modulation." },
+        "Coral Brain": { type: "interference", eq: "R * (1 + 0.08 * sin(10 * theta + 5*phi) * sin(8 * phi))", desc: "Dense brain-coral style patterning." },
+        "Irrational Weave Orb": { type: "interference", eq: "R * (1 + 0.06*cos(9*theta + sqrt(2)*7*phi) + 0.06*cos(14*theta - sqrt(3)*5*phi))", desc: "Irrational angular weave for a woven-but-less-repetitive shell." }
     }
 };
 
@@ -988,7 +1044,7 @@ const distortionPresets = {
                 content.appendChild(section.nextSibling);
             }
 
-            const startsOpen = idx < 2;
+            const startsOpen = idx < 1;
             section.classList.toggle('is-collapsed', !startsOpen);
             title.setAttribute('role', 'button');
             title.setAttribute('tabindex', '0');
