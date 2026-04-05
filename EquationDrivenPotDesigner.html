@@ -17,31 +17,37 @@
         }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: var(--bg); overflow: hidden; }
         #sidebar {
-            width: 460px; background: var(--panel); padding: 25px;
+            width: clamp(360px, 29vw, 420px); background: var(--panel); padding: 16px 16px 14px;
             box-shadow: 2px 0 15px rgba(0,0,0,0.1); overflow-y: auto; z-index: 100; flex-shrink: 0;
         }
         #viewer-container { flex-grow: 1; background: #ffffff; position: relative; }
-        .section-title { font-size: 0.95rem; color: var(--secondary); border-bottom: 2px solid #eee; padding-bottom: 5px; margin-top: 20px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .input-group { margin-bottom: 10px; }
-        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-        .color-row { grid-template-columns: 1fr 1fr; gap: 14px; }
-        label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        input[type="number"], select, textarea { width: 100%; padding: 7px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 0.85rem; }
-        textarea { height: 72px; font-family: 'Courier New', monospace; background: #fafafa; line-height: 1.4; resize: vertical; }
-        .tex-area { border-color: var(--highlight); background: #fdfafef0; }
-        .desc-text { font-size: 0.75rem; color: #7f8c8d; font-style: italic; margin-top: -6px; margin-bottom: 10px; line-height: 1.25; }
-        .pot-toggle { background: #e8f4f8; padding: 10px; border-radius: 6px; border: 1px solid #bce0ee; display: flex; align-items: center; margin-bottom: 15px; margin-top: 15px; }
-        .pot-toggle input { width: auto; margin-right: 10px; transform: scale(1.2); cursor: pointer; }
-        .pot-toggle label { margin-bottom: 0; font-size: 0.9rem; color: var(--primary); cursor: pointer; font-weight: bold; }
-        .pot-settings { display: none; background: #fff8e1; padding: 12px; border-radius: 6px; border: 1px solid #ffe082; margin-bottom: 15px; }
+        .section-title { font-size: 0.95rem; font-weight: 700; font-family: 'Segoe UI', sans-serif; color: var(--secondary); border-bottom: 1px solid #e7eaee; padding: 3px 36px 3px 0; margin-top: 8px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.35px; cursor: pointer; position: relative; user-select: none; }
+        .section-title::after { content: '▾'; position: absolute; right: 0; top: 50%; transform: translateY(-52%); font-size: 1.35rem; font-weight: 700; color: #7f8c8d; transition: transform 0.18s ease; line-height: 1; }
+        .collapsible-section.is-collapsed > .section-title::after { transform: translateY(-52%) rotate(-90deg); }
+        .collapsible-content { overflow: hidden; transition: max-height 0.22s ease, opacity 0.18s ease; max-height: 2400px; opacity: 1; }
+        .collapsible-section.is-collapsed > .collapsible-content { max-height: 0; opacity: 0; margin: 0; pointer-events: none; }
+        .collapsible-section.is-collapsed > .section-title { margin-bottom: 0; }
+        .input-group { margin-bottom: 4px; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 4px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 4px; }
+        .color-row { grid-template-columns: 1fr 1fr; gap: 6px; }
+        label { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 2px; color: #4d5966; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        input[type="number"], select, textarea { width: 100%; padding: 5px 6px; border: 1px solid #d8dee6; border-radius: 6px; box-sizing: border-box; font-size: 0.8rem; font-family: 'Segoe UI', sans-serif; background: #ffffff; }
+        textarea { height: 60px; font-family: 'Courier New', monospace; background: #f2f4f7; line-height: 1.3; resize: vertical; }
+        .tex-area { border-color: #d8dee6; background: #f2f4f7; }
+        .desc-text { font-size: 0.7rem; color: #7b8794; font-style: italic; margin-top: -1px; margin-bottom: 4px; line-height: 1.15; }
+        .pot-toggle { background: #ffffff; padding: 8px; border-radius: 8px; border: 1px solid #e3e8ef; display: flex; align-items: center; margin-bottom: 10px; margin-top: 8px; }
+        .pot-toggle input { width: auto; margin-right: 10px; transform: scale(1.1); cursor: pointer; }
+        .pot-toggle label { margin-bottom: 0; font-size: 0.84rem; color: var(--primary); cursor: pointer; font-weight: 700; }
+        .pot-settings { display: none; background: transparent; padding: 0; border-radius: 0; border: none; margin-bottom: 4px; }
         .pot-settings.active { display: block; }
-        .color-chip { height: 46px; padding: 4px; width: 100%; }
-        button { width: 100%; padding: 12px; margin-top: 8px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; transition: opacity 0.2s; font-size: 0.9rem; }
+        .color-chip { height: 42px; padding: 3px; width: 100%; background: #ffffff; }
+        button { width: 100%; padding: 10px; margin-top: 6px; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; color: white; transition: opacity 0.2s; font-size: 0.86rem; }
         button:active { opacity: 0.8; }
         .btn-preview { background: var(--secondary); }
         .btn-stl { background: var(--success); }
         .btn-3mf { background: var(--export3mf); }
+        .btn-reset { background: #7f8c8d; }
         #status { position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.74); color: white; padding: 8px 18px; border-radius: 20px; font-size: 12px; pointer-events: none; max-width: calc(100% - 40px); }
         .status-error { background: rgba(231, 76, 60, 0.92) !important; }
         .status-warn { background: rgba(230, 126, 34, 0.92) !important; }
@@ -50,22 +56,23 @@
             body { height: 100dvh; }
             #sidebar {
                 width: clamp(160px, 42vw, 230px);
-                padding: 8px;
+                padding: 8px 8px 10px;
                 overflow-x: hidden;
                 -webkit-overflow-scrolling: touch;
             }
             #viewer-container { min-width: 0; }
-            h2 { font-size: 0.92rem !important; margin: 0 0 6px 0 !important; }
+            h2 { font-size: 0.88rem !important; margin: 0 0 5px 0 !important; }
             .section-title {
-                font-size: 0.64rem;
-                margin-top: 10px;
-                margin-bottom: 6px;
-                padding-bottom: 3px;
-                letter-spacing: 0.35px;
+                font-size: 0.62rem;
+                font-weight: 700;
+                margin-top: 6px;
+                margin-bottom: 3px;
+                padding: 2px 22px 2px 0;
+                letter-spacing: 0.28px;
             }
-            .input-group { margin-bottom: 4px; }
-            .grid-inputs, .grid-3 { gap: 4px; margin-bottom: 4px; }
-            .color-row { gap: 6px; }
+            .input-group { margin-bottom: 2px; }
+            .grid-inputs, .grid-3 { gap: 3px; margin-bottom: 2px; }
+            .color-row { gap: 3px; }
             label {
                 font-size: 0.58rem;
                 margin-bottom: 1px;
@@ -73,19 +80,20 @@
             }
             input[type="number"], select, textarea {
                 padding: 4px;
-                font-size: 0.72rem;
+                font-size: 0.68rem;
             }
             textarea {
-                height: 40px;
-                font-size: 0.62rem;
-                line-height: 1.15;
-                margin-bottom: 4px;
+                height: 36px;
+                font-size: 0.58rem;
+                line-height: 1.12;
+                margin-bottom: 2px;
+                background: #f2f4f7;
             }
             .desc-text {
-                font-size: 0.52rem;
-                margin-top: -2px;
-                margin-bottom: 5px;
-                line-height: 1.15;
+                font-size: 0.48rem;
+                margin-top: -1px;
+                margin-bottom: 3px;
+                line-height: 1.1;
             }
             .pot-toggle {
                 padding: 6px;
@@ -98,8 +106,9 @@
             }
             .pot-toggle label { font-size: 0.7rem; }
             .pot-settings {
-                padding: 6px;
-                margin-bottom: 8px;
+                padding: 0;
+                margin-bottom: 3px;
+                background: transparent;
             }
             .color-chip {
                 height: 28px;
@@ -107,7 +116,7 @@
             }
             button {
                 padding: 8px 2px;
-                font-size: 0.64rem;
+                font-size: 0.62rem;
                 margin-top: 4px;
             }
             #status {
@@ -132,7 +141,7 @@
 <body>
 
 <div id="sidebar">
-    <h2 style="margin-top:0; color:var(--secondary)">EquationDrivenPotDesigner</h2>
+    <h2 style="margin:0 0 8px 0; color:var(--secondary); font-size:1.15rem; line-height:1.15;">EquationDrivenPotDesigner</h2>
 
     <div class="section-title">1. Base Scaffold</div>
     <div class="input-group">
@@ -141,8 +150,15 @@
             <option value="spherical">Spherical Wrap (r, θ, φ)</option>
         </select>
     </div>
-    <div class="input-group">
-        <select id="presetSelect" onchange="applyPreset()"></select>
+    <div class="grid-inputs">
+        <div class="input-group">
+            <label>Base Type</label>
+            <select id="baseTypeSelect" onchange="onBaseTypeChange()"></select>
+        </div>
+        <div class="input-group">
+            <label>Base Option</label>
+            <select id="presetSelect" onchange="applyPreset()"></select>
+        </div>
     </div>
     <div id="baseDesc" class="desc-text"></div>
     <div class="input-group">
@@ -155,21 +171,18 @@
     </div>
 
     <div class="section-title">2. Structural Geometry</div>
-    <div class="input-group"><label>Wall Thick (cm) [Smooth Inside]</label><input type="number" id="wall" value="0.35" step="0.05" oninput="updatePreview()"></div>
-
     <div class="input-group">
         <label>Functional Build</label>
-        <select id="modelMode" onchange="onBuildModeChange()">
-            <option value="mesh">Designed Figure</option>
-            <option value="pot">Functional Pot</option>
-            <option value="plate">Functional Plate</option>
-            <option value="potplate">Pot+Plate</option>
-        </select>
+        <select id="modelMode" onchange="onBuildModeChange()"></select>
+    </div>
+
+    <div class="grid-inputs">
+        <div class="input-group"><label>Wall Thick (cm)</label><input type="number" id="wall" value="0.35" step="0.05" oninput="updatePreview()"></div>
+        <div class="input-group"><label>Bottom Thickness (cm)</label><input type="number" id="bottomThickness" value="0.5" step="0.1" min="0.1" oninput="updatePreview()"></div>
     </div>
 
     <div id="cylindricalPotSettings" class="pot-settings">
         <div class="grid-inputs">
-            <div class="input-group"><label>Base Thick (cm)</label><input type="number" id="cylBase" value="0.5" step="0.1" oninput="updatePreview()"></div>
             <div class="input-group"><label>Drain Radius (cm)</label><input type="number" id="cylDrain" value="0.5" step="0.1" oninput="updatePreview()"></div>
         </div>
     </div>
@@ -185,13 +198,88 @@
     <div id="plateSettings" class="pot-settings">
         <div class="grid-inputs">
             <div class="input-group"><label>Plate Height (cm)</label><input type="number" id="plateHeight" value="1.5" step="0.1" min="0.3" oninput="updatePreview()"></div>
+            <div class="input-group"><label>Plate Opening Angle (°)</label><input type="number" id="plateOpeningAngle" value="25" step="1" min="0" max="60" oninput="updatePreview()"></div>
         </div>
-        <div class="desc-text" style="margin:0;">Generates a closed functional plate sized from the current design footprint plus 1 cm of clearance. Plate height is now editable here. In Pot+Plate mode, the pot is raised by the plate height so it sits directly on the plate. The plate stays centered under the pot and exports as a separate object in the same 3MF file.</div>
+        <div class="grid-inputs">
+            <div class="input-group"><label>Plate Radius Extra (cm)</label><input type="number" id="plateRadiusExtra" value="0.5" step="0.1" oninput="updatePreview()"></div>
+        </div>
+    </div><div class="section-title">3. Surface Texture (External)</div>
+    <div class="grid-inputs">
+        <div class="input-group">
+            <label>Texture Type</label>
+            <select id="texTypeSelect" onchange="onTextureTypeChange()"></select>
+        </div>
+        <div class="input-group">
+            <label>Texture Option</label>
+            <select id="texPresetSelect" onchange="applyTexturePreset()"></select>
+        </div>
+    </div>
+    <div id="texDesc" class="desc-text"></div>
+    <div class="input-group">
+        <label style="color: var(--highlight)">Displacement: T(θ, <span class="varLabel">z</span>, v)</label>
+        <textarea id="texEquation" class="tex-area" oninput="updatePreview()"></textarea>
+    </div>
+    <div class="input-group">
+        <label>Texture Intensity (Multiplier)</label>
+        <input type="number" id="texIntensity" value="0.15" step="0.05" oninput="updatePreview()">
     </div>
 
+    <div class="section-title">4. Dual Pattern Color Layer</div>
+    <div class="grid-inputs">
+        <div class="input-group">
+            <label>Pattern A Preset</label>
+            <select id="patternPresetSelect1" onchange="applyPatternPreset(1)"></select>
+        </div>
+        <div class="input-group">
+            <label>Pattern B Preset</label>
+            <select id="patternPresetSelect2" onchange="applyPatternPreset(2)"></select>
+        </div>
+    </div>
+    <div class="grid-inputs">
+        <div id="patternDesc1" class="desc-text">Primary mask description.</div>
+        <div id="patternDesc2" class="desc-text">Secondary mask description.</div>
+    </div>
+    <div class="grid-inputs">
+        <div class="input-group">
+            <label style="color: var(--highlight)">Pattern A Mask: P₁(θ, <span class="varLabel">z</span>, v)</label>
+            <textarea id="patternEquation1" class="tex-area" oninput="updatePreview()"></textarea>
+        </div>
+        <div class="input-group">
+            <label style="color: var(--highlight)">Pattern B Mask: P₂(θ, <span class="varLabel">z</span>, v)</label>
+            <textarea id="patternEquation2" class="tex-area" oninput="updatePreview()"></textarea>
+        </div>
+    </div>
+    <div class="grid-inputs color-row">
+        <div class="input-group"><label>Neither / Base</label><input type="color" id="baseColor" class="color-chip" value="#0f4d80" oninput="updatePreview()"></div>
+        <div class="input-group"><label>Pattern A Only</label><input type="color" id="patternColor1" class="color-chip" value="#ff7062" oninput="updatePreview()"></div>
+    </div>
+    <div class="grid-inputs color-row">
+        <div class="input-group"><label>Pattern B Only</label><input type="color" id="patternColor2" class="color-chip" value="#5f4a8b" oninput="updatePreview()"></div>
+        <div class="input-group"><label>Overlap (A + B)</label><input type="color" id="overlapColor" class="color-chip" value="#8ab04d" oninput="updatePreview()"></div>
+    </div>
+    <div class="desc-text">Two masks define four surface color states: neither, A only, B only, and A+B overlap.</div>
+    <div class="input-group">
+        <label>Color Layer Depth (mm)</label>
+        <input type="number" id="patternDepthMm" value="1.2" step="0.1" min="0" oninput="updatePreview()">
+    </div>
+
+    <div class="section-title">5. Mesh Resolution</div>
+    <div class="grid-inputs">
+        <div class="input-group"><label>Vertical Nodes</label><input type="number" id="resV" value="120" step="10" min="20" oninput="updatePreview()"></div>
+        <div class="input-group"><label>Radial Nodes (θ)</label><input type="number" id="resT" value="180" step="10" min="20" oninput="updatePreview()"></div>
+    </div>
+    <div class="grid-inputs">
+        <div class="input-group"><label>Pattern Vertical Nodes</label><input type="number" id="patternResV" value="120" step="10" min="20" oninput="updatePreview()"></div>
+        <div class="input-group"><label>Pattern Radial Nodes (θ)</label><input type="number" id="patternResT" value="180" step="10" min="20" oninput="updatePreview()"></div>
+    </div>
+
+    
+    
 
 
-    <div class="section-title" style="color: var(--highlight)">3. Field Modifier</div>
+
+
+    <div class="section-title" style="color: var(--highlight)">6. Experimental Tool - Field Modifier</div>
     <div class="grid-inputs">
         <div class="input-group">
             <label>Modifier Type</label>
@@ -221,21 +309,25 @@
     </div>
     <div class="desc-text">Field modifiers remap the sampled coordinates before evaluating the selected target. This first version warps angular sampling only, which keeps the form pot-oriented and printable by default.</div>
 
-        <div class="section-title" style="color: var(--highlight)">4. Distortion Field</div>
-    <div class="input-group">
-        <select id="distortionType" onchange="applyDistortionType()">
-            <option value="all">All Distortion Types</option>
-            <option value="utility">Utility / None</option>
-            <option value="wind">Wind</option>
-            <option value="gravity">Gravity / Sag</option>
-            <option value="swirl">Swirl / Vortex</option>
-            <option value="torsion">Torsion / Crown Rotation</option>
-            <option value="pressure">Pressure / Dent</option>
-            <option value="custom">Custom</option>
-        </select>
-    </div>
-    <div class="input-group">
-        <select id="distortionPresetSelect" onchange="applyDistortionPreset()"></select>
+        <div class="section-title" style="color: var(--highlight)">7. Experimental Tool - Field Distortion</div>
+    <div class="grid-inputs">
+        <div class="input-group">
+            <label>Distortion Type</label>
+            <select id="distortionType" onchange="applyDistortionType()">
+                <option value="all">All Distortion Types</option>
+                <option value="utility">Utility / None</option>
+                <option value="wind">Wind</option>
+                <option value="gravity">Gravity / Sag</option>
+                <option value="swirl">Swirl / Vortex</option>
+                <option value="torsion">Torsion / Crown Rotation</option>
+                <option value="pressure">Pressure / Dent</option>
+                <option value="custom">Custom</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Distortion Option</label>
+            <select id="distortionPresetSelect" onchange="applyDistortionPreset()"></select>
+        </div>
     </div>
     <div id="distortionDesc" class="desc-text"></div>
     <div class="grid-inputs">
@@ -287,72 +379,12 @@
     </div>
     <div class="desc-text">Distortion fields act after the base and texture fields are sampled, displacing the generated body in world XYZ space. Use wind, gravity, swirl, or pressure presets as starting points, then tune region and anchor behavior.</div>
 
-    <div class="section-title" style="color: var(--highlight)">5. Surface Texture (External)</div>
-    <div class="input-group">
-        <select id="texPresetSelect" onchange="applyTexturePreset()"></select>
-    </div>
-    <div id="texDesc" class="desc-text"></div>
-    <div class="input-group">
-        <label style="color: var(--highlight)">Displacement: T(θ, <span class="varLabel">z</span>, v)</label>
-        <textarea id="texEquation" class="tex-area" oninput="updatePreview()"></textarea>
-    </div>
-    <div class="input-group">
-        <label>Texture Intensity (Multiplier)</label>
-        <input type="number" id="texIntensity" value="0.15" step="0.05" oninput="updatePreview()">
-    </div>
-
-    <div class="section-title" style="color: var(--highlight)">6. Dual Pattern Color Layer</div>
-    <div class="grid-inputs">
-        <div class="input-group">
-            <label>Pattern A Preset</label>
-            <select id="patternPresetSelect1" onchange="applyPatternPreset(1)"></select>
-        </div>
-        <div class="input-group">
-            <label>Pattern B Preset</label>
-            <select id="patternPresetSelect2" onchange="applyPatternPreset(2)"></select>
-        </div>
-    </div>
-    <div class="grid-inputs">
-        <div id="patternDesc1" class="desc-text">Primary mask description.</div>
-        <div id="patternDesc2" class="desc-text">Secondary mask description.</div>
-    </div>
-    <div class="grid-inputs">
-        <div class="input-group">
-            <label style="color: var(--highlight)">Pattern A Mask: P₁(θ, <span class="varLabel">z</span>, v)</label>
-            <textarea id="patternEquation1" class="tex-area" oninput="updatePreview()"></textarea>
-        </div>
-        <div class="input-group">
-            <label style="color: var(--highlight)">Pattern B Mask: P₂(θ, <span class="varLabel">z</span>, v)</label>
-            <textarea id="patternEquation2" class="tex-area" oninput="updatePreview()"></textarea>
-        </div>
-    </div>
-    <div class="grid-inputs color-row">
-        <div class="input-group"><label>Neither / Base</label><input type="color" id="baseColor" class="color-chip" value="#0f4d80" oninput="updatePreview()"></div>
-        <div class="input-group"><label>Pattern A Only</label><input type="color" id="patternColor1" class="color-chip" value="#ff7062" oninput="updatePreview()"></div>
-    </div>
-    <div class="grid-inputs color-row">
-        <div class="input-group"><label>Pattern B Only</label><input type="color" id="patternColor2" class="color-chip" value="#5f4a8b" oninput="updatePreview()"></div>
-        <div class="input-group"><label>Overlap (A + B)</label><input type="color" id="overlapColor" class="color-chip" value="#8ab04d" oninput="updatePreview()"></div>
-    </div>
-    <div class="desc-text">Two masks define four surface color states: neither, A only, B only, and A+B overlap.</div>
-    <div class="input-group">
-        <label>Color Layer Depth (mm)</label>
-        <input type="number" id="patternDepthMm" value="1.2" step="0.1" min="0" oninput="updatePreview()">
-    </div>
-
-    <div class="section-title">Mesh Resolution</div>
-    <div class="grid-inputs">
-        <div class="input-group"><label>Vertical Nodes</label><input type="number" id="resV" value="120" step="10" min="20" oninput="updatePreview()"></div>
-        <div class="input-group"><label>Radial Nodes (θ)</label><input type="number" id="resT" value="180" step="10" min="20" oninput="updatePreview()"></div>
-    </div>
-    <div class="grid-inputs">
-        <div class="input-group"><label>Pattern Vertical Nodes</label><input type="number" id="patternResV" value="120" step="10" min="20" oninput="updatePreview()"></div>
-        <div class="input-group"><label>Pattern Radial Nodes (θ)</label><input type="number" id="patternResT" value="180" step="10" min="20" oninput="updatePreview()"></div>
-    </div>
+    
 
     <button class="btn-preview" onclick="updatePreview()">RENDER PREVIEW</button>
     <button class="btn-3mf" onclick="exportMultiPart3MF()">DOWNLOAD MULTI-PART .3MF</button>
     <button class="btn-stl" onclick="exportSTL()">DOWNLOAD .STL</button>
+    <button class="btn-reset" onclick="resetParameters()">RESET PARAMETERS</button>
     <div class="desc-text"></div>
 </div>
 
@@ -370,37 +402,37 @@
 
 const libraries = {
     cylindrical: {
-        "Circle (Pure Base)": { eq: "R", desc: "Simple cylindrical base field." },
-        "Triangle": { eq: "R * cos(pi/3) / cos((theta % (2*pi/3)) - pi/3)", desc: "Regular triangular cross-section." },
-        "Square": { eq: "R * cos(pi/4) / cos((theta % (pi/2)) - pi/4)", desc: "Regular square cross-section." },
-        "Pentagon": { eq: "R * cos(pi/5) / cos((theta % (2*pi/5)) - pi/5)", desc: "Regular pentagonal cross-section." },
-        "Hexagon": { eq: "R * cos(pi/6) / cos((theta % (pi/3)) - pi/6)", desc: "Regular hexagonal cross-section." },
-        "Ellipse": { eq: "R / sqrt(pow(cos(theta), 2) + 2.5 * pow(sin(theta), 2))", desc: "Elliptical plan profile." },
-        "Rounded Square": { eq: "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125)", desc: "Superellipse / rounded-square base." },
-        "3-Petal Flower": { eq: "R * (1 + 0.24 * cos(3 * theta))", desc: "Simple 3-lobed floral base." },
-        "5-Petal Flower": { eq: "R * (1 + 0.25 * cos(5 * theta))", desc: "Simple 5-lobed floral base." },
-        "ATan Fluting": { eq: "R * (1 + 0.16 * atan(6 * cos(10 * theta + 2*pi*v)))", desc: "Saturated flutes with flatter faces and sharper groove transitions." },
-        "Arc-Petal Crown": { eq: "R * (1 + 0.10 * asin(0.98 * sin(7 * theta + pi*v)))", desc: "Inverse-trig petals with clean arc-like lobes." },
-        "Folded Mod Panels": { eq: "R * (1 + 0.18 * cos(8 * abs(mod(theta + pi*v, pi/4) - pi/8)))", desc: "Wrapped angular domain creates folded, paneled symmetry." },
-        "Fourier Bloom": { eq: "R * (1 + 0.18 * (cos(3*theta) + 0.45*cos(7*theta + pi*v) + 0.20*cos(13*theta - 2*pi*v)))", desc: "Layered harmonic bloom with decaying Fourier detail." },
-        "Quasi-Crystal Helix": { eq: "R * (1 + 0.10*cos(5*theta + 2*pi*v) + 0.07*cos(8*theta - 2*pi*sqrt(2)*v) + 0.05*cos(13*theta + pi*sqrt(3)*v))", desc: "Irrational phase mixing reduces obvious repetition." },
-        "Stepped Crown Phase": { eq: "R * (1 + (0.05 + 0.16*exp(-pow(v - 0.85, 2)*60)) * cos(6*theta + floor(8*v)*pi/8))", desc: "Discrete phase jumps create a terraced crown effect." },
-        "Nested Warp Blossom": { eq: "R * (1 + 0.22 * cos(5 * (theta + 0.18*sin(3*pi*v) + 0.07*sin(11*theta))))", desc: "Domain-warped blossom with nested internal phase motion." },
-        "Compressed Wave Stack": { eq: "R * (1 + 0.12 * atan(5 * (sin(4*theta + 3*pi*v) + 0.6*sin(9*theta - 2*pi*v))))", desc: "Nonlinear compression turns layered waves into sculptural terraces." }
+        "Circle (Pure Base)": { type: "primitive", eq: "R", desc: "Simple cylindrical base field." },
+        "Triangle": { type: "polygon", eq: "R * cos(pi/3) / cos((theta % (2*pi/3)) - pi/3)", desc: "Regular triangular cross-section." },
+        "Square": { type: "polygon", eq: "R * cos(pi/4) / cos((theta % (pi/2)) - pi/4)", desc: "Regular square cross-section." },
+        "Pentagon": { type: "polygon", eq: "R * cos(pi/5) / cos((theta % (2*pi/5)) - pi/5)", desc: "Regular pentagonal cross-section." },
+        "Hexagon": { type: "polygon", eq: "R * cos(pi/6) / cos((theta % (pi/3)) - pi/6)", desc: "Regular hexagonal cross-section." },
+        "Ellipse": { type: "primitive", eq: "R / sqrt(pow(cos(theta), 2) + 2.5 * pow(sin(theta), 2))", desc: "Elliptical plan profile." },
+        "Rounded Square": { type: "primitive", eq: "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125)", desc: "Superellipse / rounded-square base." },
+        "3-Petal Flower": { type: "floral", eq: "R * (1 + 0.24 * cos(3 * theta))", desc: "Simple 3-lobed floral base." },
+        "5-Petal Flower": { type: "floral", eq: "R * (1 + 0.25 * cos(5 * theta))", desc: "Simple 5-lobed floral base." },
+        "ATan Fluting": { type: "nonlinear", eq: "R * (1 + 0.16 * atan(6 * cos(10 * theta + 2*pi*v)))", desc: "Saturated flutes with flatter faces and sharper groove transitions." },
+        "Arc-Petal Crown": { type: "floral", eq: "R * (1 + 0.10 * asin(0.98 * sin(7 * theta + pi*v)))", desc: "Inverse-trig petals with clean arc-like lobes." },
+        "Folded Mod Panels": { type: "folded", eq: "R * (1 + 0.18 * cos(8 * abs(mod(theta + pi*v, pi/4) - pi/8)))", desc: "Wrapped angular domain creates folded, paneled symmetry." },
+        "Fourier Bloom": { type: "interference", eq: "R * (1 + 0.18 * (cos(3*theta) + 0.45*cos(7*theta + pi*v) + 0.20*cos(13*theta - 2*pi*v)))", desc: "Layered harmonic bloom with decaying Fourier detail." },
+        "Quasi-Crystal Helix": { type: "interference", eq: "R * (1 + 0.10*cos(5*theta + 2*pi*v) + 0.07*cos(8*theta - 2*pi*sqrt(2)*v) + 0.05*cos(13*theta + pi*sqrt(3)*v))", desc: "Irrational phase mixing reduces obvious repetition." },
+        "Stepped Crown Phase": { type: "folded", eq: "R * (1 + (0.05 + 0.16*exp(-pow(v - 0.85, 2)*60)) * cos(6*theta + floor(8*v)*pi/8))", desc: "Discrete phase jumps create a terraced crown effect." },
+        "Nested Warp Blossom": { type: "floral", eq: "R * (1 + 0.22 * cos(5 * (theta + 0.18*sin(3*pi*v) + 0.07*sin(11*theta))))", desc: "Domain-warped blossom with nested internal phase motion." },
+        "Compressed Wave Stack": { type: "nonlinear", eq: "R * (1 + 0.12 * atan(5 * (sin(4*theta + 3*pi*v) + 0.6*sin(9*theta - 2*pi*v))))", desc: "Nonlinear compression turns layered waves into sculptural terraces." }
     },
     spherical: {
-        "Perfect Sphere": { eq: "R", desc: "Pure spherical base field." },
-        "Ellipse": { eq: "R * (1 + 0.18 * cos(2 * theta) * pow(sin(phi), 1.8))", desc: "Elliptical modulation around the equator." },
-        "Dipole (Two Petals)": { eq: "R * (1 + 0.24 * cos(2 * theta) * pow(sin(phi), 1.5))", desc: "Two-lobed spherical base." },
-        "3-Petal Flower": { eq: "R * (1 + 0.22 * cos(3 * theta) * pow(sin(phi), 1.5))", desc: "Three-petal spherical modulation." },
-        "5-Petal Flower": { eq: "R * (1 + 0.20 * cos(5 * theta) * pow(sin(phi), 1.5))", desc: "Five-petal spherical modulation." },
-        "Pumpkin Lobes": { eq: "R * (1 + 0.15 * cos(8 * theta))", desc: "Simple rounded lobes." },
-        "Arc-Lobed Shell": { eq: "R * (1 + 0.12 * pow(sin(phi), 1.8) * asin(0.96 * sin(7*theta)) + 0.03*cos(5*phi))", desc: "Arc-shaped lobes concentrated around the equator." },
-        "ATan Geode": { eq: "R * (1 + 0.08 * atan(8 * (cos(10*theta + 7*phi) + cos(10*theta - 7*phi))))", desc: "Nonlinear ridge compression for geode-like faceting." },
-        "Modulo Meridians": { eq: "R * (1 + 0.10 * cos(10 * abs(mod(theta, pi/5) - pi/10)) * pow(sin(phi), 1.5))", desc: "Wrapped meridian wedges with strong rotational order." },
-        "Quasi-Spiral Shell": { eq: "R * (1 + 0.08*cos(13*theta - 8*phi) + 0.08*cos(8*theta + 13*phi) + 0.04*cos(21*theta - 5*phi))", desc: "Quasi-periodic spiral shell with less repetitive interference." },
-        "Equatorial Saturation": { eq: "R * (1 + 0.16 * exp(-pow(phi - pi/2, 2) * 8) * atan(6 * cos(8*theta)))", desc: "Compressed nonlinear lobes focused into the equatorial belt." },
-        "Irrational Weave Orb": { eq: "R * (1 + 0.06*cos(9*theta + sqrt(2)*7*phi) + 0.06*cos(14*theta - sqrt(3)*5*phi))", desc: "Irrational angular weave for a woven-but-nonrepeating shell." }
+        "Perfect Sphere": { type: "primitive", eq: "R", desc: "Pure spherical base field." },
+        "Ellipse": { type: "primitive", eq: "R * (1 + 0.18 * cos(2 * theta) * pow(sin(phi), 1.8))", desc: "Elliptical modulation around the equator." },
+        "Dipole (Two Petals)": { type: "floral", eq: "R * (1 + 0.24 * cos(2 * theta) * pow(sin(phi), 1.5))", desc: "Two-lobed spherical base." },
+        "3-Petal Flower": { type: "floral", eq: "R * (1 + 0.22 * cos(3 * theta) * pow(sin(phi), 1.5))", desc: "Three-petal spherical modulation." },
+        "5-Petal Flower": { type: "floral", eq: "R * (1 + 0.20 * cos(5 * theta) * pow(sin(phi), 1.5))", desc: "Five-petal spherical modulation." },
+        "Pumpkin Lobes": { type: "floral", eq: "R * (1 + 0.15 * cos(8 * theta))", desc: "Simple rounded lobes." },
+        "Arc-Lobed Shell": { type: "floral", eq: "R * (1 + 0.12 * pow(sin(phi), 1.8) * asin(0.96 * sin(7*theta)) + 0.03*cos(5*phi))", desc: "Arc-shaped lobes concentrated around the equator." },
+        "ATan Geode": { type: "nonlinear", eq: "R * (1 + 0.08 * atan(8 * (cos(10*theta + 7*phi) + cos(10*theta - 7*phi))))", desc: "Nonlinear ridge compression for geode-like faceting." },
+        "Modulo Meridians": { type: "folded", eq: "R * (1 + 0.10 * cos(10 * abs(mod(theta, pi/5) - pi/10)) * pow(sin(phi), 1.5))", desc: "Wrapped meridian wedges with strong rotational order." },
+        "Quasi-Spiral Shell": { type: "interference", eq: "R * (1 + 0.08*cos(13*theta - 8*phi) + 0.08*cos(8*theta + 13*phi) + 0.04*cos(21*theta - 5*phi))", desc: "Quasi-periodic spiral shell with less repetitive interference." },
+        "Equatorial Saturation": { type: "nonlinear", eq: "R * (1 + 0.16 * exp(-pow(phi - pi/2, 2) * 8) * atan(6 * cos(8*theta)))", desc: "Compressed nonlinear lobes focused into the equatorial belt." },
+        "Irrational Weave Orb": { type: "interference", eq: "R * (1 + 0.06*cos(9*theta + sqrt(2)*7*phi) + 0.06*cos(14*theta - sqrt(3)*5*phi))", desc: "Irrational angular weave for a woven-but-nonrepeating shell." }
     }
 };
 
@@ -423,23 +455,30 @@ const patternPresets = {
 };
 
 const texturePresets = {
-    "None (Flat Surface)": { eq: "0", desc: "No additional surface displacement." },
-    "Fine Vertical Ribs": { eq: "cos(16*theta)", desc: "Classic vertical ribbing." },
-    "Topographic Rings": { eq: "sin(24*pi*v)", desc: "Horizontal contour rings." },
-    "Diamond Weave": { eq: "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)", desc: "Crossing diagonals for a woven diamond field." },
-    "Honeycomb Relief": { eq: "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v))", desc: "Hex-cell inspired relief." },
-    "ATan Braid": { eq: "atan(8 * (sin(6*theta + 8*pi*v) + 0.6*sin(11*theta - 7*pi*v)))", desc: "Braided relief with compressed plateaus and crisp grooves." },
-    "Modulo Tile Relief": { eq: "cos(10 * abs(mod(theta + pi*v, pi/4) - pi/8))", desc: "Folded tiled relief from wrapped angular domains." },
-    "Stepped Weave": { eq: "cos(8*theta + floor(10*v)*pi/5)", desc: "Discrete vertical phase shifts create a stepped weave." },
-    "Log Ripple Compression": { eq: "log(1 + 4*abs(sin(12*theta + 10*pi*v)))", desc: "Compressed ripple field with dense nonlinear ridges." },
-    "Arc Shell Carving": { eq: "asin(0.98*sin(8*theta + 6*pi*v))", desc: "Arc-shaped carved channels with inverse-trig wall shaping." },
-    "Quasi Interference": { eq: "sin(7*theta + 9*pi*v) + 0.55*sin(11*theta - sqrt(2)*8*pi*v) + 0.35*cos(13*theta + sqrt(3)*5*pi*v)", desc: "Quasi-periodic interference texture with reduced repetition." },
-    "Folded Chevron": { eq: "abs(sin(6*theta + 8*pi*v)) - 0.45*abs(sin(6*theta - 8*pi*v))", desc: "Folded chevron relief with mirrored directional structure." },
-    "Domain Warp Ribs": { eq: "cos(12*(theta + 0.12*sin(6*pi*v) + 0.05*sin(9*theta)))", desc: "Ribs warped in-domain rather than just amplitude-modulated." },
-    "Saturated Moire": { eq: "atan(5 * (sin(18*theta + 12*pi*v) + sin(19*theta - 11*pi*v)))", desc: "Moire interference pushed through nonlinear saturation." },
-    "Terraced Contours": { eq: "floor(6 * (0.5 + 0.5*sin(16*pi*v))) / 6", desc: "Stepped contour bands with terraced relief." },
-    "Compressed Wave Stack": { eq: "atan(6 * (sin(4*theta + 10*pi*v) + 0.6*sin(9*theta - 6*pi*v)))", desc: "Layered waves compressed into stronger sculptural strata." }
+    "None (Flat Surface)": { type: "utility", eq: "0", desc: "No additional surface displacement." },
+
+    "Fine Vertical Ribs": { type: "ribs", eq: "cos(16*theta)", desc: "Classic vertical ribbing." },
+    "Domain Warp Ribs": { type: "ribs", eq: "cos(12*(theta + 0.12*sin(6*pi*v) + 0.05*sin(9*theta)))", desc: "Ribs warped in-domain rather than just amplitude-modulated." },
+
+    "Topographic Rings": { type: "bands", eq: "sin(24*pi*v)", desc: "Horizontal contour rings." },
+    "Terraced Contours": { type: "bands", eq: "floor(6 * (0.5 + 0.5*sin(16*pi*v))) / 6", desc: "Stepped contour bands with terraced relief." },
+
+    "Diamond Weave": { type: "weave", eq: "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)", desc: "Crossing diagonals for a woven diamond field." },
+    "Honeycomb Relief": { type: "weave", eq: "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v))", desc: "Hex-cell inspired relief." },
+    "Stepped Weave": { type: "weave", eq: "cos(8*theta + floor(10*v)*pi/5)", desc: "Discrete vertical phase shifts create a stepped weave." },
+
+    "ATan Braid": { type: "nonlinear", eq: "atan(8 * (sin(6*theta + 8*pi*v) + 0.6*sin(11*theta - 7*pi*v)))", desc: "Braided relief with compressed plateaus and crisp grooves." },
+    "Log Ripple Compression": { type: "nonlinear", eq: "log(1 + 4*abs(sin(12*theta + 10*pi*v)))", desc: "Compressed ripple field with dense nonlinear ridges." },
+    "Saturated Moire": { type: "nonlinear", eq: "atan(5 * (sin(18*theta + 12*pi*v) + sin(19*theta - 11*pi*v)))", desc: "Moire interference pushed through nonlinear saturation." },
+    "Compressed Wave Stack": { type: "nonlinear", eq: "atan(6 * (sin(4*theta + 10*pi*v) + 0.6*sin(9*theta - 6*pi*v)))", desc: "Layered waves compressed into stronger sculptural strata." },
+
+    "Modulo Tile Relief": { type: "carved", eq: "cos(10 * abs(mod(theta + pi*v, pi/4) - pi/8))", desc: "Folded tiled relief from wrapped angular domains." },
+    "Arc Shell Carving": { type: "carved", eq: "asin(0.98*sin(8*theta + 6*pi*v))", desc: "Arc-shaped carved channels with inverse-trig wall shaping." },
+    "Folded Chevron": { type: "carved", eq: "abs(sin(6*theta + 8*pi*v)) - 0.45*abs(sin(6*theta - 8*pi*v))", desc: "Folded chevron relief with mirrored directional structure." },
+
+    "Quasi Interference": { type: "interference", eq: "sin(7*theta + 9*pi*v) + 0.55*sin(11*theta - sqrt(2)*8*pi*v) + 0.35*cos(13*theta + sqrt(3)*5*pi*v)", desc: "Quasi-periodic interference texture with reduced repetition." }
 };
+
 
 
 const modifierPresets = {
@@ -613,15 +652,115 @@ const distortionPresets = {
         if (triggerPreview) updatePreview();
     }
 
-    function populateTexturePresets() {
-        const select = document.getElementById('texPresetSelect');
+    function getBaseTypeOptions(sys = null) {
+        const activeSys = sys || document.getElementById('coordSystem')?.value || 'cylindrical';
+        if (activeSys === 'spherical') {
+            return [
+                { value: 'all', label: 'All Base Types' },
+                { value: 'primitive', label: 'Primitive / Smooth' },
+                { value: 'floral', label: 'Floral / Lobed' },
+                { value: 'folded', label: 'Folded / Wrapped' },
+                { value: 'nonlinear', label: 'Nonlinear / Compressed' },
+                { value: 'interference', label: 'Interference / Quasi' }
+            ];
+        }
+        return [
+            { value: 'all', label: 'All Base Types' },
+            { value: 'primitive', label: 'Primitive / Smooth' },
+            { value: 'polygon', label: 'Polygon / Faceted' },
+            { value: 'floral', label: 'Floral / Petal' },
+            { value: 'folded', label: 'Folded / Panel' },
+            { value: 'nonlinear', label: 'Nonlinear / Compressed' },
+            { value: 'interference', label: 'Interference / Quasi' }
+        ];
+    }
+
+    function populateBaseTypes(preferred = null) {
+        const select = document.getElementById('baseTypeSelect');
+        const sys = document.getElementById('coordSystem')?.value || 'cylindrical';
+        if (!select) return;
+        const current = preferred || select.value || 'all';
         select.innerHTML = '';
-        Object.keys(texturePresets).forEach(key => {
+        getBaseTypeOptions(sys).forEach(optData => {
+            const opt = document.createElement('option');
+            opt.value = optData.value;
+            opt.innerText = optData.label;
+            select.appendChild(opt);
+        });
+        const valid = Array.from(select.options).map(o => o.value);
+        select.value = valid.includes(current) ? current : 'all';
+    }
+
+    function populateBasePresets(preferred = null) {
+        const sys = document.getElementById('coordSystem')?.value || 'cylindrical';
+        const type = document.getElementById('baseTypeSelect')?.value || 'all';
+        const select = document.getElementById('presetSelect');
+        if (!select) return;
+        const current = preferred || select.value || Object.keys(libraries[sys])[0];
+        select.innerHTML = '';
+        const keys = Object.keys(libraries[sys]).filter(key => type === 'all' || libraries[sys][key].type === type);
+        keys.forEach(key => {
             const opt = document.createElement('option');
             opt.value = key;
             opt.innerText = key;
             select.appendChild(opt);
         });
+        if (!keys.length) return;
+        select.value = keys.includes(current) ? current : keys[0];
+    }
+
+    function onBaseTypeChange() {
+        populateBasePresets();
+        applyPreset();
+    }
+
+    function getTextureTypeOptions() {
+        return [
+            { value: 'all', label: 'All Texture Types' },
+            { value: 'utility', label: 'Utility / None' },
+            { value: 'ribs', label: 'Ribs / Linear' },
+            { value: 'bands', label: 'Bands / Contours' },
+            { value: 'weave', label: 'Weave / Lattice' },
+            { value: 'nonlinear', label: 'Nonlinear / Compressed' },
+            { value: 'carved', label: 'Carved / Folded' },
+            { value: 'interference', label: 'Interference / Quasi' }
+        ];
+    }
+
+    function populateTextureTypes() {
+        const select = document.getElementById('texTypeSelect');
+        if (!select) return;
+        const current = select.value || 'all';
+        select.innerHTML = '';
+        getTextureTypeOptions().forEach(optData => {
+            const opt = document.createElement('option');
+            opt.value = optData.value;
+            opt.innerText = optData.label;
+            select.appendChild(opt);
+        });
+        select.value = current;
+    }
+
+    function populateTexturePresets(preferred = null) {
+        const select = document.getElementById('texPresetSelect');
+        const type = document.getElementById('texTypeSelect')?.value || 'all';
+        if (!select) return;
+        const current = preferred || select.value || 'None (Flat Surface)';
+        select.innerHTML = '';
+        const keys = Object.keys(texturePresets).filter(key => type === 'all' || texturePresets[key].type === type);
+        keys.forEach(key => {
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.innerText = key;
+            select.appendChild(opt);
+        });
+        if (!keys.length) return;
+        select.value = keys.includes(current) ? current : keys[0];
+    }
+
+    function onTextureTypeChange() {
+        populateTexturePresets();
+        applyTexturePreset();
     }
 
     function populatePatternPresetSelect(selectId) {
@@ -643,15 +782,9 @@ const distortionPresets = {
 
     function switchSystem(targetPreset = null) {
         const sys = document.getElementById('coordSystem').value;
-        const select = document.getElementById('presetSelect');
-        select.innerHTML = '';
-
-        Object.keys(libraries[sys]).forEach(key => {
-            const opt = document.createElement('option');
-            opt.value = key;
-            opt.innerText = key;
-            select.appendChild(opt);
-        });
+        const modeBefore = getModelMode();
+        populateModelModeOptions(modeBefore === 'plate' || modeBefore === 'potplate' ? (sys === 'cylindrical' ? modeBefore : 'pot') : modeBefore);
+        populateBaseTypes();
 
         const varLabels = document.querySelectorAll('.varLabel');
         varLabels.forEach(el => el.innerText = sys === 'cylindrical' ? 'z' : 'φ');
@@ -659,20 +792,17 @@ const distortionPresets = {
         document.getElementById('heightGroup').style.display = sys === 'cylindrical' ? 'block' : 'none';
         togglePotUI();
 
-        if (targetPreset && libraries[sys][targetPreset]) {
-            select.value = targetPreset;
-        } else {
-            select.value = Object.keys(libraries[sys])[0];
-        }
+        populateBasePresets(targetPreset && libraries[sys][targetPreset] ? targetPreset : Object.keys(libraries[sys])[0]);
 
-        document.getElementById('equation').value = libraries[sys][select.value].eq;
-        document.getElementById('baseDesc').innerText = libraries[sys][select.value].desc;
+        const presetKey = document.getElementById('presetSelect').value;
+        document.getElementById('equation').value = libraries[sys][presetKey].eq;
+        document.getElementById('baseDesc').innerText = libraries[sys][presetKey].desc;
 
         const modifierKey = document.getElementById('modifierPresetSelect').value;
         document.getElementById('modifierEquation').value = modifierPresets[modifierKey].eq;
         document.getElementById('modifierDesc').innerText = modifierPresets[modifierKey].desc;
 
-        const texKey = document.getElementById('texPresetSelect').value;
+        const texKey = document.getElementById('texPresetSelect').value || 'None (Flat Surface)';
         document.getElementById('texEquation').value = texturePresets[texKey].eq;
         document.getElementById('texDesc').innerText = texturePresets[texKey].desc;
 
@@ -684,6 +814,47 @@ const distortionPresets = {
         document.getElementById('patternDesc2').innerText = patternPresets[patternKey2].desc;
 
         updatePreview();
+    }
+
+    function getModelModeOptions(sys = null) {
+        const activeSys = sys || document.getElementById('coordSystem')?.value || 'cylindrical';
+        const options = [
+            { value: 'mesh', label: 'Designed Figure' },
+            { value: 'pot', label: 'Functional Pot' }
+        ];
+        if (activeSys === 'cylindrical') {
+            options.push(
+                { value: 'plate', label: 'Functional Plate' },
+                { value: 'potplate', label: 'Pot+Plate' }
+            );
+        }
+        return options;
+    }
+
+    function populateModelModeOptions(preferred = null) {
+        const select = document.getElementById('modelMode');
+        if (!select) return;
+        const sys = document.getElementById('coordSystem')?.value || 'cylindrical';
+        const current = preferred || select.value || 'mesh';
+        const options = getModelModeOptions(sys);
+        select.innerHTML = '';
+        options.forEach(optData => {
+            const opt = document.createElement('option');
+            opt.value = optData.value;
+            opt.innerText = optData.label;
+            select.appendChild(opt);
+        });
+        const valid = options.map(opt => opt.value);
+        select.value = valid.includes(current) ? current : 'pot';
+    }
+
+    function forcePlateModesToCylindrical() {
+        const select = document.getElementById('coordSystem');
+        if (!select) return;
+        if (select.value !== 'cylindrical') {
+            select.value = 'cylindrical';
+            switchSystem();
+        }
     }
 
     function getModelMode() {
@@ -707,6 +878,12 @@ const distortionPresets = {
     }
 
     function onBuildModeChange() {
+        const mode = getModelMode();
+        if (mode === 'plate' || mode === 'potplate') {
+            forcePlateModesToCylindrical();
+            populateModelModeOptions(mode);
+            document.getElementById('modelMode').value = mode;
+        }
         togglePotUI();
         updatePreview();
     }
@@ -718,6 +895,7 @@ const distortionPresets = {
     function applyPreset() {
         const sys = document.getElementById('coordSystem').value;
         const key = document.getElementById('presetSelect').value;
+        if (!libraries[sys][key]) return;
         document.getElementById('equation').value = libraries[sys][key].eq;
         document.getElementById('baseDesc').innerText = libraries[sys][key].desc;
         updatePreview();
@@ -747,27 +925,158 @@ const distortionPresets = {
         updatePreview();
     }
 
+    function initCollapsibleSections() {
+        const sidebar = document.getElementById('sidebar');
+        if (!sidebar || sidebar.dataset.collapsibleInit === '1') return;
+
+        const stopSelectors = [
+            '.section-title',
+            'button',
+            'h2',
+            '#status'
+        ];
+
+        const shouldStopAt = (node) => {
+            if (!node || node.nodeType !== 1) return false;
+            return stopSelectors.some(selector => node.matches(selector));
+        };
+
+        const titles = Array.from(sidebar.querySelectorAll(':scope > .section-title'));
+        titles.forEach((title, idx) => {
+            const section = document.createElement('div');
+            section.className = 'collapsible-section';
+
+            sidebar.insertBefore(section, title);
+            section.appendChild(title);
+
+            const content = document.createElement('div');
+            content.className = 'collapsible-content';
+            section.appendChild(content);
+
+            while (section.nextSibling && !shouldStopAt(section.nextSibling)) {
+                content.appendChild(section.nextSibling);
+            }
+
+            const startsOpen = idx < 2;
+            section.classList.toggle('is-collapsed', !startsOpen);
+            title.setAttribute('role', 'button');
+            title.setAttribute('tabindex', '0');
+            title.setAttribute('aria-expanded', startsOpen ? 'true' : 'false');
+
+            const toggleSection = () => {
+                const isCollapsed = section.classList.toggle('is-collapsed');
+                title.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+            };
+
+            title.addEventListener('click', toggleSection);
+            title.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    toggleSection();
+                }
+            });
+        });
+
+        sidebar.dataset.collapsibleInit = '1';
+    }
+
+    function resetParameters() {
+        document.getElementById('coordSystem').value = 'cylindrical';
+        populateModelModeOptions('potplate');
+        document.getElementById('modelMode').value = 'potplate';
+
+        populateBaseTypes('primitive');
+        document.getElementById('baseTypeSelect').value = 'primitive';
+        switchSystem('Circle (Pure Base)');
+        document.getElementById('baseTypeSelect').value = 'primitive';
+        populateBasePresets('Circle (Pure Base)');
+        document.getElementById('presetSelect').value = 'Circle (Pure Base)';
+        applyPreset();
+
+        document.getElementById('baseRadius').value = '5';
+        document.getElementById('height').value = '10';
+        document.getElementById('wall').value = '0.35';
+        document.getElementById('bottomThickness').value = '0.5';
+        document.getElementById('cylDrain').value = '0.5';
+
+        document.getElementById('plateHeight').value = '1.5';
+        document.getElementById('plateOpeningAngle').value = '25';
+        document.getElementById('plateRadiusExtra').value = '0.5';
+
+        document.getElementById('modifierTypeSelect').value = 'utility';
+        populateModifierPresets('None (No Modifier)');
+        document.getElementById('modifierPresetSelect').value = 'None (No Modifier)';
+        document.getElementById('modifierStrength').value = '0';
+        document.getElementById('modifierTarget').value = 'base';
+        applyModifierPreset();
+
+        document.getElementById('distortionType').value = 'utility';
+        populateDistortionPresets('utility', 'None (No Distortion)');
+        document.getElementById('distortionPresetSelect').value = 'None (No Distortion)';
+        document.getElementById('distortionStrength').value = '0';
+        document.getElementById('distortionRegion').value = 'all';
+        document.getElementById('distortionAnchor').value = 'none';
+        document.getElementById('distortionSpace').value = 'xyz';
+        applyDistortionPreset(false);
+
+        document.getElementById('texTypeSelect').value = 'utility';
+        populateTexturePresets('None (Flat Surface)');
+        document.getElementById('texPresetSelect').value = 'None (Flat Surface)';
+        document.getElementById('texIntensity').value = '0.15';
+        applyTexturePreset();
+
+        document.getElementById('patternPresetSelect1').value = 'None (Solid Base Color)';
+        document.getElementById('patternPresetSelect2').value = 'None (Solid Base Color)';
+        applyPatternPreset(1);
+        applyPatternPreset(2);
+
+        document.getElementById('patternDepthMm').value = '1.2';
+        document.getElementById('patternResV').value = '120';
+        document.getElementById('patternResT').value = '180';
+        document.getElementById('resV').value = '120';
+        document.getElementById('resT').value = '180';
+
+        document.getElementById('baseColor').value = '#0f4d80';
+        document.getElementById('patternColor1').value = '#ff7062';
+        document.getElementById('patternColor2').value = '#5f4a8b';
+        document.getElementById('overlapColor').value = '#8ab04d';
+
+        togglePotUI();
+        setStatus('Parameters reset | Cylindrical | Pot+Plate | Circle', '');
+        updatePreview();
+    }
+
     window.onload = function() {
         initThree();
         populateModifierTypes();
         populateModifierPresets('None (No Modifier)');
         populateDistortionPresets('all', 'None (No Distortion)');
         updateDistortionTitle();
-        populateTexturePresets();
+        populateBaseTypes('all');
+        populateBasePresets('Circle (Pure Base)');
+        populateTextureTypes();
+        populateTexturePresets('None (Flat Surface)');
         populatePatternPresets();
+        initCollapsibleSections();
 
-        document.getElementById('coordSystem').value = 'spherical';
-        document.getElementById('modelMode').value = 'pot';
+        document.getElementById('coordSystem').value = 'cylindrical';
+        populateModelModeOptions('potplate');
+        document.getElementById('modelMode').value = 'potplate';
+        document.getElementById('baseTypeSelect').value = 'primitive';
         document.getElementById('modifierTypeSelect').value = 'utility';
         populateModifierPresets('None (No Modifier)');
         document.getElementById('modifierPresetSelect').value = 'None (No Modifier)';
         document.getElementById('modifierStrength').value = '0';
         document.getElementById('modifierTarget').value = 'base';
-        document.getElementById('distortionType').value = 'torsion';
-        populateDistortionPresets('torsion', 'Fluid Twist XYZ');
-        document.getElementById('distortionStrength').value = '5';
+        document.getElementById('bottomThickness').value = '0.5';
+        document.getElementById('distortionType').value = 'utility';
+        populateDistortionPresets('utility', 'None (No Distortion)');
+        document.getElementById('distortionPresetSelect').value = 'None (No Distortion)';
+        document.getElementById('distortionStrength').value = '0';
         document.getElementById('distortionRegion').value = 'all';
-        document.getElementById('distortionAnchor').value = 'baseAnchored';
+        document.getElementById('distortionAnchor').value = 'none';
+        document.getElementById('texTypeSelect').value = 'utility';
+        populateTexturePresets('None (Flat Surface)');
         document.getElementById('texPresetSelect').value = 'None (Flat Surface)';
         document.getElementById('patternPresetSelect1').value = 'None (Solid Base Color)';
         document.getElementById('patternPresetSelect2').value = 'None (Solid Base Color)';
@@ -777,10 +1086,19 @@ const distortionPresets = {
         document.getElementById('patternColor1').value = '#ff7062';
         document.getElementById('patternColor2').value = '#5f4a8b';
         document.getElementById('plateHeight').value = '1.5';
+        document.getElementById('plateOpeningAngle').value = '25';
+        document.getElementById('plateRadiusExtra').value = '0.5';
         document.getElementById('overlapColor').value = '#8ab04d';
 
-        switchSystem('3-Petal Flower');
+        switchSystem('Circle (Pure Base)');
+        document.getElementById('baseTypeSelect').value = 'primitive';
+        populateBasePresets('Circle (Pure Base)');
+        applyDistortionPreset(false);
+        applyTexturePreset();
+        applyPatternPreset(1);
+        applyPatternPreset(2);
         togglePotUI();
+        updatePreview();
         window.addEventListener('resize', onWindowResize);
     };
 
@@ -832,6 +1150,7 @@ const distortionPresets = {
 
     function getConfig() {
         const wall = parseFloat(document.getElementById('wall').value) || 0.35;
+        const bottomThickness = Math.max(0.1, parseFloat(document.getElementById('bottomThickness')?.value) || 0.5);
         const requestedDepthCm = Math.max(0, (parseFloat(document.getElementById('patternDepthMm').value) || 0) / 10);
         const maxDepthCm = Math.max(0, wall - 0.02);
         const patternDepthCm = Math.min(requestedDepthCm, maxDepthCm);
@@ -840,7 +1159,7 @@ const distortionPresets = {
 
         return {
             modelMode,
-            sys: document.getElementById('coordSystem').value,
+            sys: ((modelMode === 'plate' || modelMode === 'potplate') ? 'cylindrical' : document.getElementById('coordSystem').value),
             eq: document.getElementById('equation').value,
             modifierEq: document.getElementById('modifierEquation').value,
             modifierStrength: parseFloat(document.getElementById('modifierStrength').value) || 0,
@@ -865,6 +1184,7 @@ const distortionPresets = {
             patternDepthCm: patternDepthCm,
             R: parseFloat(document.getElementById('baseRadius').value) || 5.0,
             w: wall,
+            bottomThickness: bottomThickness,
             h: parseFloat(document.getElementById('height').value) || 10.0,
             resV: parseInt(document.getElementById('resV').value) || 120,
             resT: parseInt(document.getElementById('resT').value) || 180,
@@ -874,8 +1194,18 @@ const distortionPresets = {
             isPlate: modelMode === 'plate',
             includePlate: modelMode === 'potplate',
             plateHeight: parseFloat(document.getElementById('plateHeight')?.value) || 1.5,
+            plateOpeningAngleDeg: parseFloat(document.getElementById('plateOpeningAngle')?.value) || 0,
+            plateOpeningAngleRad: (parseFloat(document.getElementById('plateOpeningAngle')?.value) || 0) * (Math.PI / 180),
+            plateRadiusExtra: parseFloat(document.getElementById('plateRadiusExtra')?.value) || 0,
+            plateSphericalRadiusBiasPct: parseFloat(document.getElementById('plateSphericalRadiusBias')?.value) || 100,
+            plateSphericalRadiusBias: (parseFloat(document.getElementById('plateSphericalRadiusBias')?.value) || 100) / 100,
+            plateSphericalBasePhiDeg: parseFloat(document.getElementById('plateSphericalBasePhi')?.value) || 0,
+            plateSphericalBasePhiRad: (parseFloat(document.getElementById('plateSphericalBasePhi')?.value) || 0) * (Math.PI / 180),
+            plateSphericalBaseScalePct: parseFloat(document.getElementById('plateSphericalBaseScale')?.value) || 100,
+            plateSphericalBaseScale: (parseFloat(document.getElementById('plateSphericalBaseScale')?.value) || 100) / 100,
+            plateSphericalBaseOffset: parseFloat(document.getElementById('plateSphericalBaseOffset')?.value) || 0,
             plateClearance: 1.0,
-            cylBase: parseFloat(document.getElementById('cylBase').value) || 0.5,
+            cylBase: bottomThickness,
             cylDrain: parseFloat(document.getElementById('cylDrain').value) || 0.5,
             sphTopCut: (parseFloat(document.getElementById('sphTopCut').value) || 25) * (Math.PI / 180),
             sphBotFlatten: (parseFloat(document.getElementById('sphBotFlatten').value) || 150) * (Math.PI / 180),
@@ -979,15 +1309,25 @@ const distortionPresets = {
 
 
     function buildPlateHostProbeConfig(cfg) {
-        const hostAsPot = !!cfg.includePlate || (!!cfg.isPot && !cfg.isPlate);
         return Object.assign({}, cfg, {
-            modelMode: hostAsPot ? 'pot' : 'mesh',
-            isPot: hostAsPot,
+            modelMode: 'pot',
+            isPot: true,
             isPlate: false,
             includePlate: false,
             requestedPatternDepthCm: 0,
             patternDepthCm: 0
         });
+    }
+
+    function computeProfileCentroid(profile) {
+        const centroid = profile.reduce((acc, pt) => {
+            acc.x += pt.x;
+            acc.z += pt.z;
+            return acc;
+        }, { x: 0, z: 0 });
+        centroid.x /= Math.max(1, profile.length);
+        centroid.z /= Math.max(1, profile.length);
+        return centroid;
     }
 
     function offsetProfileFromCentroid(profile, centroid, offset) {
@@ -1019,82 +1359,123 @@ const distortionPresets = {
         };
     }
 
-    function computePlateHostProfile(cfg) {
+    function getMeshVerticalBounds(meshData) {
+        let minY = Infinity, maxY = -Infinity;
+        for (let i = 1; i < meshData.vertices.length; i += 3) {
+            const y = meshData.vertices[i];
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+        }
+        return {
+            minY: isFinite(minY) ? minY : 0,
+            maxY: isFinite(maxY) ? maxY : 0
+        };
+    }
+
+    function extractOuterRingsFromHostMesh(cfg, meshData) {
+        const rings = [];
+        const resT = Math.max(3, cfg.resT || 120);
+        const resV = Math.max(1, cfg.resV || 120);
+
+        if (cfg.sys === 'cylindrical') {
+            for (let iv = 0; iv <= resV; iv++) {
+                const profile = [];
+                let meanY = 0;
+                for (let it = 0; it < resT; it++) {
+                    const vertexIndex = (iv * resT * 2) + (it * 2);
+                    const base = vertexIndex * 3;
+                    const x = meshData.vertices[base];
+                    const y = meshData.vertices[base + 1];
+                    const z = meshData.vertices[base + 2];
+                    profile.push({ x, z });
+                    meanY += y;
+                }
+                meanY /= resT;
+                rings.push({
+                    profile,
+                    centroid: computeProfileCentroid(profile),
+                    meanY,
+                    bounds: computePlateProfileBounds(profile),
+                    resT
+                });
+            }
+        } else {
+            const outerVertexCount = (resV + 1) * resT;
+            for (let iv = 0; iv <= resV; iv++) {
+                const profile = [];
+                let meanY = 0;
+                for (let it = 0; it < resT; it++) {
+                    const vertexIndex = iv * resT + it;
+                    if (vertexIndex >= outerVertexCount) continue;
+                    const base = vertexIndex * 3;
+                    const x = meshData.vertices[base];
+                    const y = meshData.vertices[base + 1];
+                    const z = meshData.vertices[base + 2];
+                    profile.push({ x, z });
+                    meanY += y;
+                }
+                meanY /= Math.max(1, profile.length);
+                rings.push({
+                    profile,
+                    centroid: computeProfileCentroid(profile),
+                    meanY,
+                    bounds: computePlateProfileBounds(profile),
+                    resT: profile.length
+                });
+            }
+        }
+
+        return rings.filter(ring => ring.profile.length >= 3);
+    }
+
+    function buildPlateProfileSeries(cfg) {
         const probeCfg = buildPlateHostProbeConfig(cfg);
-        const meshData = buildPrimaryMeshData(probeCfg);
-        const resT = Math.max(48, probeCfg.resT || 120);
-        const bins = Array.from({ length: resT }, () => null);
-
-        for (let i = 0; i < meshData.vertices.length; i += 3) {
-            const x = meshData.vertices[i];
-            const z = meshData.vertices[i + 2];
-            const r = Math.sqrt(x * x + z * z);
-            const theta = mod(Math.atan2(-z, x), 2 * Math.PI);
-            let bin = Math.floor((theta / (2 * Math.PI)) * resT);
-            if (bin >= resT) bin = resT - 1;
-            const current = bins[bin];
-            if (!current || r > current.r) {
-                bins[bin] = { x, z, r };
-            }
+        const hostMesh = buildPrimaryMeshData(probeCfg);
+        const outerRings = extractOuterRingsFromHostMesh(probeCfg, hostMesh);
+        if (!outerRings.length) {
+            return {
+                rings: [],
+                probeCfg,
+                height: Math.max(0.1, cfg.plateHeight || 1.5),
+                hostDiameter: 1.0
+            };
         }
 
-        let maxRadius = 0;
-        const fallbackProfile = [];
-        for (let i = 0; i < resT; i++) {
-            const theta = (2 * Math.PI * i) / resT;
-            const point = bins[i];
-            if (point) {
-                if (point.r > maxRadius) maxRadius = point.r;
-                fallbackProfile.push({ x: point.x, z: point.z });
-            } else {
-                fallbackProfile.push({ x: probeCfg.R * Math.cos(theta), z: -probeCfg.R * Math.sin(theta) });
-            }
+        let yTop = -Infinity;
+        let yBottom = Infinity;
+        outerRings.forEach(ring => {
+            if (ring.meanY > yTop) yTop = ring.meanY;
+            if (ring.meanY < yBottom) yBottom = ring.meanY;
+        });
+
+        const height = Math.max(0.1, cfg.plateHeight || 1.5);
+        const yBase = Math.max(yBottom, yTop - height);
+
+        let selected = outerRings
+            .filter(ring => ring.meanY >= yBase - 1e-6 && ring.meanY <= yTop + 1e-6)
+            .sort((a, b) => a.meanY - b.meanY);
+
+        if (!selected.length) {
+            const nearest = outerRings.reduce((best, ring) => {
+                const d = Math.abs(ring.meanY - yTop);
+                return (!best || d < best.d) ? { d, ring } : best;
+            }, null);
+            selected = nearest ? [nearest.ring] : [];
         }
 
-        for (let i = 0; i < resT; i++) {
-            if (bins[i]) continue;
-            for (let step = 1; step < resT; step++) {
-                const prev = bins[(i - step + resT) % resT];
-                const next = bins[(i + step) % resT];
-                if (prev && next) {
-                    bins[i] = {
-                        x: 0.5 * (prev.x + next.x),
-                        z: 0.5 * (prev.z + next.z),
-                        r: 0.5 * (prev.r + next.r)
-                    };
-                    break;
-                }
-                if (prev || next) {
-                    const fill = prev || next;
-                    bins[i] = { x: fill.x, z: fill.z, r: fill.r };
-                    break;
-                }
-            }
-            if (!bins[i]) {
-                const fb = fallbackProfile[i];
-                const r = Math.sqrt(fb.x * fb.x + fb.z * fb.z);
-                bins[i] = { x: fb.x, z: fb.z, r };
-            }
-            if (bins[i].r > maxRadius) maxRadius = bins[i].r;
-        }
+        const span = Math.max(1e-6, yTop - yBase);
+        selected.forEach(ring => {
+            ring.localY = ((ring.meanY - yBase) / span) * height;
+        });
 
-        const profile = bins.map(pt => ({ x: pt.x, z: pt.z }));
-        const centroid = profile.reduce((acc, pt) => {
-            acc.x += pt.x;
-            acc.z += pt.z;
-            return acc;
-        }, { x: 0, z: 0 });
-        centroid.x /= Math.max(1, profile.length);
-        centroid.z /= Math.max(1, profile.length);
-
-        const bounds = computePlateProfileBounds(profile);
+        const topRing = selected[selected.length - 1];
+        const hostDiameter = Math.max(1.0, topRing.bounds.nominalDiameter);
 
         return {
-            profile,
-            centroid,
-            maxRadius: Math.max(0.5, maxRadius),
-            hostDiameter: Math.max(1.0, bounds.nominalDiameter),
-            resT
+            rings: selected,
+            probeCfg,
+            height,
+            hostDiameter
         };
     }
 
@@ -1106,47 +1487,77 @@ const distortionPresets = {
             return (vertices.length / 3) - 1;
         };
 
-        const hostProfile = computePlateHostProfile(cfg);
-        const outerOffset = cfg.plateClearance * 0.5;
+        const plateSeries = buildPlateProfileSeries(cfg);
+        const height = plateSeries.height;
         const rimInset = Math.max(0.2, Math.min(0.45, cfg.w));
-        const innerOffset = outerOffset - rimInset;
-        const outerProfile = offsetProfileFromCentroid(hostProfile.profile, hostProfile.centroid, outerOffset);
-        const innerProfile = offsetProfileFromCentroid(hostProfile.profile, hostProfile.centroid, innerOffset);
-
-        const height = cfg.plateHeight || 1.5;
-        const baseThickness = Math.max(0.25, Math.min(height - 0.1, cfg.w || 0.35));
+        const baseThickness = Math.max(0.1, Math.min(height - 0.1, cfg.bottomThickness || 0.5));
         const color = hexToRgb01(cfg.baseColor);
-        const resT = hostProfile.resT;
+        const clearanceOffset = cfg.plateClearance * 0.5;
+        const flareOffset = Math.max(0, Math.tan(cfg.plateOpeningAngleRad || 0) * height);
+        const radiusExtra = cfg.plateRadiusExtra || 0;
 
-        const ob = [], ot = [], ib = [], it = [];
-        for (let i = 0; i < resT; i++) {
-            const outerPt = outerProfile[i];
-            const innerPt = innerProfile[i];
-            ob.push(addV(outerPt.x, 0, outerPt.z, color));
-            ot.push(addV(outerPt.x, height, outerPt.z, color));
-            ib.push(addV(innerPt.x, baseThickness, innerPt.z, color));
-            it.push(addV(innerPt.x, height, innerPt.z, color));
+        const outerIdx = [];
+        const innerIdx = [];
+        let baseCentroid = { x: 0, z: 0 };
+        let topOuterBounds = null;
+
+        plateSeries.rings.forEach((ring, ringIndex) => {
+            const t = height > 1e-9 ? (ring.localY / height) : 0;
+            const radialOffset = clearanceOffset + radiusExtra + (flareOffset * t);
+            const outerProfile = offsetProfileFromCentroid(ring.profile, ring.centroid, radialOffset);
+            const innerProfile = offsetProfileFromCentroid(outerProfile, ring.centroid, -rimInset);
+            const outerRow = [];
+            const innerRow = [];
+            const innerY = baseThickness + t * (height - baseThickness);
+
+            if (ringIndex === 0) baseCentroid = ring.centroid;
+            if (ringIndex === plateSeries.rings.length - 1) topOuterBounds = computePlateProfileBounds(outerProfile);
+
+            for (let it = 0; it < outerProfile.length; it++) {
+                const outerPt = outerProfile[it];
+                const innerPt = innerProfile[it];
+                outerRow.push(addV(outerPt.x, ring.localY, outerPt.z, color));
+                innerRow.push(addV(innerPt.x, innerY, innerPt.z, color));
+            }
+            outerIdx.push(outerRow);
+            innerIdx.push(innerRow);
+        });
+
+        const centerBottom = addV(baseCentroid.x, 0, baseCentroid.z, color);
+        const centerFloor = addV(baseCentroid.x, baseThickness, baseCentroid.z, color);
+
+        for (let iv = 0; iv < outerIdx.length - 1; iv++) {
+            for (let it = 0; it < outerIdx[iv].length; it++) {
+                const it1 = (it + 1) % outerIdx[iv].length;
+                indices.push(
+                    outerIdx[iv][it], outerIdx[iv + 1][it], outerIdx[iv + 1][it1],
+                    outerIdx[iv][it], outerIdx[iv + 1][it1], outerIdx[iv][it1]
+                );
+                indices.push(
+                    innerIdx[iv][it], innerIdx[iv][it1], innerIdx[iv + 1][it1],
+                    innerIdx[iv][it], innerIdx[iv + 1][it1], innerIdx[iv + 1][it]
+                );
+            }
         }
-        const centerBottom = addV(hostProfile.centroid.x, 0, hostProfile.centroid.z, color);
-        const centerFloor = addV(hostProfile.centroid.x, baseThickness, hostProfile.centroid.z, color);
 
-        for (let i = 0; i < resT; i++) {
-            const n = (i + 1) % resT;
-            indices.push(ob[i], ob[n], ot[n], ob[i], ot[n], ot[i]); // outer wall
-            indices.push(centerBottom, ob[n], ob[i]); // bottom
-            indices.push(ot[i], ot[n], it[n], ot[i], it[n], it[i]); // top rim
-            indices.push(ib[i], it[n], ib[n], ib[i], it[i], it[n]); // inner wall
-            indices.push(centerFloor, ib[i], ib[n]); // cavity floor
+        const lastOuter = outerIdx[outerIdx.length - 1];
+        const lastInner = innerIdx[innerIdx.length - 1];
+        const firstOuter = outerIdx[0];
+        const firstInner = innerIdx[0];
+
+        for (let it = 0; it < lastOuter.length; it++) {
+            const it1 = (it + 1) % lastOuter.length;
+            indices.push(lastOuter[it], lastOuter[it1], lastInner[it1], lastOuter[it], lastInner[it1], lastInner[it]);
+            indices.push(centerBottom, firstOuter[it1], firstOuter[it]);
+            indices.push(centerFloor, firstInner[it], firstInner[it1]);
         }
-
-        const outerBounds = computePlateProfileBounds(outerProfile);
 
         return {
             vertices,
             indices,
             colors,
-            plateOuterDiameter: Math.max(1.0, outerBounds.nominalDiameter),
-            plateHostDiameter: hostProfile.hostDiameter,
+            plateOuterDiameter: Math.max(1.0, (topOuterBounds ? topOuterBounds.nominalDiameter : plateSeries.hostDiameter)),
+            plateHostDiameter: plateSeries.hostDiameter,
             plateHeight: height
         };
     }
@@ -2385,7 +2796,7 @@ ${trianglesXml.join('\n')}
                     currentObject = new THREE.Mesh(geometry, material);
                     scene.add(currentObject);
                     if (cfg.isPlate) {
-                        setStatus(`Plate preview | Host ${(meshData.plateHostDiameter).toFixed(2)} cm | Outer ${(meshData.plateOuterDiameter).toFixed(2)} cm | Height ${(meshData.plateHeight).toFixed(2)} cm`, '');
+                        setStatus(`Plate preview | Host ${(meshData.plateHostDiameter).toFixed(2)} cm | Outer ${(meshData.plateOuterDiameter).toFixed(2)} cm | Height ${(meshData.plateHeight).toFixed(2)} cm | outer-ring plate sampling`, '');
                     } else {
                         setStatus("Preview generated.", '');
                     }
