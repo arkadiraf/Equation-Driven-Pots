@@ -1,390 +1,304 @@
 # Equation-Driven Pots
 
-[**Open the online tools**](https://arkadiraf.github.io/Equation-Driven-Pots-App/)
+Equation-Driven Pots is a math-based 3D design project for generating printable pots, vessels, plates, and related forms from equations.
 
-**Equation-Driven Pots** is a design project for generating functional, 3D-printable plant pots from mathematical equations.
+Instead of sculpting a shape manually, the project defines geometry through sampled mathematical fields in cylindrical or spherical coordinates. That makes it possible to design objects by controlling radial form, texture, color masks, field modifiers, and spatial distortions with equations.
 
-Instead of sculpting a vessel manually, the project defines form through radius fields such as:
+## Live unified GUI
 
-- `r(z, θ)` for cylindrical workflows
-- `r(θ, φ)` for spherical workflows
+The main browser tool is now the unified **Equation Driven Pot Designer**, available here:
 
-where:
+[Equation Driven Pot Designer](https://arkadiraf.github.io/Equation-Driven-Pots/)
 
-- `z` is vertical height
-- `θ` is the angle around the form
-- `φ` is the polar angle in spherical coordinates
-- `r` is the radius at that point
+![Equation Driven Pot Designer](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/Images/EquationDrivenPotDesigner.jpg?raw=true)
 
-By changing the math, the tools can produce printable vessels that are smooth, ribbed, lobed, twisted, patterned, textured, or highly experimental.
+This all-in-one GUI brings the current browser workflow together in a single interface. It includes:
 
----
+- cylindrical and spherical coordinate modes
+- base scaffold libraries
+- structural geometry controls
+- surface texture controls
+- dual color-mask pattern logic
+- plate and pot+plate generation
+- STL and multi-part 3MF export
+- two experimental math tools:
+  - **Field Modifier**
+  - **Field Distortion**
 
-## Project focus
+The current unified GUI exposes those experimental tools directly in the sidebar as separate sections after the core pot workflow, so they can be layered on top of the main design rather than used as a completely separate app.
 
-This repository now centers on the HTML / JavaScript tools.
+## Core idea
 
-The Python scripts remain important as the basis of the project and as the foundation for the Fusion 360 sweep workflow, but the main user-facing experience is now the browser-based designers.
-
----
-
-## How it works
-
-At the core, the tools sample a user-defined equation over a grid and convert the result into printable geometry.
-
-Depending on the workflow, the generated object may include:
-
-- an outer shell
-- an inner shell
-- a base or bottom surface
-- drainage openings
-- texture displacement
-- pattern-separated regions
-- closed meshes for `.stl`
-- grouped parts for multi-part `.3mf`
-
-A useful way to think about the project is:
-
-- **base field** → defines the main vessel shape
-- **texture field** → adds surface relief
-- **pattern / mask fields** → split the surface into printable regions
-- **guided sweep controls** → generate more directed spatial forms
-
----
-
-## Current tools
-
-### 1. [Textured Pot Designer](./JavaScript/TexturedPotDesigner.html)
-
-![Textured Pot Designer](Images/TexturedPotDesigner.jpg)
-
-The unified textured designer is the main general-purpose pot tool.
-
-**What it does**
-
-- Supports both cylindrical and spherical coordinate systems in one interface
-- Separates the main form from the texture displacement field
-- Lets you switch between equation systems without switching tools
-- Exports printable meshes directly from the browser
-
-**Best for**
-
-- core equation-driven pot design
-- switching between `r(z, θ)` and `r(θ, φ)`
-- exploring surface texture on top of a stable base form
-
----
-
-### 2. [Quad Color Pot Designer](./JavaScript/QuadColorPotDesigner.html)
-
-![Quad Color Pot Designer](Images/QuadColorPotDesigner.jpg)
-
-This tool introduced layered pattern logic and four printable surface states.
-
-**What it does**
-
-- Builds on the textured workflow with two independent pattern masks
-- Defines four printable surface states:
-  - base only
-  - pattern A only
-  - pattern B only
-  - overlap of A and B
-- Exports grouped multi-part `.3mf` assemblies for multi-filament workflows
-- Also supports `.stl` export for standard mesh workflows
-
-**Best for**
-
-- color-separated surface design
-- dual-mask pattern logic
-- slicer-friendly grouped output
-
----
-
-### 3. [Nonlinear Field Pot Designer](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/JavaScript/NonlinearFieldPotDesigner.html)
-
-![Nonlinear Field Pot Designer](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/Images/NonlinearFieldPotDesigner.jpg?raw=true)
-
-This is the newest and most experimental tool in the project.
-
-It keeps the equation-driven shell workflow but pushes it into more nonlinear territory with wrapped domains, stepped phase changes, inverse trig, saturation, quasi-periodic interference, and more aggressive field behavior.
-
-**What it does**
-
-- Extends the pot workflow with nonlinear field presets
-- Explores operations such as:
-  - `atan`
-  - `asin`
-  - `mod`
-  - `floor`
-  - `log`
-  - domain warping
-  - quasi-periodic and layered harmonic fields
-- Combines advanced form generation with texture and pattern logic
-- Supports browser preview and printable export workflows
-
-**Best for**
-
-- more surprising and less repetitive equation-driven forms
-- nonlinear and transcendental field experiments
-- exploratory shape generation beyond the more stable quad-color workflow
-
-> **Note:** this tool is more experimental and less stable than the earlier designers. Some parameter combinations can generate invalid or broken geometry.
-
----
-
-### 4. [Sweep Designer](./JavaScript/SweepDesigner.html)
-
-![Sweep Designer](Images/3DSweepDesignerHTML.jpg)
-
-The sweep workflow moves beyond pure radial pot generation and into guided spatial form development.
-
-**What it does**
-
-- Generates guided swept forms in the browser
-- Produces more directed, path-based geometry than the radial pot tools
-- Exports meshes that can be continued in downstream modeling workflows
-
-**Fusion 360 companion**
-
-The sweep workflow pairs with [`Python/Fusion360/3d MathSweep Studio.py`](./Python/Fusion360/3d%20MathSweep%20Studio.py), which reconstructs sweep-based forms as editable Fusion 360 geometry.
-
-**Best for**
-
-- guided form development
-- more directed 3D shape control
-- workflows that continue from lightweight mesh exploration into editable CAD geometry
-
----
-
-## Tool progression
-
-A simple way to read the project is as a progression of design layers:
-
-1. **Textured Pot Designer** — stable base-form and texture workflow
-2. **Quad Color Pot Designer** — adds dual-mask pattern separation and four printable states
-3. **Nonlinear Field Pot Designer** — pushes the field logic into more experimental nonlinear behavior
-4. **Sweep Designer** — shifts from radial pot generation to guided swept forms and CAD continuation
-
----
-
-## Equation examples
-
-### Cylindrical base field
-
-```text
-R * (1 + 0.22 * cos(5 * theta + pi * z / 10))
-```
-
-### Spherical base field
-
-```text
-R * (1 + 0.18 * cos(2 * theta) * pow(sin(phi), 1.8))
-```
-
-### Texture field
-
-```text
-0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)
-```
-
-### Nonlinear field example
-
-```text
-R * (1 + 0.16 * atan(6 * cos(10 * theta + 2*pi*v)))
-```
-
-These equations are sampled across a mesh grid and turned into printable geometry.
-
----
-
-## Pot equations
-
-A larger collection of cylindrical and spherical equations is available here:
-
-[Pot Equations Spreadsheet](https://docs.google.com/spreadsheets/d/e/2PACX-1vRYxQRyGNsDuxl4WaNONKAniyfK-77zSTJY7q4plz88dK7fTNcIbU8814u9wOJ2o2BI10GwCpFbcP3U/pubhtml?widget=true&headers=false)
-
-## AI equation generator prompt
-
-If you already know the kind of pot or surface behavior you want, you can also use the project’s equation generator prompt:
-
-[Equation Generator Prompt](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/EquationGeneratorPrompt.txt)
-
-This prompt helps turn a natural-language design idea into implementation-ready equations for the project tools. It is useful when you want to describe a form such as a twisted flower vase, a ribbed shell, a nonlinear crown, or a color-separated patterned pot and quickly get equations that fit the selected GUI.
-
-The prompt is especially useful as a starting point before fine-tuning the equations directly inside the browser tools.
-
----
-
-
-## Experimental math for 3D design
-
-In addition to the more stable pot workflows, the project also explores **experimental mathematical design layers** that change how fields are sampled, not just what equations are used.
-
-### [Field Modifier Pot Designer](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/JavaScript/FieldModifierPotDesigner.html)
-
-The **Field Modifier Pot Designer** extends the equation-driven pot workflow by introducing a modifier field that remaps the sampled coordinates before the main equations are evaluated.
-
-Instead of only defining a base radius field such as:
+For cylindrical designs, the main shape is sampled from a field such as:
 
 ```text
 r = f(theta, z, v, R)
 ```
 
-the field modifier workflow adds an intermediate remapping step and then evaluates the selected field using the modified coordinates.
+For spherical designs, the main shape is sampled from a field such as:
 
-### Core modifier idea
+```text
+r = f(theta, phi, v, R)
+```
 
-For angular remapping, the workflow behaves like:
+Where:
+
+- `theta` is the angle around the object
+- `z` is the sampled vertical coordinate in cylindrical mode
+- `phi` is the polar coordinate in spherical mode
+- `v` is the normalized vertical progression from `0` to `1`
+- `R` is the base radius parameter
+
+The project then builds printable geometry such as outer walls, inner walls, bottoms, drainage openings, and closed shells from those sampled fields.
+
+## Unified browser workflow
+
+The current browser workflow is built around four main design layers:
+
+### 1. Base scaffold
+
+The base scaffold defines the main silhouette of the form.
+
+This can be:
+- geometric
+- floral
+- folded
+- nonlinear
+- interference-based
+
+Examples include polygonal sections, petal blooms, rounded-square scaffolds, layered harmonic growth, wrapped modular panels, and nonlinear compressed forms.
+
+### 2. Structural geometry
+
+The structural layer turns the field into an actual printable object.
+
+This includes:
+- designed figure mode
+- functional pot mode
+- functional plate mode
+- pot + plate mode
+- wall thickness
+- bottom thickness
+- drainage controls
+- spherical cut settings
+- plate height and plate sizing controls
+
+This is where the project shifts from pure surface design into usable 3D-printable objects.
+
+### 3. Surface texture
+
+Texture is applied as a separate field on top of the base scaffold.
+
+Conceptually:
+
+```text
+final radius = base radius + texture displacement
+```
+
+This separation keeps the main silhouette and the surface relief independent. One equation can define the vessel body while another adds ribs, weave, terracing, nonlinear compression, or carved interference.
+
+### 4. Dual pattern color layer
+
+Two mask equations define up to four printable color states:
+
+- neither pattern
+- pattern A only
+- pattern B only
+- overlap of A and B
+
+This allows the GUI to produce more structured multi-color results without requiring the base form itself to become overly complex.
+
+## Experimental math tools
+
+The unified GUI now includes two experimental design layers that push the project beyond static equation-defined surfaces.
+
+### Field Modifier
+
+The **Field Modifier** changes where a field is sampled before it is evaluated.
+
+In its current form, the main idea is:
 
 ```text
 theta' = theta + strength * M(theta, z, v)
-r = f(theta', z, v, R)
 ```
 
-This is the most pot-safe modifier mode and is still the best default when the goal is to preserve a printable vessel silhouette while making the surface logic drift, rotate, or fold.
+and the selected field is then evaluated using the modified coordinate.
 
-The current tool now also supports remapping other sampled coordinates:
+This allows effects such as:
 
-#### Cylindrical coordinate mode
+- twist drift
+- crown rotation
+- petal migration
+- diagonal braid motion
+- rim-localized activity
+- regional modifier windows
+
+Field modifiers are useful when the shape should still behave like a pot, but the sampled structure should drift, rotate, fold, or migrate through the body.
+
+### Field Distortion
+
+The newer **Field Distortion** layer works differently.
+
+Instead of changing where the field is sampled, it changes where the generated body exists in world space after the field has already been evaluated.
+
+Conceptually:
 
 ```text
-theta' = theta + strength * M(theta, z, v)
-z' = z + strength * H(theta, z, v)
-v' = v + strength * Q(theta, z, v)
+x' = x + Dx
+y' = y + Dy
+z' = z + Dz
 ```
 
-#### Spherical coordinate mode
+This opens up more physical and sculptural behaviors such as:
 
-```text
-theta' = theta + strength * M(theta, phi, v)
-phi' = phi + strength * H(theta, phi, v)
-v' = v + strength * Q(theta, phi, v)
-```
+- wind bend
+- gravity sag
+- swirl and vortex motion
+- torsion in the `x-z` plane
+- crown turning
+- local pressure dents
+- hand-formed asymmetry
 
-This means the modifier is no longer limited to angular drift. It can now change:
-- the angular sampling
-- the sampled height or polar angle
-- the normalized vertical progression through the form
+In the current unified GUI, distortion presets are grouped by type such as:
 
-### What this means in 3D design
+- wind
+- gravity
+- swirl
+- torsion
+- pressure
+- custom
 
-The earlier tools mainly change the **value** of a field:
-- the base equation changes the overall silhouette
-- the texture equation changes the surface displacement
-- the pattern equations change the selected color regions
+That is an important expansion of the project. The design process is no longer limited to changing radial equations alone. The project now supports both **field-based shape generation** and **post-field spatial deformation** inside the same browser tool.
 
-The field modifier changes the **sampling location** of those fields.
+## Why the experimental tools matter
 
-That makes it possible to create:
-- drifting ribs
-- migrating petals
-- twisting crowns
-- rim-focused folds
-- angular shearing
-- vertical timing shifts
-- feature motion that changes along the height of the pot
+The two experimental tools expand the project in two different directions:
 
-without abandoning the pot-oriented structure of the model.
+- **Field Modifier** changes the sampled coordinates used by the field.
+- **Field Distortion** changes the generated body in world XYZ space.
 
-### Field target logic
+Field modifiers are ideal for:
+- rotational drift
+- petal motion
+- remapped symmetry
+- region-aware field behavior
 
-The current Field Modifier Pot Designer supports both a **modified coordinate** and a **field target**.
+Field distortions are ideal for:
+- wind-like lean
+- fluid twist
+- torsion
+- pressure and denting
+- more tactile or physically suggestive deformations
 
-The modifier can be applied to:
-- base shape only
-- texture only
-- patterns only
-- all supported fields
+Together, they move the project from “equation-defined pots” toward a broader system of **equation-driven 3D design** while still keeping printability and object function central.
 
-This makes it possible to keep the pot silhouette stable while shifting only the texture or pattern logic, or to push the entire form through the modifier field when a more dramatic result is desired.
+## Main browser tools
 
-### Practical examples
+The repository currently centers on a small set of browser tools:
 
-Two good examples from the current modifier presets are:
+### [Equation Driven Pot Designer](./JavaScript/EquationDrivenPotDesigner.html)
 
-- **Crown Rotation**  
-  concentrates the modifier near the upper body, making the crown region drift and rotate more strongly than the lower body.
+The current all-in-one browser GUI.
 
-- **Rim Fold**  
-  localizes the modifier near the rim, producing a folded or pulled upper edge while keeping most of the pot calmer and more printable.
+**Purpose**
+- unified cylindrical and spherical workflow
+- textured equation-driven design
+- dual-mask color logic
+- structural pot / plate / pot+plate generation
+- experimental field modifier and field distortion layers
+- STL and multi-part 3MF export
 
-These examples show why field modifiers are useful: the math can become spatially expressive without forcing the whole form into chaos.
+### [Textured Pot Designer](./JavaScript/TexturedPotDesigner.html)
 
-### Why this matters
+The stable browser-based textured pot designer.
 
-Field modifiers are a natural next step after nonlinear math.
+**Purpose**
+- cylindrical and spherical pot design in one interface
+- separate base and texture equations
+- practical and stable workflow for printable forms
 
-Nonlinear math changes the field itself through operations such as saturation, wrapping, stepped phase behavior, or logarithmic compression. Field modifiers change **where** the field is sampled. That produces a different kind of complexity: not just stronger equations, but moving equations.
+### [Quad Color Pot Designer](./JavaScript/QuadColorPotDesignerMobile.html)
 
-This opens up a richer design space while still keeping:
-- cylindrical and spherical pot workflows
-- functional pot generation
-- texture and pattern logic
-- grouped export workflows
-- a math-first modeling approach
+The browser-based color-pattern workflow that introduced layered mask logic.
 
-### Experimental status
+**Purpose**
+- combine base shape, texture, and two mask equations
+- produce four printable color states from two fields
+- explore multi-material / multi-color styling
 
-The field modifier workflow is intentionally experimental.
+### [Sweep Designer](./JavaScript/SweepDesigner.html)
 
-It is designed to explore how mathematical coordinate remapping can become a practical 3D design method for printable objects. It is more controlled than a general deformation system, but it still opens a more exploratory branch of the project than the main textured and quad-color tools.
+The guided sweep workflow for more path-driven 3D forms.
 
-As this branch develops, it will likely become the foundation for further work in:
-- regional field activity
-- modifier stacks
-- field-specific targeting
-- more expressive but still printable math-based form generation
+**Purpose**
+- create swept forms with more explicit path/profile logic
+- serve as a bridge toward Fusion-based reconstruction and CAD continuation
 
----
+## Python and Fusion scripts
 
-## Gallery
+The repository still includes the earlier Python and Fusion tools that formed the basis of the project.
 
-### Cylindrical designs
+These remain useful as reference implementations, alternate workflows, and foundations for future extensions:
 
-![Pot Designs Grid](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/Images/pot_designs_3xn_grid.jpg?raw=true)
+- command-line pot generation
+- Tkinter GUI
+- Dash web interface
+- PyVista preview GUI
+- Fusion 360 MathSweep Studio
 
-### Spherical design summary
+The browser tools are now the main public-facing workflow, but the Python and Fusion scripts still show how the project evolved and remain useful for experimentation and reconstruction workflows.
 
-![Spherical Design Summary](Images/spherical_design_summary.jpg)
+## Equation generator prompt
 
-Example 3D models for the spherical workflow are hosted here:
+The repository also includes an AI prompt file that helps turn a design description into equations for the pot-design GUIs:
 
-[Equation-Driven Pots on Thingiverse](https://www.thingiverse.com/thing:7327538)
+[EquationGeneratorPrompt.txt](./EquationGeneratorPrompt.txt)
 
----
+This prompt can help users describe the kind of pot or form they want and receive implementation-ready equations for the relevant interface.
+
+## How the project has evolved
+
+The browser side of the project has gradually expanded in layers:
+
+1. equation-defined radial pot generation
+2. unified cylindrical + spherical workflows
+3. texture displacement
+4. dual-mask color logic
+5. nonlinear field equations
+6. field modifiers
+7. field distortion
+8. structural plate and pot+plate generation in the unified GUI
+
+That progression matters because the project is still fundamentally math-based. Even as the forms become more complex, the workflow remains centered on sampled mathematical fields rather than manual sculpting.
 
 ## Output
 
-Depending on the tool, the project supports:
+The current browser tools support:
 
-- `.stl`
-- `.obj`
-- grouped multi-part `.3mf`
+- STL export
+- multi-part 3MF export
 
-These outputs can be opened in slicers and modeling tools such as Blender, MeshLab, PrusaSlicer, and Cura.
+These outputs can be opened in tools such as:
 
----
+- PrusaSlicer
+- Cura
+- Blender
+- MeshLab
+- other modeling or slicing tools
 
-## 3D printing notes
+## Design and print notes
 
 For better results:
 
-- keep wall thickness large enough for your nozzle and material
-- avoid equations that produce negative or near-zero radii
-- increase mesh resolution for higher-frequency patterns
-- inspect the mesh before slicing
-- test smaller versions before printing full-size pots
+- keep wall thickness appropriate for your nozzle and material
+- avoid equations that create negative or near-zero radii
+- increase angular resolution for sharp high-frequency detail
+- keep modifier and distortion strengths moderate unless intentionally exploring extreme forms
+- inspect multi-part exports carefully when combining pots and plates
+- prototype smaller prints first before scaling up
 
----
+## Why this project
 
-## Why this project?
+Equation-Driven Pots treats mathematics as a direct design medium.
 
-Equation-Driven Pots treats mathematics as a fabrication workflow.
-
-The project connects procedural form, browser-based interactive design, printable mesh generation, multi-part color workflows, and CAD continuation inside one evolving set of design tools.
-
----
-
-## License
-
-This repository is licensed under GPL-3.0.
+It is not just about describing forms mathematically after the fact. The equations are the design process itself. The newer unified GUI extends that idea further by combining stable printable vessel generation with more experimental field-based and distortion-based workflows in a single browser interface.
