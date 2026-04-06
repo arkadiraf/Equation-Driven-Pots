@@ -736,7 +736,8 @@ const libraries = {
         "Pod Orb": { type: "primitive", eq: "R * (1 + 0.18*cos(phi) - 0.12*cos(2*phi) + 0.04*cos(3*phi))", desc: "An elongated organic pod shape with soft top-to-bottom directional bias." },
         "Lantern Sphere": { type: "primitive", eq: "R * (1 + 0.18*pow(sin(phi), 2) - 0.06*pow(sin(phi), 4))", desc: "A lantern-like orb with a full middle and gently tightened poles." },
         "Squashed Drop": { type: "primitive", eq: "R * (1 + 0.18*cos(phi) - 0.10*sin(phi) - 0.05*cos(2*phi))", desc: "A softened droplet form with more lower-body fullness and a slightly compressed silhouette." },
-        
+        "Pointed Diamond Orb": { type: "primitive", eq: "R / (pow(pow(abs(sin(phi) * cos(2 * theta)), 40) + pow(abs(sin(phi) * sin(2 * theta)), 40), 0.025) + abs(cos(phi)))", desc: "Pointed diamond-like spherical shell with a sharpened equatorial body and compressed poles." },
+       
         // floral
         "Dipole (Two Petals)": { type: "floral", eq: "R * (1 + 0.24 * cos(2 * theta) * pow(sin(phi), 1.5))", desc: "Two-lobed spherical bloom strongest around the equatorial region." },
         "3-Petal Flower": { type: "floral", eq: "R * (1 + 0.22 * cos(3 * theta) * pow(sin(phi), 1.5))", desc: "Three-lobed floral shell with petals wrapped around the body." },
