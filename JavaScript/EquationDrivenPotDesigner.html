@@ -329,7 +329,7 @@
 
     <div id="cylindricalPotSettings" class="pot-settings">
         <div class="grid-inputs">
-            <div class="input-group"><label>Drain Radius (cm)</label><input type="number" id="cylDrain" value="0.5" step="0.1" oninput="updatePreview()"></div>
+            <div class="input-group"><label>Drain Radius (cm)</label><input type="number" id="cylDrain" value="0.5" step="0.1" min="0" oninput="updatePreview()"></div>
         </div>
     </div>
 
@@ -1592,76 +1592,6 @@ const distortionPresets = {
         dropzone.classList.toggle('is-dragover', !!isDragOver);
     }
 
-    function extractFirstTopLevelJsonBlock(rawText) {
-        const textValue = String(rawText ?? '');
-        const objectStart = textValue.indexOf('{');
-        const arrayStart = textValue.indexOf('[');
-
-        let start = -1;
-        let openChar = '';
-        let closeChar = '';
-
-        if (objectStart === -1 && arrayStart === -1) {
-            throw new Error('No JSON opening bracket found.');
-        }
-        if (objectStart === -1 || (arrayStart !== -1 && arrayStart < objectStart)) {
-            start = arrayStart;
-            openChar = '[';
-            closeChar = ']';
-        } else {
-            start = objectStart;
-            openChar = '{';
-            closeChar = '}';
-        }
-
-        let depth = 0;
-        let inString = false;
-        let escapeNext = false;
-
-        for (let i = start; i < textValue.length; i++) {
-            const ch = textValue[i];
-
-            if (inString) {
-                if (escapeNext) {
-                    escapeNext = false;
-                } else if (ch === '\\') {
-                    escapeNext = true;
-                } else if (ch === '"') {
-                    inString = false;
-                }
-                continue;
-            }
-
-            if (ch === '"') {
-                inString = true;
-                continue;
-            }
-
-            if (ch === openChar) {
-                depth += 1;
-            } else if (ch === closeChar) {
-                depth -= 1;
-                if (depth === 0) {
-                    return {
-                        jsonText: textValue.slice(start, i + 1),
-                        leadingText: textValue.slice(0, start),
-                        trailingText: textValue.slice(i + 1)
-                    };
-                }
-            }
-        }
-
-        throw new Error('JSON appears incomplete.');
-    }
-
-    function parseLooseAIJson(rawText) {
-        const extracted = extractFirstTopLevelJsonBlock(rawText);
-        return {
-            ...extracted,
-            parsed: JSON.parse(extracted.jsonText)
-        };
-    }
-
     function loadAIJsonText(rawText, sourceLabel = 'file') {
         const input = document.getElementById('aiJsonInput');
         if (!input) return;
@@ -1674,14 +1604,8 @@ const distortionPresets = {
         }
         const label = sourceLabel.charAt(0).toUpperCase() + sourceLabel.slice(1);
         try {
-            const parsedResult = parseLooseAIJson(textValue);
-            const ignoredExtraText = parsedResult.leadingText.trim() || parsedResult.trailingText.trim();
-            setAIJsonFeedback(
-                ignoredExtraText
-                    ? `${label} loaded. Extra text outside the JSON will be ignored when you click Apply JSON.`
-                    : `${label} loaded. Click Apply JSON to populate the designer.`,
-                'success'
-            );
+            JSON.parse(textValue);
+            setAIJsonFeedback(`${label} loaded. Click Apply JSON to populate the designer.`, 'success');
             setStatus('AI JSON file loaded.', '');
         } catch (error) {
             setAIJsonFeedback(`${label} loaded, but it is not valid JSON yet: ${error.message}`, 'error');
@@ -1852,16 +1776,8 @@ const distortionPresets = {
         if (!input) return;
 
         let parsed;
-        let extractedJsonText = '';
-        let ignoredExtraText = false;
         try {
-            const parsedResult = parseLooseAIJson(input.value);
-            parsed = parsedResult.parsed;
-            extractedJsonText = parsedResult.jsonText;
-            ignoredExtraText = !!(parsedResult.leadingText.trim() || parsedResult.trailingText.trim());
-            if (ignoredExtraText) {
-                input.value = extractedJsonText;
-            }
+            parsed = JSON.parse(input.value);
         } catch (error) {
             setAIJsonFeedback(`Invalid JSON: ${error.message}`, 'error');
             setStatus('AI JSON could not be parsed.', 'error');
@@ -2015,8 +1931,7 @@ const distortionPresets = {
         updatePreview();
         const configName = getConfiguredPotName() || getAIValue(config, ['name', 'title']) || 'AI JSON';
         const filenameNote = getConfiguredPotName() ? ` Export files will use "${getConfiguredPotName()}".` : '';
-        const ignoredTextNote = ignoredExtraText ? ' Extra text outside the JSON was ignored.' : '';
-        setAIJsonFeedback(`Applied ${configName}. The form fields and equations have been updated.${filenameNote}${ignoredTextNote}`, 'success');
+        setAIJsonFeedback(`Applied ${configName}. The form fields and equations have been updated.${filenameNote}`, 'success');
         setStatus(`AI JSON applied | ${configName}`, '');
         closeAIAssistanceWindow();
     }
@@ -2331,7 +2246,7 @@ const distortionPresets = {
             plateSphericalBaseOffset: parseFloat(document.getElementById('plateSphericalBaseOffset')?.value) || 0,
             plateClearance: 1.0,
             cylBase: bottomThickness,
-            cylDrain: parseFloat(document.getElementById('cylDrain').value) || 0.5,
+            cylDrain: document.getElementById('cylDrain').value === "" ? 0.5 : parseFloat(document.getElementById('cylDrain').value),
             sphTopCut: (parseFloat(document.getElementById('sphTopCut').value) || 25) * (Math.PI / 180),
             sphBotFlatten: (parseFloat(document.getElementById('sphBotFlatten').value) || 150) * (Math.PI / 180),
             sphBotCut: (parseFloat(document.getElementById('sphBotCut').value) || 175) * (Math.PI / 180)
@@ -3161,6 +3076,7 @@ ${trianglesXml.join('\n')}
         const phiStart = cfg.isPot ? cfg.sphTopCut : 0.001;
         const phiEnd = cfg.isPot ? cfg.sphBotCut : Math.PI - 0.001;
         const flatBottomY = cfg.R * Math.cos(cfg.sphBotFlatten);
+        const innerBottomY = flatBottomY + Math.max(0.05, cfg.bottomThickness || cfg.w || 0.1);
 
         for (let iv = 0; iv <= cfg.resV; iv++) {
             const phi = phiStart + (phiEnd - phiStart) * (iv / cfg.resV);
@@ -3183,9 +3099,13 @@ ${trianglesXml.join('\n')}
                 let iZ = rIn * Math.sin(phi) * Math.sin(theta);
                 let iY = rIn * Math.cos(phi);
 
-                if (cfg.isPot && (phi >= cfg.sphBotFlatten || oY < flatBottomY)) {
-                    oY = flatBottomY;
-                    iY = flatBottomY + cfg.w;
+                if (cfg.isPot) {
+                    if (phi >= cfg.sphBotFlatten || oY < flatBottomY) {
+                        oY = flatBottomY;
+                    }
+                    if (iY < innerBottomY) {
+                        iY = innerBottomY;
+                    }
                 }
 
                 const outerPt = applyDistortionPoint(cfg, { x: oX, y: oY, z: -oZ }, theta, 0, phi, v);
@@ -3687,7 +3607,8 @@ ${trianglesXml.join('\n')}
     }
 
     function appendCylindricalDrainClosure(mesh, sample, cfg) {
-        if (!(cfg.sys === 'cylindrical' && cfg.isPot && cfg.cylDrain > 0.0001)) return cleanupMesh(mesh);
+        // We always want to close the bottom if it's a pot, even if drain is 0
+        if (!(cfg.sys === 'cylindrical' && cfg.isPot)) return cleanupMesh(mesh);
 
         const positions = mesh.positions.slice();
         const indices = mesh.indices.slice();
@@ -3695,7 +3616,7 @@ ${trianglesXml.join('\n')}
         const innerRing = [];
         const holeBottom = [];
         const holeTop = [];
-        const drain = Math.max(0.01, cfg.cylDrain);
+        const drain = Math.max(0, cfg.cylDrain);
         const baseY = Math.max(0, cfg.cylBase);
 
         function addPoint(p) {
@@ -3707,15 +3628,26 @@ ${trianglesXml.join('\n')}
             const theta = (2 * Math.PI * it) / sample.resT;
             outerRing.push(addPoint(sample.layers[0][0][it]));
             innerRing.push(addPoint(sample.layers[2][0][it]));
-            holeBottom.push(addPoint({ x: drain * Math.cos(theta), y: 0, z: -drain * Math.sin(theta) }));
-            holeTop.push(addPoint({ x: drain * Math.cos(theta), y: baseY, z: -drain * Math.sin(theta) }));
+            
+            const bx = drain <= 0 ? 0 : drain * Math.cos(theta);
+            const bz = drain <= 0 ? 0 : -drain * Math.sin(theta);
+            
+            holeBottom.push(addPoint({ x: bx, y: 0, z: bz }));
+            holeTop.push(addPoint({ x: bx, y: baseY, z: bz }));
         }
 
         for (let it = 0; it < sample.resT; it++) {
             const it1 = (it + 1) % sample.resT;
-            indices.push(outerRing[it], holeBottom[it1], holeBottom[it], outerRing[it], outerRing[it1], holeBottom[it1]);
-            indices.push(innerRing[it], holeTop[it], holeTop[it1], innerRing[it], holeTop[it1], innerRing[it1]);
-            indices.push(holeBottom[it], holeBottom[it1], holeTop[it1], holeBottom[it], holeTop[it1], holeTop[it]);
+            if (drain > 1e-5) {
+                // Standard hole tube and connecting faces
+                indices.push(outerRing[it], holeBottom[it1], holeBottom[it], outerRing[it], outerRing[it1], holeBottom[it1]);
+                indices.push(innerRing[it], holeTop[it], holeTop[it1], innerRing[it], holeTop[it1], innerRing[it1]);
+                indices.push(holeBottom[it], holeBottom[it1], holeTop[it1], holeBottom[it], holeTop[it1], holeTop[it]);
+            } else {
+                // Solid bottom: Fan triangles from the outer/inner perimeter to the single center vertex
+                indices.push(outerRing[it], outerRing[it1], holeBottom[0]);
+                indices.push(innerRing[it], holeTop[0], innerRing[it1]);
+            }
         }
 
         return cleanupMesh({ positions, indices });
@@ -3741,11 +3673,20 @@ ${trianglesXml.join('\n')}
     function buildMultipartMeshes(cfg) {
         const sample = buildLayeredSample(cfg);
         const occ = buildOccupancies(sample, cfg);
-        const skipDrainBottom = cfg.sys === 'cylindrical' && cfg.isPot && cfg.cylDrain > 0.0001;
+        
+        // UPDATED: Trigger closure logic if it's a pot, even if drain is 0.
+        // This ensures appendCylindricalDrainClosure can create the solid base.
+        const shouldCloseBottom = cfg.sys === 'cylindrical' && cfg.isPot;
+        
         let coreMesh = buildOccupancyMesh(sample, occ.coreOcc, {
-            skipMinusIVFace: (k, iv) => skipDrainBottom && iv === 0
+            // Skip the standard bottom faces so our specialized closure can handle it
+            skipMinusIVFace: (k, iv) => shouldCloseBottom && iv === 0
         });
-        if (skipDrainBottom) coreMesh = appendCylindricalDrainClosure(coreMesh, sample, cfg);
+        
+        // UPDATED: Run the closure if shouldCloseBottom is true
+        if (shouldCloseBottom) {
+            coreMesh = appendCylindricalDrainClosure(coreMesh, sample, cfg);
+        }
 
         const stateNames = {
             1: 'Pattern A',
@@ -3966,7 +3907,7 @@ ${trianglesXml.join('\n')}
 
         let oRings = [], iRings = [];
         const actualBase = cfg.isPot ? cfg.cylBase : 0;
-        const actualDrain = cfg.isPot ? cfg.cylDrain : 0;
+        const actualDrain = Math.max(0, cfg.isPot ? cfg.cylDrain : 0);
 
         for (let iv = 0; iv <= cfg.resV; iv++) {
             const zO = cfg.h * (iv / cfg.resV);
@@ -3997,9 +3938,15 @@ ${trianglesXml.join('\n')}
         for (let it = 0; it < cfg.resT; it++) {
             const theta = (2 * Math.PI * it) / cfg.resT;
             const holeColor = hexToRgb01(cfg.baseColor);
-            const bottomPt = applyDistortionPoint(cfg, { x: actualDrain * Math.cos(theta), y: 0, z: -actualDrain * Math.sin(theta) }, theta, 0, 0, 0);
+            
+            // If drain is 0, center the points exactly at 0,0
+            const bx = actualDrain <= 0 ? 0 : actualDrain * Math.cos(theta);
+            const bz = actualDrain <= 0 ? 0 : -actualDrain * Math.sin(theta);
+            
+            const bottomPt = applyDistortionPoint(cfg, { x: bx, y: 0, z: bz }, theta, 0, 0, 0);
             const topHoleV = cfg.h > 1e-9 ? actualBase / cfg.h : 0;
-            const topPt = applyDistortionPoint(cfg, { x: actualDrain * Math.cos(theta), y: actualBase, z: -actualDrain * Math.sin(theta) }, theta, actualBase, 0, topHoleV);
+            const topPt = applyDistortionPoint(cfg, { x: bx, y: actualBase, z: bz }, theta, actualBase, 0, topHoleV);
+            
             hB.push(addV(bottomPt.x, bottomPt.y, bottomPt.z, holeColor));
             hT.push(addV(topPt.x, topPt.y, topPt.z, holeColor));
         }
@@ -4013,10 +3960,17 @@ ${trianglesXml.join('\n')}
             }
             indices.push(oRings[cfg.resV][it], iRings[cfg.resV][it], iRings[cfg.resV][it1], oRings[cfg.resV][it], iRings[cfg.resV][it1], oRings[cfg.resV][it1]);
 
-            if (cfg.isPot && cfg.cylDrain > 0) {
-                indices.push(oRings[0][it], hB[it1], hB[it], oRings[0][it], oRings[0][it1], hB[it1]);
-                indices.push(iRings[0][it], hT[it], hT[it1], iRings[0][it], hT[it1], iRings[0][it1]);
-                indices.push(hB[it], hB[it1], hT[it1], hB[it], hT[it1], hT[it]);
+            if (cfg.isPot) {
+                if (actualDrain > 1e-5) {
+                    // Bridge between outer/inner rings and the drain tube
+                    indices.push(oRings[0][it], hB[it1], hB[it], oRings[0][it], oRings[0][it1], hB[it1]);
+                    indices.push(iRings[0][it], hT[it], hT[it1], iRings[0][it], hT[it1], iRings[0][it1]);
+                    indices.push(hB[it], hB[it1], hT[it1], hB[it], hT[it1], hT[it]);
+                } else {
+                    // Fan triangles to the center point (hB[0] and hT[0]) for a solid bottom
+                    indices.push(oRings[0][it], oRings[0][it1], hB[0]);
+                    indices.push(iRings[0][it], hT[0], iRings[0][it1]);
+                }
             } else {
                 indices.push(oRings[0][it], oRings[0][it1], iRings[0][it1], oRings[0][it], iRings[0][it1], iRings[0][it]);
             }
@@ -4031,6 +3985,7 @@ ${trianglesXml.join('\n')}
         const phiStart = cfg.isPot ? cfg.sphTopCut : 0.001;
         const phiEnd = cfg.isPot ? cfg.sphBotCut : Math.PI - 0.001;
         const flatBottomY = cfg.R * Math.cos(cfg.sphBotFlatten);
+        const innerBottomY = flatBottomY + Math.max(0.05, cfg.bottomThickness || cfg.w || 0.1);
 
         let oRings = [], iRings = [];
         for (let iv = 0; iv <= cfg.resV; iv++) {
@@ -4054,9 +4009,13 @@ ${trianglesXml.join('\n')}
                 let iZ = rIn * Math.sin(phi) * Math.sin(theta);
                 let iY = rIn * Math.cos(phi);
 
-                if (cfg.isPot && (phi >= cfg.sphBotFlatten || oY < flatBottomY)) {
-                    oY = flatBottomY;
-                    iY = flatBottomY + cfg.w;
+                if (cfg.isPot) {
+                    if (phi >= cfg.sphBotFlatten || oY < flatBottomY) {
+                        oY = flatBottomY;
+                    }
+                    if (iY < innerBottomY) {
+                        iY = innerBottomY;
+                    }
                 }
 
                 const outerColor = chooseColor(cfg, theta, 0, phi, v);
