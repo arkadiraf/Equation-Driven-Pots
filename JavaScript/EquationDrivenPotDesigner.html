@@ -32,7 +32,7 @@
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 4px; }
         .color-row { grid-template-columns: 1fr 1fr; gap: 6px; }
         label { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 2px; color: #4d5966; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        input[type="number"], select, textarea { width: 100%; padding: 5px 6px; border: 1px solid #d8dee6; border-radius: 6px; box-sizing: border-box; font-size: 0.8rem; font-family: 'Segoe UI', sans-serif; background: #ffffff; }
+        input[type="number"], input[type="text"], select, textarea { width: 100%; padding: 5px 6px; border: 1px solid #d8dee6; border-radius: 6px; box-sizing: border-box; font-size: 0.8rem; font-family: 'Segoe UI', sans-serif; background: #ffffff; }
         textarea { height: 60px; font-family: 'Courier New', monospace; background: #f2f4f7; line-height: 1.3; resize: vertical; }
         .tex-area { border-color: #d8dee6; background: #f2f4f7; }
         .desc-text { font-size: 0.7rem; color: #7b8794; font-style: italic; margin-top: -1px; margin-bottom: 4px; line-height: 1.15; }
@@ -45,6 +45,8 @@
         .btn-stl { background: var(--success); }
         .btn-3mf { background: var(--export3mf); }
         .btn-reset { background: #7f8c8d; }
+        .filename-control { margin-top: 8px; }
+        .filename-control input { font-weight: 600; color: var(--secondary); }
 
         .btn-ai { background: var(--highlight); }
         .ai-modal-overlay {
@@ -206,7 +208,7 @@
                 margin-bottom: 1px;
                 line-height: 1.05;
             }
-            input[type="number"], select, textarea {
+            input[type="number"], input[type="text"], select, textarea {
                 padding: 4px;
                 font-size: 0.68rem;
             }
@@ -278,7 +280,7 @@
             #sidebar { width: clamp(150px, 44vw, 210px); }
             .section-title { font-size: 0.6rem; }
             label { font-size: 0.55rem; }
-            input[type="number"], select, textarea { font-size: 0.68rem; }
+            input[type="number"], input[type="text"], select, textarea { font-size: 0.68rem; }
             textarea { height: 36px; font-size: 0.58rem; }
             button { font-size: 0.6rem; }
         }
@@ -525,8 +527,14 @@
 
     
 
+    <div class="filename-control">
+        <label for="designFileName">Design File Name</label>
+        <input type="text" id="designFileName" value="" placeholder="Use preset name" oninput="updateConfiguredPotNameFromInput(this.value)">
+    </div>
     <button class="btn-ai" onclick="openAIAssistanceWindow()">AI Asistance</button>
-    <button class="btn-preview" onclick="updatePreview()">RENDER PREVIEW</button>
+    <button class="btn-preview" onclick="downloadCurrentSettingsJson()">DOWNLOAD DESIGN .JSON</button>
+    <button class="btn-preview" onclick="triggerDesignFilePicker()">LOAD DESIGN .JSON</button>
+    <input id="designJsonFileInput" class="ai-file-input" type="file" accept=".json,.jso,application/json" onchange="handleDesignFileSelection(event)">
     <button class="btn-3mf" onclick="exportMultiPart3MF()">DOWNLOAD MULTI-PART .3MF</button>
     <button class="btn-stl" onclick="exportSTL()">DOWNLOAD .STL</button>
     <button class="btn-reset" onclick="resetParameters()">RESET PARAMETERS</button>
@@ -1640,6 +1648,38 @@ const distortionPresets = {
         if (files && files[0]) readAIJsonFile(files[0]);
     }
 
+    function triggerDesignFilePicker() {
+        const input = document.getElementById('designJsonFileInput');
+        if (input) input.click();
+    }
+
+    function readDesignJsonFile(file) {
+        if (!file) return;
+        const fileName = String(file.name || 'design.json');
+        if (!(/\.(json|jso)$/i.test(fileName))) {
+            setStatus('Only .json or .jso design files can be loaded.', 'error');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            const input = document.getElementById('aiJsonInput');
+            const picker = document.getElementById('designJsonFileInput');
+            if (input) input.value = String(reader.result || '').trim();
+            if (picker) picker.value = '';
+            applyAIJson();
+        };
+        reader.onerror = () => {
+            setStatus(`Could not read ${fileName}. Please try again.`, 'error');
+        };
+        reader.readAsText(file);
+    }
+
+    function handleDesignFileSelection(event) {
+        const files = event?.target?.files;
+        if (files && files[0]) readDesignJsonFile(files[0]);
+    }
+
     function handleAIFileDrop(event) {
         event.preventDefault();
         setAIFileDropzoneState(false);
@@ -1717,11 +1757,20 @@ const distortionPresets = {
 
     function setConfiguredPotName(value) {
         aiConfiguredPotName = normalizePotName(value);
+        const input = document.getElementById('designFileName');
+        if (input && input.value !== aiConfiguredPotName) input.value = aiConfiguredPotName;
+        return aiConfiguredPotName;
+    }
+
+    function updateConfiguredPotNameFromInput(value) {
+        aiConfiguredPotName = normalizePotName(value);
         return aiConfiguredPotName;
     }
 
     function getConfiguredPotName() {
-        return normalizePotName(aiConfiguredPotName);
+        const inputName = normalizePotName(document.getElementById('designFileName')?.value);
+        if (inputName !== aiConfiguredPotName) aiConfiguredPotName = inputName;
+        return aiConfiguredPotName;
     }
 
     function setSelectValue(id, value) {
@@ -1942,6 +1991,7 @@ const distortionPresets = {
 
         const stopSelectors = [
             '.section-title',
+            '.filename-control',
             'button',
             'h2',
             '#status'
