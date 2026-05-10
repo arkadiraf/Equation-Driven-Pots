@@ -326,7 +326,7 @@
 
     <div class="grid-inputs">
         <div class="input-group"><label>Wall Thick (cm)</label><input type="number" id="wall" value="0.35" step="0.05" oninput="updatePreview()"></div>
-        <div class="input-group"><label>Bottom Thickness (cm)</label><input type="number" id="bottomThickness" value="0.5" step="0.1" min="0.1" oninput="updatePreview()"></div>
+        <div class="input-group"><label>Bottom Thickness (cm)</label><input type="number" id="bottomThickness" value="0.35" step="0.1" min="0.1" oninput="updatePreview()"></div>
     </div>
 
     <div id="cylindricalPotSettings" class="pot-settings">
@@ -337,19 +337,23 @@
 
     <div id="sphericalPotSettings" class="pot-settings">
         <div class="grid-3">
-            <div class="input-group" title="Top Opening"><label>Top Cut (°)</label><input type="number" id="sphTopCut" value="25" step="1" min="0" max="89" oninput="updatePreview()"></div>
-            <div class="input-group" title="Flat bed start"><label>Bot Flat (°)</label><input type="number" id="sphBotFlatten" value="150" step="1" min="90" max="179" oninput="updatePreview()"></div>
-            <div class="input-group" title="Mesh hole end"><label>Bot Cut (°)</label><input type="number" id="sphBotCut" value="175" step="1" min="91" max="180" oninput="updatePreview()"></div>
+            <div class="input-group" title="Top Opening"><label>Top Cut (°)</label><input type="number" id="sphTopCut" value="35" step="1" min="0" max="180" oninput="updatePreview()"></div>
+            <div class="input-group" title="Flat bed start"><label>Bot Flat (°)</label><input type="number" id="sphBotFlatten" value="150" step="1" min="90" max="360" oninput="updatePreview()"></div>
+            <div class="input-group" title="Mesh hole end"><label>Bot Cut (°)</label><input type="number" id="sphBotCut" value="175" step="1" min="91" max="360" oninput="updatePreview()"></div>
         </div>
     </div>
 
     <div id="plateSettings" class="pot-settings">
-        <div class="grid-inputs">
+        <div id="plateHeightAngleControls" class="grid-inputs plate-only-controls">
             <div class="input-group"><label>Plate Height (cm)</label><input type="number" id="plateHeight" value="1.5" step="0.1" min="0.3" oninput="updatePreview()"></div>
             <div class="input-group"><label>Plate Opening Angle (°)</label><input type="number" id="plateOpeningAngle" value="25" step="1" min="0" max="60" oninput="updatePreview()"></div>
         </div>
+        <div id="sphPlateParamControls" class="grid-inputs plate-only-controls" style="display:none;">
+            <div class="input-group" title="Plate Top Opening"><label>Plate Top Cut (°)</label><input type="number" id="plateSphTopCut" value="90" step="1" min="0" max="180" oninput="updatePreview()"></div>
+            <div class="input-group" title="Plate Bottom Flat"><label>Plate Bottom Flat (°)</label><input type="number" id="plateSphBotFlatten" value="250" step="1" min="90" max="360" oninput="updatePreview()"></div>
+        </div>
         <div class="grid-inputs">
-            <div class="input-group"><label>Plate Radius Extra (cm)</label><input type="number" id="plateRadiusExtra" value="0.5" step="0.1" oninput="updatePreview()"></div>
+            <div class="input-group"><label>Plate Extra Diameter (cm)</label><input type="number" id="plateRadiusExtra" value="0.5" step="0.1" min="0" oninput="updatePreview()"></div>
         </div>
     </div><div class="section-title">3. Surface Texture (External)</div>
     <div class="grid-inputs">
@@ -724,6 +728,7 @@ const libraries = {
 
         // primitive
         "Perfect Sphere": { type: "primitive", eq: "R", desc: "Constant-radius spherical field. Neutral starting point for pods, bowls, and orb-like forms." },
+        "Spherical Plate Base": { type: "primitive", eq: "R", desc: "Neutral spherical host base for spherical plate mode with flat-bottom and top-cut support." },
         "Ellipse": { type: "primitive", eq: "R * (1 + 0.18 * cos(2 * theta) * pow(sin(phi), 1.8))", desc: "Equator-focused elliptical modulation around the sphere." },
         "Equatorial Flare": { type: "primitive", eq: "R * (1 + 0.4 * exp(-pow(phi-1.57, 2)*10))", desc: "Bulging field concentrated near the equator." },
         "Hourglass / Peanut": { type: "primitive", eq: "R * (1 - 0.25 * sin(2 * phi))", desc: "Pinched midsection producing an hourglass or peanut-like shell." },
@@ -1277,7 +1282,7 @@ const distortionPresets = {
     function switchSystem(targetPreset = null) {
         const sys = document.getElementById('coordSystem').value;
         const modeBefore = getModelMode();
-        populateModelModeOptions(modeBefore === 'plate' || modeBefore === 'potplate' ? (sys === 'cylindrical' ? modeBefore : 'pot') : modeBefore);
+        populateModelModeOptions(modeBefore);
         populateBaseTypes();
 
         const varLabels = document.querySelectorAll('.varLabel');
@@ -1311,17 +1316,12 @@ const distortionPresets = {
     }
 
     function getModelModeOptions(sys = null) {
-        const activeSys = sys || document.getElementById('coordSystem')?.value || 'cylindrical';
         const options = [
             { value: 'mesh', label: 'Designed Figure' },
-            { value: 'pot', label: 'Functional Pot' }
+            { value: 'pot', label: 'Functional Pot' },
+            { value: 'plate', label: 'Functional Plate' },
+            { value: 'potplate', label: 'Pot+Plate' }
         ];
-        if (activeSys === 'cylindrical') {
-            options.push(
-                { value: 'plate', label: 'Functional Plate' },
-                { value: 'potplate', label: 'Pot+Plate' }
-            );
-        }
         return options;
     }
 
@@ -1369,12 +1369,20 @@ const distortionPresets = {
         if (mode === 'plate' || mode === 'potplate') {
             document.getElementById('plateSettings').classList.add('active');
         }
+
+        const plateHeightAngleControls = document.getElementById('plateHeightAngleControls');
+        if (plateHeightAngleControls) {
+            plateHeightAngleControls.style.display = (sys === 'cylindrical' ? 'grid' : 'none');
+        }
+        const sphPlateParamControls = document.getElementById('sphPlateParamControls');
+        if (sphPlateParamControls) {
+            sphPlateParamControls.style.display = (sys === 'spherical' && (mode === 'plate' || mode === 'potplate') ? 'grid' : 'none');
+        }
     }
 
     function onBuildModeChange() {
         const mode = getModelMode();
         if (mode === 'plate' || mode === 'potplate') {
-            forcePlateModesToCylindrical();
             populateModelModeOptions(mode);
             document.getElementById('modelMode').value = mode;
         }
@@ -1485,6 +1493,8 @@ const distortionPresets = {
     }
 
     function getFieldNumberValue(id, fallback = 0) {
+        const el = document.getElementById(id);
+        if (!el) return fallback;
         const rawValue = getFieldStringValue(id, '');
         if (!rawValue) return fallback;
         const numericValue = Number(rawValue);
@@ -1516,17 +1526,20 @@ const distortionPresets = {
             structure: {
                 modelMode,
                 wall: getFieldNumberValue('wall', 0.35),
-                bottomThickness: getFieldNumberValue('bottomThickness', 0.5),
+                bottomThickness: getFieldNumberValue('bottomThickness', 0.35),
                 cylDrain: getFieldNumberValue('cylDrain', 0.5),
                 sphTopCut: getFieldNumberValue('sphTopCut', 25),
                 sphBotFlatten: getFieldNumberValue('sphBotFlatten', 150),
-                sphBotCut: getFieldNumberValue('sphBotCut', 175)
+                sphBotCut: getFieldNumberValue('sphBotCut', 180)
             },
             plate: {
                 enabled: modelMode === 'plate' || modelMode === 'potplate',
                 plateHeight: getFieldNumberValue('plateHeight', 1.5),
                 plateOpeningAngle: getFieldNumberValue('plateOpeningAngle', 25),
-                plateRadiusExtra: getFieldNumberValue('plateRadiusExtra', 0.5)
+                plateDiameterExtra: getFieldNumberValue('plateRadiusExtra', 0.35),
+                plateRadiusExtra: getFieldNumberValue('plateRadiusExtra', 0.5),
+                plateSphTopCut: getFieldNumberValue('plateSphTopCut', 90),
+                plateSphBotFlatten: getFieldNumberValue('plateSphBotFlatten', 250)
             },
             texture: {
                 type: getFieldStringValue('texTypeSelect', 'utility'),
@@ -1911,7 +1924,9 @@ const distortionPresets = {
 
             setFieldValue('plateHeight', getAIValue(plate, ['height', 'plateHeight']) ?? getAIValue(structure, ['plateHeight']));
             setFieldValue('plateOpeningAngle', getAIValue(plate, ['openingAngle', 'plateOpeningAngle']) ?? getAIValue(structure, ['plateOpeningAngle']));
-            setFieldValue('plateRadiusExtra', getAIValue(plate, ['radiusExtra', 'plateRadiusExtra']) ?? getAIValue(structure, ['plateRadiusExtra']));
+            setFieldValue('plateRadiusExtra', getAIValue(plate, ['diameterExtra', 'plateDiameterExtra', 'radiusExtra', 'plateRadiusExtra']) ?? getAIValue(structure, ['plateDiameterExtra', 'plateRadiusExtra']));
+            setFieldValue('plateSphTopCut', getAIValue(plate, ['sphTopCut', 'plateSphTopCut', 'topCut']) ?? getAIValue(structure, ['plateSphTopCut', 'plateTopCut']));
+            setFieldValue('plateSphBotFlatten', getAIValue(plate, ['sphBotFlatten', 'plateSphBotFlatten', 'botFlat', 'bottomFlat']) ?? getAIValue(structure, ['plateSphBotFlatten', 'plateBotFlat', 'plateBottomFlat']));
 
             const textureType = getAIValue(texture, ['type', 'textureType']);
             if (textureType) setSelectValue('texTypeSelect', textureType);
@@ -2058,12 +2073,14 @@ const distortionPresets = {
         document.getElementById('baseRadius').value = '5';
         document.getElementById('height').value = '10';
         document.getElementById('wall').value = '0.35';
-        document.getElementById('bottomThickness').value = '0.5';
+        document.getElementById('bottomThickness').value = '0.35';
         document.getElementById('cylDrain').value = '0.5';
 
         document.getElementById('plateHeight').value = '1.5';
         document.getElementById('plateOpeningAngle').value = '25';
         document.getElementById('plateRadiusExtra').value = '0.5';
+        document.getElementById('plateSphTopCut').value = '90';
+        document.getElementById('plateSphBotFlatten').value = '250';
 
         document.getElementById('modifierTypeSelect').value = 'utility';
         populateModifierPresets('None (No Modifier)');
@@ -2140,7 +2157,7 @@ const distortionPresets = {
         document.getElementById('modifierStrength').value = '0';
         document.getElementById('modifierTarget').value = 'base';
 
-        document.getElementById('bottomThickness').value = '0.5';
+        document.getElementById('bottomThickness').value = '0.35';
 
         document.getElementById('distortionType').value = 'utility';
         populateDistortionPresets('utility', 'None (No Distortion)');
@@ -2163,6 +2180,8 @@ const distortionPresets = {
         document.getElementById('plateHeight').value = '1.5';
         document.getElementById('plateOpeningAngle').value = '25';
         document.getElementById('plateRadiusExtra').value = '0.5';
+        document.getElementById('plateSphTopCut').value = '90';
+        document.getElementById('plateSphBotFlatten').value = '250';
         document.getElementById('overlapColor').value = '#8ab04d';
 
         switchSystem('3-to-6 Petal Morph (Bulged)');
@@ -2239,16 +2258,19 @@ const distortionPresets = {
 
     function getConfig() {
         const wall = parseFloat(document.getElementById('wall').value) || 0.35;
-        const bottomThickness = Math.max(0.1, parseFloat(document.getElementById('bottomThickness')?.value) || 0.5);
+        const bottomThickness = Math.max(0.1, parseFloat(document.getElementById('bottomThickness')?.value) || 0.35);
         const requestedDepthCm = Math.max(0, (parseFloat(document.getElementById('patternDepthMm').value) || 0) / 10);
         const maxDepthCm = Math.max(0, wall - 0.02);
         const patternDepthCm = Math.min(requestedDepthCm, maxDepthCm);
 
         const modelMode = getModelMode();
+        const coordSystem = document.getElementById('coordSystem').value || 'cylindrical';
+        const isSphericalPlate = coordSystem === 'spherical' && (modelMode === 'plate' || modelMode === 'potplate');
+        const plateDiameterExtra = Math.max(0, getFieldNumberValue('plateRadiusExtra', 0.5));
 
         return {
             modelMode,
-            sys: ((modelMode === 'plate' || modelMode === 'potplate') ? 'cylindrical' : document.getElementById('coordSystem').value),
+            sys: coordSystem,
             eq: document.getElementById('equation').value,
             modifierEq: document.getElementById('modifierEquation').value,
             modifierStrength: parseFloat(document.getElementById('modifierStrength').value) || 0,
@@ -2283,23 +2305,26 @@ const distortionPresets = {
             isPot: modelMode === 'pot' || modelMode === 'potplate',
             isPlate: modelMode === 'plate',
             includePlate: modelMode === 'potplate',
-            plateHeight: parseFloat(document.getElementById('plateHeight')?.value) || 1.5,
-            plateOpeningAngleDeg: parseFloat(document.getElementById('plateOpeningAngle')?.value) || 0,
-            plateOpeningAngleRad: (parseFloat(document.getElementById('plateOpeningAngle')?.value) || 0) * (Math.PI / 180),
-            plateRadiusExtra: parseFloat(document.getElementById('plateRadiusExtra')?.value) || 0,
+            plateHeight: isSphericalPlate ? 1.5 : (parseFloat(document.getElementById('plateHeight')?.value) || 1.5),
+            plateOpeningAngleDeg: isSphericalPlate ? 0 : (parseFloat(document.getElementById('plateOpeningAngle')?.value) || 0),
+            plateOpeningAngleRad: isSphericalPlate ? 0 : ((parseFloat(document.getElementById('plateOpeningAngle')?.value) || 0) * (Math.PI / 180)),
+            plateDiameterExtra,
+            plateRadiusExtra: plateDiameterExtra,
+            plateSphTopCut: getFieldNumberValue('plateSphTopCut', 90),
+            plateSphBotFlatten: getFieldNumberValue('plateSphBotFlatten', 250),
             plateSphericalRadiusBiasPct: parseFloat(document.getElementById('plateSphericalRadiusBias')?.value) || 100,
             plateSphericalRadiusBias: (parseFloat(document.getElementById('plateSphericalRadiusBias')?.value) || 100) / 100,
-            plateSphericalBasePhiDeg: parseFloat(document.getElementById('plateSphericalBasePhi')?.value) || 0,
-            plateSphericalBasePhiRad: (parseFloat(document.getElementById('plateSphericalBasePhi')?.value) || 0) * (Math.PI / 180),
-            plateSphericalBaseScalePct: parseFloat(document.getElementById('plateSphericalBaseScale')?.value) || 100,
-            plateSphericalBaseScale: (parseFloat(document.getElementById('plateSphericalBaseScale')?.value) || 100) / 100,
-            plateSphericalBaseOffset: parseFloat(document.getElementById('plateSphericalBaseOffset')?.value) || 0,
+            plateSphericalBasePhiDeg: getFieldNumberValue('plateSphericalBasePhi', 0),
+            plateSphericalBasePhiRad: getFieldNumberValue('plateSphericalBasePhi', 0) * (Math.PI / 180),
+            plateSphericalBaseScalePct: getFieldNumberValue('plateSphericalBaseScale', 100),
+            plateSphericalBaseScale: getFieldNumberValue('plateSphericalBaseScale', 100) / 100,
+            plateSphericalBaseOffset: getFieldNumberValue('plateSphericalBaseOffset', 0),
             plateClearance: 1.0,
             cylBase: bottomThickness,
             cylDrain: document.getElementById('cylDrain').value === "" ? 0.5 : parseFloat(document.getElementById('cylDrain').value),
-            sphTopCut: (parseFloat(document.getElementById('sphTopCut').value) || 25) * (Math.PI / 180),
-            sphBotFlatten: (parseFloat(document.getElementById('sphBotFlatten').value) || 150) * (Math.PI / 180),
-            sphBotCut: (parseFloat(document.getElementById('sphBotCut').value) || 175) * (Math.PI / 180)
+            sphTopCut: getFieldNumberValue('sphTopCut', 25) * (Math.PI / 180),
+            sphBotFlatten: getFieldNumberValue('sphBotFlatten', 150) * (Math.PI / 180),
+            sphBotCut: getFieldNumberValue('sphBotCut', 175) * (Math.PI / 180)
         };
     }
 
@@ -2397,7 +2422,17 @@ const distortionPresets = {
     }
 
     function buildPlateHostProbeConfig(cfg) {
-        return Object.assign({}, cfg, {
+        const parseAngle = (value, fallback) => {
+            if (Number.isFinite(value)) return value;
+            const parsed = Number.parseFloat(value);
+            return Number.isFinite(parsed) ? parsed : fallback;
+        };
+        const override = (cfg.sys === 'spherical' && (cfg.modelMode === 'plate' || cfg.includePlate)) ? {
+            sphTopCut: (parseAngle(cfg.plateSphTopCut, 90) * (Math.PI / 180)),
+            sphBotFlatten: (parseAngle(cfg.plateSphBotFlatten, 250) * (Math.PI / 180)),
+            sphBotCut: (180 * (Math.PI / 180))
+        } : {};
+        return Object.assign({}, cfg, override, {
             modelMode: 'pot',
             isPot: true,
             isPlate: false,
@@ -2447,6 +2482,111 @@ const distortionPresets = {
         };
     }
 
+    function finiteNumber(value, fallback = 0) {
+        if (value === undefined || value === null || value === '') return fallback;
+        const numeric = Number(value);
+        return Number.isFinite(numeric) ? numeric : fallback;
+    }
+
+    function clampNumber(value, min, max) {
+        return Math.min(max, Math.max(min, value));
+    }
+
+    function getPlateDiameterExtra(cfg) {
+        return Math.max(0, finiteNumber(cfg.plateDiameterExtra ?? cfg.plateRadiusExtra, 0));
+    }
+
+    function computeMeshDataBounds(vertices) {
+        let minX = Infinity, maxX = -Infinity;
+        let minY = Infinity, maxY = -Infinity;
+        let minZ = Infinity, maxZ = -Infinity;
+
+        for (let i = 0; i < vertices.length; i += 3) {
+            const x = vertices[i];
+            const y = vertices[i + 1];
+            const z = vertices[i + 2];
+            if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) continue;
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+            if (z < minZ) minZ = z;
+            if (z > maxZ) maxZ = z;
+        }
+
+        if (!Number.isFinite(minX)) {
+            minX = maxX = minY = maxY = minZ = maxZ = 0;
+        }
+
+        const width = maxX - minX;
+        const height = maxY - minY;
+        const depth = maxZ - minZ;
+        return {
+            minX, maxX, minY, maxY, minZ, maxZ,
+            width,
+            height,
+            depth,
+            centerX: (minX + maxX) * 0.5,
+            centerZ: (minZ + maxZ) * 0.5,
+            nominalDiameter: Math.max(width, depth)
+        };
+    }
+
+    function expandMeshDataDiameter(meshData, diameterExtra) {
+        const radiusOffset = Math.max(0, finiteNumber(diameterExtra, 0)) * 0.5;
+        if (radiusOffset <= 1e-8) return meshData;
+
+        const vertices = meshData.vertices.slice();
+        const bounds = computeMeshDataBounds(vertices);
+        for (let i = 0; i < vertices.length; i += 3) {
+            const dx = vertices[i] - bounds.centerX;
+            const dz = vertices[i + 2] - bounds.centerZ;
+            const len = Math.sqrt(dx * dx + dz * dz);
+            
+            // If the point is essentially at the center (the pole), don't expand it.
+            if (len <= 0.01) continue; 
+            
+            vertices[i] += (dx / len) * radiusOffset;
+            vertices[i + 2] += (dz / len) * radiusOffset;
+        }
+
+        return Object.assign({}, meshData, { vertices });
+    }
+
+    function buildSphericalPlateGenerationConfig(cfg) {
+        const topCutDeg = clampNumber(finiteNumber(cfg.plateSphTopCut, 90), 0.001, 179.999);
+        const bottomFlatDeg = clampNumber(finiteNumber(cfg.plateSphBotFlatten, 250), 90, 360);
+        const botCutDeg = 180; // Hardcoded for clean generation without holes, matching body defaults
+        return Object.assign({}, cfg, {
+            modelMode: 'pot',
+            isPot: true,
+            isPlate: false,
+            includePlate: false,
+            sphTopCut: topCutDeg * (Math.PI / 180),
+            sphBotFlatten: bottomFlatDeg * (Math.PI / 180),
+            sphBotCut: botCutDeg * (Math.PI / 180),
+            plateSphTopCut: topCutDeg,
+            plateSphBotFlatten: bottomFlatDeg,
+            cylDrain: 0
+        });
+    }
+
+    function generateSphericalPlate(cfg) {
+        const plateCfg = buildSphericalPlateGenerationConfig(cfg);
+        const baseMesh = generateSpherical(plateCfg);
+        const hostBounds = computeMeshDataBounds(baseMesh.vertices);
+        const expandedMesh = expandMeshDataDiameter(baseMesh, getPlateDiameterExtra(cfg));
+        const plateBounds = computeMeshDataBounds(expandedMesh.vertices);
+
+        return Object.assign({}, expandedMesh, {
+            plateOuterDiameter: Math.max(1.0, plateBounds.nominalDiameter),
+            plateHostDiameter: Math.max(1.0, hostBounds.nominalDiameter),
+            plateHeight: Math.max(0.1, plateBounds.height),
+            plateSphTopCut: plateCfg.plateSphTopCut,
+            plateSphBotFlatten: plateCfg.plateSphBotFlatten
+        });
+    }
+
 
     function extractOuterRingsFromHostMesh(cfg, meshData) {
         const rings = [];
@@ -2476,13 +2616,11 @@ const distortionPresets = {
                 });
             }
         } else {
-            const outerVertexCount = (resV + 1) * resT;
             for (let iv = 0; iv <= resV; iv++) {
                 const profile = [];
                 let meanY = 0;
                 for (let it = 0; it < resT; it++) {
-                    const vertexIndex = iv * resT + it;
-                    if (vertexIndex >= outerVertexCount) continue;
+                    const vertexIndex = (iv * resT * 2) + (it * 2);
                     const base = vertexIndex * 3;
                     const x = meshData.vertices[base];
                     const y = meshData.vertices[base + 1];
@@ -2490,13 +2628,13 @@ const distortionPresets = {
                     profile.push({ x, z });
                     meanY += y;
                 }
-                meanY /= Math.max(1, profile.length);
+                meanY /= resT;
                 rings.push({
                     profile,
                     centroid: computeProfileCentroid(profile),
                     meanY,
                     bounds: computePlateProfileBounds(profile),
-                    resT: profile.length
+                    resT
                 });
             }
         }
@@ -2556,6 +2694,10 @@ const distortionPresets = {
     }
 
     function generatePlate(cfg) {
+        if (cfg.sys === 'spherical') {
+            return generateSphericalPlate(cfg);
+        }
+
         const vertices = [], indices = [], colors = [];
         const addV = (x, y, z, color) => {
             vertices.push(x, y, z);
@@ -2566,11 +2708,11 @@ const distortionPresets = {
         const plateSeries = buildPlateProfileSeries(cfg);
         const height = plateSeries.height;
         const rimInset = Math.max(0.2, Math.min(0.45, cfg.w));
-        const baseThickness = Math.max(0.1, Math.min(height - 0.1, cfg.bottomThickness || 0.5));
+        const baseThickness = Math.max(0.1, Math.min(height - 0.1, cfg.bottomThickness || 0.35));
         const color = hexToRgb01(cfg.baseColor);
         const clearanceOffset = cfg.plateClearance * 0.5;
         const flareOffset = Math.max(0, Math.tan(cfg.plateOpeningAngleRad || 0) * height);
-        const radiusExtra = cfg.plateRadiusExtra || 0;
+        const radiusExtra = getPlateDiameterExtra(cfg) * 0.5;
 
         const outerIdx = [];
         const innerIdx = [];
@@ -3123,8 +3265,8 @@ ${trianglesXml.join('\n')}
         const outer = [], inner = [], cellMaskA = [], cellMaskB = [], surfaceEligible = [];
         let minY = Infinity;
 
-        const phiStart = cfg.isPot ? cfg.sphTopCut : 0.001;
-        const phiEnd = cfg.isPot ? cfg.sphBotCut : Math.PI - 0.001;
+        const phiEnd = cfg.isPot ? Math.min(cfg.sphBotCut, Math.PI - 0.001) : Math.PI - 0.001;
+        const phiStart = cfg.isPot ? Math.min(Math.max(cfg.sphTopCut, 0.001), phiEnd - 0.001) : 0.001;
         const flatBottomY = cfg.R * Math.cos(cfg.sphBotFlatten);
         const innerBottomY = flatBottomY + Math.max(0.05, cfg.bottomThickness || cfg.w || 0.1);
 
@@ -3917,7 +4059,8 @@ ${trianglesXml.join('\n')}
                     scene.add(currentObject);
                     setGenerationNotice('');
                     if (cfg.isPlate) {
-                        setStatus(`Plate preview | Host ${(meshData.plateHostDiameter).toFixed(2)} cm | Outer ${(meshData.plateOuterDiameter).toFixed(2)} cm | Height ${(meshData.plateHeight).toFixed(2)} cm | outer-ring plate sampling`, '');
+                        const plateModeLabel = cfg.sys === 'spherical' ? 'spherical body-style plate' : 'outer-ring plate sampling';
+                        setStatus(`Plate preview | Host ${(meshData.plateHostDiameter).toFixed(2)} cm | Outer ${(meshData.plateOuterDiameter).toFixed(2)} cm | Height ${(meshData.plateHeight).toFixed(2)} cm | ${plateModeLabel}`, '');
                     } else {
                         setStatus("Preview generated.", '');
                     }
@@ -4032,8 +4175,13 @@ ${trianglesXml.join('\n')}
         const vertices = [], indices = [], colors = [];
         let minY = Infinity;
 
-        const phiStart = cfg.isPot ? cfg.sphTopCut : 0.001;
-        const phiEnd = cfg.isPot ? cfg.sphBotCut : Math.PI - 0.001;
+        // Check if the cut is essentially at the pole (180°)
+        const isSolidBottom = cfg.isPot && cfg.sphBotCut >= Math.PI - 0.005;
+        
+        // If it's a solid bottom, go all the way to PI. Otherwise, clamp to avoid singularities.
+        const phiEnd = isSolidBottom ? Math.PI : (cfg.isPot ? Math.min(cfg.sphBotCut, Math.PI - 0.001) : Math.PI - 0.001);
+        const phiStart = cfg.isPot ? Math.min(Math.max(cfg.sphTopCut, 0.001), phiEnd - 0.001) : 0.001;
+        
         const flatBottomY = cfg.R * Math.cos(cfg.sphBotFlatten);
         const innerBottomY = flatBottomY + Math.max(0.05, cfg.bottomThickness || cfg.w || 0.1);
 
@@ -4060,12 +4208,8 @@ ${trianglesXml.join('\n')}
                 let iY = rIn * Math.cos(phi);
 
                 if (cfg.isPot) {
-                    if (phi >= cfg.sphBotFlatten || oY < flatBottomY) {
-                        oY = flatBottomY;
-                    }
-                    if (iY < innerBottomY) {
-                        iY = innerBottomY;
-                    }
+                    if (phi >= cfg.sphBotFlatten || oY < flatBottomY) oY = flatBottomY;
+                    if (iY < innerBottomY) iY = innerBottomY;
                 }
 
                 const outerColor = chooseColor(cfg, theta, 0, phi, v);
@@ -4099,14 +4243,29 @@ ${trianglesXml.join('\n')}
             iIdx.push(iRow);
         }
 
+        let oPoleIdx, iPoleIdx;
+        const centerColor = hexToRgb01(cfg.baseColor);
+
         for (let it = 0; it < cfg.resT; it++) {
             const it1 = (it + 1) % cfg.resT;
             for (let iv = 0; iv < cfg.resV; iv++) {
                 indices.push(oIdx[iv][it], oIdx[iv + 1][it], oIdx[iv + 1][it1], oIdx[iv][it], oIdx[iv + 1][it1], oIdx[iv][it1]);
                 indices.push(iIdx[iv][it], iIdx[iv][it1], iIdx[iv + 1][it1], iIdx[iv][it], iIdx[iv + 1][it1], iIdx[iv + 1][it]);
             }
+            // Top rim bezel
             indices.push(oIdx[0][it], oIdx[0][it1], iIdx[0][it1], oIdx[0][it], iIdx[0][it1], iIdx[0][it]);
-            indices.push(oIdx[cfg.resV][it], iIdx[cfg.resV][it], iIdx[cfg.resV][it1], oIdx[cfg.resV][it], iIdx[cfg.resV][it1], oIdx[cfg.resV][it1]);
+            
+            // Bottom closure
+            if (isSolidBottom) {
+                if (it === 0) {
+                    oPoleIdx = addV({ x: 0, y: oRings[cfg.resV][0].y, z: 0, c: centerColor });
+                    iPoleIdx = addV({ x: 0, y: iRings[cfg.resV][0].y, z: 0, c: centerColor });
+                }
+                indices.push(oIdx[cfg.resV][it], oIdx[cfg.resV][it1], oPoleIdx);
+                indices.push(iIdx[cfg.resV][it], iPoleIdx, iIdx[cfg.resV][it1]);
+            } else {
+                indices.push(oIdx[cfg.resV][it], iIdx[cfg.resV][it], iIdx[cfg.resV][it1], oIdx[cfg.resV][it], iIdx[cfg.resV][it1], oIdx[cfg.resV][it1]);
+            }
         }
         return { vertices, indices, colors };
     }
