@@ -349,7 +349,7 @@
             <div class="input-group"><label>Plate Opening Angle (°)</label><input type="number" id="plateOpeningAngle" value="25" step="1" min="0" max="60" oninput="updatePreview()"></div>
         </div>
         <div id="sphPlateParamControls" class="grid-inputs plate-only-controls" style="display:none;">
-            <div class="input-group" title="Plate Top Opening"><label>Plate Top Cut (°)</label><input type="number" id="plateSphTopCut" value="90" step="1" min="0" max="180" oninput="updatePreview()"></div>
+            <div class="input-group" title="Plate Top Opening"><label>Plate Top Cut (°)</label><input type="number" id="plateSphTopCut" value="95" step="1" min="0" max="180" oninput="updatePreview()"></div>
             <div class="input-group" title="Plate Bottom Flat"><label>Plate Bottom Flat (°)</label><input type="number" id="plateSphBotFlatten" value="250" step="1" min="90" max="360" oninput="updatePreview()"></div>
         </div>
         <div class="grid-inputs">
@@ -584,6 +584,18 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <script>
+    const pi = Math.PI, sin = Math.sin, cos = Math.cos, tan = Math.tan,
+          asin = Math.asin, acos = Math.acos, atan = Math.atan, pow = Math.pow,
+          min = Math.min, max = Math.max, abs = Math.abs, exp = Math.exp,
+          sqrt = Math.sqrt, log = Math.log, floor = Math.floor, ceil = Math.ceil,
+          round = Math.round, sign = Math.sign;
+    const clamp = (x, a, b) => min(max(x, a), b);
+    const fract = x => x - floor(x);
+    const smoothstep = (a, b, x) => {
+        const t = clamp((x - a) / (b - a), 0, 1);
+        return t * t * (3 - 2 * t);
+    };
+
     let scene, camera, renderer, controls, currentObject = null;
     let renderTimeout = null;
     let suppressPreviewUpdates = false;
@@ -1538,7 +1550,7 @@ const distortionPresets = {
                 plateOpeningAngle: getFieldNumberValue('plateOpeningAngle', 25),
                 plateDiameterExtra: getFieldNumberValue('plateRadiusExtra', 0.35),
                 plateRadiusExtra: getFieldNumberValue('plateRadiusExtra', 0.5),
-                plateSphTopCut: getFieldNumberValue('plateSphTopCut', 90),
+                plateSphTopCut: getFieldNumberValue('plateSphTopCut', 95),
                 plateSphBotFlatten: getFieldNumberValue('plateSphBotFlatten', 250)
             },
             texture: {
@@ -2079,7 +2091,7 @@ const distortionPresets = {
         document.getElementById('plateHeight').value = '1.5';
         document.getElementById('plateOpeningAngle').value = '25';
         document.getElementById('plateRadiusExtra').value = '0.5';
-        document.getElementById('plateSphTopCut').value = '90';
+        document.getElementById('plateSphTopCut').value = '95';
         document.getElementById('plateSphBotFlatten').value = '250';
 
         document.getElementById('modifierTypeSelect').value = 'utility';
@@ -2180,7 +2192,7 @@ const distortionPresets = {
         document.getElementById('plateHeight').value = '1.5';
         document.getElementById('plateOpeningAngle').value = '25';
         document.getElementById('plateRadiusExtra').value = '0.5';
-        document.getElementById('plateSphTopCut').value = '90';
+        document.getElementById('plateSphTopCut').value = '95';
         document.getElementById('plateSphBotFlatten').value = '250';
         document.getElementById('overlapColor').value = '#8ab04d';
 
@@ -2310,7 +2322,7 @@ const distortionPresets = {
             plateOpeningAngleRad: isSphericalPlate ? 0 : ((parseFloat(document.getElementById('plateOpeningAngle')?.value) || 0) * (Math.PI / 180)),
             plateDiameterExtra,
             plateRadiusExtra: plateDiameterExtra,
-            plateSphTopCut: getFieldNumberValue('plateSphTopCut', 90),
+            plateSphTopCut: getFieldNumberValue('plateSphTopCut', 95),
             plateSphBotFlatten: getFieldNumberValue('plateSphBotFlatten', 250),
             plateSphericalRadiusBiasPct: parseFloat(document.getElementById('plateSphericalRadiusBias')?.value) || 100,
             plateSphericalRadiusBias: (parseFloat(document.getElementById('plateSphericalRadiusBias')?.value) || 100) / 100,
@@ -2375,32 +2387,6 @@ const distortionPresets = {
 
     function evalDistortionExpr(eq, theta, zs, phi, v, R, x, y, z) {
         try {
-            const pi = Math.PI,
-                sin = Math.sin,
-                cos = Math.cos,
-                tan = Math.tan,
-                asin = Math.asin,
-                acos = Math.acos,
-                atan = Math.atan,
-                pow = Math.pow,
-                min = Math.min,
-                max = Math.max,
-                abs = Math.abs,
-                exp = Math.exp,
-                sqrt = Math.sqrt,
-                log = Math.log,
-                floor = Math.floor,
-                ceil = Math.ceil,
-                round = Math.round,
-                sign = Math.sign;
-            const clamp = (n, a, b) => min(max(n, a), b);
-            const fract = n => n - floor(n);
-            const mod = (n, m) => ((n % m) + m) % m;
-            const smoothstep = (a, b, n) => {
-                const t = clamp((n - a) / (b - a), 0, 1);
-                return t * t * (3 - 2 * t);
-            };
-            const wx = x, wy = y, wz = z;
             const result = eval(eq);
             return (typeof result === 'number' && isFinite(result)) ? result : 0;
         } catch (e) {
@@ -2428,7 +2414,7 @@ const distortionPresets = {
             return Number.isFinite(parsed) ? parsed : fallback;
         };
         const override = (cfg.sys === 'spherical' && (cfg.modelMode === 'plate' || cfg.includePlate)) ? {
-            sphTopCut: (parseAngle(cfg.plateSphTopCut, 90) * (Math.PI / 180)),
+            sphTopCut: (parseAngle(cfg.plateSphTopCut, 95) * (Math.PI / 180)),
             sphBotFlatten: (parseAngle(cfg.plateSphBotFlatten, 250) * (Math.PI / 180)),
             sphBotCut: (180 * (Math.PI / 180))
         } : {};
@@ -2554,7 +2540,7 @@ const distortionPresets = {
     }
 
     function buildSphericalPlateGenerationConfig(cfg) {
-        const topCutDeg = clampNumber(finiteNumber(cfg.plateSphTopCut, 90), 0.001, 179.999);
+        const topCutDeg = clampNumber(finiteNumber(cfg.plateSphTopCut, 95), 0.001, 179.999);
         const bottomFlatDeg = clampNumber(finiteNumber(cfg.plateSphBotFlatten, 250), 90, 360);
         const botCutDeg = 180; // Hardcoded for clean generation without holes, matching body defaults
         return Object.assign({}, cfg, {
@@ -3015,33 +3001,6 @@ ${trianglesXml.join('\n')}
 
     function secureEval(eq, theta, z, phi, v, R, isTexture = false) {
         try {
-            const pi = Math.PI,
-                sin = Math.sin,
-                cos = Math.cos,
-                tan = Math.tan,
-                asin = Math.asin,
-                acos = Math.acos,
-                atan = Math.atan,
-                pow = Math.pow,
-                min = Math.min,
-                max = Math.max,
-                abs = Math.abs,
-                exp = Math.exp,
-                sqrt = Math.sqrt,
-                log = Math.log,
-                floor = Math.floor,
-                ceil = Math.ceil,
-                round = Math.round,
-                sign = Math.sign;
-
-            const clamp = (x, a, b) => min(max(x, a), b);
-            const fract = x => x - floor(x);
-            const mod = (n, m) => ((n % m) + m) % m;
-            const smoothstep = (a, b, x) => {
-                const t = clamp((x - a) / (b - a), 0, 1);
-                return t * t * (3 - 2 * t);
-            };
-
             let result = eval(eq);
             let fallback = isTexture ? 0 : R;
             return (typeof result !== 'number' || isNaN(result) || !isFinite(result)) ? fallback : result;
@@ -3106,33 +3065,6 @@ ${trianglesXml.join('\n')}
 
     function evaluatePatternValue(patternEq, cfg, theta, z, phi, v, outerRadius, baseFormRadius, texRaw, stats) {
         try {
-            const pi = Math.PI,
-                sin = Math.sin,
-                cos = Math.cos,
-                tan = Math.tan,
-                asin = Math.asin,
-                acos = Math.acos,
-                atan = Math.atan,
-                pow = Math.pow,
-                min = Math.min,
-                max = Math.max,
-                abs = Math.abs,
-                exp = Math.exp,
-                sqrt = Math.sqrt,
-                log = Math.log,
-                floor = Math.floor,
-                ceil = Math.ceil,
-                round = Math.round,
-                sign = Math.sign;
-
-            const clamp = (x, a, b) => min(max(x, a), b);
-            const fract = x => x - floor(x);
-            const mod = (n, m) => ((n % m) + m) % m;
-            const smoothstep = (a, b, x) => {
-                const t = clamp((x - a) / (b - a), 0, 1);
-                return t * t * (3 - 2 * t);
-            };
-
             const R = cfg.R || 0;
             const texMin = stats ? stats.texMin : 0;
             const texMax = stats ? stats.texMax : 0;
