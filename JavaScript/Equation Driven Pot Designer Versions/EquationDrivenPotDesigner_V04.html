@@ -663,14 +663,6 @@
             <div class="grid-inputs">
                 <div class="input-group"><label>Plate Extra Diameter (cm)</label><input type="number"
                         id="plateRadiusExtra" value="0.5" step="0.1" min="0" oninput="updatePreview()"></div>
-                <div class="input-group"
-                    style="display: flex; flex-direction: row; align-items: center; gap: 8px; justify-content: flex-start; padding-top: 22px;">
-                    <input type="checkbox" id="applyPlateColoring" checked onchange="updatePreview()"
-                        style="width: auto; height: 18px; cursor: pointer; margin: 0;">
-                    <label for="applyPlateColoring"
-                        style="display: inline-block; margin: 0; cursor: pointer; overflow: visible;">Apply Plate
-                        Coloring</label>
-                </div>
             </div>
         </div>
         <div class="section-title">3. Surface Texture (External)</div>
@@ -2631,7 +2623,6 @@
             const coordSystem = document.getElementById('coordSystem').value || 'cylindrical';
             const isSphericalPlate = coordSystem === 'spherical' && (modelMode === 'plate' || modelMode === 'potplate');
             const plateDiameterExtra = Math.max(0, getFieldNumberValue('plateRadiusExtra', 0.5));
-            const applyPlateColoring = document.getElementById('applyPlateColoring') ? document.getElementById('applyPlateColoring').checked : true;
 
             return {
                 modelMode,
@@ -2675,7 +2666,6 @@
                 plateOpeningAngleRad: isSphericalPlate ? 0 : ((parseFloat(document.getElementById('plateOpeningAngle')?.value) || 0) * (Math.PI / 180)),
                 plateDiameterExtra,
                 plateRadiusExtra: plateDiameterExtra,
-                applyPlateColoring,
                 plateSphTopCut: getFieldNumberValue('plateSphTopCut', 95),
                 plateSphBotFlatten: getFieldNumberValue('plateSphBotFlatten', 250),
                 plateSphericalRadiusBiasPct: parseFloat(document.getElementById('plateSphericalRadiusBias')?.value) || 100,
@@ -2902,7 +2892,6 @@
                 isPot: true,
                 isPlate: false,
                 includePlate: false,
-                isGeneratingPlateDirectly: true,
                 sphTopCut: topCutDeg * (Math.PI / 180),
                 sphBotFlatten: bottomFlatDeg * (Math.PI / 180),
                 sphBotCut: botCutDeg * (Math.PI / 180),
@@ -3059,7 +3048,6 @@
             const innerIdx = [];
             let baseCentroid = { x: 0, z: 0 };
             let topOuterBounds = null;
-            const plateColorCfg = Object.assign({}, cfg, { isPot: false });
 
             plateSeries.rings.forEach((ring, ringIndex) => {
                 const t = height > 1e-9 ? (ring.localY / height) : 0;
@@ -3073,13 +3061,9 @@
                 if (ringIndex === 0) baseCentroid = ring.centroid;
                 if (ringIndex === plateSeries.rings.length - 1) topOuterBounds = computePlateProfileBounds(outerProfile);
 
-                const v = t;
-                const zCoord = t * cfg.h;
-
                 for (let it = 0; it < outerProfile.length; it++) {
                     const theta = (2 * Math.PI * it) / outerProfile.length;
-                    const baseColorRGB = hexToRgb01(cfg.baseColor);
-                    const ptColor = cfg.applyPlateColoring ? chooseColor(plateColorCfg, theta, zCoord, 0, v) : baseColorRGB;
+                    const ptColor = chooseColor(cfg, theta, ring.localY, 0, height > 1e-9 ? ring.localY / cfg.h : 0);
                     const outerPt = outerProfile[it];
                     const innerPt = innerProfile[it];
                     outerRow.push(addV(outerPt.x, ring.localY, outerPt.z, ptColor));
@@ -4344,8 +4328,7 @@ ${trianglesXml.join('\n')}
                             }
                             plateGeom.setIndex(plateMeshData.indices);
                             plateGeom.computeVertexNormals();
-                            const hasPlateColors = !!plateGeom.getAttribute('color');
-                            const plateMat = new THREE.MeshStandardMaterial({ color: hasPlateColors ? 0xffffff : cfg.baseColor, vertexColors: hasPlateColors, side: THREE.DoubleSide, roughness: 0.78, metalness: 0.05 });
+                            const plateMat = new THREE.MeshStandardMaterial({ color: cfg.baseColor, vertexColors: !!plateGeom.getAttribute('color'), side: THREE.DoubleSide, roughness: 0.78, metalness: 0.05 });
                             const plateMesh = new THREE.Mesh(plateGeom, plateMat);
                             group.add(plateMesh);
                             group.userData.plateInfo = plateMeshData;
@@ -4429,8 +4412,9 @@ ${trianglesXml.join('\n')}
             if (cfg.sys === 'cylindrical' && cfg.isPot && z <= cfg.cylBase + 1e-6) {
                 return palette[0];
             }
-            const maskA = evaluatePatternValue(cfg.patternEq1, cfg, theta, z, phi, v, cfg.R || 5, cfg.R || 5, 0, null) > 0;
-            const maskB = evaluatePatternValue(cfg.patternEq2, cfg, theta, z, phi, v, cfg.R || 5, cfg.R || 5, 0, null) > 0;
+            const coords = getModifiedCoords(cfg, theta, z, phi, v, 'pattern');
+            const maskA = secureEval(cfg.patternEq1, coords.theta, coords.z, coords.phi, coords.v, 0, true) > 0;
+            const maskB = secureEval(cfg.patternEq2, coords.theta, coords.z, coords.phi, coords.v, 0, true) > 0;
             const state = (maskA ? 1 : 0) + (maskB ? 2 : 0);
             return palette[state];
         }
@@ -4557,9 +4541,7 @@ ${trianglesXml.join('\n')}
                         if (iY < innerBottomY) iY = innerBottomY;
                     }
 
-                    const baseColorRGB = hexToRgb01(cfg.baseColor);
-                    const shouldApplyColor = cfg.isGeneratingPlateDirectly ? cfg.applyPlateColoring : true;
-                    const outerColor = shouldApplyColor ? chooseColor(cfg, theta, 0, phi, v) : baseColorRGB;
+                    const outerColor = chooseColor(cfg, theta, 0, phi, v);
                     const outerPt = applyDistortionPoint(cfg, { x: oX, y: oY, z: -oZ }, theta, 0, phi, v);
                     const innerPt = applyDistortionPoint(cfg, { x: iX, y: iY, z: -iZ }, theta, 0, phi, v);
 
