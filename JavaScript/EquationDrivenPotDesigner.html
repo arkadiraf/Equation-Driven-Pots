@@ -2464,6 +2464,31 @@
         }
 
         window.onload = function () {
+            // Check for config URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const configPath = urlParams.get('config');
+            if (configPath) {
+                // Load the config file
+                fetch(configPath)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.text();
+                    })
+                    .then(jsonText => {
+                        loadAIJsonText(jsonText, `config file "${configPath}"`);
+                        // Apply the JSON after a short delay to ensure UI is ready
+                        setTimeout(() => {
+                            applyAIJson();
+                        }, 100);
+                    })
+                    .catch(error => {
+                        console.error('Error loading config file:', error);
+                        setStatus('Error loading config file: ' + error.message, 'error');
+                    });
+            }
+
             initThree();
             initAIFileDropzone();
             document.addEventListener('keydown', (event) => {

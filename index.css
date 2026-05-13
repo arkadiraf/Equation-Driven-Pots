@@ -680,6 +680,18 @@ body {
   border-color: rgba(56, 189, 248, 0.4);
 }
 
+.btn-gui {
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--text-success);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.btn-gui:hover {
+  background: rgba(34, 197, 94, 0.2);
+  color: #fff;
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
 /* Image Lightbox Modal */
 .lightbox-modal {
   position: fixed;
