@@ -2014,6 +2014,27 @@
             dropzone.classList.toggle('is-dragover', !!isDragOver);
         }
 
+        function loadAIJsonText(rawText, sourceLabel = 'file') {
+            const input = document.getElementById('aiJsonInput');
+            if (!input) return;
+            const textValue = String(rawText || '').trim();
+            input.value = textValue;
+            if (!textValue) {
+                setAIJsonFeedback(`The selected ${sourceLabel} is empty.`, 'error');
+                setStatus('AI JSON file is empty.', 'error');
+                return;
+            }
+            const label = sourceLabel.charAt(0).toUpperCase() + sourceLabel.slice(1);
+            try {
+                JSON.parse(textValue);
+                setAIJsonFeedback(`${label} loaded. Click Apply JSON to populate the designer.`, 'success');
+                setStatus('AI JSON file loaded.', '');
+            } catch (error) {
+                setAIJsonFeedback(`${label} loaded, but it is not valid JSON yet: ${error.message}`, 'error');
+                setStatus('AI JSON file loaded with parse errors.', 'warn');
+            }
+        }
+
         function readAIJsonFile(file) {
             if (!file) return;
             const fileName = String(file.name || 'file');
