@@ -1,0 +1,67 @@
+{
+  "name": "Saturated Moire",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "3-Petal Flower",
+    "equation": "R * (1 + 0.10 * cos(4 * theta) + 0.05 * sin(2 * theta))",
+    "baseRadius": 5,
+    "height": 10
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.35,
+    "bottomThickness": 0.35,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": true,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5
+  },
+  "texture": {
+    "type": "nonlinear",
+    "preset": "Saturated Moire",
+    "equation": "atan(5 * (sin(18*theta + 12*pi*v) + sin(19*theta - 11*pi*v)))",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "Surface Texture Top %",
+    "equation1": "textureFill(texPosNorm, 10)",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#3e3f3f",
+    "patternColor1": "#8ab04d",
+    "patternColor2": "#5f4a8b",
+    "overlapColor": "#8ab04d",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

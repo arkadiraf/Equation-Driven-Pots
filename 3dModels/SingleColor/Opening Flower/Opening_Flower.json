@@ -1,0 +1,67 @@
+{
+  "name": "Opening Flower",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "Opening Flower",
+    "equation": "R * (1 + 0.25 * cos(5 * theta)) * (1 + 0.35 * sin(pi * z / 10))",
+    "baseRadius": 5,
+    "height": 10
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.35,
+    "bottomThickness": 0.35,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": true,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 44,
+    "plateRadiusExtra": 0.5
+  },
+  "texture": {
+    "type": "nonlinear",
+    "preset": "Log Ripple Compression",
+    "equation": "log(1 + 4*abs(sin(12*theta + 10*pi*v)))",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#0f4d80",
+    "patternColor1": "#ff7062",
+    "patternColor2": "#5f4a8b",
+    "overlapColor": "#8ab04d",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

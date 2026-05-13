@@ -1,0 +1,67 @@
+{
+  "name": "Bamboo_Bulge_Ribbed_Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "basicEffect",
+    "preset": "Mid Bulge",
+    "equation": "R * (1 + 0.25 * sin(5 * pi * v) + 1 * pow(1-v, 2)+ 1 * pow(v, 2))",
+    "baseRadius": 2.5,
+    "height": 20
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.5,
+    "bottomThickness": 0.5,
+    "cylDrain": 0,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": false,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5
+  },
+  "texture": {
+    "type": "basicEffect",
+    "preset": "Basic Twist Relief",
+    "equation": "cos(15 * theta + 2 * pi * v)",
+    "intensity": 0.1
+  },
+  "patterns": {
+    "preset1": "Hex Window Grid",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#543fa2",
+    "patternColor1": "#2d5a27",
+    "patternColor2": "#2d5a27",
+    "overlapColor": "#2d5a27",
+    "depthMm": 0.8
+  },
+  "mesh": {
+    "resV": 200,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "petal",
+    "preset": "Petal Migration",
+    "equation": "sin(2*pi*v) + .25*sin(5*theta)",
+    "strength": 0.5,
+    "target": "texture"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}
