@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pot Gallery Thumbnail Helper</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <style>
+        :root {
+            --bg: #0b0f17;
+            --surface: rgba(20, 27, 41, 0.9);
+            --accent: #38bdf8;
+            --gradient: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+            --text: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .tool-container {
+            background: var(--surface);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 900px;
+            width: 100%;
+            backdrop-filter: blur(12px);
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+        }
+
+        input {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 0.6rem;
+            border-radius: 8px;
+            color: white;
+            outline: none;
+        }
+
+        #drop-zone {
+            border: 2px dashed rgba(56, 189, 248, 0.3);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 2rem;
+        }
+
+        #drop-zone.hover {
+            background: rgba(56, 189, 248, 0.1);
+            border-color: var(--accent);
+        }
+
+        .cropper-container-wrapper {
+            max-height: 500px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .btn {
+            background: var(--gradient);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            color: #0b0f17;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover { transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        img { max-width: 100%; }
+    </style>
+</head>
+<body>
+
+    <div class="tool-container">
+        <h2 style="margin-top: 0;">Gallery Thumbnail Helper</h2>
+        
+        <div class="controls">
+            <div class="input-group">
+                <label>Target Width (px)</label>
+                <input type="number" id="out-width" value="800">
+            </div>
+            <div class="input-group">
+                <label>Aspect Ratio X</label>
+                <input type="number" id="ratio-x" value="4">
+            </div>
+            <div class="input-group">
+                <label>Aspect Ratio Y</label>
+                <input type="number" id="ratio-y" value="3">
+            </div>
+        </div>
+
+        <div id="drop-zone">
+            <p>Drag & Drop original image here or <strong>Click to Browse</strong></p>
+            <input type="file" id="file-input" hidden accept="image/*">
+        </div>
+
+        <div class="cropper-container-wrapper" id="cropper-wrapper">
+            <img id="image-to-crop">
+        </div>
+
+        <button class="btn" id="save-btn" disabled>Crop & Download Thumbnail</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const imageElement = document.getElementById('image-to-crop');
+        const wrapper = document.getElementById('cropper-wrapper');
+        const saveBtn = document.getElementById('save-btn');
+        
+        let cropper;
+        let originalFileName = "vessel";
+
+        // Handle File Selection
+        dropZone.onclick = () => fileInput.click();
+        
+        fileInput.onchange = (e) => handleFiles(e.target.files);
+        
+        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('hover'); };
+        dropZone.ondragleave = () => dropZone.classList.remove('hover');
+        dropZone.ondrop = (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('hover');
+            handleFiles(e.dataTransfer.files);
+        };
+
+        function handleFiles(files) {
+            if (!files.length) return;
+            const file = files[0];
+            originalFileName = file.name.split('.').slice(0, -1).join('.');
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                imageElement.src = event.target.result;
+                initCropper();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function initCropper() {
+            if (cropper) cropper.destroy();
+            
+            wrapper.style.display = 'block';
+            const rx = parseFloat(document.getElementById('ratio-x').value);
+            const ry = parseFloat(document.getElementById('ratio-y').value);
+
+            cropper = new Cropper(imageElement, {
+                aspectRatio: rx / ry,
+                viewMode: 1,
+                autoCropArea: 1,
+            });
+            
+            saveBtn.disabled = false;
+        }
+
+        saveBtn.onclick = () => {
+            const width = parseInt(document.getElementById('out-width').value);
+            
+            // Calculate height based on chosen ratio
+            const rx = parseFloat(document.getElementById('ratio-x').value);
+            const ry = parseFloat(document.getElementById('ratio-y').value);
+            const targetHeight = Math.round((width * ry) / rx);
+
+            const canvas = cropper.getCroppedCanvas({
+                width: width,
+                height: targetHeight,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high',
+            });
+
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = `${originalFileName}Thumbnail.jpg`;
+                link.href = url;
+                link.click();
+                URL.revokeObjectURL(url);
+            }, 'image/jpeg', 0.9); // 0.9 quality for preview performance
+        };
+
+        // Update ratio on the fly if inputs change
+        [document.getElementById('ratio-x'), document.getElementById('ratio-y')].forEach(input => {
+            input.onchange = () => {
+                if(cropper) {
+                    const rx = parseFloat(document.getElementById('ratio-x').value);
+                    const ry = parseFloat(document.getElementById('ratio-y').value);
+                    cropper.setAspectRatio(rx / ry);
+                }
+            };
+        });
+    </script>
+</body>
+</html>
