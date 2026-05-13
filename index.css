@@ -93,12 +93,11 @@ body {
   color: var(--text-main);
 }
 
-.logo-icon {
-  background: var(--primary-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-size: 1.6rem;
+.logo-img {
+  height: 2.2rem;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px var(--glow-primary));
 }
 
 .nav-links {
