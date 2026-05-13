@@ -366,13 +366,23 @@ body {
   font-weight: 500;
 }
 
-.tool-footer {
+.tags-action-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  gap: 1rem;
   justify-content: space-between;
-  border-top: 1px solid var(--border-color);
-  padding-top: 1.2rem;
   margin-top: auto;
+}
+
+.tags-action-row .tags {
+  margin-bottom: 0;
+  flex: 1;
+}
+
+.tags-action-row .btn {
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* Features Grid Section */
@@ -573,6 +583,10 @@ body {
   overflow: hidden;
   background: #0f172a;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: zoom-in;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .model-img {
@@ -580,11 +594,30 @@ body {
   height: 100%;
   object-fit: cover;
   object-position: center;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
 }
 
 .model-card:hover .model-img {
   transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+/* Zoom Icon Indicator */
+.model-img-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(56, 189, 248, 0.08) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.model-card:hover .model-img-wrapper::after {
+  opacity: 1;
 }
 
 .model-info {
