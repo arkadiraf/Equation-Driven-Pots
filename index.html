@@ -1,572 +1,810 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Equation-Driven Pots | Parametric 3D Vessel Design</title>
-  <meta name="description" content="A math-based 3D design platform for generating printable pots, vessels, plates, and related sculptural forms from cylindrical and spherical equations.">
-  <link rel="stylesheet" href="index.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equation-Driven Pots | Parametric 3D Vessel Design</title>
+    <meta name="description"
+        content="A math-based 3D design platform for generating printable pots, vessels, plates, and related sculptural forms from cylindrical and spherical equations.">
+    <link rel="stylesheet" href="index.css">
 </head>
+
 <body>
 
-  <!-- Site Header -->
-  <header class="site-header">
-    <div class="container nav-container">
-      <a href="index.html" class="logo" id="nav-logo">
-        <img src="Images/Equation%20Driven%20Pots%20-%20Colored%20Logo%20No%20Background.png" alt="Equation-Driven Pots Logo" class="logo-img">
-        <span>Equation-Driven Pots</span>
-      </a>
-      <nav class="nav-links">
-        <a href="#designer-tool" class="nav-link" id="link-nav-tool">Designer Tool</a>
-        <a href="#gallery" class="nav-link" id="link-nav-gallery">Model Gallery</a>
-        <a href="#features" class="nav-link" id="link-nav-features">Core Concepts</a>
-        <a href="https://github.com/arkadiraf/Equation-Driven-Pots" target="_blank" rel="noopener noreferrer" class="nav-link" id="link-nav-github">GitHub</a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Main Content Area -->
-  <main>
-    <!-- Hero Section -->
-    <section class="hero container">
-      <div class="badge">Mathematical 3D Modeling</div>
-      <h1 class="headline">
-        Design Parametric Vessels <br>
-        <span class="headline-gradient">Directly from Equations</span>
-      </h1>
-      <p class="project-explanation">
-        Equation-Driven Pots treats mathematics as a native design medium. Generate stunning, fully 3D-printable pots, plates, and complex vessels by sampling continuous mathematical fields in cylindrical or spherical coordinates—enabling procedural textures, spatial distortions, and multi-color pattern layers.
-      </p>
-      <div class="cta-group">
-        <a href="EquationDrivenPotDesigner.html" class="btn btn-primary" id="btn-hero-launch">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-          Launch Designer Tool
-        </a>
-        <a href="https://github.com/arkadiraf/Equation-Driven-Pots" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" id="btn-hero-github">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-          View on GitHub
-        </a>
-      </div>
-    </section>
-
-    <!-- Showcase Section: Featured Designer Tool -->
-    <section class="showcase container" id="designer-tool">
-      <div class="tool-card">
-        <a href="EquationDrivenPotDesigner.html" class="tool-preview" id="link-preview-image" aria-label="Open Equation Driven Pot Designer">
-          <img src="Images/EquationDrivenPotDesigner.jpg" alt="Equation Driven Pot Designer unified GUI screenshot showing live mathematical modeling preview" class="tool-image" loading="lazy">
-          <div class="preview-overlay">
-            <span class="launch-hint">
-              Click to Open App 
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-            </span>
-          </div>
-        </a>
-        
-        <div class="tool-info">
-          <div>
-            <div class="tool-header">
-              <h2 class="tool-title">
-                Equation-Driven Pot Designer
-                <span class="status-dot" title="Live & Ready"></span>
-              </h2>
-            </div>
-            
-            <p class="tool-desc">
-              The all-in-one browser GUI merges pure procedural field generation with usable 3D printable object structures. Effortlessly switch between cylindrical and spherical scaffold modes, add surface displacements, set structural thicknesses, and apply advanced layer math directly in your browser.
-            </p>
-            
-            <div class="tags">
-              <span class="tag">Cylindrical & Spherical</span>
-              <span class="tag">Dual-Mask Colors</span>
-              <span class="tag">Field Modifiers</span>
-              <span class="tag">Spatial Distortion</span>
-              <span class="tag">Multi-Part 3MF Export</span>
-            </div>
-          </div>
-
-          <div class="tool-footer">
-            <span style="color: var(--text-muted); font-size: 0.85rem;">Client-side live evaluation</span>
-            <a href="EquationDrivenPotDesigner.html" class="btn btn-primary" id="btn-card-launch" style="padding: 0.6rem 1.5rem; font-size: 0.95rem;">
-              Open GUI
+    <!-- Site Header -->
+    <header class="site-header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo" id="nav-logo">
+                <img src="Images/Equation%20Driven%20Pots%20-%20Colored%20Logo%20No%20Background.png"
+                    alt="Equation-Driven Pots Logo" class="logo-img">
+                <span>Equation-Driven Pots</span>
             </a>
-          </div>
+            <nav class="nav-links">
+                <a href="#designer-tool" class="nav-link" id="link-nav-tool">Designer Tool</a>
+                <a href="#gallery" class="nav-link" id="link-nav-gallery">Model Gallery</a>
+                <a href="#features" class="nav-link" id="link-nav-features">Core Concepts</a>
+                <a href="https://github.com/arkadiraf/Equation-Driven-Pots" target="_blank" rel="noopener noreferrer"
+                    class="nav-link" id="link-nav-github">GitHub</a>
+            </nav>
         </div>
-      </div>
-    </section>
+    </header>
 
-    <!-- Core Features / Project Overview Section -->
-    <section class="features container" id="features">
-      <h2 class="section-title">Engineered for Advanced Form Generation</h2>
-      <div class="grid">
-        
-        <div class="feature-card">
-          <div class="feature-icon">📐</div>
-          <h3 class="feature-title">Mathematical Scaffolding</h3>
-          <p class="feature-desc">
-            Define basic silhouettes via sampled functions in <code>(θ, z)</code> or <code>(θ, φ)</code> coordinates. Support ranges from simple polygons and smooth curves to floral blooms and nonlinear compressed structures.
-          </p>
+    <!-- Main Content Area -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero container">
+            <div class="badge">Mathematical 3D Modeling</div>
+            <h1 class="headline">
+                Design Parametric Vessels <br>
+                <span class="headline-gradient">Directly from Equations</span>
+            </h1>
+            <p class="project-explanation">
+                Equation-Driven Pots treats mathematics as a native design medium. Generate stunning, fully 3D-printable
+                pots, plates, and complex vessels by sampling continuous mathematical fields in cylindrical or spherical
+                coordinates - enabling procedural textures, spatial distortions, and multi-color pattern layers.
+            </p>
+            <div class="cta-group">
+                <a href="EquationDrivenPotDesigner.html" class="btn btn-primary" id="btn-hero-launch">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    Launch Designer Tool
+                </a>
+                <a href="https://github.com/arkadiraf/Equation-Driven-Pots" target="_blank" rel="noopener noreferrer"
+                    class="btn btn-secondary" id="btn-hero-github">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+                        </path>
+                    </svg>
+                    View on GitHub
+                </a>
+            </div>
+        </section>
+
+        <!-- Showcase Section: Featured Designer Tool -->
+        <section class="showcase container" id="designer-tool">
+            <div class="tool-card">
+                <a href="EquationDrivenPotDesigner.html" class="tool-preview" id="link-preview-image"
+                    aria-label="Open Equation Driven Pot Designer">
+                    <img src="Images/EquationDrivenPotDesigner.jpg"
+                        alt="Equation Driven Pot Designer unified GUI screenshot showing live mathematical modeling preview"
+                        class="tool-image" loading="lazy">
+                    <div class="preview-overlay">
+                        <span class="launch-hint">
+                            Click to Open App
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+                </a>
+
+                <div class="tool-info">
+                    <div>
+                        <div class="tool-header">
+                            <h2 class="tool-title">
+                                Equation-Driven Pot Designer
+                                <span class="status-dot" title="Live & Ready"></span>
+                            </h2>
+                        </div>
+
+                        <p class="tool-desc">
+                            The all-in-one browser GUI merges pure procedural field generation with usable 3D printable
+                            object structures. Effortlessly switch between cylindrical and spherical scaffold modes, add
+                            surface displacements, set structural thicknesses, and apply advanced layer math directly in
+                            your browser.
+                        </p>
+
+                        <div class="tags">
+                            <span class="tag">Cylindrical & Spherical</span>
+                            <span class="tag">Dual-Mask Colors</span>
+                            <span class="tag">Field Modifiers</span>
+                            <span class="tag">Spatial Distortion</span>
+                            <span class="tag">Multi-Part 3MF Export</span>
+                        </div>
+                    </div>
+
+                    <div class="tool-footer">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Client-side live evaluation</span>
+                        <a href="EquationDrivenPotDesigner.html" class="btn btn-primary" id="btn-card-launch"
+                            style="padding: 0.6rem 1.5rem; font-size: 0.95rem;">
+                            Open GUI
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Features / Project Overview Section -->
+        <section class="features container" id="features">
+            <h2 class="section-title">Engineered for Advanced Form Generation</h2>
+            <div class="grid">
+
+                <div class="feature-card">
+                    <div class="feature-icon">📐</div>
+                    <h3 class="feature-title">Mathematical Scaffolding</h3>
+                    <p class="feature-desc">
+                        Define basic silhouettes via sampled functions in <code>(θ, z)</code> or <code>(θ, φ)</code>
+                        coordinates. Support ranges from simple polygons and smooth curves to floral blooms and
+                        nonlinear compressed structures.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">✨</div>
+                    <h3 class="feature-title">Independent Surface Relief</h3>
+                    <p class="feature-desc">
+                        Apply dedicated procedural textures on top of the base silhouette. Keep your primary form clean
+                        while layering complex fluting, horizontal ribbing, terracing, or woven interference grids.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3 class="feature-title">Dual Pattern Color Layers</h3>
+                    <p class="feature-desc">
+                        Evaluate overlapping boolean mask equations to instantly partition geometry into independent
+                        print volumes, generating striking quad-color designs ready for multi-material 3MF slicing.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🌀</div>
+                    <h3 class="feature-title">Field Modifiers</h3>
+                    <p class="feature-desc">
+                        Remap coordinate spaces before field evaluations take place. Dynamically introduce rotational
+                        drift, twist vectors, and localized patterns along vessel rims or specific target heights.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💨</div>
+                    <h3 class="feature-title">Spatial Distortions</h3>
+                    <p class="feature-desc">
+                        Deform finalized object meshes in world coordinates post-evaluation. Simulate sculptural wind
+                        bends, gravity sags, fluid vortex twisting, and localized interactive pressure indentations.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🖨️</div>
+                    <h3 class="feature-title">Production Output</h3>
+                    <p class="feature-desc">
+                        Transition instantly from abstract fields to solid functional models with specified walls,
+                        bottoms, drainage paths, and base plates. Export robust STLs or multi-body 3MF files for
+                        slicing.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Showcase Gallery Section -->
+        <section class="gallery-section container" id="gallery">
+            <div class="gallery-header">
+                <h2 class="section-title" style="margin-bottom: 0.5rem;">Designed Models Showcase</h2>
+                <p class="gallery-subtitle">Explore actual printable vessels created directly with the parametric
+                    equation tools. Download configuration files or multi-body 3MF projects.</p>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="tabs-nav" role="tablist">
+                <button class="tab-btn active" data-tab="tab-multicolor" role="tab" id="btn-tab-mc">Multi-Color
+                    Designs</button>
+                <button class="tab-btn" data-tab="tab-singlecolor" role="tab" id="btn-tab-sc">Single-Color
+                    Designs</button>
+                <button class="tab-btn" data-tab="tab-vase" role="tab" id="btn-tab-vase">Vase & Geometric</button>
+            </div>
+
+            <!-- Tab Content Area -->
+            <div class="tabs-content">
+
+                <!-- Multi-Color Tab (Active by Default) -->
+                <div class="tab-pane active" id="tab-multicolor" role="tabpanel">
+                    <div class="model-grid">
+
+                        <div class="model-card">
+                            <div class="model-img-wrapper">
+                                <img src="3dModels/MultiColor/3-to-6_Petal_Morph_Bulged/3-to-6_Petal_Morph_Bulged.jpg"
+                                    alt="3-to-6 Petal Morph Bulged design preview" class="model-img" loading="lazy">
+                            </div>
+                            <div class="model-info">
+                                <h3 class="model-title">3-to-6 Petal Morph Bulged</h3>
+                                <div class="model-actions">
+                                    <a href="3dModels/MultiColor/3-to-6_Petal_Morph_Bulged/3-to-6_Petal_Morph_Bulged.json"
+                                        download class="btn-dl btn-dl-json" id="dl-mc1-json"
+                                        title="Download config JSON">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                                        </svg>
+                                        .JSON
+                                    </a>
+                                    <a href="3dModels/MultiColor/3-to-6_Petal_Morph_Bulged/3-to-6_Petal_Morph_Bulged.3mf"
+                                        download class="btn-dl btn-dl-3mf" id="dl-mc1-3mf"
+                                        title="Download printable 3MF">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        .3MF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="model-card">
+                            <div class="model-img-wrapper">
+                                <img src="3dModels/MultiColor/Aerospace_Isogrid/Aerospace_Isogrid.jpg"
+                                    alt="Aerospace Isogrid design preview" class="model-img" loading="lazy">
+                            </div>
+                            <div class="model-info">
+                                <h3 class="model-title">Aerospace Isogrid</h3>
+                                <div class="model-actions">
+                                    <a href="3dModels/MultiColor/Aerospace_Isogrid/Aerospace_Isogrid.json" download
+                                        class="btn-dl btn-dl-json" id="dl-mc2-json">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                                        </svg>
+                                        .JSON
+                                    </a>
+                                    <a href="3dModels/MultiColor/Aerospace_Isogrid/Aerospace_Isogrid.3mf" download
+                                        class="btn-dl btn-dl-3mf" id="dl-mc2-3mf">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        .3MF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="model-card">
+                            <div class="model-img-wrapper">
+                                <img src="3dModels/MultiColor/Five Petal Interlaced Bloom/Five_Petal_Interlaced_Bloom.jpg"
+                                    alt="Five Petal Interlaced Bloom design preview" class="model-img" loading="lazy">
+                            </div>
+                            <div class="model-info">
+                                <h3 class="model-title">Five Petal Interlaced Bloom</h3>
+                                <div class="model-actions">
+                                    <a href="3dModels/MultiColor/Five Petal Interlaced Bloom/Five_Petal_Interlaced_Bloom.json"
+                                        download class="btn-dl btn-dl-json" id="dl-mc3-json">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                                        </svg>
+                                        .JSON
+                                    </a>
+                                    <a href="3dModels/MultiColor/Five Petal Interlaced Bloom/Five_Petal_Interlaced_Bloom.3mf"
+                                        download class="btn-dl btn-dl-3mf" id="dl-mc3-3mf">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        .3MF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="model-card">
+                            <div class="model-img-wrapper">
+                                <img src="3dModels/MultiColor/Layer Plate Shell/Layered_Plate_Shell.jpg"
+                                    alt="Layered Plate Shell design preview" class="model-img" loading="lazy">
+                            </div>
+                            <div class="model-info">
+                                <h3 class="model-title">Layered Plate Shell</h3>
+                                <div class="model-actions">
+                                    <a href="3dModels/MultiColor/Layer Plate Shell/Layered_Plate_Shell.json" download
+                                        class="btn-dl btn-dl-json" id="dl-mc4-json">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                                        </svg>
+                                        .JSON
+                                    </a>
+                                    <a href="3dModels/MultiColor/Layer Plate Shell/Layered_Plate_Shell.3mf" download
+                                        class="btn-dl btn-dl-3mf" id="dl-mc4-3mf">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        .3MF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="model-card">
+                            <div class="model-img-wrapper">
+                                <img src="3dModels/MultiColor/Opening_Flower/Opening_Flower.jpg"
+                                    alt="Opening Flower design preview" class="model-img" loading="lazy">
+                            </div>
+                            <div class="model-info">
+                                <h3 class="model-title">Opening Flower</h3>
+                                <div class="model-actions">
+                                    <a href="3dModels/MultiColor/Opening_Flower/Opening_Flower.json" download
+                                        class="btn-dl btn-dl-json" id="dl-mc5-json">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                                        </svg>
+                                        .JSON
+                                    </a>
+                                    <a href="3dModels/MultiColor/Opening_Flower/Opening_Flower.3mf" download
+                                        class="btn-dl btn-dl-3mf" id="dl-mc5-3mf">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        .3MF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="model-card">
+                            <div class="model-img-wrapper">
+                                <img src="3dModels/MultiColor/Saturated Moire/Saturated_Moire.jpg"
+                                    alt="Saturated Moire design preview" class="model-img" loading="lazy">
+                            </div>
+                            <div class="model-info">
+                                <h3 class="model-title">Saturated Moire</h3>
+                                <div class="model-actions">
+                                    <a href="3dModels/MultiColor/Saturated Moire/Saturated_Moire.json" download
+                                        class="btn-dl btn-dl-json" id="dl-mc6-json">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                                        </svg>
+                                        .JSON
+                                    </a>
+                                    <a href="3dModels/MultiColor/Saturated Moire/Saturated_Moire.3mf" download
+                                        class="btn-dl btn-dl-3mf" id="dl-mc6-3mf">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        .3MF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="model-card">
+                            <div class="model-img-wrapper">
+                                <img src="3dModels/MultiColor/Soft Capsule/Soft_Capsule.jpg"
+                                    alt="Soft Capsule design preview" class="model-img" loading="lazy">
+                            </div>
+                            <div class="model-info">
+                                <h3 class="model-title">Soft Capsule</h3>
+                                <div class="model-actions">
+                                    <a href="3dModels/MultiColor/Soft Capsule/Soft_Capsule.json" download
+                                        class="btn-dl btn-dl-json" id="dl-mc7-json">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                                        </svg>
+                                        .JSON
+                                    </a>
+                                    <a href="3dModels/MultiColor/Soft Capsule/Soft_Capsule.3mf" download
+                                        class="btn-dl btn-dl-3mf" id="dl-mc7-3mf">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        .3MF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Single-Color Tab -->
+                <div class="tab-pane" id="tab-singlecolor" role="tabpanel">
+                    <div class="model-grid">
+
+                        <div class="model-card">
+                            <div class="model-img-wrapper">
+                                <img src="3dModels/SingleColor/Braided Helix/Braided_Helix.jpg"
+                                    alt="Braided Helix design preview" class="model-img" loading="lazy">
+                            </div>
+                            <div class="model-info">
+                                <h3 class="model-title">Braided Helix</h3>
+                                <div class="model-actions">
+                                    <a href="3dModels/SingleColor/Braided Helix/Braided_Helix.json" download
+                                        class="btn-dl btn-dl-json" id="dl-sc1-json">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                                        </svg>
+                                        .JSON
+                                    </a>
+                                    <a href="3dModels/SingleColor/Braided Helix/Braided_Helix.3mf" download
+                                        class="btn-dl btn-dl-3mf" id="dl-sc1-3mf">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        .3MF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="model-card">
+                            <div class="model-img-wrapper">
+                                <img src="3dModels/SingleColor/Opening Flower/Opening_Flower.jpg"
+                                    alt="Opening Flower design preview" class="model-img" loading="lazy">
+                            </div>
+                            <div class="model-info">
+                                <h3 class="model-title">Opening Flower</h3>
+                                <div class="model-actions">
+                                    <a href="3dModels/SingleColor/Opening Flower/Opening_Flower.json" download
+                                        class="btn-dl btn-dl-json" id="dl-sc2-json">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                                        </svg>
+                                        .JSON
+                                    </a>
+                                    <a href="3dModels/SingleColor/Opening Flower/Opening_Flower.3mf" download
+                                        class="btn-dl btn-dl-3mf" id="dl-sc2-3mf">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        .3MF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="model-card">
+                            <div class="model-img-wrapper">
+                                <img src="3dModels/SingleColor/Pumkin Lobes/Pumpkin_Lobes.jpg"
+                                    alt="Pumpkin Lobes design preview" class="model-img" loading="lazy">
+                            </div>
+                            <div class="model-info">
+                                <h3 class="model-title">Pumpkin Lobes</h3>
+                                <div class="model-actions">
+                                    <a href="3dModels/SingleColor/Pumkin Lobes/Pumpkin_Lobes.json" download
+                                        class="btn-dl btn-dl-json" id="dl-sc3-json">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                                        </svg>
+                                        .JSON
+                                    </a>
+                                    <a href="3dModels/SingleColor/Pumkin Lobes/Pumpkin_Lobe.3mf" download
+                                        class="btn-dl btn-dl-3mf" id="dl-sc3-3mf">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        .3MF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="model-card">
+                            <div class="model-img-wrapper">
+                                <img src="3dModels/SingleColor/Quasi Crystal Helix/Quasi-Crystal_Helix.jpg"
+                                    alt="Quasi-Crystal Helix design preview" class="model-img" loading="lazy">
+                            </div>
+                            <div class="model-info">
+                                <h3 class="model-title">Quasi-Crystal Helix</h3>
+                                <div class="model-actions">
+                                    <a href="3dModels/SingleColor/Quasi Crystal Helix/Quasi-Crystal_Helix.json" download
+                                        class="btn-dl btn-dl-json" id="dl-sc4-json">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                                        </svg>
+                                        .JSON
+                                    </a>
+                                    <a href="3dModels/SingleColor/Quasi Crystal Helix/Quasi-Crystal_Helix.3mf" download
+                                        class="btn-dl btn-dl-3mf" id="dl-sc4-3mf">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        .3MF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="model-card">
+                            <div class="model-img-wrapper">
+                                <img src="3dModels/SingleColor/Twist Bands/Twist_Bands.jpg"
+                                    alt="Twist Bands design preview" class="model-img" loading="lazy">
+                            </div>
+                            <div class="model-info">
+                                <h3 class="model-title">Twist Bands</h3>
+                                <div class="model-actions">
+                                    <a href="3dModels/SingleColor/Twist Bands/Twist_Bands.json" download
+                                        class="btn-dl btn-dl-json" id="dl-sc5-json">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                                        </svg>
+                                        .JSON
+                                    </a>
+                                    <a href="3dModels/SingleColor/Twist Bands/Twist_Bands.3mf" download
+                                        class="btn-dl btn-dl-3mf" id="dl-sc5-3mf">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        .3MF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Vase Tab -->
+                <div class="tab-pane" id="tab-vase" role="tabpanel">
+                    <div class="model-grid">
+
+                        <div class="model-card">
+                            <div class="model-img-wrapper">
+                                <img src="3dModels/Vase/Bamboo Bulge Ribbed/Bamboo_Bulge_Ribbed_Vase.jpg"
+                                    alt="Bamboo Bulge Ribbed Vase preview" class="model-img" loading="lazy">
+                            </div>
+                            <div class="model-info">
+                                <h3 class="model-title">Bamboo Bulge Ribbed</h3>
+                                <div class="model-actions">
+                                    <a href="3dModels/Vase/Bamboo Bulge Ribbed/Bamboo_Bulge_Ribbed_Vase.json" download
+                                        class="btn-dl btn-dl-json" id="dl-v1-json">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                                        </svg>
+                                        .JSON
+                                    </a>
+                                    <a href="3dModels/Vase/Bamboo Bulge Ribbed/Bamboo_Bulge_Ribbed_Vase.3mf" download
+                                        class="btn-dl btn-dl-3mf" id="dl-v1-3mf">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        .3MF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="model-card">
+                            <div class="model-img-wrapper">
+                                <img src="3dModels/Vase/Pillow Square/Pillow_Square.jpg"
+                                    alt="Pillow Square Vase preview" class="model-img" loading="lazy">
+                            </div>
+                            <div class="model-info">
+                                <h3 class="model-title">Pillow Square</h3>
+                                <div class="model-actions">
+                                    <a href="3dModels/Vase/Pillow Square/Pillow_Square.json" download
+                                        class="btn-dl btn-dl-json" id="dl-v2-json">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                                        </svg>
+                                        .JSON
+                                    </a>
+                                    <a href="3dModels/Vase/Pillow Square/Pillow_Square_Vase.3mf" download
+                                        class="btn-dl btn-dl-3mf" id="dl-v2-3mf">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        .3MF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <div class="footer-links">
+                <a href="EquationDrivenPotDesigner.html" class="footer-link" id="link-footer-tool">Unified Designer</a>
+                <a href="https://github.com/arkadiraf/Equation-Driven-Pots" target="_blank" rel="noopener noreferrer"
+                    class="footer-link" id="link-footer-repo">GitHub Repository</a>
+            </div>
+            <p>&copy; Equation-Driven Pots Project. Licensed under the MIT License.</p>
         </div>
+    </footer>
 
-        <div class="feature-card">
-          <div class="feature-icon">✨</div>
-          <h3 class="feature-title">Independent Surface Relief</h3>
-          <p class="feature-desc">
-            Apply dedicated procedural textures on top of the base silhouette. Keep your primary form clean while layering complex fluting, horizontal ribbing, terracing, or woven interference grids.
-          </p>
+    <!-- Lightbox Modal Container -->
+    <div class="lightbox-modal" id="image-lightbox" role="dialog" aria-modal="true" aria-label="Image Preview">
+        <div class="lightbox-content">
+            <button class="lightbox-close" id="lightbox-close-btn" aria-label="Close Preview">&times;</button>
+            <img src="" alt="Full size preview" class="lightbox-img" id="lightbox-image">
         </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">🎨</div>
-          <h3 class="feature-title">Dual Pattern Color Layers</h3>
-          <p class="feature-desc">
-            Evaluate overlapping boolean mask equations to instantly partition geometry into independent print volumes, generating striking quad-color designs ready for multi-material 3MF slicing.
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">🌀</div>
-          <h3 class="feature-title">Field Modifiers</h3>
-          <p class="feature-desc">
-            Remap coordinate spaces before field evaluations take place. Dynamically introduce rotational drift, twist vectors, and localized patterns along vessel rims or specific target heights.
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">💨</div>
-          <h3 class="feature-title">Spatial Distortions</h3>
-          <p class="feature-desc">
-            Deform finalized object meshes in world coordinates post-evaluation. Simulate sculptural wind bends, gravity sags, fluid vortex twisting, and localized interactive pressure indentations.
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">🖨️</div>
-          <h3 class="feature-title">Production Output</h3>
-          <p class="feature-desc">
-            Transition instantly from abstract fields to solid functional models with specified walls, bottoms, drainage paths, and base plates. Export robust STLs or multi-body 3MF files for slicing.
-          </p>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- Showcase Gallery Section -->
-    <section class="gallery-section container" id="gallery">
-      <div class="gallery-header">
-        <h2 class="section-title" style="margin-bottom: 0.5rem;">Designed Models Showcase</h2>
-        <p class="gallery-subtitle">Explore actual printable vessels created directly with the parametric equation tools. Download configuration files or multi-body 3MF projects.</p>
-      </div>
-
-      <!-- Tab Navigation -->
-      <div class="tabs-nav" role="tablist">
-        <button class="tab-btn active" data-tab="tab-multicolor" role="tab" id="btn-tab-mc">Multi-Color Designs</button>
-        <button class="tab-btn" data-tab="tab-singlecolor" role="tab" id="btn-tab-sc">Single-Color Designs</button>
-        <button class="tab-btn" data-tab="tab-vase" role="tab" id="btn-tab-vase">Vase & Geometric</button>
-      </div>
-
-      <!-- Tab Content Area -->
-      <div class="tabs-content">
-        
-        <!-- Multi-Color Tab (Active by Default) -->
-        <div class="tab-pane active" id="tab-multicolor" role="tabpanel">
-          <div class="model-grid">
-            
-            <div class="model-card">
-              <div class="model-img-wrapper">
-                <img src="3dModels/MultiColor/3-to-6_Petal_Morph_Bulged/3-to-6_Petal_Morph_Bulged.jpg" alt="3-to-6 Petal Morph Bulged design preview" class="model-img" loading="lazy">
-              </div>
-              <div class="model-info">
-                <h3 class="model-title">3-to-6 Petal Morph Bulged</h3>
-                <div class="model-actions">
-                  <a href="3dModels/MultiColor/3-to-6_Petal_Morph_Bulged/3-to-6_Petal_Morph_Bulged.json" download class="btn-dl btn-dl-json" id="dl-mc1-json" title="Download config JSON">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                    .JSON
-                  </a>
-                  <a href="3dModels/MultiColor/3-to-6_Petal_Morph_Bulged/3-to-6_Petal_Morph_Bulged.3mf" download class="btn-dl btn-dl-3mf" id="dl-mc1-3mf" title="Download printable 3MF">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    .3MF
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div class="model-card">
-              <div class="model-img-wrapper">
-                <img src="3dModels/MultiColor/Aerospace_Isogrid/Aerospace_Isogrid.jpg" alt="Aerospace Isogrid design preview" class="model-img" loading="lazy">
-              </div>
-              <div class="model-info">
-                <h3 class="model-title">Aerospace Isogrid</h3>
-                <div class="model-actions">
-                  <a href="3dModels/MultiColor/Aerospace_Isogrid/Aerospace_Isogrid.json" download class="btn-dl btn-dl-json" id="dl-mc2-json">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                    .JSON
-                  </a>
-                  <a href="3dModels/MultiColor/Aerospace_Isogrid/Aerospace_Isogrid.3mf" download class="btn-dl btn-dl-3mf" id="dl-mc2-3mf">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    .3MF
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div class="model-card">
-              <div class="model-img-wrapper">
-                <img src="3dModels/MultiColor/Five Petal Interlaced Bloom/Five_Petal_Interlaced_Bloom.jpg" alt="Five Petal Interlaced Bloom design preview" class="model-img" loading="lazy">
-              </div>
-              <div class="model-info">
-                <h3 class="model-title">Five Petal Interlaced Bloom</h3>
-                <div class="model-actions">
-                  <a href="3dModels/MultiColor/Five Petal Interlaced Bloom/Five_Petal_Interlaced_Bloom.json" download class="btn-dl btn-dl-json" id="dl-mc3-json">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                    .JSON
-                  </a>
-                  <a href="3dModels/MultiColor/Five Petal Interlaced Bloom/Five_Petal_Interlaced_Bloom.3mf" download class="btn-dl btn-dl-3mf" id="dl-mc3-3mf">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    .3MF
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div class="model-card">
-              <div class="model-img-wrapper">
-                <img src="3dModels/MultiColor/Layer Plate Shell/Layered_Plate_Shell.jpg" alt="Layered Plate Shell design preview" class="model-img" loading="lazy">
-              </div>
-              <div class="model-info">
-                <h3 class="model-title">Layered Plate Shell</h3>
-                <div class="model-actions">
-                  <a href="3dModels/MultiColor/Layer Plate Shell/Layered_Plate_Shell.json" download class="btn-dl btn-dl-json" id="dl-mc4-json">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                    .JSON
-                  </a>
-                  <a href="3dModels/MultiColor/Layer Plate Shell/Layered_Plate_Shell.3mf" download class="btn-dl btn-dl-3mf" id="dl-mc4-3mf">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    .3MF
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div class="model-card">
-              <div class="model-img-wrapper">
-                <img src="3dModels/MultiColor/Opening_Flower/Opening_Flower.jpg" alt="Opening Flower design preview" class="model-img" loading="lazy">
-              </div>
-              <div class="model-info">
-                <h3 class="model-title">Opening Flower</h3>
-                <div class="model-actions">
-                  <a href="3dModels/MultiColor/Opening_Flower/Opening_Flower.json" download class="btn-dl btn-dl-json" id="dl-mc5-json">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                    .JSON
-                  </a>
-                  <a href="3dModels/MultiColor/Opening_Flower/Opening_Flower.3mf" download class="btn-dl btn-dl-3mf" id="dl-mc5-3mf">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    .3MF
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div class="model-card">
-              <div class="model-img-wrapper">
-                <img src="3dModels/MultiColor/Saturated Moire/Saturated_Moire.jpg" alt="Saturated Moire design preview" class="model-img" loading="lazy">
-              </div>
-              <div class="model-info">
-                <h3 class="model-title">Saturated Moire</h3>
-                <div class="model-actions">
-                  <a href="3dModels/MultiColor/Saturated Moire/Saturated_Moire.json" download class="btn-dl btn-dl-json" id="dl-mc6-json">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                    .JSON
-                  </a>
-                  <a href="3dModels/MultiColor/Saturated Moire/Saturated_Moire.3mf" download class="btn-dl btn-dl-3mf" id="dl-mc6-3mf">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    .3MF
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div class="model-card">
-              <div class="model-img-wrapper">
-                <img src="3dModels/MultiColor/Soft Capsule/Soft_Capsule.jpg" alt="Soft Capsule design preview" class="model-img" loading="lazy">
-              </div>
-              <div class="model-info">
-                <h3 class="model-title">Soft Capsule</h3>
-                <div class="model-actions">
-                  <a href="3dModels/MultiColor/Soft Capsule/Soft_Capsule.json" download class="btn-dl btn-dl-json" id="dl-mc7-json">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                    .JSON
-                  </a>
-                  <a href="3dModels/MultiColor/Soft Capsule/Soft_Capsule.3mf" download class="btn-dl btn-dl-3mf" id="dl-mc7-3mf">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    .3MF
-                  </a>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- Single-Color Tab -->
-        <div class="tab-pane" id="tab-singlecolor" role="tabpanel">
-          <div class="model-grid">
-            
-            <div class="model-card">
-              <div class="model-img-wrapper">
-                <img src="3dModels/SingleColor/Braided Helix/Braided_Helix.jpg" alt="Braided Helix design preview" class="model-img" loading="lazy">
-              </div>
-              <div class="model-info">
-                <h3 class="model-title">Braided Helix</h3>
-                <div class="model-actions">
-                  <a href="3dModels/SingleColor/Braided Helix/Braided_Helix.json" download class="btn-dl btn-dl-json" id="dl-sc1-json">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                    .JSON
-                  </a>
-                  <a href="3dModels/SingleColor/Braided Helix/Braided_Helix.3mf" download class="btn-dl btn-dl-3mf" id="dl-sc1-3mf">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    .3MF
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div class="model-card">
-              <div class="model-img-wrapper">
-                <img src="3dModels/SingleColor/Opening Flower/Opening_Flower.jpg" alt="Opening Flower design preview" class="model-img" loading="lazy">
-              </div>
-              <div class="model-info">
-                <h3 class="model-title">Opening Flower</h3>
-                <div class="model-actions">
-                  <a href="3dModels/SingleColor/Opening Flower/Opening_Flower.json" download class="btn-dl btn-dl-json" id="dl-sc2-json">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                    .JSON
-                  </a>
-                  <a href="3dModels/SingleColor/Opening Flower/Opening_Flower.3mf" download class="btn-dl btn-dl-3mf" id="dl-sc2-3mf">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    .3MF
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div class="model-card">
-              <div class="model-img-wrapper">
-                <img src="3dModels/SingleColor/Pumkin Lobes/Pumpkin_Lobes.jpg" alt="Pumpkin Lobes design preview" class="model-img" loading="lazy">
-              </div>
-              <div class="model-info">
-                <h3 class="model-title">Pumpkin Lobes</h3>
-                <div class="model-actions">
-                  <a href="3dModels/SingleColor/Pumkin Lobes/Pumpkin_Lobes.json" download class="btn-dl btn-dl-json" id="dl-sc3-json">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                    .JSON
-                  </a>
-                  <a href="3dModels/SingleColor/Pumkin Lobes/Pumpkin_Lobe.3mf" download class="btn-dl btn-dl-3mf" id="dl-sc3-3mf">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    .3MF
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div class="model-card">
-              <div class="model-img-wrapper">
-                <img src="3dModels/SingleColor/Quasi Crystal Helix/Quasi-Crystal_Helix.jpg" alt="Quasi-Crystal Helix design preview" class="model-img" loading="lazy">
-              </div>
-              <div class="model-info">
-                <h3 class="model-title">Quasi-Crystal Helix</h3>
-                <div class="model-actions">
-                  <a href="3dModels/SingleColor/Quasi Crystal Helix/Quasi-Crystal_Helix.json" download class="btn-dl btn-dl-json" id="dl-sc4-json">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                    .JSON
-                  </a>
-                  <a href="3dModels/SingleColor/Quasi Crystal Helix/Quasi-Crystal_Helix.3mf" download class="btn-dl btn-dl-3mf" id="dl-sc4-3mf">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    .3MF
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div class="model-card">
-              <div class="model-img-wrapper">
-                <img src="3dModels/SingleColor/Twist Bands/Twist_Bands.jpg" alt="Twist Bands design preview" class="model-img" loading="lazy">
-              </div>
-              <div class="model-info">
-                <h3 class="model-title">Twist Bands</h3>
-                <div class="model-actions">
-                  <a href="3dModels/SingleColor/Twist Bands/Twist_Bands.json" download class="btn-dl btn-dl-json" id="dl-sc5-json">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                    .JSON
-                  </a>
-                  <a href="3dModels/SingleColor/Twist Bands/Twist_Bands.3mf" download class="btn-dl btn-dl-3mf" id="dl-sc5-3mf">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    .3MF
-                  </a>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- Vase Tab -->
-        <div class="tab-pane" id="tab-vase" role="tabpanel">
-          <div class="model-grid">
-            
-            <div class="model-card">
-              <div class="model-img-wrapper">
-                <img src="3dModels/Vase/Bamboo Bulge Ribbed/Bamboo_Bulge_Ribbed_Vase.jpg" alt="Bamboo Bulge Ribbed Vase preview" class="model-img" loading="lazy">
-              </div>
-              <div class="model-info">
-                <h3 class="model-title">Bamboo Bulge Ribbed</h3>
-                <div class="model-actions">
-                  <a href="3dModels/Vase/Bamboo Bulge Ribbed/Bamboo_Bulge_Ribbed_Vase.json" download class="btn-dl btn-dl-json" id="dl-v1-json">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                    .JSON
-                  </a>
-                  <a href="3dModels/Vase/Bamboo Bulge Ribbed/Bamboo_Bulge_Ribbed_Vase.3mf" download class="btn-dl btn-dl-3mf" id="dl-v1-3mf">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    .3MF
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div class="model-card">
-              <div class="model-img-wrapper">
-                <img src="3dModels/Vase/Pillow Square/Pillow_Square.jpg" alt="Pillow Square Vase preview" class="model-img" loading="lazy">
-              </div>
-              <div class="model-info">
-                <h3 class="model-title">Pillow Square</h3>
-                <div class="model-actions">
-                  <a href="3dModels/Vase/Pillow Square/Pillow_Square.json" download class="btn-dl btn-dl-json" id="dl-v2-json">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                    .JSON
-                  </a>
-                  <a href="3dModels/Vase/Pillow Square/Pillow_Square_Vase.3mf" download class="btn-dl btn-dl-3mf" id="dl-v2-3mf">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    .3MF
-                  </a>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-      </div>
-    </section>
-  </main>
-
-  <!-- Site Footer -->
-  <footer class="site-footer">
-    <div class="container footer-content">
-      <div class="footer-links">
-        <a href="EquationDrivenPotDesigner.html" class="footer-link" id="link-footer-tool">Unified Designer</a>
-        <a href="https://github.com/arkadiraf/Equation-Driven-Pots" target="_blank" rel="noopener noreferrer" class="footer-link" id="link-footer-repo">GitHub Repository</a>
-      </div>
-      <p>&copy; Equation-Driven Pots Project. Licensed under the MIT License.</p>
     </div>
-  </footer>
 
-  <!-- Lightbox Modal Container -->
-  <div class="lightbox-modal" id="image-lightbox" role="dialog" aria-modal="true" aria-label="Image Preview">
-    <div class="lightbox-content">
-      <button class="lightbox-close" id="lightbox-close-btn" aria-label="Close Preview">&times;</button>
-      <img src="" alt="Full size preview" class="lightbox-img" id="lightbox-image">
-    </div>
-  </div>
+    <!-- Live Interactions Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Tab Switching Logic
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabPanes = document.querySelectorAll('.tab-pane');
 
-  <!-- Live Interactions Logic -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // 1. Tab Switching Logic
-      const tabButtons = document.querySelectorAll('.tab-btn');
-      const tabPanes = document.querySelectorAll('.tab-pane');
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetTab = btn.getAttribute('data-tab');
 
-      tabButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const targetTab = btn.getAttribute('data-tab');
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    tabPanes.forEach(p => p.classList.remove('active'));
 
-          tabButtons.forEach(b => b.classList.remove('active'));
-          tabPanes.forEach(p => p.classList.remove('active'));
+                    btn.classList.add('active');
+                    const pane = document.getElementById(targetTab);
+                    if (pane) {
+                        pane.classList.add('active');
+                    }
+                });
+            });
 
-          btn.classList.add('active');
-          const pane = document.getElementById(targetTab);
-          if (pane) {
-            pane.classList.add('active');
-          }
+            // 2. Image Lightbox Popup Logic
+            const modal = document.getElementById('image-lightbox');
+            const modalImg = document.getElementById('lightbox-image');
+            const closeBtn = document.getElementById('lightbox-close-btn');
+            const previewImages = document.querySelectorAll('.model-img');
+
+            const closeModal = () => {
+                modal.classList.remove('active');
+                setTimeout(() => {
+                    if (!modal.classList.contains('active')) {
+                        modalImg.src = '';
+                    }
+                }, 300);
+            };
+
+            previewImages.forEach(img => {
+                img.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    modalImg.src = img.src;
+                    modalImg.alt = img.alt;
+                    modal.classList.add('active');
+                });
+            });
+
+            closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal || e.target.classList.contains('lightbox-content')) {
+                    closeModal();
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    closeModal();
+                }
+            });
+
+            // 3. Guaranteed Client-Side Download Logic for .JSON files
+            const jsonLinks = document.querySelectorAll('.btn-dl-json');
+            jsonLinks.forEach(link => {
+                link.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    const fileUrl = link.getAttribute('href');
+                    const filename = fileUrl.split('/').pop() || 'config.json';
+
+                    try {
+                        const response = await fetch(fileUrl);
+                        if (!response.ok) throw new Error('Network response failure');
+                        const text = await response.text();
+
+                        const blob = new Blob([text], { type: 'application/octet-stream' });
+                        const downloadUrl = URL.createObjectURL(blob);
+
+                        const tempAnchor = document.createElement('a');
+                        tempAnchor.href = downloadUrl;
+                        tempAnchor.download = filename;
+                        document.body.appendChild(tempAnchor);
+                        tempAnchor.click();
+                        document.body.removeChild(tempAnchor);
+
+                        setTimeout(() => URL.revokeObjectURL(downloadUrl), 100);
+                    } catch (err) {
+                        console.error('Programmatic fetch failed, falling back to direct link:', err);
+                        window.open(fileUrl, '_blank');
+                    }
+                });
+            });
         });
-      });
-
-      // 2. Image Lightbox Popup Logic
-      const modal = document.getElementById('image-lightbox');
-      const modalImg = document.getElementById('lightbox-image');
-      const closeBtn = document.getElementById('lightbox-close-btn');
-      const previewImages = document.querySelectorAll('.model-img');
-
-      const closeModal = () => {
-        modal.classList.remove('active');
-        setTimeout(() => {
-          if (!modal.classList.contains('active')) {
-            modalImg.src = '';
-          }
-        }, 300);
-      };
-
-      previewImages.forEach(img => {
-        img.addEventListener('click', (e) => {
-          e.stopPropagation();
-          modalImg.src = img.src;
-          modalImg.alt = img.alt;
-          modal.classList.add('active');
-        });
-      });
-
-      closeBtn.addEventListener('click', closeModal);
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal || e.target.classList.contains('lightbox-content')) {
-          closeModal();
-        }
-      });
-
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('active')) {
-          closeModal();
-        }
-      });
-
-      // 3. Guaranteed Client-Side Download Logic for .JSON files
-      const jsonLinks = document.querySelectorAll('.btn-dl-json');
-      jsonLinks.forEach(link => {
-        link.addEventListener('click', async (e) => {
-          e.preventDefault();
-          const fileUrl = link.getAttribute('href');
-          const filename = fileUrl.split('/').pop() || 'config.json';
-          
-          try {
-            const response = await fetch(fileUrl);
-            if (!response.ok) throw new Error('Network response failure');
-            const text = await response.text();
-            
-            const blob = new Blob([text], { type: 'application/octet-stream' });
-            const downloadUrl = URL.createObjectURL(blob);
-            
-            const tempAnchor = document.createElement('a');
-            tempAnchor.href = downloadUrl;
-            tempAnchor.download = filename;
-            document.body.appendChild(tempAnchor);
-            tempAnchor.click();
-            document.body.removeChild(tempAnchor);
-            
-            setTimeout(() => URL.revokeObjectURL(downloadUrl), 100);
-          } catch (err) {
-            console.error('Programmatic fetch failed, falling back to direct link:', err);
-            window.open(fileUrl, '_blank');
-          }
-        });
-      });
-    });
-  </script>
+    </script>
 </body>
+
 </html>
