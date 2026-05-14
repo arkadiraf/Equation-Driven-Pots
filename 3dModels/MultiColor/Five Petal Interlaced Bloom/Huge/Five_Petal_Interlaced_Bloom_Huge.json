@@ -5,7 +5,7 @@
     "baseType": "floral",
     "preset": "4-Petal Flower",
     "equation": "R * (1 + 0.20 * cos(5 * theta) * pow(sin(phi), 1.5))",
-    "baseRadius": 7.5,
+    "baseRadius": 10,
     "height": 10
   },
   "structure": {
