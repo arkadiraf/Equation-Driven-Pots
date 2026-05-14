@@ -1,0 +1,70 @@
+{
+  "name": "3-to-6 Petal Morph Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "3-to-6 Petal Morph (Bulged)",
+    "equation": "R * (1 + 0.35 * sin(pi * z / 10)) * (1 + 0.25 * (((10 - z) / 15) * cos(3 * theta) + (z / 15) * cos(6 * theta)))*(1 + 0.5 * pow(0.5*v, 2.5))",
+    "baseRadius": 5,
+    "height": 15
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.35,
+    "cylDrain": 0,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": false,
+    "plateHeight": 2,
+    "plateOpeningAngle": 45,
+    "plateDiameterExtra": 0.75,
+    "plateRadiusExtra": 0.75,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "0",
+    "intensity": 0.3
+  },
+  "patterns": {
+    "preset1": "Crisp Interference Windows",
+    "equation1": "smoothstep(0.18, 0.22, sin(6*theta + 8*pi*v) + 0.55*sin(11*theta - 5*pi*v)) - 0.5",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#0f4d80",
+    "patternColor1": "#ffffff",
+    "patternColor2": "#5f4a8b",
+    "overlapColor": "#8ab04d",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}
