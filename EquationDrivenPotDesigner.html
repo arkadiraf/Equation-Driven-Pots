@@ -3059,98 +3059,158 @@
             };
         }
 
-        function generatePlate(cfg) {
-            if (cfg.sys === 'spherical') {
-                return generateSphericalPlate(cfg);
-            }
-
-            const vertices = [], indices = [], colors = [];
-            const addV = (x, y, z, color) => {
+        function buildCylindricalPlateGrid(cfg) {
+            const vertices = [], colors = [];
+            const addV = (x, y, z, col) => {
                 vertices.push(x, y, z);
-                colors.push(color[0], color[1], color[2]);
-                return (vertices.length / 3) - 1;
+                colors.push(col[0], col[1], col[2]);
+                return vertices.length / 3 - 1;
             };
-
             const plateSeries = buildPlateProfileSeries(cfg);
             const height = plateSeries.height;
             const rimInset = Math.max(0.2, Math.min(0.45, cfg.w));
             const baseThickness = Math.max(0.1, Math.min(height - 0.1, cfg.bottomThickness || 0.35));
-            const color = hexToRgb01(cfg.baseColor);
+            const baseColorRGB = hexToRgb01(cfg.baseColor);
             const clearanceOffset = cfg.plateClearance * 0.5;
             const flareOffset = Math.max(0, Math.tan(cfg.plateOpeningAngleRad || 0) * height);
             const radiusExtra = getPlateDiameterExtra(cfg) * 0.5;
-
-            const outerIdx = [];
-            const innerIdx = [];
-            let baseCentroid = { x: 0, z: 0 };
-            let topOuterBounds = null;
             const plateColorCfg = Object.assign({}, cfg, { isPot: false });
+            const outerGrid = [], innerGrid = [];
+            let baseCentroid = { x: 0, z: 0 }, topOuterBounds = null;
 
             plateSeries.rings.forEach((ring, ringIndex) => {
-                const t = height > 1e-9 ? (ring.localY / height) : 0;
-                const radialOffset = clearanceOffset + radiusExtra + (flareOffset * t);
-                const outerProfile = offsetProfileFromCentroid(ring.profile, ring.centroid, radialOffset);
+                const t = height > 1e-9 ? ring.localY / height : 0;
+                const outerProfile = offsetProfileFromCentroid(ring.profile, ring.centroid, clearanceOffset + radiusExtra + flareOffset * t);
                 const innerProfile = offsetProfileFromCentroid(outerProfile, ring.centroid, -rimInset);
-                const outerRow = [];
-                const innerRow = [];
                 const innerY = baseThickness + t * (height - baseThickness);
-
                 if (ringIndex === 0) baseCentroid = ring.centroid;
                 if (ringIndex === plateSeries.rings.length - 1) topOuterBounds = computePlateProfileBounds(outerProfile);
-
-                const v = t;
-                const zCoord = t * cfg.h;
-
+                const outerRow = [], innerRow = [];
                 for (let it = 0; it < outerProfile.length; it++) {
                     const theta = (2 * Math.PI * it) / outerProfile.length;
-                    const baseColorRGB = hexToRgb01(cfg.baseColor);
-                    const ptColor = cfg.applyPlateColoring ? chooseColor(plateColorCfg, theta, zCoord, 0, v) : baseColorRGB;
-                    const outerPt = outerProfile[it];
-                    const innerPt = innerProfile[it];
-                    outerRow.push(addV(outerPt.x, ring.localY, outerPt.z, ptColor));
-                    innerRow.push(addV(innerPt.x, innerY, innerPt.z, ptColor));
+                    const ptColor = cfg.applyPlateColoring ? chooseColor(plateColorCfg, theta, t * cfg.h, 0, t) : baseColorRGB;
+                    outerRow.push(addV(outerProfile[it].x, ring.localY, outerProfile[it].z, ptColor));
+                    innerRow.push(addV(innerProfile[it].x, innerY, innerProfile[it].z, ptColor));
                 }
-                outerIdx.push(outerRow);
-                innerIdx.push(innerRow);
+                outerGrid.push(outerRow);
+                innerGrid.push(innerRow);
             });
 
-            const centerBottom = addV(baseCentroid.x, 0, baseCentroid.z, color);
-            const centerFloor = addV(baseCentroid.x, baseThickness, baseCentroid.z, color);
-
-            for (let iv = 0; iv < outerIdx.length - 1; iv++) {
-                for (let it = 0; it < outerIdx[iv].length; it++) {
-                    const it1 = (it + 1) % outerIdx[iv].length;
-                    indices.push(
-                        outerIdx[iv][it], outerIdx[iv + 1][it], outerIdx[iv + 1][it1],
-                        outerIdx[iv][it], outerIdx[iv + 1][it1], outerIdx[iv][it1]
-                    );
-                    indices.push(
-                        innerIdx[iv][it], innerIdx[iv][it1], innerIdx[iv + 1][it1],
-                        innerIdx[iv][it], innerIdx[iv + 1][it1], innerIdx[iv + 1][it]
-                    );
-                }
-            }
-
-            const lastOuter = outerIdx[outerIdx.length - 1];
-            const lastInner = innerIdx[innerIdx.length - 1];
-            const firstOuter = outerIdx[0];
-            const firstInner = innerIdx[0];
-
-            for (let it = 0; it < lastOuter.length; it++) {
-                const it1 = (it + 1) % lastOuter.length;
-                indices.push(lastOuter[it], lastOuter[it1], lastInner[it1], lastOuter[it], lastInner[it1], lastInner[it]);
-                indices.push(centerBottom, firstOuter[it1], firstOuter[it]);
-                indices.push(centerFloor, firstInner[it], firstInner[it1]);
-            }
+            const resT = outerGrid.length ? outerGrid[0].length : 0;
+            const centerBottomIdx = addV(baseCentroid.x, 0, baseCentroid.z, baseColorRGB);
+            const centerFloorIdx = addV(baseCentroid.x, baseThickness, baseCentroid.z, baseColorRGB);
 
             return {
-                vertices,
-                indices,
-                colors,
-                plateOuterDiameter: Math.max(1.0, (topOuterBounds ? topOuterBounds.nominalDiameter : plateSeries.hostDiameter)),
+                outerGrid, innerGrid, positions: vertices, colors,
+                centerBottomIdx, centerFloorIdx, resT,
+                numRings: outerGrid.length, height, baseThickness,
+                plateOuterDiameter: Math.max(1.0, topOuterBounds ? topOuterBounds.nominalDiameter : plateSeries.hostDiameter),
                 plateHostDiameter: plateSeries.hostDiameter,
                 plateHeight: height
             };
+        }
+
+        function buildCylindricalPlateSample(cfg) {
+            const grid = buildCylindricalPlateGrid(cfg);
+            const { outerGrid, innerGrid, positions, resT, numRings, height, baseThickness } = grid;
+            if (numRings < 2) return { grid, sample: null };
+
+            const resV = numRings - 1;
+            const layers = [
+                Array.from({ length: numRings }, () => Array(resT)),
+                Array.from({ length: numRings }, () => Array(resT)),
+                Array.from({ length: numRings }, () => Array(resT))
+            ];
+
+            for (let iv = 0; iv < numRings; iv++) {
+                for (let it = 0; it < resT; it++) {
+                    const oIdx = outerGrid[iv][it];
+                    const iIdx = innerGrid[iv][it];
+                    const pOut = { x: positions[oIdx*3], y: positions[oIdx*3+1], z: positions[oIdx*3+2] };
+                    const pIn  = { x: positions[iIdx*3], y: positions[iIdx*3+1], z: positions[iIdx*3+2] };
+                    const thickness = distPt(pOut, pIn);
+                    const safeDepth = Math.min(cfg.patternDepthCm || 0, Math.max(0, thickness - 0.001));
+                    const frac = thickness > 1e-8 ? safeDepth / thickness : 0;
+                    layers[0][iv][it] = pOut;
+                    layers[1][iv][it] = lerpPt(pOut, pIn, frac);
+                    layers[2][iv][it] = pIn;
+                }
+            }
+
+            const plateColorCfg = Object.assign({}, cfg, { isPot: false });
+            const stats = { texMin: Infinity, texMax: -Infinity, texPosMax: 0, radiusMin: Infinity, radiusMax: -Infinity };
+
+            for (let iv = 0; iv < resV; iv++) {
+                const y0 = layers[0][iv][0].y, y1 = layers[0][iv+1][0].y;
+                const tMid = height > 1e-9 ? (y0+y1)*0.5 / height : 0;
+                const zMid = tMid * cfg.h;
+                for (let it = 0; it < resT; it++) {
+                    const it1 = (it+1) % resT;
+                    const thetaMid = (2*Math.PI*(it+0.5)) / resT;
+                    const ox = (positions[outerGrid[iv][it]*3]   + positions[outerGrid[iv][it1]*3])   * 0.5;
+                    const oz = (positions[outerGrid[iv][it]*3+2] + positions[outerGrid[iv][it1]*3+2]) * 0.5;
+                    const r = Math.sqrt(ox*ox + oz*oz);
+                    stats.radiusMin = Math.min(stats.radiusMin, r);
+                    stats.radiusMax = Math.max(stats.radiusMax, r);
+                    const texRaw = evalFieldWithModifier(cfg.texEq, plateColorCfg, thetaMid, zMid, 0, tMid, 0, true, 'texture');
+                    if (isFinite(texRaw)) {
+                        stats.texMin = Math.min(stats.texMin, texRaw);
+                        stats.texMax = Math.max(stats.texMax, texRaw);
+                        stats.texPosMax = Math.max(stats.texPosMax, Math.max(0, texRaw));
+                    }
+                }
+            }
+            if (!isFinite(stats.texMin)) { stats.texMin = 0; stats.texMax = 0; }
+            if (!isFinite(stats.radiusMin)) { stats.radiusMin = 1; stats.radiusMax = 1; }
+
+            const cellMaskA = [], cellMaskB = [], surfaceEligible = [];
+            for (let iv = 0; iv < resV; iv++) {
+                const y0 = layers[0][iv][0].y, y1 = layers[0][iv+1][0].y;
+                const yMid = (y0+y1) * 0.5;
+                const tMid = height > 1e-9 ? yMid / height : 0;
+                const zMid = tMid * cfg.h;
+                const allowPattern = cfg.applyPlateColoring && yMid > baseThickness + 1e-6;
+                const rowA = [], rowB = [], rowEligible = [];
+                for (let it = 0; it < resT; it++) {
+                    const it1 = (it+1) % resT;
+                    const thetaMid = (2*Math.PI*(it+0.5)) / resT;
+                    const ox = (positions[outerGrid[iv][it]*3]   + positions[outerGrid[iv][it1]*3])   * 0.5;
+                    const oz = (positions[outerGrid[iv][it]*3+2] + positions[outerGrid[iv][it1]*3+2]) * 0.5;
+                    const outerRadius = Math.sqrt(ox*ox + oz*oz);
+                    const texRaw = evalFieldWithModifier(cfg.texEq, plateColorCfg, thetaMid, zMid, 0, tMid, 0, true, 'texture');
+                    rowEligible.push(allowPattern);
+                    rowA.push(allowPattern && evaluatePatternValue(cfg.patternEq1, plateColorCfg, thetaMid, zMid, 0, tMid, outerRadius, outerRadius, texRaw, stats) > 0);
+                    rowB.push(allowPattern && evaluatePatternValue(cfg.patternEq2, plateColorCfg, thetaMid, zMid, 0, tMid, outerRadius, outerRadius, texRaw, stats) > 0);
+                }
+                cellMaskA.push(rowA);
+                cellMaskB.push(rowB);
+                surfaceEligible.push(rowEligible);
+            }
+
+            return { grid, sample: { layers, cellMaskA, cellMaskB, surfaceEligible, resV, resT, yShift: 0 } };
+        }
+
+        function generatePlate(cfg) {
+            if (cfg.sys === 'spherical') return generateSphericalPlate(cfg);
+            const grid = buildCylindricalPlateGrid(cfg);
+            const { outerGrid, innerGrid, positions: vertices, colors, centerBottomIdx: centerBottom, centerFloorIdx: centerFloor } = grid;
+            const indices = [];
+            const lastRing = outerGrid.length - 1;
+            const resT = outerGrid.length ? outerGrid[0].length : 0;
+            for (let iv = 0; iv < lastRing; iv++) {
+                for (let it = 0; it < resT; it++) {
+                    const it1 = (it + 1) % resT;
+                    indices.push(outerGrid[iv][it], outerGrid[iv+1][it], outerGrid[iv+1][it1], outerGrid[iv][it], outerGrid[iv+1][it1], outerGrid[iv][it1]);
+                    indices.push(innerGrid[iv][it], innerGrid[iv][it1], innerGrid[iv+1][it1], innerGrid[iv][it], innerGrid[iv+1][it1], innerGrid[iv+1][it]);
+                }
+            }
+            for (let it = 0; it < resT; it++) {
+                const it1 = (it + 1) % resT;
+                indices.push(outerGrid[lastRing][it], outerGrid[lastRing][it1], innerGrid[lastRing][it1], outerGrid[lastRing][it], innerGrid[lastRing][it1], innerGrid[lastRing][it]);
+                indices.push(centerBottom, outerGrid[0][it1], outerGrid[0][it]);
+                indices.push(centerFloor, innerGrid[0][it], innerGrid[0][it1]);
+            }
+            return { vertices, indices, colors, plateOuterDiameter: grid.plateOuterDiameter, plateHostDiameter: grid.plateHostDiameter, plateHeight: grid.plateHeight };
         }
 
         function translateRawMeshData(meshData, dx = 0, dy = 0, dz = 0) {
@@ -3366,47 +3426,74 @@ ${trianglesXml.join('\n')}
             return components;
         }
 
-        async function exportPlateAssembly3MF(cfg, meshData, options = {}) {
+        function expandMeshPositions(mesh, diameterExtra) {
+            if (!diameterExtra || diameterExtra <= 1e-8) return mesh;
+            const expanded = expandMeshDataDiameter({ vertices: mesh.positions }, diameterExtra);
+            return Object.assign({}, mesh, { positions: expanded.vertices });
+        }
+
+        function buildCylindricalPlateMultipartMeshes(cfg) {
+            const { grid, sample } = buildCylindricalPlateSample(cfg);
+            if (!sample) {
+                const empty = { positions: [], indices: [] };
+                return { coreMesh: empty, coreValidation: validateMesh(empty), surfaceGroups: [],
+                         plateOuterDiameter: grid.plateOuterDiameter, plateHostDiameter: grid.plateHostDiameter, plateHeight: grid.plateHeight };
+            }
+
+            const plateCfg = Object.assign({}, cfg, { sys: 'cylindrical', isPot: true, cylDrain: 0, cylBase: grid.baseThickness });
+            const occ = buildOccupancies(sample, cfg);
+
+            let coreMesh = buildOccupancyMesh(sample, occ.coreOcc, { skipMinusIVFace: (k, iv) => iv === 0 });
+            coreMesh = appendCylindricalDrainClosure(coreMesh, sample, plateCfg);
+
+            const stateNames = { 1: 'Pattern A', 2: 'Pattern B', 3: 'Overlap' };
+            const surfaceGroups = [];
+            for (let state = 1; state <= 3; state++) {
+                if (occ.stateCounts[state] <= 0) continue;
+                const componentOccs = splitOccupancyComponents(occ.surfaceOccs[state], sample.resV, sample.resT);
+                const meshes = componentOccs.map(componentOcc => buildOccupancyMesh(sample, componentOcc));
+                const merged = mergeMeshes(meshes);
+                surfaceGroups.push({ colorIndex: state, name: stateNames[state], mesh: merged, validation: validateMesh(merged) });
+            }
+
+            return { coreMesh, coreValidation: validateMesh(coreMesh), surfaceGroups,
+                     plateOuterDiameter: grid.plateOuterDiameter, plateHostDiameter: grid.plateHostDiameter, plateHeight: grid.plateHeight };
+        }
+
+        function buildSphericalPlateMultipartMeshes(cfg) {
+            const plateCfg = buildSphericalPlateGenerationConfig(cfg);
+            const parts = buildMultipartMeshes(plateCfg);
+            const diameterExtra = getPlateDiameterExtra(cfg);
+            const coreMesh = expandMeshPositions(parts.coreMesh, diameterExtra);
+            const stateToColorIndex = { 1: 1, 2: 2, 3: 3 };
+            const surfaceGroups = parts.surfaceGroups.map(g => {
+                const mesh = expandMeshPositions(g.mergedMesh, diameterExtra);
+                return { colorIndex: stateToColorIndex[g.state] || 1, name: g.name, mesh, validation: validateMesh(mesh) };
+            });
+            const expBounds = computeMeshDataBounds(coreMesh.positions);
+            const rawBounds = computeMeshDataBounds(parts.coreMesh.positions);
+            return { coreMesh, coreValidation: validateMesh(coreMesh), surfaceGroups, plateOuterDiameter: Math.max(1.0, expBounds.nominalDiameter), plateHostDiameter: Math.max(1.0, rawBounds.nominalDiameter), plateHeight: Math.max(0.1, expBounds.height) };
+        }
+
+        function buildPlateMultipartMeshes(cfg) {
+            return cfg.sys === 'spherical' ? buildSphericalPlateMultipartMeshes(cfg) : buildCylindricalPlateMultipartMeshes(cfg);
+        }
+
+
+        async function exportPlateAssembly3MF(cfg, options = {}) {
             try {
-                const mesh = rotateMeshForPrinterCoordinates(meshDataToMesh(meshData));
+                const parts = buildPlateMultipartMeshes(cfg);
+                const filenameStem = options.filenameStem || buildExportStemForKind(cfg, 'Plate', false);
                 const colorGroupId = 1;
                 const resources = [];
-                const filenameStem = options.filenameStem || buildExportStemForKind(cfg, 'Plate', false);
 
-                // Validate the unified plate mesh before splitting
-                const unifiedValidation = validateMesh(mesh);
-
-                // Split plate mesh by color into separate components
-                const components = splitMeshByColorIndex(mesh);
-                const colorNames = ['Base', 'Pattern A', 'Pattern B', 'Overlap'];
-                const componentIds = [];
-                const componentValidations = [];
-                let nextObjectId = 2;
-
-                // Validate each color component
-                components.forEach((component, idx) => {
-                    if (component.mesh.indices.length > 0) {
-                        const validation = validateMesh(component.mesh);
-                        componentValidations.push({
-                            colorName: colorNames[component.colorIndex] || `Color ${component.colorIndex}`,
-                            colorIndex: component.colorIndex,
-                            validation: validation
-                        });
-                    }
-                });
-
-                // Check for manifold issues
-                const manifoldIssues = [];
-                
-                // Check unified mesh for issues
-                if (unifiedValidation.boundaryEdges || unifiedValidation.nonManifoldEdges) {
-                    manifoldIssues.push(`Plate Unified B:${unifiedValidation.boundaryEdges} N:${unifiedValidation.nonManifoldEdges}`);
+                const warnIssues = [];
+                if (parts.coreValidation.boundaryEdges || parts.coreValidation.nonManifoldEdges) {
+                    warnIssues.push(`Core B:${parts.coreValidation.boundaryEdges} N:${parts.coreValidation.nonManifoldEdges}`);
                 }
-
-                // Check each component for issues
-                componentValidations.forEach(comp => {
-                    if (comp.validation.boundaryEdges || comp.validation.nonManifoldEdges) {
-                        manifoldIssues.push(`${comp.colorName} B:${comp.validation.boundaryEdges} N:${comp.validation.nonManifoldEdges}`);
+                parts.surfaceGroups.forEach(g => {
+                    if (g.validation.boundaryEdges || g.validation.nonManifoldEdges) {
+                        warnIssues.push(`${g.name} B:${g.validation.boundaryEdges} N:${g.validation.nonManifoldEdges}`);
                     }
                 });
 
@@ -3418,16 +3505,17 @@ ${trianglesXml.join('\n')}
     ${colorGroupColorXml(cfg.overlapColor)}
   </m:colorgroup>`);
 
-                components.forEach((component, idx) => {
-                    const colorName = colorNames[component.colorIndex] || `Color ${component.colorIndex}`;
-                    if (component.mesh.indices.length > 0) {
-                        resources.push(meshTo3mfObjectXml(nextObjectId, colorName, component.mesh, colorGroupId, component.colorIndex));
-                        componentIds.push(nextObjectId);
-                        nextObjectId += 1;
-                    }
+                let nextObjectId = 2;
+                const componentIds = [];
+
+                resources.push(meshTo3mfObjectXml(nextObjectId, 'Plate Base', rotateMeshForPrinterCoordinates(parts.coreMesh), colorGroupId, 0));
+                componentIds.push(nextObjectId++);
+
+                parts.surfaceGroups.forEach(group => {
+                    resources.push(meshTo3mfObjectXml(nextObjectId, group.name, rotateMeshForPrinterCoordinates(group.mesh), colorGroupId, group.colorIndex));
+                    componentIds.push(nextObjectId++);
                 });
 
-                // Create assembly to hold all components
                 const assemblyId = nextObjectId;
                 const componentsXml = componentIds.map(id => `<component objectid="${id}" />`).join('');
                 resources.push(`
@@ -3471,18 +3559,11 @@ ${trianglesXml.join('\n')}
                 downloadBlob(blob, `${filenameStem}.3mf`);
 
                 if (!options.suppressStatus) {
-                    const summaryBits = [
-                        `Plate ${(meshData.plateOuterDiameter).toFixed(2)} cm dia x ${(meshData.plateHeight).toFixed(2)} cm high`,
-                        `Bodies ${componentIds.length}`,
-                        `Unified ${unifiedValidation.vertices} verts | ${unifiedValidation.triangles} tris`
-                    ];
-                    componentValidations.forEach(comp => {
-                        summaryBits.push(`${comp.colorName} ${comp.validation.triangles} tris`);
-                    });
-                    const issueSuffix = manifoldIssues.length ? ` | ${manifoldIssues.join(' | ')}` : '';
-                    const statusKind = manifoldIssues.length ? 'warn' : '';
-                    const summaryText = manifoldIssues.length ? `manifold check warning${issueSuffix}` : 'manifold check passed';
-                    setStatus(`3MF exported | Printer-flat orientation applied | ${summaryBits.join(' | ')} | ${summaryText}`, statusKind);
+                    const totalBodies = componentIds.length;
+                    const groupSummary = parts.surfaceGroups.map(g => g.name).join(' | ');
+                    const checkNote = warnIssues.length ? `manifold warnings | ${warnIssues.join(' | ')}` : 'manifold check passed';
+                    const statusKind = warnIssues.length ? 'warn' : '';
+                    setStatus(`3MF exported | Printer-flat orientation applied | Plate ${parts.plateOuterDiameter.toFixed(2)} cm dia x ${parts.plateHeight.toFixed(2)} cm high | Bodies ${totalBodies}${groupSummary ? ' | ' + groupSummary : ''} | ${checkNote}`, statusKind);
                 }
             } catch (err) {
                 console.error(err);
@@ -4533,22 +4614,21 @@ ${trianglesXml.join('\n')}
                         });
 
                         if (cfg.includePlate) {
-                            const plateMeshData = generatePlate(cfg);
-                            const plateHeight = plateMeshData.plateHeight || cfg.plateHeight || 1.5;
+                            const plateParts = buildPlateMultipartMeshes(cfg);
+                            const plateHeight = plateParts.plateHeight || cfg.plateHeight || 1.5;
                             group.children.forEach(child => { child.position.y += plateHeight; });
 
-                            const plateGeom = new THREE.BufferGeometry();
-                            plateGeom.setAttribute('position', new THREE.Float32BufferAttribute(plateMeshData.vertices, 3));
-                            if (plateMeshData.colors && plateMeshData.colors.length === plateMeshData.vertices.length) {
-                                plateGeom.setAttribute('color', new THREE.Float32BufferAttribute(plateMeshData.colors, 3));
+                            const plateColors = [cfg.baseColor, cfg.patternColor1, cfg.patternColor2, cfg.overlapColor];
+                            if (plateParts.coreMesh.indices.length) {
+                                const coreGeom = meshToThreeGeometry(plateParts.coreMesh);
+                                group.add(new THREE.Mesh(coreGeom, new THREE.MeshStandardMaterial({ color: cfg.baseColor, roughness: 0.72, metalness: 0.08, side: THREE.DoubleSide })));
                             }
-                            plateGeom.setIndex(plateMeshData.indices);
-                            plateGeom.computeVertexNormals();
-                            const hasPlateColors = !!plateGeom.getAttribute('color');
-                            const plateMat = new THREE.MeshStandardMaterial({ color: hasPlateColors ? 0xffffff : cfg.baseColor, vertexColors: hasPlateColors, side: THREE.DoubleSide, roughness: 0.78, metalness: 0.05 });
-                            const plateMesh = new THREE.Mesh(plateGeom, plateMat);
-                            group.add(plateMesh);
-                            group.userData.plateInfo = plateMeshData;
+                            plateParts.surfaceGroups.forEach(part => {
+                                if (!part.mesh.indices.length) return;
+                                const geom = meshToThreeGeometry(part.mesh);
+                                group.add(new THREE.Mesh(geom, new THREE.MeshStandardMaterial({ color: plateColors[part.colorIndex], roughness: 0.55, metalness: 0.05, side: THREE.DoubleSide })));
+                            });
+                            group.userData.plateInfo = plateParts;
                         }
 
                         currentObject = group;
@@ -4592,48 +4672,38 @@ ${trianglesXml.join('\n')}
                             setStatus(`field+distortion preview | Depth ${(cfg.patternDepthCm * 10).toFixed(1)} mm | ${activeStates}${suffix}`, warnBits.length ? 'warn' : '');
                         }
                     } else {
-                        const meshData = cfg.isPlate ? generatePlate(cfg) : (cfg.sys === 'cylindrical' ? generateCylindrical(cfg) : generateSpherical(cfg));
-                        const geometry = new THREE.BufferGeometry();
-                        geometry.setAttribute('position', new THREE.Float32BufferAttribute(meshData.vertices, 3));
-                        if (meshData.colors && meshData.colors.length === meshData.vertices.length) {
-                            geometry.setAttribute('color', new THREE.Float32BufferAttribute(meshData.colors, 3));
+                        const parts = buildPlateMultipartMeshes(cfg);
+                        const group = new THREE.Group();
+                        const plateColors = [cfg.baseColor, cfg.patternColor1, cfg.patternColor2, cfg.overlapColor];
+                        if (parts.coreMesh.indices.length) {
+                            const coreGeom = meshToThreeGeometry(parts.coreMesh);
+                            group.add(new THREE.Mesh(coreGeom, new THREE.MeshStandardMaterial({ color: cfg.baseColor, roughness: 0.72, metalness: 0.08, side: THREE.DoubleSide })));
                         }
-                        geometry.setIndex(meshData.indices);
-                        geometry.computeVertexNormals();
-                        const material = new THREE.MeshStandardMaterial({ vertexColors: !!meshData.colors, side: THREE.DoubleSide, roughness: 0.7, metalness: 0.1 });
-                        currentObject = new THREE.Mesh(geometry, material);
-                        scene.add(currentObject);
-                        setGenerationNotice('');
-                        if (cfg.isPlate) {
-                            // Validate plate mesh
-                            const plateMesh = rotateMeshForPrinterCoordinates(meshDataToMesh(meshData));
-                            const unifiedValidation = validateMesh(plateMesh);
-                            const components = splitMeshByColorIndex(plateMesh);
-                            
-                            const plateWarnBits = [];
-                            if (unifiedValidation.boundaryEdges || unifiedValidation.nonManifoldEdges) {
-                                plateWarnBits.push(`Unified B:${unifiedValidation.boundaryEdges} N:${unifiedValidation.nonManifoldEdges}`);
-                            }
-                            
-                            const colorNames = ['Base', 'Pattern A', 'Pattern B', 'Overlap'];
-                            components.forEach(comp => {
-                                const validation = validateMesh(comp.mesh);
-                                if (validation.boundaryEdges || validation.nonManifoldEdges) {
-                                    const colorName = colorNames[comp.colorIndex] || `Color ${comp.colorIndex}`;
-                                    plateWarnBits.push(`${colorName} B:${validation.boundaryEdges} N:${validation.nonManifoldEdges}`);
-                                }
-                            });
-                            
-                            const plateModeLabel = cfg.sys === 'spherical' ? 'spherical body-style plate' : 'outer-ring plate sampling';
-                            const plateSuffix = plateWarnBits.length ? ` | ${plateWarnBits.join(' | ')}` : '';
-                            setStatus(`Plate preview | Host ${(meshData.plateHostDiameter).toFixed(2)} cm | Outer ${(meshData.plateOuterDiameter).toFixed(2)} cm | Height ${(meshData.plateHeight).toFixed(2)} cm | ${plateModeLabel}${plateSuffix}`, plateWarnBits.length ? 'warn' : '');
-                            
-                            if (plateWarnBits.length) {
-                                setGenerationNotice(`Plate manifold check: ${plateWarnBits.join(' | ')}`);
-                            }
-                        } else {
-                            setStatus("Preview generated.", '');
+                        parts.surfaceGroups.forEach(part => {
+                            if (!part.mesh.indices.length) return;
+                            const geom = meshToThreeGeometry(part.mesh);
+                            group.add(new THREE.Mesh(geom, new THREE.MeshStandardMaterial({ color: plateColors[part.colorIndex], roughness: 0.55, metalness: 0.05, side: THREE.DoubleSide })));
+                        });
+                        currentObject = group;
+                        scene.add(group);
+
+                        const box = new THREE.Box3().setFromObject(group);
+                        const center = box.getCenter(new THREE.Vector3());
+                        controls.target.set(0, center.y, 0);
+                        controls.update();
+
+                        const plateWarnBits = [];
+                        if (parts.coreValidation.boundaryEdges || parts.coreValidation.nonManifoldEdges) {
+                            plateWarnBits.push(`Core B:${parts.coreValidation.boundaryEdges} N:${parts.coreValidation.nonManifoldEdges}`);
                         }
+                        parts.surfaceGroups.forEach(part => {
+                            const v = part.validation || {};
+                            if (v.boundaryEdges || v.nonManifoldEdges) plateWarnBits.push(`${part.name} B:${v.boundaryEdges} N:${v.nonManifoldEdges}`);
+                        });
+                        const plateModeLabel = cfg.sys === 'spherical' ? 'spherical' : 'cylindrical';
+                        const plateSuffix = plateWarnBits.length ? ` | ${plateWarnBits.join(' | ')}` : '';
+                        setStatus(`Plate preview | Host ${(parts.plateHostDiameter).toFixed(2)} cm | Outer ${(parts.plateOuterDiameter).toFixed(2)} cm | Height ${(parts.plateHeight).toFixed(2)} cm | ${plateModeLabel}${plateSuffix}`, plateWarnBits.length ? 'warn' : '');
+                        setGenerationNotice(plateWarnBits.length ? `Plate manifold check: ${plateWarnBits.join(' | ')}` : '');
                     }
                 } catch (err) {
                     console.error(err);
@@ -4877,8 +4947,7 @@ ${trianglesXml.join('\n')}
             try {
                 const cfg = getConfig();
                 if (cfg.isPlate) {
-                    const meshData = generatePlate(cfg);
-                    await exportPlateAssembly3MF(cfg, meshData);
+                    await exportPlateAssembly3MF(cfg);
                     return;
                 }
 
@@ -4982,8 +5051,9 @@ ${trianglesXml.join('\n')}
                 const blob = await zip.generateAsync({ type: 'blob', mimeType: 'model/3mf' });
                 downloadBlob(blob, `${buildExportStemForKind(cfg, 'Pot', true)}_multipart.3mf`);
 
-                if (exportSeparatePlate && plateMeshData) {
-                    await exportPlateAssembly3MF(cfg, plateMeshData, {
+                if (exportSeparatePlate) {
+                    await exportPlateAssembly3MF(cfg, {
+                        filenameStem: buildExportStemForKind(cfg, 'Plate', false),
                         suppressStatus: true
                     });
                 }
