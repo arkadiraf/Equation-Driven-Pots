@@ -3315,6 +3315,181 @@ ${trianglesXml.join('\n')}
             }
         }
 
+        function splitMeshByColorIndex(mesh) {
+            // Splits a mesh into components by triangleColorIndices
+            if (!mesh.triangleColorIndices || !mesh.triangleColorIndices.length) {
+                return [{ colorIndex: 0, mesh: mesh }];
+            }
+
+            const colorGroups = new Map(); // colorIndex -> triangle indices
+
+            // Group triangle indices by their color
+            for (let i = 0; i < mesh.indices.length; i += 3) {
+                const triIdx = i / 3;
+                const colorIdx = mesh.triangleColorIndices[triIdx] !== undefined ? mesh.triangleColorIndices[triIdx] : 0;
+                if (!colorGroups.has(colorIdx)) {
+                    colorGroups.set(colorIdx, []);
+                }
+                colorGroups.get(colorIdx).push(i, i + 1, i + 2);
+            }
+
+            // Create separate mesh for each color
+            const components = [];
+            colorGroups.forEach((triIndices, colorIndex) => {
+                const newIndices = [];
+                const vertexMap = new Map(); // old vertex index -> new vertex index
+                const newPositions = [];
+
+                let newVertexIdx = 0;
+                for (let i = 0; i < triIndices.length; i++) {
+                    const oldVertexIdx = mesh.indices[triIndices[i]];
+                    if (!vertexMap.has(oldVertexIdx)) {
+                        vertexMap.set(oldVertexIdx, newVertexIdx);
+                        newPositions.push(mesh.positions[oldVertexIdx * 3]);
+                        newPositions.push(mesh.positions[oldVertexIdx * 3 + 1]);
+                        newPositions.push(mesh.positions[oldVertexIdx * 3 + 2]);
+                        newVertexIdx++;
+                    }
+                    newIndices.push(vertexMap.get(oldVertexIdx));
+                }
+
+                components.push({
+                    colorIndex: colorIndex,
+                    mesh: {
+                        positions: newPositions,
+                        indices: newIndices,
+                        triangleColorIndices: new Array(newIndices.length / 3).fill(colorIndex)
+                    }
+                });
+            });
+
+            return components;
+        }
+
+        async function exportPlateAssembly3MF(cfg, meshData, options = {}) {
+            try {
+                const mesh = rotateMeshForPrinterCoordinates(meshDataToMesh(meshData));
+                const colorGroupId = 1;
+                const resources = [];
+                const filenameStem = options.filenameStem || buildExportStemForKind(cfg, 'Plate', false);
+
+                // Validate the unified plate mesh before splitting
+                const unifiedValidation = validateMesh(mesh);
+
+                // Split plate mesh by color into separate components
+                const components = splitMeshByColorIndex(mesh);
+                const colorNames = ['Base', 'Pattern A', 'Pattern B', 'Overlap'];
+                const componentIds = [];
+                const componentValidations = [];
+                let nextObjectId = 2;
+
+                // Validate each color component
+                components.forEach((component, idx) => {
+                    if (component.mesh.indices.length > 0) {
+                        const validation = validateMesh(component.mesh);
+                        componentValidations.push({
+                            colorName: colorNames[component.colorIndex] || `Color ${component.colorIndex}`,
+                            colorIndex: component.colorIndex,
+                            validation: validation
+                        });
+                    }
+                });
+
+                // Check for manifold issues
+                const manifoldIssues = [];
+                
+                // Check unified mesh for issues
+                if (unifiedValidation.boundaryEdges || unifiedValidation.nonManifoldEdges) {
+                    manifoldIssues.push(`Plate Unified B:${unifiedValidation.boundaryEdges} N:${unifiedValidation.nonManifoldEdges}`);
+                }
+
+                // Check each component for issues
+                componentValidations.forEach(comp => {
+                    if (comp.validation.boundaryEdges || comp.validation.nonManifoldEdges) {
+                        manifoldIssues.push(`${comp.colorName} B:${comp.validation.boundaryEdges} N:${comp.validation.nonManifoldEdges}`);
+                    }
+                });
+
+                resources.push(`
+  <m:colorgroup id="${colorGroupId}">
+    ${colorGroupColorXml(cfg.baseColor)}
+    ${colorGroupColorXml(cfg.patternColor1)}
+    ${colorGroupColorXml(cfg.patternColor2)}
+    ${colorGroupColorXml(cfg.overlapColor)}
+  </m:colorgroup>`);
+
+                components.forEach((component, idx) => {
+                    const colorName = colorNames[component.colorIndex] || `Color ${component.colorIndex}`;
+                    if (component.mesh.indices.length > 0) {
+                        resources.push(meshTo3mfObjectXml(nextObjectId, colorName, component.mesh, colorGroupId, component.colorIndex));
+                        componentIds.push(nextObjectId);
+                        nextObjectId += 1;
+                    }
+                });
+
+                // Create assembly to hold all components
+                const assemblyId = nextObjectId;
+                const componentsXml = componentIds.map(id => `<component objectid="${id}" />`).join('');
+                resources.push(`
+  <object id="${assemblyId}" type="model" name="Plate Assembly">
+    <components>
+      ${componentsXml}
+    </components>
+  </object>`);
+
+                const modelXml = `<?xml version="1.0" encoding="UTF-8"?>
+<model unit="millimeter" xml:lang="en-US"
+       xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"
+       xmlns:m="http://schemas.microsoft.com/3dmanufacturing/material/2015/02"
+       requiredextensions="m">
+  <resources>
+    ${resources.join('')}
+  </resources>
+  <build>
+    <item objectid="${assemblyId}" />
+  </build>
+</model>`;
+
+                const contentTypesXml = `<?xml version="1.0" encoding="UTF-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml" />
+  <Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml" />
+  <Override PartName="/3D/3dmodel.model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml" />
+</Types>`;
+
+                const relsXml = `<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Target="/3D/3dmodel.model" Id="rel0" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel" />
+</Relationships>`;
+
+                const zip = new JSZip();
+                zip.file('[Content_Types].xml', contentTypesXml);
+                zip.folder('_rels').file('.rels', relsXml);
+                zip.folder('3D').file('3dmodel.model', modelXml);
+
+                const blob = await zip.generateAsync({ type: 'blob', mimeType: 'model/3mf' });
+                downloadBlob(blob, `${filenameStem}.3mf`);
+
+                if (!options.suppressStatus) {
+                    const summaryBits = [
+                        `Plate ${(meshData.plateOuterDiameter).toFixed(2)} cm dia x ${(meshData.plateHeight).toFixed(2)} cm high`,
+                        `Bodies ${componentIds.length}`,
+                        `Unified ${unifiedValidation.vertices} verts | ${unifiedValidation.triangles} tris`
+                    ];
+                    componentValidations.forEach(comp => {
+                        summaryBits.push(`${comp.colorName} ${comp.validation.triangles} tris`);
+                    });
+                    const issueSuffix = manifoldIssues.length ? ` | ${manifoldIssues.join(' | ')}` : '';
+                    const statusKind = manifoldIssues.length ? 'warn' : '';
+                    const summaryText = manifoldIssues.length ? `manifold check warning${issueSuffix}` : 'manifold check passed';
+                    setStatus(`3MF exported | Printer-flat orientation applied | ${summaryBits.join(' | ')} | ${summaryText}`, statusKind);
+                }
+            } catch (err) {
+                console.error(err);
+                setStatus("Plate 3MF export failed.", 'error');
+            }
+        }
+
         function slugifyName(value) {
             return String(value || '')
                 .replace(/\s+/g, '_')
@@ -4430,8 +4605,32 @@ ${trianglesXml.join('\n')}
                         scene.add(currentObject);
                         setGenerationNotice('');
                         if (cfg.isPlate) {
+                            // Validate plate mesh
+                            const plateMesh = rotateMeshForPrinterCoordinates(meshDataToMesh(meshData));
+                            const unifiedValidation = validateMesh(plateMesh);
+                            const components = splitMeshByColorIndex(plateMesh);
+                            
+                            const plateWarnBits = [];
+                            if (unifiedValidation.boundaryEdges || unifiedValidation.nonManifoldEdges) {
+                                plateWarnBits.push(`Unified B:${unifiedValidation.boundaryEdges} N:${unifiedValidation.nonManifoldEdges}`);
+                            }
+                            
+                            const colorNames = ['Base', 'Pattern A', 'Pattern B', 'Overlap'];
+                            components.forEach(comp => {
+                                const validation = validateMesh(comp.mesh);
+                                if (validation.boundaryEdges || validation.nonManifoldEdges) {
+                                    const colorName = colorNames[comp.colorIndex] || `Color ${comp.colorIndex}`;
+                                    plateWarnBits.push(`${colorName} B:${validation.boundaryEdges} N:${validation.nonManifoldEdges}`);
+                                }
+                            });
+                            
                             const plateModeLabel = cfg.sys === 'spherical' ? 'spherical body-style plate' : 'outer-ring plate sampling';
-                            setStatus(`Plate preview | Host ${(meshData.plateHostDiameter).toFixed(2)} cm | Outer ${(meshData.plateOuterDiameter).toFixed(2)} cm | Height ${(meshData.plateHeight).toFixed(2)} cm | ${plateModeLabel}`, '');
+                            const plateSuffix = plateWarnBits.length ? ` | ${plateWarnBits.join(' | ')}` : '';
+                            setStatus(`Plate preview | Host ${(meshData.plateHostDiameter).toFixed(2)} cm | Outer ${(meshData.plateOuterDiameter).toFixed(2)} cm | Height ${(meshData.plateHeight).toFixed(2)} cm | ${plateModeLabel}${plateSuffix}`, plateWarnBits.length ? 'warn' : '');
+                            
+                            if (plateWarnBits.length) {
+                                setGenerationNotice(`Plate manifold check: ${plateWarnBits.join(' | ')}`);
+                            }
                         } else {
                             setStatus("Preview generated.", '');
                         }
@@ -4679,7 +4878,7 @@ ${trianglesXml.join('\n')}
                 const cfg = getConfig();
                 if (cfg.isPlate) {
                     const meshData = generatePlate(cfg);
-                    await exportSinglePart3MF(cfg, meshData);
+                    await exportPlateAssembly3MF(cfg, meshData);
                     return;
                 }
 
@@ -4784,9 +4983,7 @@ ${trianglesXml.join('\n')}
                 downloadBlob(blob, `${buildExportStemForKind(cfg, 'Pot', true)}_multipart.3mf`);
 
                 if (exportSeparatePlate && plateMeshData) {
-                    await exportSinglePart3MF(cfg, plateMeshData, {
-                        filenameStem: buildExportStemForKind(cfg, 'Plate', false),
-                        objectName: 'Plate',
+                    await exportPlateAssembly3MF(cfg, plateMeshData, {
                         suppressStatus: true
                     });
                 }
