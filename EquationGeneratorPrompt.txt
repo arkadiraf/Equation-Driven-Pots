@@ -200,6 +200,7 @@ Use spherical mode for:
 - shell forms
 - rounded floral bodies
 - spherical bowls or decorative forms
+- spherical pots with spherical-style plates
 
 Important intuition:
 - theta controls rotation around the object
@@ -207,8 +208,30 @@ Important intuition:
 - sin(phi) is often strongest around the equator
 - cos(phi) often biases upper vs lower regions
 
-RULE:
-If structure.modelMode is "plate" or "potplate", force base.coordSystem to "cylindrical".
+PLATE MODES IN CYLINDRICAL VS SPHERICAL:
+
+Both coordinate systems support plate and potplate modes.
+Choose based on the body form, not by any forced restriction.
+
+Cylindrical plate parameters (used when coordSystem is "cylindrical"):
+- plateHeight: height of the plate in cm (e.g. 1.5)
+- plateOpeningAngle: rim flare angle in degrees (e.g. 25)
+- plateRadiusExtra: how much larger than the pot in cm (e.g. 0.5)
+
+Spherical plate parameters (used when coordSystem is "spherical"):
+- plateSphTopCut: top opening of the spherical plate body in degrees (default 95, range 0-180)
+- plateSphBotFlatten: bottom flat cutoff in degrees (default 250, range 90-360)
+- plateRadiusExtra: extra radius beyond the host body in cm (e.g. 0.5)
+- plateHeight and plateOpeningAngle are ignored in spherical plate mode
+
+When to use spherical plate:
+- When the main body is spherical and the plate should share its rounded form language
+- When a saucer or dish shape with a curved underside fits the object
+- When the plate is a mirrored spherical cap
+
+When to use cylindrical plate:
+- When the main body is cylindrical or the plate is a simple flat tray
+- Always for standard pots with a flat-bottomed plate
 
 ==================================================
 6. WHAT EACH EQUATION IS RESPONSIBLE FOR
@@ -363,6 +386,10 @@ SPHERICAL BASE EXAMPLES
 
 Name: Perfect Sphere
 Description: Neutral spherical body.
+Equation: R
+
+Name: Spherical Plate Base
+Description: Neutral spherical host base specifically suited for spherical plate mode with flat-bottom and top-cut support.
 Equation: R
 
 Name: Equator Bulge
@@ -653,6 +680,19 @@ The JSON must contain the colors you chose.
 If the user explicitly asks for colors, follow that request.
 If not, choose a tasteful set that fits the object.
 
+PLATE COLORING:
+
+The plate (when modelMode is "plate" or "potplate") can display in two ways:
+- Colored plate: the plate inherits the full pattern color logic (baseColor, patternColor1, patternColor2, overlapColor)
+- Single color plate: the plate uses only the baseColor regardless of the active pattern masks
+
+This is a UI toggle (Apply Plate Coloring checkbox) that is not set by the JSON.
+By default it is enabled (colored plate).
+
+When recommending a design:
+- If the plate is decorative or part of a display piece, colored plates are appropriate
+- If the plate is purely functional and should be visually neutral, mention that the user can uncheck "Apply Plate Coloring" to reduce it to a single flat base color
+
 ==================================================
 12. PRINTABILITY RULES
 ==================================================
@@ -683,7 +723,8 @@ structure.modelMode must be one of:
 - "plate"
 - "potplate"
 
-If structure.modelMode is "plate" or "potplate", force base.coordSystem to "cylindrical".
+structure.modelMode "plate" and "potplate" work with both "cylindrical" and "spherical" coordinate systems.
+Choose the coordinate system based on the body form of the object, not based on whether a plate is present.
 
 base.baseType must be:
 - for cylindrical: "all", "basicEffect", "primitive", "polygon", "floral", "folded", "nonlinear", "interference"
@@ -712,6 +753,21 @@ distortion.anchor must be one of:
 
 distortion.space must always be:
 - "xyz"
+
+PLATE PARAMETER RULES:
+
+In cylindrical plate mode (coordSystem = "cylindrical", modelMode = "plate" or "potplate"):
+- plateHeight: number in cm, required
+- plateOpeningAngle: degrees, 0-60
+- plateRadiusExtra: cm, >= 0
+
+In spherical plate mode (coordSystem = "spherical", modelMode = "plate" or "potplate"):
+- plateSphTopCut: degrees, 0-180 (top opening of plate body, default 95)
+- plateSphBotFlatten: degrees, 90-360 (bottom flat cutoff, default 250)
+- plateRadiusExtra: cm, >= 0
+- plateHeight and plateOpeningAngle are still output in the JSON but are ignored by the app in spherical mode
+
+Always output the full plate section with all parameters regardless of mode.
 
 IMPORTANT MODIFIER RULE
 - Do not output any "modifiedCoordinate" field.
@@ -743,7 +799,9 @@ IMPORTANT MODIFIER RULE
   "plate": {
     "plateHeight": 1.5,
     "plateOpeningAngle": 25,
-    "plateRadiusExtra": 0.5
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
   },
   "texture": {
     "type": "utility",
@@ -797,7 +855,10 @@ IMPORTANT MODIFIER RULE
 - Use hex strings for colors.
 - Use a short human-readable value for "name".
 - If base.coordSystem is "spherical", do not use baseType "polygon".
-- If structure.modelMode is "plate" or "potplate", set base.coordSystem to "cylindrical".
+- Both cylindrical and spherical coordinate systems support modelMode "plate" and "potplate".
+- In cylindrical plate mode, the plate is controlled by plateHeight and plateOpeningAngle.
+- In spherical plate mode, the plate is controlled by plateSphTopCut and plateSphBotFlatten.
+- Always output the full plate section with all parameters regardless of mode.
 - If a field is inactive, keep its preset neutral and still output its neutral equation.
 - If a field is active, choose the nearest valid preset but write your own custom equation.
 - The generated configuration must be loadable into the current Equation Driven Pot Designer.
