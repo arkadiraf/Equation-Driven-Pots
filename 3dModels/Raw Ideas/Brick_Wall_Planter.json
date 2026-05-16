@@ -1,0 +1,68 @@
+{
+  "name": "Brick Wall Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 - 0.05*v + 0.02*sin(pi*v))",
+    "baseRadius": 5.2,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.3,
+    "plateOpeningAngle": 14,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "bands",
+    "preset": "Brick Courses",
+    "equation": "abs(sin(floor(8*v + 0.5)*pi)) * cos(6*(theta + floor(8*v)*pi/6))",
+    "intensity": 0.10
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "abs(sin(8*pi*v)) - 0.10",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(6*(theta + floor(8*v + 0.5)*pi/6)) - 0.20",
+    "baseColor": "#a04030",
+    "patternColor1": "#c86040",
+    "patternColor2": "#808080",
+    "overlapColor": "#d08060",
+    "depthMm": 1.0
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

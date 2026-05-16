@@ -1,0 +1,68 @@
+{
+  "name": "Fibonacci Spirals Orb",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Fibonacci Spirals",
+    "equation": "R * (1 + 0.08*pow(max(0, sin(13*theta - 8*phi)), 2) + 0.08*pow(max(0, sin(8*theta + 13*phi)), 2))",
+    "baseRadius": 5.5,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 28,
+    "sphBotFlatten": 155,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Fibonacci Texture",
+    "equation": "pow(max(0, sin(13*theta - 8*phi)), 2) + pow(max(0, sin(8*theta + 13*phi)), 2)",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(13*theta - 8*phi) - 0.30",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(8*theta + 13*phi) - 0.30",
+    "baseColor": "#c87820",
+    "patternColor1": "#8c3010",
+    "patternColor2": "#e09030",
+    "overlapColor": "#f0e060",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 220,
+    "patternResV": 160,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "diagonal",
+    "preset": "Diagonal Petal Sweep",
+    "equation": "sin(13*theta - 5*pi*v) + 0.6*sin(8*theta + 5*pi*v)",
+    "strength": 0.22,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

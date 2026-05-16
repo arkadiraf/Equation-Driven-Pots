@@ -1,0 +1,68 @@
+{
+  "name": "Terraced Contour Bowl",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Flared Bowl",
+    "equation": "R * (1 + 0.30*pow(v,1.6) - 0.06*v)",
+    "baseRadius": 5.0,
+    "height": 9.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 18,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.2,
+    "plateOpeningAngle": 14,
+    "plateRadiusExtra": 0.6,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "nonlinear",
+    "preset": "Terraced Contours",
+    "equation": "floor(6*(0.5 + 0.5*sin(16*pi*v))) / 6",
+    "intensity": 0.10
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "floor(6*(0.5 + 0.5*sin(16*pi*v))) / 6 - 0.40",
+    "preset2": "Basic Band Mask",
+    "equation2": "floor(3*(0.5 + 0.5*sin(16*pi*v))) / 3 - 0.50",
+    "baseColor": "#a08060",
+    "patternColor1": "#604020",
+    "patternColor2": "#c0a070",
+    "overlapColor": "#f0d8a0",
+    "depthMm": 1.0
+  },
+  "mesh": {
+    "resV": 130,
+    "resT": 180,
+    "patternResV": 130,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

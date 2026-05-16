@@ -1,0 +1,68 @@
+{
+  "name": "Rippled Membrane Orb",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Membrane Sphere",
+    "equation": "R * (1 + 0.08*sin(12*theta + 8*phi) + 0.08*cos(12*theta - 8*phi) + 0.04*sin(16*phi))",
+    "baseRadius": 5.5,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 28,
+    "sphBotFlatten": 155,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Membrane Texture",
+    "equation": "sin(12*theta + 8*phi) + cos(12*theta - 8*phi) + 0.5*sin(16*phi)",
+    "intensity": 0.16
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(12*theta + 8*phi) + cos(12*theta - 8*phi) - 1.20",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(16*phi) - 0.30",
+    "baseColor": "#f0f4ff",
+    "patternColor1": "#4060c8",
+    "patternColor2": "#c0d0f0",
+    "overlapColor": "#102080",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 180,
+    "resT": 240,
+    "patternResV": 180,
+    "patternResT": 240
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Gentle Torsion",
+    "equation": "sin(pi*v)",
+    "strength": 0.18,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

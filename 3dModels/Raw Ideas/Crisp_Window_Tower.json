@@ -1,0 +1,68 @@
+{
+  "name": "Crisp Window Tower",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Woven Interference",
+    "equation": "R * (1 + 0.12*(sin(6*theta + 5*pi*v) + 0.6*sin(9*theta - 4*pi*v))) * (1 - 0.04*v)",
+    "baseRadius": 4.8,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "sin(6*theta + 8*pi*v) + 0.55*sin(11*theta - 5*pi*v)",
+    "intensity": 0.16
+  },
+  "patterns": {
+    "preset1": "Moire Windows",
+    "equation1": "smoothstep(0.18, 0.22, sin(6*theta + 8*pi*v) + 0.55*sin(11*theta - 5*pi*v)) - 0.5",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(6*theta + 8*pi*v) * sin(11*theta - 5*pi*v) - 0.10",
+    "baseColor": "#181818",
+    "patternColor1": "#c8c8c8",
+    "patternColor2": "#707070",
+    "overlapColor": "#f0f0f0",
+    "depthMm": 2.0
+  },
+  "mesh": {
+    "resV": 180,
+    "resT": 240,
+    "patternResV": 180,
+    "patternResT": 240
+  },
+  "modifier": {
+    "type": "interference",
+    "preset": "Cross-Diagonal Weave",
+    "equation": "sin(6*theta + 4*pi*v) * cos(6*theta - 4*pi*v)",
+    "strength": 0.22,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

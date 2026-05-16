@@ -1,0 +1,68 @@
+{
+  "name": "DNA Double Helix Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "DNA Helix",
+    "equation": "R + 0.5*sin(4*theta + z) + 0.5*cos(4*theta - z)",
+    "baseRadius": 4.5,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Braided Interference",
+    "equation": "sin(4*theta + 8*pi*v) + sin(4*theta - 8*pi*v)",
+    "intensity": 0.20
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(4*theta + 8*pi*v) - 0.20",
+    "preset2": "Basic Band Mask",
+    "equation2": "cos(4*theta - 8*pi*v) - 0.20",
+    "baseColor": "#080808",
+    "patternColor1": "#e01010",
+    "patternColor2": "#1010e0",
+    "overlapColor": "#e0e0e0",
+    "depthMm": 1.6
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 220,
+    "patternResV": 160,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "interference",
+    "preset": "Braided Drift",
+    "equation": "sin(4*theta + 3*pi*v) + 0.5*sin(4*theta - 3*pi*v)",
+    "strength": 0.32,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

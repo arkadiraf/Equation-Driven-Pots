@@ -1,0 +1,68 @@
+{
+  "name": "Echo Spiral Tower",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Self-Similar Spiral",
+    "equation": "R * (1 + 0.14*cos(4*theta + 3*pi*v) + 0.07*cos(8*theta + 6*pi*v) + 0.035*cos(16*theta + 12*pi*v) + 0.018*cos(32*theta + 24*pi*v))",
+    "baseRadius": 5.0,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "nonlinear",
+    "preset": "Log Ripple Compression",
+    "equation": "log(1 + 4*abs(cos(4*theta + 3*pi*v) + 0.5*cos(8*theta + 6*pi*v)))",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "cos(4*theta + 3*pi*v) + 0.5*cos(8*theta + 6*pi*v) - 0.80",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(16*theta + 12*pi*v) + 0.5*cos(32*theta + 24*pi*v) - 0.60",
+    "baseColor": "#1a0c00",
+    "patternColor1": "#b07820",
+    "patternColor2": "#603c10",
+    "overlapColor": "#f0c060",
+    "depthMm": 1.6
+  },
+  "mesh": {
+    "resV": 180,
+    "resT": 240,
+    "patternResV": 180,
+    "patternResT": 240
+  },
+  "modifier": {
+    "type": "interference",
+    "preset": "Braided Drift",
+    "equation": "cos(4*theta + pi*v) + 0.5*cos(8*theta + 2*pi*v)",
+    "strength": 0.28,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "torsion",
+    "preset": "Torsion Twist",
+    "dx": "x*cos(0.32*sin(pi*v)) - z*sin(0.32*sin(pi*v)) - x",
+    "dy": "0",
+    "dz": "x*sin(0.32*sin(pi*v)) + z*cos(0.32*sin(pi*v)) - z",
+    "strength": 0.45,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

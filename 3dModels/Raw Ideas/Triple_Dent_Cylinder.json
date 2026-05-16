@@ -1,0 +1,68 @@
+{
+  "name": "Triple Dent Cylinder",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 - 0.04*v + 0.02*sin(pi*v))",
+    "baseRadius": 5.2,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Basic Broad Flutes",
+    "equation": "cos(3*theta) * sin(pi*v) * 0.35",
+    "intensity": 0.08
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(3*theta) - 0.20",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(pi*v) - 0.35",
+    "baseColor": "#808890",
+    "patternColor1": "#505860",
+    "patternColor2": "#b0b8c0",
+    "overlapColor": "#d8e0e8",
+    "depthMm": 0.7
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 180,
+    "patternResV": 140,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "pressure",
+    "preset": "Triple Dent",
+    "dx": "-0.40*(exp(-pow(theta,2)*5) + exp(-pow(theta-2.094,2)*5) + exp(-pow(theta-4.189,2)*5)) * exp(-pow(v-0.55,2)*18)",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.50,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

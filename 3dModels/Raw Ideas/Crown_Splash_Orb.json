@@ -1,0 +1,68 @@
+{
+  "name": "Crown Splash Orb",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Crown Splash",
+    "equation": "R * (1 + 0.35*exp(-pow(phi-0.4,2)*20)*max(0, cos(14*theta)) + 0.05*sin(phi*8))",
+    "baseRadius": 5.5,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 26,
+    "sphBotFlatten": 155,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Crown Ribs",
+    "equation": "exp(-pow(phi-0.4,2)*18)*cos(14*theta)",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "exp(-pow(phi-0.4,2)*18)*max(0, cos(14*theta)) - 0.15",
+    "preset2": "Basic Band Mask",
+    "equation2": "exp(-pow(v-0.85,2)*25) - 0.40",
+    "baseColor": "#084848",
+    "patternColor1": "#10d0c0",
+    "patternColor2": "#60e8e0",
+    "overlapColor": "#c0fffc",
+    "depthMm": 1.6
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 220,
+    "patternResV": 160,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Crown Rotation",
+    "equation": "exp(-pow(v-1.0,2)*30)",
+    "strength": 0.35,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

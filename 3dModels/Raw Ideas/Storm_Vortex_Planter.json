@@ -1,0 +1,68 @@
+{
+  "name": "Storm Vortex Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Fourier Bloom",
+    "equation": "R * (1 + 0.18*cos(4*theta + pi*v) + 0.10*cos(9*theta - 2*pi*v) + 0.06*sin(pi*v))",
+    "baseRadius": 5.5,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "carved",
+    "preset": "Arc Shell Carving",
+    "equation": "asin(0.97*sin(8*theta + 6*pi*v)) + 0.45*cos(12*theta - 4*pi*v)",
+    "intensity": 0.22
+  },
+  "patterns": {
+    "preset1": "Moire Windows",
+    "equation1": "smoothstep(0.2, 0.28, sin(10*theta + 8*pi*v) + sin(11*theta - 8*pi*v)) - 0.5",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(8*theta + 4*pi*v) - 0.10",
+    "baseColor": "#060814",
+    "patternColor1": "#0050e8",
+    "patternColor2": "#00e870",
+    "overlapColor": "#e87000",
+    "depthMm": 1.6
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 220,
+    "patternResV": 150,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "interference",
+    "preset": "Braided Drift",
+    "equation": "sin(6*theta + 3*pi*v) + 0.50*sin(6*theta - 3*pi*v)",
+    "strength": 0.40,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "swirl",
+    "preset": "Basic Swirl",
+    "dx": "-0.12*z*sin(pi*v)",
+    "dy": "0",
+    "dz": "0.12*x*sin(pi*v)",
+    "strength": 0.45,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

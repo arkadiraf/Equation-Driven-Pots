@@ -1,0 +1,68 @@
+{
+  "name": "Raku Fire Bowl",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Rim Flare",
+    "equation": "R * (1 + 0.22*pow(v, 1.6) - 0.04*pow(1 - v, 0.8))",
+    "baseRadius": 5.5,
+    "height": 8.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.1,
+    "plateOpeningAngle": 18,
+    "plateRadiusExtra": 0.9,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "sin(16*theta + 12*pi*v) + sin(17*theta - 12*pi*v)",
+    "intensity": 0.18
+  },
+  "patterns": {
+    "preset1": "Moire Windows",
+    "equation1": "sin(16*theta + 12*pi*v) + sin(17*theta - 12*pi*v) - 0.40",
+    "preset2": "Basic Horizontal Split",
+    "equation2": "v - 0.55",
+    "baseColor": "#1a1010",
+    "patternColor1": "#c84020",
+    "patternColor2": "#e8a830",
+    "overlapColor": "#f8f0c0",
+    "depthMm": 1.4
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

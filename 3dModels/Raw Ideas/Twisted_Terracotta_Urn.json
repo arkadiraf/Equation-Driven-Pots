@@ -1,0 +1,68 @@
+{
+  "name": "Twisted Terracotta Urn",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "5-Petal Flower",
+    "equation": "R * (1 + 0.20*cos(5*theta)*sin(pi*v) + 0.10*sin(pi*v) - 0.06*pow(1 - v, 1.2))",
+    "baseRadius": 5.0,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Basic Twist Relief",
+    "equation": "cos(5*theta + 3*pi*v) * sin(pi*v) * 0.6",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(5*theta + 2*pi*v) - 0.20",
+    "preset2": "Basic Horizontal Split",
+    "equation2": "v - 0.70",
+    "baseColor": "#c06030",
+    "patternColor1": "#7a2810",
+    "patternColor2": "#e8a870",
+    "overlapColor": "#d47840",
+    "depthMm": 1.0
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Basic Twist",
+    "equation": "sin(pi*v)",
+    "strength": 0.55,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

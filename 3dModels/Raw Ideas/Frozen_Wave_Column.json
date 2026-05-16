@@ -1,0 +1,68 @@
+{
+  "name": "Frozen Wave Column",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Frozen Wave",
+    "equation": "R * (1 + 0.20*sin(pi*v)) * (1 + 0.16*sin(6*theta + 8*pi*v)*exp(-pow(v-0.5,2)*4))",
+    "baseRadius": 4.8,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Wave Ribs",
+    "equation": "sin(6*theta + 8*pi*v) * exp(-pow(v-0.5,2)*4)",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(6*theta + 8*pi*v)*exp(-pow(v-0.5,2)*4) - 0.30",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(pi*v) - 0.40",
+    "baseColor": "#d8f0ff",
+    "patternColor1": "#1060b0",
+    "patternColor2": "#90d0f0",
+    "overlapColor": "#042040",
+    "depthMm": 1.4
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 220,
+    "patternResV": 160,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "wind",
+    "preset": "Anti-Gravity Lean",
+    "dx": "0.20*pow(v,1.6)",
+    "dy": "0.04*sin(pi*v)",
+    "dz": "0",
+    "strength": 0.40,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

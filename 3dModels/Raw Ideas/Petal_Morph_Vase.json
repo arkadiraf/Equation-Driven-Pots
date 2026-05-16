@@ -1,0 +1,68 @@
+{
+  "name": "Petal Morph Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "Petal Morph",
+    "equation": "R * (1 + 0.35*sin(pi*z/10)) * (1 + 0.25*(((10-z)/10)*cos(3*theta) + (z/10)*cos(6*theta)))",
+    "baseRadius": 4.8,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Petal Ribs",
+    "equation": "cos(3*theta) * (1 - v) + cos(6*theta) * v",
+    "intensity": 0.13
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(3*theta) * (1 - v) + cos(6*theta) * v - 0.15",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(4*pi*v + theta) - 0.30",
+    "baseColor": "#1a3d18",
+    "patternColor1": "#40a030",
+    "patternColor2": "#80d840",
+    "overlapColor": "#c8f840",
+    "depthMm": 1.0
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "petal",
+    "preset": "Petal Migration",
+    "equation": "cos(3*theta) * (1 - v) + cos(6*theta) * v",
+    "strength": 0.20,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

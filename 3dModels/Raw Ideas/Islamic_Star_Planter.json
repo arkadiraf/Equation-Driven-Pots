@@ -1,0 +1,68 @@
+{
+  "name": "Islamic Star Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "Soft Hex",
+    "equation": "R * (1 + 0.10*cos(6*theta)) * (1 + 0.06*sin(pi*v))",
+    "baseRadius": 5.0,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.3,
+    "plateOpeningAngle": 16,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "carved",
+    "preset": "Islamic Star",
+    "equation": "max(cos(6*theta), cos(6*theta + pi/3), cos(6*theta - pi/3))",
+    "intensity": 0.16
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "max(cos(6*theta), cos(6*theta + pi/3), cos(6*theta - pi/3)) - 0.50",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(6*theta) - 0.15",
+    "baseColor": "#005060",
+    "patternColor1": "#d0a020",
+    "patternColor2": "#20a0b0",
+    "overlapColor": "#f8e070",
+    "depthMm": 1.8
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 220,
+    "patternResV": 150,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

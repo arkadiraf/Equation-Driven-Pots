@@ -1,0 +1,68 @@
+{
+  "name": "Pinched Neck Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Mid Bulge",
+    "equation": "R * (1 + 0.28*exp(-pow(v - 0.38, 2)*12) - 0.18*exp(-pow(v - 0.72, 2)*26) + 0.14*pow(v, 3))",
+    "baseRadius": 4.5,
+    "height": 15.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "bands",
+    "preset": "Basic Horizontal Bands",
+    "equation": "sin(28*pi*v) * 0.35",
+    "intensity": 0.07
+  },
+  "patterns": {
+    "preset1": "Basic Horizontal Split",
+    "equation1": "v - 0.68",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#c8b4a0",
+    "patternColor1": "#6a4a38",
+    "patternColor2": "#c8b4a0",
+    "overlapColor": "#6a4a38",
+    "depthMm": 0.5
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

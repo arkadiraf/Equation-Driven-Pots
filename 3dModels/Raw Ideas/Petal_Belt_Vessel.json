@@ -1,0 +1,68 @@
+{
+  "name": "Petal Belt Vessel",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "Petal Belt",
+    "equation": "R * (1 + 0.18*cos(6*theta)*exp(-pow(v-0.55,2)*18))",
+    "baseRadius": 5.0,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "bands",
+    "preset": "Equatorial Belt Relief",
+    "equation": "sin(8*pi*v) * exp(-pow(v-0.55,2)*16) * 0.4",
+    "intensity": 0.08
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(6*theta)*exp(-pow(v-0.55,2)*18) - 0.10",
+    "preset2": "Basic Band Mask",
+    "equation2": "exp(-pow(v-0.55,2)*14) - 0.50",
+    "baseColor": "#f4f0e8",
+    "patternColor1": "#8ab070",
+    "patternColor2": "#d8e8c8",
+    "overlapColor": "#506040",
+    "depthMm": 0.7
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 180,
+    "patternResV": 140,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

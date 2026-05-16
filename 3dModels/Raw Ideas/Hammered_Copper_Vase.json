@@ -1,0 +1,68 @@
+{
+  "name": "Hammered Copper Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Gentle Belly",
+    "equation": "R * (1 + 0.14*sin(pi*v) + 0.05*exp(-pow(v-0.45,2)*10))",
+    "baseRadius": 5.0,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Hammered Metal",
+    "equation": "sin(18*theta + 14*pi*v)*sin(19*theta - 13*pi*v) + 0.3*sin(23*theta + 9*pi*v)",
+    "intensity": 0.16
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(18*theta + 14*pi*v)*sin(19*theta - 13*pi*v) - 0.30",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(23*theta + 9*pi*v) - 0.35",
+    "baseColor": "#8a3c10",
+    "patternColor1": "#c07030",
+    "patternColor2": "#305028",
+    "overlapColor": "#f0a050",
+    "depthMm": 1.4
+  },
+  "mesh": {
+    "resV": 180,
+    "resT": 240,
+    "patternResV": 180,
+    "patternResT": 240
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

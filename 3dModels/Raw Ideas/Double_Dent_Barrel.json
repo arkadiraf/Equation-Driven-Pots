@@ -1,0 +1,68 @@
+{
+  "name": "Double Dent Barrel",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Mid Bulge",
+    "equation": "R * (1 + 0.14*sin(pi*v) - 0.03*v)",
+    "baseRadius": 5.5,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Basic Vertical Ribs",
+    "equation": "cos(8*theta)",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Surface Texture Top %",
+    "equation1": "textureFill(texPosNorm, 55)",
+    "preset2": "Basic Horizontal Split",
+    "equation2": "v - 0.80",
+    "baseColor": "#a06030",
+    "patternColor1": "#d09060",
+    "patternColor2": "#604018",
+    "overlapColor": "#302010",
+    "depthMm": 1.0
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "pressure",
+    "preset": "Side Pressure Dent",
+    "dx": "-0.55 * sign(x) * pow(cos(theta), 8) * exp(-pow(v - 0.50, 2)*20)",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.50,
+    "region": "body",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

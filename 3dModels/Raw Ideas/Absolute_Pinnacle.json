@@ -1,0 +1,68 @@
+{
+  "name": "Absolute Pinnacle",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Spherical Quasi Lattice Orb",
+    "equation": "R * (1 + 0.12*pow(sin(phi),2)) * (1 + 0.06*cos(10*theta + sqrt(2)*8*phi) + 0.06*cos(15*theta - sqrt(3)*6*phi) + 0.03*cos(20*theta + 4*phi))",
+    "baseRadius": 5.5,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 28,
+    "sphBotFlatten": 155,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Audio Ripple Shell",
+    "equation": "sin(16*theta)*cos(18*phi) + 0.4*sin(24*theta - 10*phi) + 0.3*cos(30*theta + 14*phi)",
+    "intensity": 0.18
+  },
+  "patterns": {
+    "preset1": "Moire Windows",
+    "equation1": "cos(10*theta + sqrt(2)*8*phi) + cos(15*theta - sqrt(3)*6*phi) - 0.40",
+    "preset2": "Basic Band Mask",
+    "equation2": "cos(20*theta + 4*phi) + sin(16*theta)*cos(18*phi) - 0.50",
+    "baseColor": "#000000",
+    "patternColor1": "#d0a820",
+    "patternColor2": "#00d8f0",
+    "overlapColor": "#ffffff",
+    "depthMm": 2.0
+  },
+  "mesh": {
+    "resV": 200,
+    "resT": 200,
+    "patternResV": 200,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "interference",
+    "preset": "Multi-Direction Flower",
+    "equation": "sin(4*theta + 2*pi*v) + 0.6*sin(7*theta - 3*pi*v)",
+    "strength": 0.35,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "torsion",
+    "preset": "Fluid Twist XYZ",
+    "dx": "x*cos(0.30*sin(2*pi*v) + 0.18*exp(-pow(v-0.72,2)*16)) - z*sin(0.30*sin(2*pi*v) + 0.18*exp(-pow(v-0.72,2)*16)) - x",
+    "dy": "0",
+    "dz": "x*sin(0.30*sin(2*pi*v) + 0.18*exp(-pow(v-0.72,2)*16)) + z*cos(0.30*sin(2*pi*v) + 0.18*exp(-pow(v-0.72,2)*16)) - z",
+    "strength": 0.50,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

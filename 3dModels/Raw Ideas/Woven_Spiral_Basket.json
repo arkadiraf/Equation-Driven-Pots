@@ -1,0 +1,68 @@
+{
+  "name": "Woven Spiral Basket",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Mid Bulge",
+    "equation": "R * (1 + 0.08*sin(pi*v) - 0.04*v)",
+    "baseRadius": 5.5,
+    "height": 10.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "weave",
+    "preset": "Diamond Weave",
+    "equation": "0.5*cos(12*theta + 10*pi*v) + 0.5*cos(12*theta - 10*pi*v)",
+    "intensity": 0.20
+  },
+  "patterns": {
+    "preset1": "Surface Texture Top %",
+    "equation1": "textureFill(texPosNorm, 58)",
+    "preset2": "Double Helix Mask",
+    "equation2": "cos(12*theta + 10*pi*v) * cos(12*theta - 10*pi*v) - 0.20",
+    "baseColor": "#8a6030",
+    "patternColor1": "#c8a060",
+    "patternColor2": "#604020",
+    "overlapColor": "#f0d090",
+    "depthMm": 1.3
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Twist Drift",
+    "equation": "sin(2*pi*v)",
+    "strength": 0.40,
+    "target": "texture"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

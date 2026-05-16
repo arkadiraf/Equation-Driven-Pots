@@ -1,0 +1,68 @@
+{
+  "name": "Lattice Lantern",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "polygon",
+    "preset": "Soft Hexagon",
+    "equation": "R * (1 + 0.10*cos(6*theta) + 0.04*cos(12*theta)) * (1 + 0.08*sin(pi*v) - 0.04*pow(v, 2))",
+    "baseRadius": 4.5,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.40,
+    "bottomThickness": 0.6,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.2,
+    "plateOpeningAngle": 18,
+    "plateRadiusExtra": 0.7,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "weave",
+    "preset": "Honeycomb Relief",
+    "equation": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v))",
+    "intensity": 0.20
+  },
+  "patterns": {
+    "preset1": "Hex Window Grid",
+    "equation1": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v)) - 0.55",
+    "preset2": "Outer Radius Deviation",
+    "equation2": "outerDeviation(0.25)",
+    "baseColor": "#1a2a3a",
+    "patternColor1": "#c89820",
+    "patternColor2": "#8a3818",
+    "overlapColor": "#e8d060",
+    "depthMm": 1.8
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "interference",
+    "preset": "Braided Drift",
+    "equation": "sin(6*theta + 2*pi*v) * 0.5",
+    "strength": 0.18,
+    "target": "texture"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

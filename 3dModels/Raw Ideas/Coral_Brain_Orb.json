@@ -1,0 +1,68 @@
+{
+  "name": "Coral Brain Orb",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Coral Brain",
+    "equation": "R * (1 + 0.08*sin(10*theta + 5*phi)*sin(8*phi))",
+    "baseRadius": 5.5,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 28,
+    "sphBotFlatten": 155,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Coral Texture",
+    "equation": "sin(10*theta + 5*phi) * sin(8*phi)",
+    "intensity": 0.18
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(10*theta + 5*phi)*sin(8*phi) - 0.20",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "sin(8*phi) - 0.25",
+    "baseColor": "#d0f0f8",
+    "patternColor1": "#e05030",
+    "patternColor2": "#80c8d8",
+    "overlapColor": "#f0a070",
+    "depthMm": 1.4
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 220,
+    "patternResV": 160,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "petal",
+    "preset": "Petal Ripple",
+    "equation": "sin(10*theta + 5*pi*v) * sin(8*pi*v)",
+    "strength": 0.25,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

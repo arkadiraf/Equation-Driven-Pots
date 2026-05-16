@@ -1,0 +1,68 @@
+{
+  "name": "Pillow Square Pot",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "polygon",
+    "preset": "Pillow Square",
+    "equation": "R * pow(pow(abs(cos(theta)),6) + pow(abs(sin(theta)),6), -0.1666666667) * (1 + 0.08*sin(pi*v))",
+    "baseRadius": 5.0,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.3,
+    "plateOpeningAngle": 14,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "weave",
+    "preset": "Stepped Weave",
+    "equation": "cos(8*theta + floor(10*v)*pi/5)",
+    "intensity": 0.10
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(4*theta) - 0.10",
+    "preset2": "Basic Band Mask",
+    "equation2": "cos(8*theta + floor(10*v)*pi/5) - 0.25",
+    "baseColor": "#f4f0ff",
+    "patternColor1": "#2830a0",
+    "patternColor2": "#b0a8d8",
+    "overlapColor": "#080c50",
+    "depthMm": 0.8
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 200,
+    "patternResV": 140,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

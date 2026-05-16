@@ -1,0 +1,68 @@
+{
+  "name": "Interference Lantern Orb",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Dragon Egg",
+    "equation": "R * (1 + 0.18*pow(sin(phi), 2) + 0.08*(cos(8*theta + 6*phi) + cos(8*theta - 6*phi)))",
+    "baseRadius": 5.5,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 30,
+    "sphBotFlatten": 154,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.6,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Diamond Weave",
+    "equation": "cos(8*theta) * cos(6*phi)",
+    "intensity": 0.22
+  },
+  "patterns": {
+    "preset1": "Hex Window Grid",
+    "equation1": "cos(8*theta) * cos(6*phi) - 0.30",
+    "preset2": "Basic Horizontal Split",
+    "equation2": "pow(sin(phi), 2) - 0.55",
+    "baseColor": "#200830",
+    "patternColor1": "#c020d0",
+    "patternColor2": "#20c8e0",
+    "overlapColor": "#f0e020",
+    "depthMm": 1.8
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Twist Drift",
+    "equation": "sin(3*pi*v)",
+    "strength": 0.28,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "torsion",
+    "preset": "Torsion Twist",
+    "dx": "x*cos(0.25*sin(pi*v)) - z*sin(0.25*sin(pi*v)) - x",
+    "dy": "0",
+    "dz": "x*sin(0.25*sin(pi*v)) + z*cos(0.25*sin(pi*v)) - z",
+    "strength": 0.40,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

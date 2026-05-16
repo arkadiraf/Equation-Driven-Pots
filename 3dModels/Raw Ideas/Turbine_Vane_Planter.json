@@ -1,0 +1,68 @@
+{
+  "name": "Turbine Vane Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Turbine Vanes",
+    "equation": "R * (1 + 0.22*sin(8*theta + 4*pi*v)) * (1 - 0.05*v)",
+    "baseRadius": 4.8,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Swept Ribs",
+    "equation": "sin(8*theta + 4*pi*v)",
+    "intensity": 0.13
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(8*theta + 4*pi*v) - 0.30",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(8*theta + 8*pi*v) - 0.30",
+    "baseColor": "#303840",
+    "patternColor1": "#9098a8",
+    "patternColor2": "#505860",
+    "overlapColor": "#d0d8e8",
+    "depthMm": 1.3
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 220,
+    "patternResV": 160,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "diagonal",
+    "preset": "Basic Diagonal Drift",
+    "equation": "sin(8*theta + 2*pi*v)",
+    "strength": 0.22,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "Counter Twist Column",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Woven Interference",
+    "equation": "R * (1 + 0.10*(sin(6*theta + 5*pi*v) + 0.55*sin(9*theta - 4*pi*v))) * (1 - 0.04*v)",
+    "baseRadius": 4.8,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "sin(6*theta + 6*pi*v) + sin(9*theta - 5*pi*v)",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(6*theta + 6*pi*v) + sin(9*theta - 5*pi*v) - 0.60",
+    "preset2": "Moire Windows",
+    "equation2": "smoothstep(0.15, 0.22, sin(6*theta + 6*pi*v) + sin(9*theta - 5*pi*v)) - 0.5",
+    "baseColor": "#080c28",
+    "patternColor1": "#2040b0",
+    "patternColor2": "#4060d0",
+    "overlapColor": "#8090f0",
+    "depthMm": 1.4
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 220,
+    "patternResV": 160,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "torsion",
+    "preset": "Counter Twist",
+    "dx": "x*cos(0.18*sin(2*pi*v)) - z*sin(0.18*sin(2*pi*v)) - x",
+    "dy": "0",
+    "dz": "x*sin(0.18*sin(2*pi*v)) + z*cos(0.18*sin(2*pi*v)) - z",
+    "strength": 0.50,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

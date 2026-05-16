@@ -1,0 +1,68 @@
+{
+  "name": "Cactus Column Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "Cactus Ribs",
+    "equation": "R * (1 + 0.22*cos(11*theta)) * (1 + 0.08*sin(pi*v))",
+    "baseRadius": 5.0,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Basic Narrow Ribs",
+    "equation": "cos(11*theta) * 0.45",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(11*theta) - 0.20",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(pi*v) - 0.30",
+    "baseColor": "#2a5020",
+    "patternColor1": "#4a8040",
+    "patternColor2": "#80b868",
+    "overlapColor": "#d8f0c0",
+    "depthMm": 1.4
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 220,
+    "patternResV": 150,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

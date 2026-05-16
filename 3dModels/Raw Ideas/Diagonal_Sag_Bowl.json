@@ -1,0 +1,68 @@
+{
+  "name": "Diagonal Sag Bowl",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Flared Bowl",
+    "equation": "R * (1 + 0.28*pow(v,1.5) - 0.05*v)",
+    "baseRadius": 5.5,
+    "height": 9.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 18,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.2,
+    "plateOpeningAngle": 15,
+    "plateRadiusExtra": 0.6,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "bands",
+    "preset": "Ripple Rings",
+    "equation": "sin(14*pi*v) * 0.35",
+    "intensity": 0.07
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(8*pi*v) - 0.25",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "sin(3*theta) - 0.20",
+    "baseColor": "#c8a840",
+    "patternColor1": "#686020",
+    "patternColor2": "#506030",
+    "overlapColor": "#302810",
+    "depthMm": 0.8
+  },
+  "mesh": {
+    "resV": 130,
+    "resT": 180,
+    "patternResV": 130,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "gravity",
+    "preset": "Diagonal Sag",
+    "dx": "0.10*exp(-pow(v-0.70,2)*14)",
+    "dy": "-0.16*exp(-pow(v-0.70,2)*14)",
+    "dz": "0.06*sin(3*theta)*exp(-pow(v-0.70,2)*10)",
+    "strength": 0.48,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "Irrational Weave Orb",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Irrational Weave",
+    "equation": "R * (1 + 0.06*cos(9*theta + sqrt(2)*7*phi) + 0.06*cos(14*theta - sqrt(3)*5*phi))",
+    "baseRadius": 5.5,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 28,
+    "sphBotFlatten": 155,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "weave",
+    "preset": "Irrational Weave Texture",
+    "equation": "cos(9*theta + sqrt(2)*7*phi) * cos(14*theta - sqrt(3)*5*phi)",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "cos(9*theta + sqrt(2)*7*phi) + cos(14*theta - sqrt(3)*5*phi) - 0.70",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(9*theta + sqrt(2)*7*phi) * cos(14*theta - sqrt(3)*5*phi) - 0.20",
+    "baseColor": "#3a1808",
+    "patternColor1": "#c07820",
+    "patternColor2": "#e0c060",
+    "overlapColor": "#f8f0c0",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 180,
+    "resT": 240,
+    "patternResV": 180,
+    "patternResT": 240
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Gentle Torsion",
+    "equation": "sin(pi*v)",
+    "strength": 0.20,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "torsion",
+    "preset": "Crown Rotation XYZ",
+    "dx": "x*cos(0.15*pow(v,2)) - z*sin(0.15*pow(v,2)) - x",
+    "dy": "0",
+    "dz": "x*sin(0.15*pow(v,2)) + z*cos(0.15*pow(v,2)) - z",
+    "strength": 0.30,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

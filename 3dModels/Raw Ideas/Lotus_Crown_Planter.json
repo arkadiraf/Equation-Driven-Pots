@@ -1,0 +1,68 @@
+{
+  "name": "Lotus Crown Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "Lotus Crown",
+    "equation": "R * (1 + 0.10*cos(6*theta)*exp(-pow(v-0.88,2)*40))",
+    "baseRadius": 5.2,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.3,
+    "plateOpeningAngle": 18,
+    "plateRadiusExtra": 0.6,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Crown Interference",
+    "equation": "sin(6*theta + 12*pi*v) + 0.5*sin(12*theta - 8*pi*v)",
+    "intensity": 0.12
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(6*theta)*exp(-pow(v-0.88,2)*40) - 0.05",
+    "preset2": "Basic Band Mask",
+    "equation2": "exp(-pow(v-0.88,2)*35) - 0.40",
+    "baseColor": "#f8f4e0",
+    "patternColor1": "#2a5c1a",
+    "patternColor2": "#c8d8b0",
+    "overlapColor": "#c8a830",
+    "depthMm": 0.8
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 180,
+    "patternResV": 140,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "regional",
+    "preset": "Lotus Crown",
+    "equation": "exp(-pow(v-0.88,2)*55)*sin(8*theta)",
+    "strength": 0.30,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "ATan Braid Column",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 - 0.05*v + 0.03*sin(pi*v))",
+    "baseRadius": 4.8,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "nonlinear",
+    "preset": "ATan Braid",
+    "equation": "atan(8*(sin(6*theta + 8*pi*v) + 0.6*sin(11*theta - 7*pi*v)))",
+    "intensity": 0.20
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "atan(8*(sin(6*theta + 8*pi*v) + 0.6*sin(11*theta - 7*pi*v))) - 1.0",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "sin(6*theta + 8*pi*v) + 0.6*sin(11*theta - 7*pi*v) - 0.25",
+    "baseColor": "#2a1008",
+    "patternColor1": "#c06020",
+    "patternColor2": "#a04810",
+    "overlapColor": "#f0b860",
+    "depthMm": 1.8
+  },
+  "mesh": {
+    "resV": 180,
+    "resT": 240,
+    "patternResV": 180,
+    "patternResT": 240
+  },
+  "modifier": {
+    "type": "interference",
+    "preset": "Cymatic Sweep",
+    "equation": "sin(6*theta + 4*pi*v) * cos(4*theta - 6*pi*v)",
+    "strength": 0.28,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

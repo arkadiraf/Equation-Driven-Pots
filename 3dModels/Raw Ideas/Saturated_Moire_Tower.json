@@ -1,0 +1,68 @@
+{
+  "name": "Saturated Moire Tower",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 - 0.04*v + 0.02*sin(pi*v))",
+    "baseRadius": 4.8,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "nonlinear",
+    "preset": "Saturated Moire",
+    "equation": "atan(5*(sin(18*theta + 12*pi*v) + sin(19*theta - 11*pi*v)))",
+    "intensity": 0.18
+  },
+  "patterns": {
+    "preset1": "Moire Windows",
+    "equation1": "smoothstep(0.10, 0.20, sin(18*theta + 12*pi*v) + sin(19*theta - 11*pi*v)) - 0.5",
+    "preset2": "Basic Band Mask",
+    "equation2": "atan(5*(sin(18*theta + 12*pi*v) + sin(19*theta - 11*pi*v))) - 1.20",
+    "baseColor": "#1a1a1a",
+    "patternColor1": "#e06010",
+    "patternColor2": "#f8f8f8",
+    "overlapColor": "#ff8030",
+    "depthMm": 1.6
+  },
+  "mesh": {
+    "resV": 180,
+    "resT": 240,
+    "patternResV": 180,
+    "patternResT": 240
+  },
+  "modifier": {
+    "type": "interference",
+    "preset": "Quasi Drift",
+    "equation": "sin(18*theta + 6*pi*v) + 0.5*sin(19*theta - 5*pi*v)",
+    "strength": 0.20,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

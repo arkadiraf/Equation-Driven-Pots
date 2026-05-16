@@ -1,0 +1,68 @@
+{
+  "name": "Chromatic Bloom",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Fourier Bloom",
+    "equation": "R * (1 + 0.22*(cos(3*theta) + 0.48*cos(7*theta + pi*v) + 0.22*cos(13*theta - 2*pi*v)))",
+    "baseRadius": 5.0,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "sin(12*theta + 10*pi*v) + sin(13*theta - 10*pi*v)",
+    "intensity": 0.20
+  },
+  "patterns": {
+    "preset1": "Double Helix Mask",
+    "equation1": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+    "preset2": "Moire Windows",
+    "equation2": "smoothstep(0.2, 0.28, sin(10*theta + 8*pi*v) + sin(11*theta - 8*pi*v)) - 0.5",
+    "baseColor": "#180a38",
+    "patternColor1": "#ff3878",
+    "patternColor2": "#28d8f8",
+    "overlapColor": "#f8f820",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "interference",
+    "preset": "Braided Drift",
+    "equation": "sin(3*theta + 2*pi*v) + 0.40*sin(7*theta - pi*v)",
+    "strength": 0.30,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

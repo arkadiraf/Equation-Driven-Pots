@@ -1,0 +1,68 @@
+{
+  "name": "Omega Point Vessel",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Omega Quasi-Crystal Lattice",
+    "equation": "R * (1 + 0.14*pow(sin(phi),2) - 0.04*cos(phi)) * (1 + 0.09*cos(10*theta + sqrt(2)*9*phi) + 0.09*cos(15*theta - sqrt(3)*7*phi) + 0.06*cos(22*theta + sqrt(5)*5*phi) + 0.04*cos(31*theta - sqrt(7)*4*phi) + 0.025*cos(41*theta + sqrt(11)*3*phi) + 0.015*sin(53*theta - sqrt(13)*2*phi))",
+    "baseRadius": 5.5,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 28,
+    "sphBotFlatten": 155,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Omega Ripple Shell",
+    "equation": "sin(22*theta)*cos(24*phi) + 0.55*sin(30*theta - 16*phi) + 0.38*cos(40*theta + 20*phi) + 0.24*sin(18*theta + 28*phi) + 0.15*cos(50*theta - 12*phi) + 0.09*sin(14*theta + 32*phi)",
+    "intensity": 0.22
+  },
+  "patterns": {
+    "preset1": "Moire Windows",
+    "equation1": "smoothstep(0.12, 0.18, cos(10*theta + sqrt(2)*9*phi) + cos(15*theta - sqrt(3)*7*phi)) - 0.5",
+    "preset2": "Moire Windows",
+    "equation2": "smoothstep(0.12, 0.18, cos(22*theta + sqrt(5)*5*phi) + sin(22*theta)*cos(24*phi)) - 0.5",
+    "baseColor": "#000000",
+    "patternColor1": "#ffd700",
+    "patternColor2": "#00f8ff",
+    "overlapColor": "#ffffff",
+    "depthMm": 2.0
+  },
+  "mesh": {
+    "resV": 200,
+    "resT": 240,
+    "patternResV": 200,
+    "patternResT": 240
+  },
+  "modifier": {
+    "type": "interference",
+    "preset": "Omega Flower",
+    "equation": "sin(5*theta + 2*pi*v) + 0.65*sin(8*theta - 3*pi*v) + 0.45*sin(12*theta + pi*v) + 0.30*sin(3*theta - 4*pi*v) + 0.18*sin(17*theta + 2.5*pi*v)",
+    "strength": 0.42,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "torsion",
+    "preset": "Omega Fluid Twist",
+    "dx": "x*cos(0.40*sin(2*pi*v) + 0.22*exp(-pow(v-0.74,2)*16) + 0.14*exp(-pow(v-0.22,2)*30) + 0.08*exp(-pow(v-0.50,2)*40)) - z*sin(0.40*sin(2*pi*v) + 0.22*exp(-pow(v-0.74,2)*16) + 0.14*exp(-pow(v-0.22,2)*30) + 0.08*exp(-pow(v-0.50,2)*40)) - x",
+    "dy": "-0.07*exp(-pow(v-0.08,2)*32) + 0.02*sin(3*pi*v)",
+    "dz": "x*sin(0.40*sin(2*pi*v) + 0.22*exp(-pow(v-0.74,2)*16) + 0.14*exp(-pow(v-0.22,2)*30) + 0.08*exp(-pow(v-0.50,2)*40)) + z*cos(0.40*sin(2*pi*v) + 0.22*exp(-pow(v-0.74,2)*16) + 0.14*exp(-pow(v-0.22,2)*30) + 0.08*exp(-pow(v-0.50,2)*40)) - z",
+    "strength": 0.65,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

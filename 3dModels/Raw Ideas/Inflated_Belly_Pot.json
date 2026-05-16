@@ -1,0 +1,68 @@
+{
+  "name": "Inflated Belly Pot",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Gentle Belly",
+    "equation": "R * (1 + 0.08*sin(pi*v) - 0.03*pow(v,2))",
+    "baseRadius": 5.0,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "bands",
+    "preset": "Basic Horizontal Bands",
+    "equation": "sin(16*pi*v) * 0.30",
+    "intensity": 0.06
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(8*pi*v) - 0.30",
+    "preset2": "Basic Band Mask",
+    "equation2": "exp(-pow(v-0.50,2)*14) - 0.50",
+    "baseColor": "#c09060",
+    "patternColor1": "#884020",
+    "patternColor2": "#d8b880",
+    "overlapColor": "#f0d0a0",
+    "depthMm": 0.7
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 180,
+    "patternResV": 140,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "pressure",
+    "preset": "Inflated Belly",
+    "dx": "0.28*exp(-pow(v-0.50,2)*12)*cos(theta)",
+    "dy": "0",
+    "dz": "0.28*exp(-pow(v-0.50,2)*12)*sin(theta)",
+    "strength": 0.55,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

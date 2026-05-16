@@ -1,0 +1,68 @@
+{
+  "name": "Rounded Rectangle Trough",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "polygon",
+    "preset": "Rounded Rectangle",
+    "equation": "R / pow(pow(abs(cos(theta))/1.25, 6) + pow(abs(sin(theta))/0.82, 6), 0.1666666667) * (1 - 0.04*v)",
+    "baseRadius": 5.5,
+    "height": 7.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 18,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.2,
+    "plateOpeningAngle": 12,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "bands",
+    "preset": "Crown Terraces",
+    "equation": "floor(5*(0.5 + 0.5*sin(12*pi*v))) / 5",
+    "intensity": 0.08
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "floor(5*(0.5 + 0.5*sin(12*pi*v))) / 5 - 0.35",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(4*theta) - 0.20",
+    "baseColor": "#909090",
+    "patternColor1": "#c0c0c0",
+    "patternColor2": "#505050",
+    "overlapColor": "#d8d8d8",
+    "depthMm": 0.6
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 200,
+    "patternResV": 120,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

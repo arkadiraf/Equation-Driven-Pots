@@ -1,0 +1,68 @@
+{
+  "name": "Hourglass Pinch Pod",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "primitive",
+    "preset": "Hourglass Pinch",
+    "equation": "R * (1 - 0.22*pow(sin(phi), 2) + 0.08*cos(phi))",
+    "baseRadius": 5.5,
+    "height": 10.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 28,
+    "sphBotFlatten": 155,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Basic Broad Flutes",
+    "equation": "cos(phi) * cos(4*theta) * 0.6",
+    "intensity": 0.12
+  },
+  "patterns": {
+    "preset1": "Basic Horizontal Split",
+    "equation1": "cos(phi) - 0.05",
+    "preset2": "Basic Band Mask",
+    "equation2": "pow(sin(phi), 2) - 0.70",
+    "baseColor": "#c0d8e8",
+    "patternColor1": "#4070a0",
+    "patternColor2": "#d8e8f0",
+    "overlapColor": "#204060",
+    "depthMm": 0.8
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

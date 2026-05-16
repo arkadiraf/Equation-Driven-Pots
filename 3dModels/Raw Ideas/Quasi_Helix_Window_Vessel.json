@@ -1,0 +1,68 @@
+{
+  "name": "Quasi Helix Window Vessel",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Fourier Bloom",
+    "equation": "R * (1 + 0.18*(cos(3*theta) + 0.45*cos(7*theta + 1.2*pi*v) + 0.22*cos(11*theta - 0.8*pi*v)))",
+    "baseRadius": 5.0,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Quasi Interference",
+    "equation": "sin(5*theta + 8*pi*v) + 0.7*sin(8*theta - sqrt(2)*7*pi*v)",
+    "intensity": 0.18
+  },
+  "patterns": {
+    "preset1": "Moire Windows",
+    "equation1": "cos(5*theta + 8*pi*v) + 0.7*cos(8*theta - sqrt(2)*7*pi*v) - 0.25",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(3*theta) - 0.15",
+    "baseColor": "#100828",
+    "patternColor1": "#7030c0",
+    "patternColor2": "#a060f0",
+    "overlapColor": "#e0c0ff",
+    "depthMm": 1.4
+  },
+  "mesh": {
+    "resV": 180,
+    "resT": 220,
+    "patternResV": 180,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "interference",
+    "preset": "Interference Drift",
+    "equation": "sin(5*theta + 4*pi*v) + 0.6*sin(8*theta - sqrt(2)*3*pi*v)",
+    "strength": 0.25,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

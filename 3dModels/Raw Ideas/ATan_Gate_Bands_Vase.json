@@ -1,0 +1,68 @@
+{
+  "name": "ATan Gate Bands Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "nonlinear",
+    "preset": "Arc Compression",
+    "equation": "R * (1 + 0.16*atan(5*cos(8*theta + 3*pi*v))) * (1 + 0.06*sin(pi*v))",
+    "baseRadius": 5.0,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "nonlinear",
+    "preset": "ATan Braid",
+    "equation": "atan(6*sin(8*theta + 6*pi*v))",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "atan(7*(sin(7*theta + 8*pi*v) + 0.35*cos(3*theta - 6*pi*v))) - 1.10",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "sin(7*theta + 8*pi*v) + 0.35*cos(3*theta - 6*pi*v) - 0.30",
+    "baseColor": "#280818",
+    "patternColor1": "#d02070",
+    "patternColor2": "#f060a0",
+    "overlapColor": "#ff80c0",
+    "depthMm": 1.4
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 220,
+    "patternResV": 160,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "regional",
+    "preset": "Upper Bloom Twist",
+    "equation": "exp(-pow(v-0.80,2)*28)",
+    "strength": 0.30,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

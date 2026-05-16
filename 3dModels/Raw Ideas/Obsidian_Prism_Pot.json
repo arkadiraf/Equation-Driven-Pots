@@ -1,0 +1,68 @@
+{
+  "name": "Obsidian Prism Pot",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "nonlinear",
+    "preset": "Prismatic ATan",
+    "equation": "R * (1 + 0.22*atan(14*cos(6*theta))) * (1 - 0.05*v)",
+    "baseRadius": 4.8,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 18,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "carved",
+    "preset": "Edge Carving",
+    "equation": "atan(14*cos(6*theta)) * 0.35",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "atan(14*cos(6*theta)) - 1.0",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(8*pi*v) - 0.30",
+    "baseColor": "#0a0a0a",
+    "patternColor1": "#c0c8d0",
+    "patternColor2": "#202828",
+    "overlapColor": "#e8f0f8",
+    "depthMm": 2.0
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 240,
+    "patternResV": 160,
+    "patternResT": 240
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

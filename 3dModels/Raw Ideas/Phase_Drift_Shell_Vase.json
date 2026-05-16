@@ -1,0 +1,68 @@
+{
+  "name": "Phase Drift Shell Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Phase Drift Shell",
+    "equation": "R * (1 + 0.12*cos(5*theta + pi*v + 0.4*sin(2*pi*v)) + 0.05*cos(11*theta - 2*pi*v))",
+    "baseRadius": 5.0,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Quasi Interference",
+    "equation": "sin(5*theta + 8*pi*v + 0.5*sin(3*pi*v)) + 0.6*sin(11*theta - sqrt(2)*6*pi*v)",
+    "intensity": 0.16
+  },
+  "patterns": {
+    "preset1": "Moire Windows",
+    "equation1": "cos(5*theta + 8*pi*v + 0.5*sin(3*pi*v)) + 0.6*cos(11*theta - sqrt(2)*6*pi*v) - 0.25",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(5*theta + pi*v + 0.4*sin(2*pi*v)) + sin(11*theta - 2*pi*v) - 0.40",
+    "baseColor": "#000812",
+    "patternColor1": "#0060f0",
+    "patternColor2": "#00c0f8",
+    "overlapColor": "#40f0ff",
+    "depthMm": 1.4
+  },
+  "mesh": {
+    "resV": 180,
+    "resT": 220,
+    "patternResV": 180,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "interference",
+    "preset": "Quasi Drift",
+    "equation": "sin(5*theta + 4*pi*v + 0.3*sin(2*pi*v)) + 0.5*sin(11*theta - 3*pi*v)",
+    "strength": 0.22,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

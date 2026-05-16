@@ -1,0 +1,68 @@
+{
+  "name": "Sway Wave Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "polygon",
+    "preset": "Barrel Oval",
+    "equation": "R / sqrt(1.45*pow(cos(theta),2) + 0.82*pow(sin(theta),2)) * (1 + 0.08*sin(pi*v))",
+    "baseRadius": 5.2,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "bands",
+    "preset": "Ripple Rings",
+    "equation": "sin(12*pi*v) * 0.35",
+    "intensity": 0.07
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(6*pi*v + 0.5*theta) - 0.25",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(2*theta) - 0.25",
+    "baseColor": "#e8c0c8",
+    "patternColor1": "#a04060",
+    "patternColor2": "#f0d8dc",
+    "overlapColor": "#602030",
+    "depthMm": 0.7
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 180,
+    "patternResV": 140,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "wind",
+    "preset": "Sway Wave",
+    "dx": "0.12*sin(3*pi*v)",
+    "dy": "0.02*sin(2*pi*v)",
+    "dz": "0",
+    "strength": 0.45,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

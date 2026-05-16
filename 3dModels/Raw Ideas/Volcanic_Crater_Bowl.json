@@ -1,0 +1,68 @@
+{
+  "name": "Volcanic Crater Bowl",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Rim Flare",
+    "equation": "R * (1 + 0.45*pow(v, 2.4) - 0.06*pow(1 - v, 0.5))",
+    "baseRadius": 5.0,
+    "height": 7.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.6,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "carved",
+    "preset": "Arc Shell Carving",
+    "equation": "asin(0.97*sin(6*theta + 4*pi*v)) + 0.40*sin(10*theta - 3*pi*v)",
+    "intensity": 0.22
+  },
+  "patterns": {
+    "preset1": "Basic Horizontal Split",
+    "equation1": "v - 0.40",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(6*theta + 2*pi*v) - 0.15",
+    "baseColor": "#0a0808",
+    "patternColor1": "#a82010",
+    "patternColor2": "#c05020",
+    "overlapColor": "#e0a030",
+    "depthMm": 1.6
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "custom",
+    "preset": "None (No Distortion)",
+    "dx": "-0.35*exp(-pow(theta - 0.8, 2)*4)*exp(-pow(v - 0.55, 2)*16)",
+    "dy": "-0.15*pow(v, 1.6)",
+    "dz": "0",
+    "strength": 0.45,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

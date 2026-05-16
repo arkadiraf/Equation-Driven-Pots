@@ -1,0 +1,68 @@
+{
+  "name": "Bloomfold Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "Bloomfold",
+    "equation": "(R - 1.0) + 1.2*sin(pi*z/10.0) + (0.34 + 0.42*sin(pi*z/10.0)) * (pow(cos(0.5*pi*z/10.0),2)*cos(3*theta) + 1.55*pow(sin(pi*z/10.0),2)*cos(6*theta))",
+    "baseRadius": 5.0,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Crown Interference",
+    "equation": "sin(6*theta + 10*pi*v) + 0.5*sin(12*theta - 8*pi*v)",
+    "intensity": 0.16
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(3*theta) - 0.10",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(6*theta) - 0.10",
+    "baseColor": "#3a0818",
+    "patternColor1": "#c0204a",
+    "patternColor2": "#e080a0",
+    "overlapColor": "#f0d0d8",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 200,
+    "patternResV": 160,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Gentle Torsion",
+    "equation": "sin(pi*v)",
+    "strength": 0.22,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

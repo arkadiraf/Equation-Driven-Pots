@@ -1,0 +1,68 @@
+{
+  "name": "Transcendent Vessel",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Transcendent Quasi-Lattice",
+    "equation": "R * (1 + 0.10*pow(sin(phi),2)) * (1 + 0.07*cos(11*theta + sqrt(2)*9*phi) + 0.07*cos(16*theta - sqrt(3)*7*phi) + 0.04*cos(22*theta + sqrt(5)*5*phi) + 0.02*cos(27*theta - 4*phi))",
+    "baseRadius": 5.5,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 28,
+    "sphBotFlatten": 155,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Audio Ripple Shell",
+    "equation": "sin(18*theta)*cos(20*phi) + 0.45*sin(26*theta - 12*phi) + 0.30*cos(32*theta + 16*phi) + 0.15*sin(14*theta + 24*phi)",
+    "intensity": 0.18
+  },
+  "patterns": {
+    "preset1": "Moire Windows",
+    "equation1": "cos(11*theta + sqrt(2)*9*phi) + cos(16*theta - sqrt(3)*7*phi) - 0.50",
+    "preset2": "Moire Windows",
+    "equation2": "cos(22*theta + sqrt(5)*5*phi) + sin(18*theta)*cos(20*phi) - 0.60",
+    "baseColor": "#000000",
+    "patternColor1": "#e8c020",
+    "patternColor2": "#00e8ff",
+    "overlapColor": "#ffffff",
+    "depthMm": 2.0
+  },
+  "mesh": {
+    "resV": 200,
+    "resT": 240,
+    "patternResV": 200,
+    "patternResT": 240
+  },
+  "modifier": {
+    "type": "interference",
+    "preset": "Multi-Direction Flower",
+    "equation": "sin(5*theta + 2*pi*v) + 0.6*sin(8*theta - 3*pi*v) + 0.4*sin(11*theta + pi*v)",
+    "strength": 0.32,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "torsion",
+    "preset": "Fluid Twist XYZ",
+    "dx": "x*cos(0.28*sin(2*pi*v) + 0.14*exp(-pow(v-0.70,2)*18)) - z*sin(0.28*sin(2*pi*v) + 0.14*exp(-pow(v-0.70,2)*18)) - x",
+    "dy": "-0.08*exp(-pow(v-0.12,2)*30)",
+    "dz": "x*sin(0.28*sin(2*pi*v) + 0.14*exp(-pow(v-0.70,2)*18)) + z*cos(0.28*sin(2*pi*v) + 0.14*exp(-pow(v-0.70,2)*18)) - z",
+    "strength": 0.55,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

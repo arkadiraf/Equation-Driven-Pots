@@ -1,0 +1,68 @@
+{
+  "name": "Fractal Growth Column",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "nonlinear",
+    "preset": "Fractal Growth",
+    "equation": "R * (1 + 0.14*cos(3*theta)*clamp(1-2*v,0,1) + 0.18*cos(5*theta)*clamp(2*v-0,0,1)*clamp(1-v,0,1) + 0.22*cos(7*theta)*clamp(3*v-1,0,1)*clamp(1-v*0.8,0,1) + 0.12*cos(11*theta)*clamp(4*v-2,0,1))",
+    "baseRadius": 4.8,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Quasi Interference",
+    "equation": "sin(7*theta + 6*pi*v) + sin(11*theta - sqrt(2)*5*pi*v) + 0.5*sin(13*theta + sqrt(3)*4*pi*v)",
+    "intensity": 0.13
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "v - 0.50",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(5*theta + 4*pi*v) + cos(8*theta - 3*pi*v) - 0.30",
+    "baseColor": "#302010",
+    "patternColor1": "#c08830",
+    "patternColor2": "#805820",
+    "overlapColor": "#f0d080",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 200,
+    "patternResV": 160,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

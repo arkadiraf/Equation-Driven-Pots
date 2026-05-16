@@ -1,0 +1,68 @@
+{
+  "name": "Barrel Oval Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "polygon",
+    "preset": "Barrel Oval",
+    "equation": "R / sqrt(1.45*pow(cos(theta),2) + 0.82*pow(sin(theta),2)) * (1 + 0.10*sin(pi*v))",
+    "baseRadius": 5.0,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "weave",
+    "preset": "Basket Crosshatch",
+    "equation": "sin(10*theta + 8*pi*v) * sin(10*theta - 8*pi*v)",
+    "intensity": 0.10
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(10*theta + 8*pi*v) * sin(10*theta - 8*pi*v) - 0.20",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(2*theta) - 0.30",
+    "baseColor": "#c8a870",
+    "patternColor1": "#6b4820",
+    "patternColor2": "#e8c898",
+    "overlapColor": "#3d2808",
+    "depthMm": 1.0
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 200,
+    "patternResV": 140,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

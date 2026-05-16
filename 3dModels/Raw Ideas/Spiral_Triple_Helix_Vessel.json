@@ -1,0 +1,68 @@
+{
+  "name": "Spiral Triple Helix Vessel",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Spiral Helix",
+    "equation": "(R + 2.0*sin(pi*z/10.0)) * (1 + 0.20*cos(3*theta + pi*z/10.0))",
+    "baseRadius": 4.5,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Twisted Ribs",
+    "equation": "cos(3*theta + 8*pi*v)",
+    "intensity": 0.13
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(3*theta + pi*z/10.0) - 0.15",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(pi*z/10.0) - 0.30",
+    "baseColor": "#280820",
+    "patternColor1": "#c04080",
+    "patternColor2": "#e0a0b8",
+    "overlapColor": "#f8d8e8",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 200,
+    "patternResV": 160,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Twist Drift",
+    "equation": "sin(pi*v)",
+    "strength": 0.30,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

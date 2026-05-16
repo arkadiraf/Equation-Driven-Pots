@@ -1,0 +1,68 @@
+{
+  "name": "Antenna Migration Tower",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "nonlinear",
+    "preset": "Antenna Migration",
+    "equation": "R * (1 + 0.40*pow(z/10.0, 1.5) * abs(cos((2 + 6*(z/10.0))*theta/2.0)))",
+    "baseRadius": 4.5,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Antenna Ribs",
+    "equation": "abs(cos((2 + 6*v)*theta/2.0)) * pow(v, 0.8)",
+    "intensity": 0.12
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "abs(cos((2 + 6*v)*theta/2.0)) - 0.40",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "pow(v, 1.2) - 0.55",
+    "baseColor": "#1a1a1a",
+    "patternColor1": "#c0c0c0",
+    "patternColor2": "#404040",
+    "overlapColor": "#f0f0f0",
+    "depthMm": 1.4
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 200,
+    "patternResV": 160,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "regional",
+    "preset": "Body Swirl Window",
+    "equation": "sin(4*theta + 6*pi*v) * (1 - exp(-pow(v-0.5,2)*20))",
+    "strength": 0.28,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

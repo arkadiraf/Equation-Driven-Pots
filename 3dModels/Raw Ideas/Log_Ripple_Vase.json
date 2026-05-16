@@ -1,0 +1,68 @@
+{
+  "name": "Log Ripple Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Shoulder Bulge",
+    "equation": "R * (1 + 0.18*exp(-pow(v-0.65,2)*14) - 0.05*pow(1-v,1.2))",
+    "baseRadius": 5.0,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "nonlinear",
+    "preset": "Log Ripple Compression",
+    "equation": "log(1 + 4*abs(sin(12*theta + 10*pi*v)))",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "log(1 + 4*abs(sin(12*theta + 10*pi*v))) - 0.70",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "sin(12*theta + 10*pi*v) - 0.25",
+    "baseColor": "#080818",
+    "patternColor1": "#c0a020",
+    "patternColor2": "#404020",
+    "overlapColor": "#f0e060",
+    "depthMm": 1.4
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 220,
+    "patternResV": 160,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "diagonal",
+    "preset": "Feather Sweep",
+    "equation": "sin(12*theta + 8*pi*v) * exp(-pow(v-0.65,2)*12)",
+    "strength": 0.28,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

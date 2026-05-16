@@ -1,0 +1,68 @@
+{
+  "name": "Crown Eddy Orb",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "primitive",
+    "preset": "Lantern Sphere",
+    "equation": "R * (1 + 0.12*pow(sin(phi),2) + 0.06*cos(8*theta)*pow(sin(phi),1.5))",
+    "baseRadius": 5.5,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 30,
+    "sphBotFlatten": 155,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Shoulder Ribs",
+    "equation": "cos(8*theta)*exp(-pow(v-0.86,2)*28)",
+    "intensity": 0.10
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "exp(-pow(v-0.86,2)*25) - 0.40",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(8*theta)*pow(sin(phi),1.5) - 0.10",
+    "baseColor": "#080818",
+    "patternColor1": "#6030b0",
+    "patternColor2": "#9060d0",
+    "overlapColor": "#d0b0ff",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 200,
+    "patternResV": 140,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "swirl",
+    "preset": "Crown Eddy",
+    "dx": "-0.14*z*exp(-pow(v-0.86,2)*30)",
+    "dy": "0.03*exp(-pow(v-0.86,2)*24)",
+    "dz": "0.14*x*exp(-pow(v-0.86,2)*30)",
+    "strength": 0.45,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

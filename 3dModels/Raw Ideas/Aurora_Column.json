@@ -1,0 +1,68 @@
+{
+  "name": "Aurora Column",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 - 0.04*v + 0.03*sin(pi*v))",
+    "baseRadius": 4.8,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Aurora Streaks",
+    "equation": "sin(14*theta + 12*pi*v)*exp(-pow(v-0.35,2)*20) + sin(11*theta - 10*pi*v)*exp(-pow(v-0.72,2)*18)",
+    "intensity": 0.10
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(8*theta + 6*pi*v)*exp(-pow(v-0.35,2)*24) - 0.20",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(11*theta - 5*pi*v)*exp(-pow(v-0.72,2)*20) - 0.20",
+    "baseColor": "#020818",
+    "patternColor1": "#00e880",
+    "patternColor2": "#a020f8",
+    "overlapColor": "#40f8f8",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 200,
+    "patternResV": 160,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

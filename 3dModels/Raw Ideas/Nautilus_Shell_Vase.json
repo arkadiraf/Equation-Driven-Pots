@@ -1,0 +1,68 @@
+{
+  "name": "Nautilus Shell Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "5-Petal Flower",
+    "equation": "R * (1 + 0.20*cos(5*theta)*sin(pi*v) + 0.10*sin(pi*v) - 0.05*v)",
+    "baseRadius": 4.5,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "carved",
+    "preset": "Arc Shell Carving",
+    "equation": "asin(0.97*sin(5*theta + 4*pi*v))",
+    "intensity": 0.16
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(5*theta + 4*pi*v) - 0.15",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(pi*v) - 0.40",
+    "baseColor": "#f8e8d0",
+    "patternColor1": "#7a4010",
+    "patternColor2": "#c87840",
+    "overlapColor": "#d4b070",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "petal",
+    "preset": "Petal Migration",
+    "equation": "sin(2*pi*v) + 0.30*sin(5*theta)",
+    "strength": 0.35,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "Domain Warp Rib Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Gentle Belly",
+    "equation": "R * (1 + 0.12*sin(pi*v) - 0.04*pow(v,2))",
+    "baseRadius": 5.2,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "nonlinear",
+    "preset": "Domain Warp Ribs",
+    "equation": "cos(12*(theta + 0.12*sin(6*pi*v) + 0.05*sin(9*theta)))",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(12*(theta + 0.12*sin(6*pi*v))) - 0.20",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(8*pi*v) - 0.30",
+    "baseColor": "#b05830",
+    "patternColor1": "#703020",
+    "patternColor2": "#d09060",
+    "overlapColor": "#f0c890",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 220,
+    "patternResV": 150,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "petal",
+    "preset": "Rosette Drift",
+    "equation": "sin(6*theta + 4*pi*v) + 0.4*sin(12*theta - 3*pi*v)",
+    "strength": 0.22,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

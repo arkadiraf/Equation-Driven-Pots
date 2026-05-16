@@ -1,0 +1,68 @@
+{
+  "name": "Star Polygon Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "polygon",
+    "preset": "Star Polygon",
+    "equation": "R * (1 + 0.22*cos(5*theta) + 0.10*cos(10*theta)) * (1 - 0.04*v)",
+    "baseRadius": 5.0,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "carved",
+    "preset": "Meridian Carving",
+    "equation": "atan(8*cos(5*theta)) * 0.35",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(5*theta) - 0.10",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(10*theta) - 0.15",
+    "baseColor": "#080c14",
+    "patternColor1": "#d0b020",
+    "patternColor2": "#604808",
+    "overlapColor": "#f8e040",
+    "depthMm": 1.6
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "diagonal",
+    "preset": "Basic Diagonal Drift",
+    "equation": "sin(5*theta + 3*pi*v)",
+    "strength": 0.20,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

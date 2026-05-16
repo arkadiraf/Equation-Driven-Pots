@@ -1,0 +1,68 @@
+{
+  "name": "Mondrian Grid Column",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 - 0.04*v)",
+    "baseRadius": 5.0,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 18,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "bands",
+    "preset": "Basic Horizontal Bands",
+    "equation": "sign(sin(10*pi*v)) * 0.5 + sign(cos(4*theta)) * 0.3",
+    "intensity": 0.06
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "floor(5*v)/5 - 0.40",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "floor(3*(theta + pi)/(2*pi))/3 - 0.50",
+    "baseColor": "#f8f8f0",
+    "patternColor1": "#c00010",
+    "patternColor2": "#0020c0",
+    "overlapColor": "#e0c000",
+    "depthMm": 1.0
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "Braided Rope Vessel",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Mid Bulge",
+    "equation": "R * (1 + 0.14*sin(pi*v) - 0.04*v)",
+    "baseRadius": 5.0,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "sin(8*theta + 6*pi*v) + 0.5*sin(8*theta - 6*pi*v)",
+    "intensity": 0.20
+  },
+  "patterns": {
+    "preset1": "Double Helix Mask",
+    "equation1": "cos(8*theta + 6*pi*v) * cos(8*theta - 6*pi*v) - 0.10",
+    "preset2": "Surface Texture Top %",
+    "equation2": "textureFill(texPosNorm, 60)",
+    "baseColor": "#c8a870",
+    "patternColor1": "#604020",
+    "patternColor2": "#e8c898",
+    "overlapColor": "#f0d8b0",
+    "depthMm": 1.4
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "interference",
+    "preset": "Braided Drift",
+    "equation": "sin(6*theta + 3*pi*v) + 0.5*sin(6*theta - 3*pi*v)",
+    "strength": 0.35,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "Petal Orb Pod",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "floral",
+    "preset": "Twisted Bloom",
+    "equation": "R * (1 + 0.22*cos(5*theta)*pow(sin(phi), 1.5) - 0.06*cos(phi) + 0.05*pow(sin(phi), 2))",
+    "baseRadius": 5.5,
+    "height": 10.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 28,
+    "sphBotFlatten": 155,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Basic Twist Relief",
+    "equation": "cos(5*theta + phi) * pow(sin(phi), 1.2) * 0.7",
+    "intensity": 0.12
+  },
+  "patterns": {
+    "preset1": "4-Petal Mask",
+    "equation1": "asin(0.97*sin(5*theta)) * pow(sin(phi), 1.4) - 0.10",
+    "preset2": "Basic Horizontal Split",
+    "equation2": "cos(phi) + 0.15",
+    "baseColor": "#e8a0c0",
+    "patternColor1": "#6a3a8a",
+    "patternColor2": "#f0d080",
+    "overlapColor": "#c060a0",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "petal",
+    "preset": "Petal Migration",
+    "equation": "sin(2*pi*v) + 0.20*sin(5*theta)",
+    "strength": 0.25,
+    "target": "pattern"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

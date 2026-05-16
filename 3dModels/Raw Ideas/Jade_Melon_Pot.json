@@ -1,0 +1,68 @@
+{
+  "name": "Jade Melon Pot",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "Melon Ribs",
+    "equation": "R * (1 + 0.12*cos(8*theta)) * (1 + 0.10*sin(pi*v) - 0.04*pow(v,2))",
+    "baseRadius": 5.2,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Basic Broad Flutes",
+    "equation": "cos(8*theta) * sin(pi*v) * 0.30",
+    "intensity": 0.09
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(8*theta) - 0.15",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(4*pi*v) - 0.30",
+    "baseColor": "#608858",
+    "patternColor1": "#f0f8f0",
+    "patternColor2": "#304828",
+    "overlapColor": "#d0e8c8",
+    "depthMm": 0.8
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 200,
+    "patternResV": 140,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "Flame Torch Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Mid Bulge",
+    "equation": "R * (1 + 0.12*sin(pi*pow(v, 0.7)) - 0.08*pow(v, 2))",
+    "baseRadius": 4.0,
+    "height": 16.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Basic Broad Flutes",
+    "equation": "sin(6*theta) * pow(v, 0.6) * 0.5",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Basic Horizontal Split",
+    "equation1": "v - 0.35",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "sin(6*theta + 2*pi*v) * pow(v, 0.7) - 0.20",
+    "baseColor": "#101010",
+    "patternColor1": "#8a2000",
+    "patternColor2": "#f87020",
+    "overlapColor": "#f8e830",
+    "depthMm": 1.0
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 180,
+    "patternResV": 150,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "diagonal",
+    "preset": "Basic Diagonal Drift",
+    "equation": "sin(4*theta + 2*pi*v)",
+    "strength": 0.20,
+    "target": "pattern"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

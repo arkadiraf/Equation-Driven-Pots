@@ -1,0 +1,68 @@
+{
+  "name": "Carved Obsidian Column",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "folded",
+    "preset": "ATan Fluting",
+    "equation": "R * (1 + 0.16 * atan(6 * cos(10 * theta + 2*pi*v))) * (1 - 0.06*v)",
+    "baseRadius": 4.5,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "carved",
+    "preset": "Arc Shell Carving",
+    "equation": "asin(0.97 * sin(10 * theta))",
+    "intensity": 0.18
+  },
+  "patterns": {
+    "preset1": "Outer Radius Deviation",
+    "equation1": "outerDeviation(0.22)",
+    "preset2": "Basic Horizontal Split",
+    "equation2": "v - 0.80",
+    "baseColor": "#0a0a0e",
+    "patternColor1": "#b0b0b8",
+    "patternColor2": "#404048",
+    "overlapColor": "#e0e0e8",
+    "depthMm": 1.4
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "regional",
+    "preset": "Crown Rotation",
+    "equation": "exp(-pow(v - 0.85, 2)*40) * sin(2*pi*v)",
+    "strength": 0.35,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

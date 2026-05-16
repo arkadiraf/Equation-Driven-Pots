@@ -1,0 +1,68 @@
+{
+  "name": "Beveled Octagon Tower",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "polygon",
+    "preset": "Soft Hexagon",
+    "equation": "R * (1 + 0.08*cos(8*theta)) * (1 - 0.05*v + 0.02*sin(pi*v))",
+    "baseRadius": 4.8,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.40,
+    "bottomThickness": 0.6,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.3,
+    "plateOpeningAngle": 12,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Saturated Flutes",
+    "equation": "atan(10*cos(8*theta)) * (1 - 0.35*v)",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(8*theta) - 0.55",
+    "preset2": "Basic Horizontal Split",
+    "equation2": "v - 0.86",
+    "baseColor": "#3a3a4a",
+    "patternColor1": "#c0a060",
+    "patternColor2": "#5a5a6a",
+    "overlapColor": "#e0c880",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "Desert Barrel Cactus Pot",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "Lobed Body",
+    "equation": "R * (1 + 0.18*cos(10*theta)*sin(pi*v) + 0.14*sin(pi*v) - 0.04*pow(v, 2))",
+    "baseRadius": 5.5,
+    "height": 10.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Basic Broad Flutes",
+    "equation": "cos(10*theta) * sin(pi*v) * 0.8",
+    "intensity": 0.16
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(10*theta) - 0.22",
+    "preset2": "Basic Horizontal Split",
+    "equation2": "v - 0.82",
+    "baseColor": "#588040",
+    "patternColor1": "#284018",
+    "patternColor2": "#d09040",
+    "overlapColor": "#f0c860",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "pressure",
+    "preset": "Side Pressure Dent",
+    "dx": "-0.55 * exp(-pow(theta - 0, 2)*7) * exp(-pow(v - 0.55, 2)*22)",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.50,
+    "region": "body",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

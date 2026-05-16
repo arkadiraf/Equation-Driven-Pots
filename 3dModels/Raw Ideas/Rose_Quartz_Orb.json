@@ -1,0 +1,68 @@
+{
+  "name": "Rose Quartz Orb",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "primitive",
+    "preset": "Egg Orb",
+    "equation": "R * (1 + 0.14*cos(phi) - 0.06*cos(2*phi) + 0.04*pow(sin(phi),2))",
+    "baseRadius": 5.5,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 28,
+    "sphBotFlatten": 155,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Quartz Texture",
+    "equation": "sin(8*theta + 5*phi) + 0.4*sin(13*theta - 8*phi) + 0.2*sin(5*theta + 11*phi)",
+    "intensity": 0.12
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(8*theta + 5*phi) + 0.4*sin(13*theta - 8*phi) - 0.80",
+    "preset2": "Basic Band Mask",
+    "equation2": "pow(cos(phi),2) - 0.40",
+    "baseColor": "#f8d8e8",
+    "patternColor1": "#e8a0c0",
+    "patternColor2": "#fce8f0",
+    "overlapColor": "#c06090",
+    "depthMm": 0.8
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "Sunflower Spiral Orb",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Fibonacci Spirals 13/21",
+    "equation": "R * (1 + 0.06*sin(13*theta + 21*phi) + 0.06*sin(21*theta - 13*phi))",
+    "baseRadius": 5.5,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 28,
+    "sphBotFlatten": 155,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Fibonacci Texture",
+    "equation": "sin(13*theta + 21*phi) + sin(21*theta - 13*phi)",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(13*theta + 21*phi) - 0.25",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(21*theta - 13*phi) - 0.25",
+    "baseColor": "#c07010",
+    "patternColor1": "#6a2800",
+    "patternColor2": "#e0a030",
+    "overlapColor": "#f8e860",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 180,
+    "resT": 240,
+    "patternResV": 180,
+    "patternResT": 240
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

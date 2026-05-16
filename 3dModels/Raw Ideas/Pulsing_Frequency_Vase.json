@@ -1,0 +1,68 @@
+{
+  "name": "Pulsing Frequency Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Mid Bulge",
+    "equation": "R * (1 + 0.16*sin(pi*pow(v, 0.7)) - 0.10*pow(v, 3))",
+    "baseRadius": 4.5,
+    "height": 16.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "bands",
+    "preset": "Basic Horizontal Bands",
+    "equation": "sin(20*pi*v) + 0.55*sin(27*pi*v)",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(18*pi*v + 2*theta) + sin(25*pi*v - 2*theta) - 0.60",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(18*pi*v - theta) - sin(25*pi*v + theta) - 0.50",
+    "baseColor": "#0a1428",
+    "patternColor1": "#e84820",
+    "patternColor2": "#f8c820",
+    "overlapColor": "#f8f8f8",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

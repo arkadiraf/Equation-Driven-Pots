@@ -1,0 +1,68 @@
+{
+  "name": "Dragon Egg Orb",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Dragon Egg",
+    "equation": "R * (1 + 0.10*cos(10*theta + 8*phi) + 0.10*cos(10*theta - 8*phi) + 0.06*pow(sin(phi), 2))",
+    "baseRadius": 5.5,
+    "height": 10.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 30,
+    "sphBotFlatten": 152,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Diamond Weave",
+    "equation": "cos(10*theta + 8*phi) * cos(10*theta - 8*phi)",
+    "intensity": 0.18
+  },
+  "patterns": {
+    "preset1": "Double Helix Mask",
+    "equation1": "cos(10*theta + 8*phi) * cos(10*theta - 8*phi) - 0.20",
+    "preset2": "Basic Horizontal Split",
+    "equation2": "cos(phi) + 0.25",
+    "baseColor": "#1a3a18",
+    "patternColor1": "#c8a820",
+    "patternColor2": "#4a8a40",
+    "overlapColor": "#e8d860",
+    "depthMm": 1.4
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

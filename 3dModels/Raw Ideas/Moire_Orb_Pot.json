@@ -1,0 +1,68 @@
+{
+  "name": "Moire Orb Pot",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Moire Sphere",
+    "equation": "R * (1 + 0.07*cos(12*theta + 9*phi) + 0.07*cos(13*theta - 9*phi))",
+    "baseRadius": 5.5,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 28,
+    "sphBotFlatten": 155,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "sin(12*theta + 9*phi) + sin(13*theta - 9*phi)",
+    "intensity": 0.18
+  },
+  "patterns": {
+    "preset1": "Moire Windows",
+    "equation1": "smoothstep(0.15, 0.22, sin(12*theta + 9*phi) + sin(13*theta - 9*phi)) - 0.5",
+    "preset2": "Basic Band Mask",
+    "equation2": "cos(12*theta + 9*phi) * cos(13*theta - 9*phi) - 0.10",
+    "baseColor": "#200830",
+    "patternColor1": "#c040e0",
+    "patternColor2": "#e080f8",
+    "overlapColor": "#ffc8ff",
+    "depthMm": 1.6
+  },
+  "mesh": {
+    "resV": 180,
+    "resT": 240,
+    "patternResV": 180,
+    "patternResT": 240
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "torsion",
+    "preset": "Vortex Turn",
+    "dx": "x*cos(0.20*pow(v,1.7)) - z*sin(0.20*pow(v,1.7)) - x",
+    "dy": "0",
+    "dz": "x*sin(0.20*pow(v,1.7)) + z*cos(0.20*pow(v,1.7)) - z",
+    "strength": 0.55,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

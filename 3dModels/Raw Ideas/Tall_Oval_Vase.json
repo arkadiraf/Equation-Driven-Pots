@@ -1,0 +1,68 @@
+{
+  "name": "Tall Oval Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "polygon",
+    "preset": "Tall Oval",
+    "equation": "R / sqrt(0.72*pow(cos(theta),2) + 1.85*pow(sin(theta),2)) * (1 - 0.10*exp(-pow(v-0.70,2)*22) + 0.04*pow(v,2))",
+    "baseRadius": 4.5,
+    "height": 15.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Shoulder Ribs",
+    "equation": "cos(12*theta) * exp(-pow(v-0.72,2)*18)",
+    "intensity": 0.10
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(12*theta) - 0.30",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(6*pi*v + 0.8*theta) - 0.35",
+    "baseColor": "#6b8c5a",
+    "patternColor1": "#3d5c2a",
+    "patternColor2": "#a0b878",
+    "overlapColor": "#1e3010",
+    "depthMm": 0.8
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 180,
+    "patternResV": 160,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

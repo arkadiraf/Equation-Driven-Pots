@@ -1,0 +1,68 @@
+{
+  "name": "Gusted Wind Tall Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 - 0.03*v + 0.02*sin(pi*v))",
+    "baseRadius": 4.5,
+    "height": 16.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Wind Streaks",
+    "equation": "sin(16*theta + 14*pi*v) * pow(v, 0.6)",
+    "intensity": 0.08
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(12*theta + 10*pi*v) - 0.30",
+    "preset2": "Basic Band Mask",
+    "equation2": "pow(v, 1.4) - 0.55",
+    "baseColor": "#d0e8f8",
+    "patternColor1": "#5090c0",
+    "patternColor2": "#a8d0e8",
+    "overlapColor": "#1858a0",
+    "depthMm": 0.8
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 200,
+    "patternResV": 160,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "wind",
+    "preset": "Gusted Wind",
+    "dx": "pow(v, 1.8) * (0.7 + 0.3*sin(4*theta))",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.45,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

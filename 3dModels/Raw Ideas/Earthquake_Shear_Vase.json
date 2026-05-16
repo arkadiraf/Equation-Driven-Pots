@@ -1,0 +1,68 @@
+{
+  "name": "Earthquake Shear Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Pinched Neck",
+    "equation": "R * (1 + 0.22*exp(-pow(v-0.38,2)*12) - 0.14*exp(-pow(v-0.68,2)*24) + 0.10*pow(v,3))",
+    "baseRadius": 5.0,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "bands",
+    "preset": "Ripple Rings",
+    "equation": "sin(16*pi*v) * 0.35",
+    "intensity": 0.07
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(10*pi*v + 0.4*theta) - 0.30",
+    "preset2": "Basic Band Mask",
+    "equation2": "v - 0.50",
+    "baseColor": "#c08840",
+    "patternColor1": "#603010",
+    "patternColor2": "#e0b860",
+    "overlapColor": "#301808",
+    "depthMm": 0.8
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 180,
+    "patternResV": 150,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "basicEffect",
+    "preset": "Earthquake Shear",
+    "dx": "0.22*sin(pi*v)",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.50,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "Torsion Spire",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Linear Taper",
+    "equation": "R * (1 - 0.10*v + 0.04*sin(2*pi*v))",
+    "baseRadius": 5.0,
+    "height": 16.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Basic Twist Relief",
+    "equation": "cos(10*theta + 8*pi*v)",
+    "intensity": 0.16
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(10*theta + 8*pi*v) - 0.20",
+    "preset2": "Basic Horizontal Split",
+    "equation2": "v - 0.70",
+    "baseColor": "#1a2838",
+    "patternColor1": "#4888c0",
+    "patternColor2": "#d0e8f8",
+    "overlapColor": "#a0c8e8",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 180,
+    "patternResV": 150,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "torsion",
+    "preset": "Torsion Twist",
+    "dx": "x*cos(0.55*sin(pi*v)) - z*sin(0.55*sin(pi*v)) - x",
+    "dy": "0",
+    "dz": "x*sin(0.55*sin(pi*v)) + z*cos(0.55*sin(pi*v)) - z",
+    "strength": 0.70,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

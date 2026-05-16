@@ -1,0 +1,68 @@
+{
+  "name": "Agate Slice Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Flared Bowl",
+    "equation": "R * (1 + 0.28*pow(v,1.5) + 0.04*sin(pi*v))",
+    "baseRadius": 5.2,
+    "height": 9.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 18,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.2,
+    "plateOpeningAngle": 15,
+    "plateRadiusExtra": 0.6,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "bands",
+    "preset": "Ripple Rings",
+    "equation": "sin(22*pi*v + 0.4*sin(8*theta)) * 0.30",
+    "intensity": 0.07
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(16*pi*v + 0.6*sin(5*theta)) - 0.15",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(10*pi*v + 0.8*sin(3*theta)) - 0.20",
+    "baseColor": "#d0b898",
+    "patternColor1": "#a02820",
+    "patternColor2": "#f8f0e8",
+    "overlapColor": "#c06040",
+    "depthMm": 0.8
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

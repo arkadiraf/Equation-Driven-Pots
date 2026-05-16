@@ -1,0 +1,68 @@
+{
+  "name": "Blunt Triangle Column",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "polygon",
+    "preset": "Blunt Triangle",
+    "equation": "R * (1 + 0.24*cos(3*theta)) * (1 - 0.05*v + 0.02*sin(pi*v))",
+    "baseRadius": 5.0,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "carved",
+    "preset": "Meridian Carving",
+    "equation": "atan(8*cos(3*theta)) * 0.35",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(3*theta) - 0.15",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(6*pi*v) - 0.30",
+    "baseColor": "#2a2a2a",
+    "patternColor1": "#c8a840",
+    "patternColor2": "#505050",
+    "overlapColor": "#f0d060",
+    "depthMm": 1.4
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 180,
+    "patternResV": 150,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Crown Rotation",
+    "equation": "exp(-pow(v-1.0,2)*30)",
+    "strength": 0.28,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

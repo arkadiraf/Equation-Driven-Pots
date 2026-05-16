@@ -1,0 +1,68 @@
+{
+  "name": "Leaf Vein Column",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Gentle Belly",
+    "equation": "R * (1 + 0.10*sin(pi*v) - 0.04*pow(v,2))",
+    "baseRadius": 5.0,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "carved",
+    "preset": "Vein Carving",
+    "equation": "abs(sin(theta)) * sin(pi*v) + 0.3*cos(14*theta) * exp(-abs(sin(theta))*3)",
+    "intensity": 0.16
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "abs(sin(theta)) * sin(pi*v) - 0.35",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(14*theta) * exp(-abs(sin(theta))*3) - 0.10",
+    "baseColor": "#2a4a18",
+    "patternColor1": "#70b040",
+    "patternColor2": "#a0d060",
+    "overlapColor": "#d8f890",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 220,
+    "patternResV": 150,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

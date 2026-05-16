@@ -1,0 +1,68 @@
+{
+  "name": "Stepped Crown Phase Column",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "nonlinear",
+    "preset": "Stepped Crown Phase",
+    "equation": "R * (1 + (0.05 + 0.16*exp(-pow(v-0.85,2)*60))*cos(6*theta + floor(8*v)*pi/8))",
+    "baseRadius": 4.8,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "bands",
+    "preset": "Crown Terraces",
+    "equation": "floor(8*v) / 8 * 0.5 + 0.5*cos(6*theta + floor(8*v)*pi/8)",
+    "intensity": 0.10
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(6*theta + floor(8*v)*pi/8) - 0.15",
+    "preset2": "Basic Band Mask",
+    "equation2": "exp(-pow(v-0.85,2)*55) - 0.40",
+    "baseColor": "#141414",
+    "patternColor1": "#00d8e8",
+    "patternColor2": "#404040",
+    "overlapColor": "#80f8ff",
+    "depthMm": 1.4
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 200,
+    "patternResV": 160,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "regional",
+    "preset": "Shoulder Window",
+    "equation": "exp(-pow(v-0.75,2)*30)*cos(6*theta)",
+    "strength": 0.28,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "Diamond Carve Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "Soft Hex",
+    "equation": "R * (1 + 0.10*cos(6*theta)) * (1 + 0.06*sin(pi*v))",
+    "baseRadius": 5.0,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "carved",
+    "preset": "Diamond Carve",
+    "equation": "abs(cos(8*theta + 6*pi*v)) + abs(cos(8*theta - 6*pi*v))",
+    "intensity": 0.16
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "abs(cos(8*theta + 6*pi*v)) + abs(cos(8*theta - 6*pi*v)) - 1.30",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(6*theta) - 0.15",
+    "baseColor": "#084040",
+    "patternColor1": "#20b0a0",
+    "patternColor2": "#c0d8d0",
+    "overlapColor": "#e0f8f0",
+    "depthMm": 1.6
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 220,
+    "patternResV": 160,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

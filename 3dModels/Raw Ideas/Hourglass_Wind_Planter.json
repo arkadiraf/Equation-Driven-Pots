@@ -1,0 +1,68 @@
+{
+  "name": "Hourglass Wind Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Waist Pinch",
+    "equation": "R * (1 - 0.24*sin(pi*v) + 0.10*pow(v, 2) + 0.08*pow(1 - v, 2))",
+    "baseRadius": 5.5,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Basic Twist Relief",
+    "equation": "cos(8*theta + 4*pi*v) * (0.5 + 0.5*sin(pi*v))",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(6*theta + 3*pi*v) - 0.15",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#c8d8e8",
+    "patternColor1": "#4a6a8a",
+    "patternColor2": "#c8d8e8",
+    "overlapColor": "#4a6a8a",
+    "depthMm": 0.8
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "wind",
+    "preset": "Wind Lean",
+    "dx": "pow(v, 1.6)",
+    "dy": "0",
+    "dz": "0.20*pow(v, 1.4)",
+    "strength": 0.38,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "Tulip Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "Tulip",
+    "equation": "R * (1 - 0.18*pow(sin(pi*v),2) + 0.30*pow(v,3)) * (1 + 0.10*cos(6*theta)*pow(sin(pi*v),1.5))",
+    "baseRadius": 4.8,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 24,
+    "plateRadiusExtra": 0.6,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Petal Ribs",
+    "equation": "cos(6*theta) * pow(sin(pi*v),1.5) * 0.35",
+    "intensity": 0.10
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(6*theta)*pow(sin(pi*v),1.5) - 0.10",
+    "preset2": "Basic Band Mask",
+    "equation2": "pow(v,2) - 0.55",
+    "baseColor": "#e83050",
+    "patternColor1": "#f89040",
+    "patternColor2": "#c01030",
+    "overlapColor": "#ffd060",
+    "depthMm": 1.0
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "petal",
+    "preset": "Petal Migration",
+    "equation": "cos(6*theta)*pow(sin(pi*v),1.5)",
+    "strength": 0.20,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

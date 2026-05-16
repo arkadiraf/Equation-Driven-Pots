@@ -1,0 +1,68 @@
+{
+  "name": "Ribbed Melon Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "Melon Ribs",
+    "equation": "R * (1 + 0.16*cos(8*theta) + 0.04*pow(sin(pi*v),2)) * (1 - 0.06*pow(1-v,1.5))",
+    "baseRadius": 5.2,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Basic Broad Flutes",
+    "equation": "cos(8*theta) * sin(pi*v) * 0.35",
+    "intensity": 0.11
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(8*theta) - 0.15",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(pi*v) - 0.40",
+    "baseColor": "#7ab058",
+    "patternColor1": "#2a5020",
+    "patternColor2": "#a8d080",
+    "overlapColor": "#f0f8d8",
+    "depthMm": 1.0
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 200,
+    "patternResV": 140,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

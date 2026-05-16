@@ -1,0 +1,68 @@
+{
+  "name": "Mushroom Cap Bowl",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "primitive",
+    "preset": "Mushroom Cap",
+    "equation": "R * (1 + 0.40*pow(sin(phi),2)*exp(-pow(phi - pi/2,2)*4))",
+    "baseRadius": 6.0,
+    "height": 9.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 30,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.2,
+    "plateOpeningAngle": 18,
+    "plateRadiusExtra": 0.6,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Radial Ribs",
+    "equation": "cos(12*theta) * exp(-pow(phi - pi/2,2)*5)",
+    "intensity": 0.10
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "pow(sin(phi),2)*exp(-pow(phi - pi/2,2)*4) - 0.30",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(12*theta) - 0.25",
+    "baseColor": "#6a3010",
+    "patternColor1": "#c09070",
+    "patternColor2": "#f0e8d8",
+    "overlapColor": "#e8d8a0",
+    "depthMm": 1.0
+  },
+  "mesh": {
+    "resV": 130,
+    "resT": 200,
+    "patternResV": 130,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

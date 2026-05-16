@@ -1,0 +1,68 @@
+{
+  "name": "Galaxy Orb",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Galaxy",
+    "equation": "R * (1 + 0.06*sin(13*theta + 8*phi) + 0.03*pow(sin(phi),2) + 0.03*cos(21*theta - 5*phi))",
+    "baseRadius": 5.5,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 28,
+    "sphBotFlatten": 155,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Galaxy Texture",
+    "equation": "sin(13*theta + 8*phi) + 0.4*sin(21*theta - 5*phi) + 0.2*pow(sin(phi),2)",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(13*theta + 8*phi) - 0.25",
+    "preset2": "Basic Band Mask",
+    "equation2": "pow(sin(phi),2) - 0.50",
+    "baseColor": "#000412",
+    "patternColor1": "#8040f0",
+    "patternColor2": "#f0f8ff",
+    "overlapColor": "#30c0ff",
+    "depthMm": 1.4
+  },
+  "mesh": {
+    "resV": 180,
+    "resT": 240,
+    "patternResV": 180,
+    "patternResT": 240
+  },
+  "modifier": {
+    "type": "diagonal",
+    "preset": "Spiral Drift",
+    "equation": "sin(13*theta + 4*pi*v) + 0.4*sin(21*theta - 2*pi*v)",
+    "strength": 0.20,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

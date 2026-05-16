@@ -1,0 +1,68 @@
+{
+  "name": "Harmonic Beats Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "nonlinear",
+    "preset": "Harmonic Beats",
+    "equation": "R * (1 + 0.30*abs(cos(pi*1.5*z/10.0))*cos(8*(theta + (pi*z/20.0))))",
+    "baseRadius": 5.0,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "bands",
+    "preset": "Crown Terraces",
+    "equation": "floor(5*(0.5 + 0.5*abs(cos(pi*1.5*z/10.0)))) / 5",
+    "intensity": 0.08
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "abs(cos(pi*1.5*z/10.0)) - 0.50",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(8*theta + pi*z/20.0) - 0.20",
+    "baseColor": "#281408",
+    "patternColor1": "#c07030",
+    "patternColor2": "#804020",
+    "overlapColor": "#f0b060",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 200,
+    "patternResV": 160,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "regional",
+    "preset": "Body Swirl",
+    "equation": "sin(8*theta + 6*pi*v) * (1 - abs(2*v-1))",
+    "strength": 0.26,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

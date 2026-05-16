@@ -1,0 +1,68 @@
+{
+  "name": "Folded Panel Column",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "folded",
+    "preset": "Folded Mod Panels",
+    "equation": "R * (1 + 0.18 * cos(8 * abs(mod(theta + pi*v, pi/4) - pi/8))) * (1 + 0.05*sin(pi*v))",
+    "baseRadius": 4.8,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "sin(8*theta + 6*pi*v) + sin(9*theta - 5*pi*v)",
+    "intensity": 0.18
+  },
+  "patterns": {
+    "preset1": "Moire Windows",
+    "equation1": "smoothstep(0.2, 0.28, sin(8*theta + 6*pi*v) + sin(9*theta - 5*pi*v)) - 0.5",
+    "preset2": "Outer Radius Deviation",
+    "equation2": "outerDeviation(0.20)",
+    "baseColor": "#182838",
+    "patternColor1": "#48a888",
+    "patternColor2": "#e0c860",
+    "overlapColor": "#f8e898",
+    "depthMm": 1.6
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "diagonal",
+    "preset": "Basic Diagonal Drift",
+    "equation": "sin(4*theta + 2*pi*v)",
+    "strength": 0.18,
+    "target": "texture"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

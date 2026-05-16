@@ -1,0 +1,68 @@
+{
+  "name": "Moebius Drift Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Moebius Drift",
+    "equation": "R * (1 + 0.20*sin(theta + 6*pi*v)) * (1 + 0.06*cos(3*theta + 2*pi*v))",
+    "baseRadius": 5.0,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Moebius Ribs",
+    "equation": "sin(theta + 6*pi*v)",
+    "intensity": 0.12
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(theta + 6*pi*v) - 0.30",
+    "preset2": "Basic Band Mask",
+    "equation2": "cos(3*theta + 2*pi*v) - 0.20",
+    "baseColor": "#383838",
+    "patternColor1": "#b0b0b0",
+    "patternColor2": "#606060",
+    "overlapColor": "#f0f0f0",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 220,
+    "patternResV": 160,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Twist Drift",
+    "equation": "sin(pi*v + theta)",
+    "strength": 0.28,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

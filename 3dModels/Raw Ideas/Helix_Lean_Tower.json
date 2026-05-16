@@ -1,0 +1,68 @@
+{
+  "name": "Helix Lean Tower",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 - 0.04*v + 0.02*sin(pi*v))",
+    "baseRadius": 4.6,
+    "height": 16.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Twisted Ribs",
+    "equation": "cos(8*theta + 10*pi*v)",
+    "intensity": 0.09
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(10*pi*v) - 0.30",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(8*theta + 10*pi*v) - 0.20",
+    "baseColor": "#e8f0ff",
+    "patternColor1": "#2840a0",
+    "patternColor2": "#90a8d8",
+    "overlapColor": "#081850",
+    "depthMm": 0.8
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 200,
+    "patternResV": 160,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "wind",
+    "preset": "Helix Lean",
+    "dx": "0.18*cos(3*pi*v)",
+    "dy": "0",
+    "dz": "0.18*sin(3*pi*v)",
+    "strength": 0.50,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

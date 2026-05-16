@@ -1,0 +1,68 @@
+{
+  "name": "Harmonic Oscillator Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "nonlinear",
+    "preset": "Harmonic Oscillator",
+    "equation": "R * (1 + 0.25*abs(cos(pi*z/10.0))*cos(7*theta))",
+    "baseRadius": 5.0,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Standing Wave Ribs",
+    "equation": "cos(7*theta) * abs(cos(pi*z/10.0))",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "abs(cos(pi*z/10.0)) - 0.50",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(7*theta) - 0.20",
+    "baseColor": "#0a1840",
+    "patternColor1": "#a8c8e8",
+    "patternColor2": "#3060b0",
+    "overlapColor": "#e0f0ff",
+    "depthMm": 1.3
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

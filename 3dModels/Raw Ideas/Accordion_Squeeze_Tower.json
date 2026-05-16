@@ -1,0 +1,68 @@
+{
+  "name": "Accordion Squeeze Tower",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 - 0.04*v + 0.02*sin(pi*v))",
+    "baseRadius": 5.0,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Basic Broad Flutes",
+    "equation": "cos(2*theta) * sin(pi*v) * 0.40",
+    "intensity": 0.10
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(2*theta) - 0.20",
+    "preset2": "Basic Band Mask",
+    "equation2": "exp(-pow(v-0.50,2)*12) - 0.50",
+    "baseColor": "#e8e0d0",
+    "patternColor1": "#806040",
+    "patternColor2": "#d8c8a0",
+    "overlapColor": "#502810",
+    "depthMm": 0.9
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 180,
+    "patternResV": 150,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "pressure",
+    "preset": "Accordion Squeeze",
+    "dx": "-0.25*cos(theta)*exp(-pow(v-0.50,2)*12)",
+    "dy": "0",
+    "dz": "-0.25*sin(theta)*exp(-pow(v-0.50,2)*12)",
+    "strength": 0.55,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

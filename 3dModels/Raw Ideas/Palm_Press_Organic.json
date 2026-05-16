@@ -1,0 +1,68 @@
+{
+  "name": "Palm Press Organic",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Organic Belly",
+    "equation": "R * (1 + 0.16*sin(pi*v) + 0.06*exp(-pow(v-0.45,2)*10) - 0.04*pow(v,2))",
+    "baseRadius": 5.2,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 24,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Basic Broad Flutes",
+    "equation": "cos(8*theta) * sin(pi*v) * 0.35",
+    "intensity": 0.08
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(8*theta) - 0.20",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(pi*v) - 0.35",
+    "baseColor": "#e0d0b0",
+    "patternColor1": "#c0a880",
+    "patternColor2": "#f0e8d0",
+    "overlapColor": "#806040",
+    "depthMm": 0.7
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 180,
+    "patternResV": 140,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "pressure",
+    "preset": "Palm Press",
+    "dx": "-0.45*exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v-0.55,2)*14)",
+    "dy": "-0.05*exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v-0.55,2)*14)",
+    "dz": "0",
+    "strength": 0.50,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

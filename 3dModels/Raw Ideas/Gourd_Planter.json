@@ -1,0 +1,68 @@
+{
+  "name": "Gourd Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Shoulder Bulge",
+    "equation": "R * (1 + 0.50*exp(-pow(v - 0.30, 2)*8) - 0.24*exp(-pow(v - 0.72, 2)*28))",
+    "baseRadius": 4.5,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "weave",
+    "preset": "Diamond Weave",
+    "equation": "0.5*cos(8*theta + 4*pi*v) + 0.5*cos(8*theta - 4*pi*v)",
+    "intensity": 0.12
+  },
+  "patterns": {
+    "preset1": "Basic Horizontal Split",
+    "equation1": "v - 0.62",
+    "preset2": "Basic Band Mask",
+    "equation2": "exp(-pow(v - 0.30, 2)*10) - 0.50",
+    "baseColor": "#c87830",
+    "patternColor1": "#7a4010",
+    "patternColor2": "#e8a860",
+    "overlapColor": "#382008",
+    "depthMm": 1.0
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

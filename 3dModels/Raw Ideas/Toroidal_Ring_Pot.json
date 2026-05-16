@@ -1,0 +1,68 @@
+{
+  "name": "Toroidal Ring Pot",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Toroidal Ring",
+    "equation": "R * (1 + 0.45*sin(pi*v) - 0.12*sin(2*pi*v)) * (1 + 0.06*cos(6*theta))",
+    "baseRadius": 5.0,
+    "height": 10.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 22,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "bands",
+    "preset": "Ripple Rings",
+    "equation": "sin(20*pi*v) * 0.30",
+    "intensity": 0.07
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(pi*v) - 0.50",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(6*theta) - 0.15",
+    "baseColor": "#c0c8d0",
+    "patternColor1": "#707880",
+    "patternColor2": "#e0e8f0",
+    "overlapColor": "#404850",
+    "depthMm": 0.8
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 200,
+    "patternResV": 140,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

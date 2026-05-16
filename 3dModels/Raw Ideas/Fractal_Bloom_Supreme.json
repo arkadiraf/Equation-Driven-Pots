@@ -1,0 +1,68 @@
+{
+  "name": "Fractal Bloom Supreme",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Fourier Bloom",
+    "equation": "R * (1 + 0.20*(cos(3*theta) + 0.55*cos(7*theta + 1.4*pi*v) + 0.28*cos(13*theta - 1.8*pi*v) + 0.12*cos(19*theta + 0.6*pi*v) + 0.07*cos(23*theta - 2.2*pi*v)))",
+    "baseRadius": 5.0,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "sin(14*theta + 12*pi*v) + sin(15*theta - 11*pi*v) + 0.5*sin(21*theta + 7*pi*v)",
+    "intensity": 0.28
+  },
+  "patterns": {
+    "preset1": "Moire Windows",
+    "equation1": "smoothstep(0.15, 0.25, sin(10*theta + 8*pi*v) + sin(13*theta - 7*pi*v)) - 0.5",
+    "preset2": "Double Helix Mask",
+    "equation2": "cos(7*theta + 10*pi*v) * cos(7*theta - 10*pi*v) - 0.15",
+    "baseColor": "#08001a",
+    "patternColor1": "#ff0080",
+    "patternColor2": "#0080ff",
+    "overlapColor": "#00ff80",
+    "depthMm": 2.0
+  },
+  "mesh": {
+    "resV": 200,
+    "resT": 240,
+    "patternResV": 200,
+    "patternResT": 240
+  },
+  "modifier": {
+    "type": "interference",
+    "preset": "Braided Drift",
+    "equation": "sin(7*theta + 3*pi*v) + 0.5*sin(7*theta - 3*pi*v)",
+    "strength": 0.55,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "torsion",
+    "preset": "Torsion Twist",
+    "dx": "x*cos(0.50*sin(pi*v)) - z*sin(0.50*sin(pi*v)) - x",
+    "dy": "0",
+    "dz": "x*sin(0.50*sin(pi*v)) + z*cos(0.50*sin(pi*v)) - z",
+    "strength": 0.70,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

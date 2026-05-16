@@ -1,0 +1,68 @@
+{
+  "name": "Bell Orb Pod",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "primitive",
+    "preset": "Bell Orb",
+    "equation": "R * (1 + 0.22*pow(sin(phi),1.6) - 0.16*cos(phi))",
+    "baseRadius": 5.5,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.55,
+    "cylDrain": 0.5,
+    "sphTopCut": 28,
+    "sphBotFlatten": 155,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Basic Broad Flutes",
+    "equation": "cos(6*theta) * pow(sin(phi),1.2) * 0.35",
+    "intensity": 0.09
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "pow(sin(phi),1.6) - 0.55",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(6*theta)*pow(sin(phi),1.2) - 0.15",
+    "baseColor": "#3c0818",
+    "patternColor1": "#c84060",
+    "patternColor2": "#e8a0b0",
+    "overlapColor": "#fce8ec",
+    "depthMm": 0.9
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 180,
+    "patternResV": 140,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

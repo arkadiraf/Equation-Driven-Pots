@@ -1,0 +1,68 @@
+{
+  "name": "Rim Vortex Bowl",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Rim Flare",
+    "equation": "R * (1 + 0.40*pow(v, 2.2) - 0.05*pow(1 - v, 0.7))",
+    "baseRadius": 5.0,
+    "height": 8.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.2,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Basic Vertical Ribs",
+    "equation": "cos(12*theta) * pow(v, 0.9)",
+    "intensity": 0.12
+  },
+  "patterns": {
+    "preset1": "Basic Horizontal Split",
+    "equation1": "v - 0.60",
+    "preset2": "Surface Texture Top %",
+    "equation2": "textureFill(texPosNorm, 60)",
+    "baseColor": "#e0e8f0",
+    "patternColor1": "#6888b0",
+    "patternColor2": "#c8d8e8",
+    "overlapColor": "#304868",
+    "depthMm": 1.0
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "swirl",
+    "preset": "Rim Vortex",
+    "dx": "-0.18*pow(v, 1.6)*sin(theta)",
+    "dy": "0",
+    "dz": "0.18*pow(v, 1.6)*cos(theta)",
+    "strength": 0.55,
+    "region": "rim",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}
