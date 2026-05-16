@@ -1,0 +1,70 @@
+{
+  "name": "Funky Punk Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "nonlinear",
+    "preset": "Nonlinear Bloom",
+    "equation": "R * (1 + 0.18 * atan(5 * cos(5*theta)) * (0.7 + 0.5*sin(pi*z/2)))",
+    "baseRadius": 5,
+    "height": 10
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.35,
+    "bottomThickness": 0.35,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": true,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 0.5,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "0",
+    "intensity": 0
+  },
+  "patterns": {
+    "preset1": "4-Petal Mask",
+    "equation1": "asin(0.98 * sin(5*theta+pi/2)) * sin(pi*v)",
+    "preset2": "Double Helix Mask",
+    "equation2": "cos(5*theta + 10*pi*v) * cos(5*theta - 10*pi*v)",
+    "baseColor": "#e0115f",
+    "patternColor1": "#6600cc",
+    "patternColor2": "#ffcc00",
+    "overlapColor": "#00cc66",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "sin(2 * pi * v) * 1.5",
+    "strength": 0,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0.15 * pow(v, 2)",
+    "dy": "0",
+    "dz": "0",
+    "strength": 1,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}
