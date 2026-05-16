@@ -3085,10 +3085,17 @@
                 const innerY = baseThickness + t * (height - baseThickness);
                 if (ringIndex === 0) baseCentroid = ring.centroid;
                 if (ringIndex === plateSeries.rings.length - 1) topOuterBounds = computePlateProfileBounds(outerProfile);
+                // The plate's solid base must read as base-coloured core, mirroring the
+                // pot rule in chooseColor(). Plates have no isPot base-colour rule, so we
+                // enforce it here; this keeps the single-part preview consistent with the
+                // multipart export, where the base row is forced core (see below).
+                const ringInSolidBase = ring.localY <= baseThickness + 1e-6;
                 const outerRow = [], innerRow = [];
                 for (let it = 0; it < outerProfile.length; it++) {
                     const theta = (2 * Math.PI * it) / outerProfile.length;
-                    const ptColor = cfg.applyPlateColoring ? chooseColor(plateColorCfg, theta, t * cfg.h, 0, t) : baseColorRGB;
+                    const ptColor = (cfg.applyPlateColoring && !ringInSolidBase)
+                        ? chooseColor(plateColorCfg, theta, t * cfg.h, 0, t)
+                        : baseColorRGB;
                     outerRow.push(addV(outerProfile[it].x, ring.localY, outerProfile[it].z, ptColor));
                     innerRow.push(addV(innerProfile[it].x, innerY, innerProfile[it].z, ptColor));
                 }
@@ -3169,7 +3176,11 @@
                 const yMid = (y0+y1) * 0.5;
                 const tMid = height > 1e-9 ? yMid / height : 0;
                 const zMid = tMid * cfg.h;
-                const allowPattern = cfg.applyPlateColoring && yMid > baseThickness + 1e-6;
+                // Mirror buildCylindricalShell's inSolidBase suppression: patterns must
+                // not split the plate's solid base (consistent with the base-colour rule
+                // applied in buildCylindricalPlateGrid). yMid is the cell's outer-y mid.
+                const inSolidBase = yMid <= baseThickness + 1e-6;
+                const allowPattern = cfg.applyPlateColoring && !inSolidBase;
                 const rowA = [], rowB = [], rowEligible = [];
                 for (let it = 0; it < resT; it++) {
                     const it1 = (it+1) % resT;
@@ -3440,11 +3451,27 @@ ${trianglesXml.join('\n')}
                          plateOuterDiameter: grid.plateOuterDiameter, plateHostDiameter: grid.plateHostDiameter, plateHeight: grid.plateHeight };
             }
 
-            const plateCfg = Object.assign({}, cfg, { sys: 'cylindrical', isPot: true, cylDrain: 0, cylBase: grid.baseThickness });
-            const occ = buildOccupancies(sample, cfg);
+            // distortionStrength:0 — plate grid points are never run through
+            // applyDistortionPoint (buildCylindricalPlateGrid uses host-mesh sampling),
+            // so the shared appendCylindricalDrainClosure must NOT distort the base
+            // points either, or export would diverge from the undistorted plate preview.
+            const plateCfg = Object.assign({}, cfg, { sys: 'cylindrical', isPot: true, cylDrain: 0, cylBase: grid.baseThickness, distortionStrength: 0 });
+            // Pass plateCfg (sys:'cylindrical', isPot:true) so buildOccupancies'
+            // forceCoreBottomRow guarantee fires — the iv=0 ring is forced core, which
+            // is the watertight precondition for appendCylindricalDrainClosure.
+            const occ = buildOccupancies(sample, plateCfg);
+
+            // Per-column state at iv=0 for coloured bottom closure.
+            const columnStates = Array.from({ length: sample.resT }, (_, it) => {
+                for (let state = 1; state <= 3; state++) {
+                    if (occ.stateCounts[state] > 0 && occ.surfaceOccs[state][0][0] && occ.surfaceOccs[state][0][0][it]) return state;
+                }
+                return 0;
+            });
 
             let coreMesh = buildOccupancyMesh(sample, occ.coreOcc, { skipMinusIVFace: (k, iv) => iv === 0 });
-            coreMesh = appendCylindricalDrainClosure(coreMesh, sample, plateCfg);
+            // Outer bottom fan: core columns only; inner floor: all columns.
+            coreMesh = appendCylindricalDrainClosure(coreMesh, sample, plateCfg, it => columnStates[it] === 0);
 
             const stateNames = { 1: 'Pattern A', 2: 'Pattern B', 3: 'Overlap' };
             const surfaceGroups = [];
@@ -3452,7 +3479,9 @@ ${trianglesXml.join('\n')}
                 if (occ.stateCounts[state] <= 0) continue;
                 const componentOccs = splitOccupancyComponents(occ.surfaceOccs[state], sample.resV, sample.resT);
                 const meshes = componentOccs.map(componentOcc => buildOccupancyMesh(sample, componentOcc));
-                const merged = mergeMeshes(meshes);
+                let merged = mergeMeshes(meshes);
+                // Add inner bottom fans (r_pattern → centre) for this state's columns.
+                merged = appendCylindricalPatternBottomFans(merged, sample, plateCfg, it => columnStates[it] === state);
                 surfaceGroups.push({ colorIndex: state, name: stateNames[state], mesh: merged, validation: validateMesh(merged) });
             }
 
@@ -3830,9 +3859,15 @@ ${trianglesXml.join('\n')}
                 const rowA = [];
                 const rowB = [];
                 const rowEligible = [];
+                // Patterns must not split the solid base. chooseColor() already forces
+                // base color for z <= cylBase; mirror that here so the *occupancy* (mesh
+                // split) is consistent. A z-node is inserted exactly at actualBase, so
+                // every cell is wholly inside or wholly above the base (no straddle).
+                const cellTopZ = zNodes[iv + 1];
+                const inSolidBase = cfg.isPot && actualBase > 1e-8 && cellTopZ <= actualBase + 1e-6;
                 for (let it = 0; it < cfg.resT; it++) {
                     const f = cellFields[iv][it];
-                    const allowPattern = !(cfg.isPot && f.zMid <= actualBase + 1e-6);
+                    const allowPattern = !inSolidBase;
                     rowEligible.push(allowPattern);
                     rowA.push(allowPattern && evaluatePatternValue(cfg.patternEq1, cfg, f.thetaMid, f.zMid, 0, f.vMid, f.outerRadius, f.baseFormRadius, f.texRaw, stats) > 0);
                     rowB.push(allowPattern && evaluatePatternValue(cfg.patternEq2, cfg, f.thetaMid, f.zMid, 0, f.vMid, f.outerRadius, f.baseFormRadius, f.texRaw, stats) > 0);
@@ -3957,7 +3992,6 @@ ${trianglesXml.join('\n')}
                     const pIn = shell.inner[iv][it];
                     const thickness = distPt(pOut, pIn);
                     let requestedDepth = cfg.patternDepthCm;
-                    if (cfg.sys === 'cylindrical' && cfg.isPot && pOut.y <= cfg.cylBase + 1e-6) requestedDepth = 0;
                     const safeDepth = Math.min(requestedDepth, Math.max(0, thickness - 0.001));
                     const t = thickness > 1e-8 ? safeDepth / thickness : 0;
                     layers[0][iv][it] = clonePt(pOut);
@@ -3983,9 +4017,15 @@ ${trianglesXml.join('\n')}
             const stateCounts = [0, 0, 0, 0];
 
             const depthActive = cfg.patternDepthCm > 0.0001;
+            // The cylindrical bottom closure (appendCylindricalDrainClosure) is only
+            // watertight when the iv=0 ring is entirely core. Fix 1 already guarantees
+            // this whenever a solid base exists; this is the belt-and-braces guarantee
+            // for the degenerate cylBase~0 case so a pattern can never reopen the base.
+            const forceCoreBottomRow = cfg.sys === 'cylindrical' && cfg.isPot;
             for (let iv = 0; iv < sample.resV; iv++) {
                 for (let it = 0; it < sample.resT; it++) {
-                    const surfaceActive = depthActive && sample.surfaceEligible[iv][it];
+                    const surfaceActive = depthActive && sample.surfaceEligible[iv][it]
+                        && !(forceCoreBottomRow && iv === 0);
                     const state = (sample.cellMaskA[iv][it] ? 1 : 0) + (sample.cellMaskB[iv][it] ? 2 : 0);
 
                     if (surfaceActive) {
@@ -4424,8 +4464,10 @@ ${trianglesXml.join('\n')}
             };
         }
 
-        function appendCylindricalDrainClosure(mesh, sample, cfg) {
-            // We always want to close the bottom if it's a pot, even if drain is 0
+        function appendCylindricalDrainClosure(mesh, sample, cfg, outerColumnFilter = null) {
+            // We always want to close the bottom if it's a pot, even if drain is 0.
+            // outerColumnFilter: optional (it) => bool — restricts the outer bottom fan to specific
+            // theta columns. The inner floor fan always covers all columns.
             if (!(cfg.sys === 'cylindrical' && cfg.isPot)) return cleanupMesh(mesh);
 
             const positions = mesh.positions.slice();
@@ -4450,25 +4492,51 @@ ${trianglesXml.join('\n')}
                 const bx = drain <= 0 ? 0 : drain * Math.cos(theta);
                 const bz = drain <= 0 ? 0 : -drain * Math.sin(theta);
 
-                holeBottom.push(addPoint({ x: bx, y: 0, z: bz }));
-                holeTop.push(addPoint({ x: bx, y: baseY, z: bz }));
+                // Distort the hole/center points identically to generateCylindrical()
+                // so the exported & validated base is the same geometry as the preview.
+                const topHoleV = cfg.h > 1e-9 ? baseY / cfg.h : 0;
+                const bPt = applyDistortionPoint(cfg, { x: bx, y: 0, z: bz }, theta, 0, 0, 0);
+                const tPt = applyDistortionPoint(cfg, { x: bx, y: baseY, z: bz }, theta, baseY, 0, topHoleV);
+
+                holeBottom.push(addPoint(bPt));
+                holeTop.push(addPoint(tPt));
             }
 
             for (let it = 0; it < sample.resT; it++) {
                 const it1 = (it + 1) % sample.resT;
                 if (drain > 1e-5) {
-                    // Standard hole tube and connecting faces
+                    // Standard hole tube and connecting faces (no column filtering for drain case)
                     indices.push(outerRing[it], holeBottom[it1], holeBottom[it], outerRing[it], outerRing[it1], holeBottom[it1]);
                     indices.push(innerRing[it], holeTop[it], holeTop[it1], innerRing[it], holeTop[it1], innerRing[it1]);
                     indices.push(holeBottom[it], holeBottom[it1], holeTop[it1], holeBottom[it], holeTop[it1], holeTop[it]);
                 } else {
-                    // Solid bottom: Fan triangles from the outer/inner perimeter to the single center vertex
-                    indices.push(outerRing[it], outerRing[it1], holeBottom[0]);
+                    // Outer bottom fan: only for columns passing the filter (default: all)
+                    if (!outerColumnFilter || outerColumnFilter(it)) {
+                        indices.push(outerRing[it], outerRing[it1], holeBottom[0]);
+                    }
+                    // Inner floor fan: always included for all columns (closes k=1 core cells)
                     indices.push(innerRing[it], holeTop[0], innerRing[it1]);
                 }
             }
 
             return cleanupMesh({ positions, indices });
+        }
+
+        function appendCylindricalPatternBottomFans(mesh, sample, cfg, columnFilter) {
+            // DEPRECATED / NO-OP.
+            //
+            // This used to fan layer1[0] -> center for pattern-coloured bottom columns.
+            // It is no longer needed and was actively harmful:
+            //  - Patterns can no longer reach the bottom row (see buildCylindricalShell's
+            //    inSolidBase suppression and buildOccupancies' forceCoreBottomRow), so
+            //    every pattern slab is now a closed prism whose bottom is already capped
+            //    by buildOccupancyMesh's own -iv face at the base plane.
+            //  - The old partial fan produced a pie wedge whose two straight radii were
+            //    boundary (non-manifold) edges, and it injected resT+1 orphan vertices.
+            //
+            // Returning the mesh untouched keeps each pattern mesh independently
+            // watertight. Signature preserved for call-site compatibility.
+            return mesh;
         }
 
         function mergeMeshes(meshes) {
@@ -4492,18 +4560,26 @@ ${trianglesXml.join('\n')}
             const sample = buildLayeredSample(cfg);
             const occ = buildOccupancies(sample, cfg);
 
-            // UPDATED: Trigger closure logic if it's a pot, even if drain is 0.
-            // This ensures appendCylindricalDrainClosure can create the solid base.
             const shouldCloseBottom = cfg.sys === 'cylindrical' && cfg.isPot;
 
+            // Per-column state at iv=0 for coloured bottom closure (0 = base/core).
+            const columnStates = shouldCloseBottom
+                ? Array.from({ length: sample.resT }, (_, it) => {
+                    for (let state = 1; state <= 3; state++) {
+                        if (occ.stateCounts[state] > 0 && occ.surfaceOccs[state][0][0] && occ.surfaceOccs[state][0][0][it]) return state;
+                    }
+                    return 0;
+                })
+                : null;
+
             let coreMesh = buildOccupancyMesh(sample, occ.coreOcc, {
-                // Skip the standard bottom faces so our specialized closure can handle it
                 skipMinusIVFace: (k, iv) => shouldCloseBottom && iv === 0
             });
 
-            // UPDATED: Run the closure if shouldCloseBottom is true
             if (shouldCloseBottom) {
-                coreMesh = appendCylindricalDrainClosure(coreMesh, sample, cfg);
+                // Outer bottom fan: only core-coloured columns; inner floor: all columns.
+                coreMesh = appendCylindricalDrainClosure(coreMesh, sample, cfg,
+                    columnStates ? it => columnStates[it] === 0 : null);
             }
 
             const stateNames = {
@@ -4527,7 +4603,14 @@ ${trianglesXml.join('\n')}
                     validations.push(validateMesh(mesh));
                 });
 
-                const mergedMesh = mergeMeshes(meshes.map(component => component.mesh));
+                let mergedMesh = mergeMeshes(meshes.map(component => component.mesh));
+
+                // Add inner bottom fans for this state's columns (closes r_pattern→centre area).
+                if (shouldCloseBottom && columnStates) {
+                    mergedMesh = appendCylindricalPatternBottomFans(mergedMesh, sample, cfg,
+                        it => columnStates[it] === state);
+                }
+
                 const mergedValidation = validateMesh(mergedMesh);
 
                 surfaceGroups.push({
