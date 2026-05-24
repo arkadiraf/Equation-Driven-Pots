@@ -1,0 +1,68 @@
+{
+  "name": "Vortex Storm Swirl",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 + 0.15 * cos(3 * theta + 2 * pi * v) * sin(pi * v))",
+    "baseRadius": 10.0,
+    "height": 20.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "sin(10 * theta + 8 * pi * v) + sin(11 * theta - 8 * pi * v)",
+    "intensity": 0.18
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#1c2321",
+    "patternColor1": "#00f5d4",
+    "patternColor2": "#7b2cbf",
+    "overlapColor": "#00bbf9",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "swirl",
+    "preset": "Basic Swirl",
+    "dx": "-0.18 * z * sin(pi * v)",
+    "dy": "0",
+    "dz": "0.18 * x * sin(pi * v)",
+    "strength": 0.85,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

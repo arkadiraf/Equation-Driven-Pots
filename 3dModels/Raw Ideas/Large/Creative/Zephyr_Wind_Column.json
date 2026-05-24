@@ -1,0 +1,68 @@
+{
+  "name": "Zephyr Wind Column",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Circle (Pure Base)",
+    "equation": "R",
+    "baseRadius": 10.0,
+    "height": 22.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Basic Twist Relief",
+    "equation": "cos(6 * theta + 3 * pi * v)",
+    "intensity": 0.16
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#e3fafc",
+    "patternColor1": "#a5d8ff",
+    "patternColor2": "#74c0fc",
+    "overlapColor": "#ffffff",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "wind",
+    "preset": "Wind Lean",
+    "dx": "0.16 * pow(v, 1.4)",
+    "dy": "0",
+    "dz": "0.06 * pow(v, 1.4)",
+    "strength": 0.8,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

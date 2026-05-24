@@ -1,0 +1,68 @@
+{
+  "name": "Gravity Sag Bowl",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Rim Flare",
+    "equation": "R * (1 + 0.35 * pow(v, 2))",
+    "baseRadius": 10.0,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "0",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#8d6e63",
+    "patternColor1": "#d7ccc8",
+    "patternColor2": "#5d4037",
+    "overlapColor": "#ffe0b2",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "gravity",
+    "preset": "Basic Sag",
+    "dx": "0",
+    "dy": "-0.22 * pow(v, 1.8)",
+    "dz": "0",
+    "strength": 0.8,
+    "region": "rim",
+    "anchor": "bottomHalfStiff",
+    "space": "xyz"
+  }
+}

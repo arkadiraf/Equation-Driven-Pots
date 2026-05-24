@@ -1,0 +1,68 @@
+{
+  "name": "Sway Wave Urn",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 + 0.15 * sin(pi * v))",
+    "baseRadius": 10.0,
+    "height": 18.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "0",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#ec4899",
+    "patternColor1": "#8b5cf6",
+    "patternColor2": "#3b82f6",
+    "overlapColor": "#f59e0b",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "wind",
+    "preset": "None (No Distortion)",
+    "dx": "0.15 * sin(3 * pi * v)",
+    "dy": "0.03 * sin(2 * pi * v)",
+    "dz": "0",
+    "strength": 0.8,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

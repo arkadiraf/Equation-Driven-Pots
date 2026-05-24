@@ -1,0 +1,68 @@
+{
+  "name": "Earthquake Shear Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Circle (Pure Base)",
+    "equation": "R",
+    "baseRadius": 10.0,
+    "height": 21.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "0",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#3f3f46",
+    "patternColor1": "#a1a1aa",
+    "patternColor2": "#f4f4f5",
+    "overlapColor": "#fbbf24",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "custom",
+    "preset": "None (No Distortion)",
+    "dx": "0.26 * sin(pi * v)",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.8,
+    "region": "body",
+    "anchor": "bottomHalfStiff",
+    "space": "xyz"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "Volcanic Fire Crag",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "nonlinear",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 + 0.12 * log(1 + 4 * abs(sin(6 * theta + 3 * pi * v))))",
+    "baseRadius": 10.0,
+    "height": 18.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "carved",
+    "preset": "Saturated Flutes",
+    "equation": "atan(8 * cos(12 * theta - 5 * pi * v))",
+    "intensity": 0.2
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "sin(12 * theta - 5 * pi * v) - 0.2",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#14110f",
+    "patternColor1": "#ff3c00",
+    "patternColor2": "#ff9000",
+    "overlapColor": "#ffea00",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

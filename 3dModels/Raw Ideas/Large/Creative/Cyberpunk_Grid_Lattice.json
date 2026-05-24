@@ -1,0 +1,68 @@
+{
+  "name": "Cyberpunk Grid Lattice",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "polygon",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125) * (1 - 0.05 * v)",
+    "baseRadius": 10.0,
+    "height": 19.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "nonlinear",
+    "preset": "Honeycomb Relief",
+    "equation": "max(cos(6 * theta), cos(6 * theta + 8 * pi * v), cos(6 * theta - 8 * pi * v))",
+    "intensity": 0.18
+  },
+  "patterns": {
+    "preset1": "Hex Window Grid",
+    "equation1": "max(cos(6 * theta), cos(6 * theta + 8 * pi * v), cos(6 * theta - 8 * pi * v)) - 0.45",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#05160e",
+    "patternColor1": "#39ff14",
+    "patternColor2": "#00ffff",
+    "overlapColor": "#ffea00",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "regional",
+    "preset": "Crown Rotation",
+    "equation": "exp(-pow(v - 0.8, 2) * 30) * sin(2 * pi * v)",
+    "strength": 0.32,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "pressure",
+    "preset": "Side Pressure Dent",
+    "dx": "-0.6 * exp(-pow(theta - pi/4, 2) * 8) * exp(-pow(v - 0.55, 2) * 16)",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.85,
+    "region": "body",
+    "anchor": "bottomHalfStiff",
+    "space": "xyz"
+  }
+}

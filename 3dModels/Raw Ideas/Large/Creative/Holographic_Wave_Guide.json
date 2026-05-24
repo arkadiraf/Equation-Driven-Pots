@@ -1,0 +1,68 @@
+{
+  "name": "Holographic Wave Guide",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "nonlinear",
+    "preset": "ATan Fluting",
+    "equation": "R * (1 + 0.15 * atan(6 * cos(8 * theta + 3 * pi * v)))",
+    "baseRadius": 10.0,
+    "height": 22.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "sin(16 * theta + 12 * pi * v) + sin(17 * theta - 12 * pi * v)",
+    "intensity": 0.16
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#0d0d0d",
+    "patternColor1": "#00ffcc",
+    "patternColor2": "#ff007f",
+    "overlapColor": "#ffff00",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "diagonal",
+    "preset": "Braided Drift",
+    "equation": "sin(8 * theta + 4 * pi * v) + 0.5 * sin(8 * theta - 4 * pi * v)",
+    "strength": 0.28,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "wind",
+    "preset": "Wind Lean",
+    "dx": "0.15 * pow(v, 1.8)",
+    "dy": "0",
+    "dz": "0.08 * pow(v, 1.8)",
+    "strength": 0.8,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

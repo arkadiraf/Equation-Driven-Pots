@@ -1,0 +1,68 @@
+{
+  "name": "Quantum Foam Matrix",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Perfect Sphere",
+    "equation": "R * (1 + 0.05 * (sin(1.414 * theta + 1.732 * phi) + sin(2.236 * theta - 2.645 * phi)))",
+    "baseRadius": 10.0,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "nonlinear",
+    "preset": "Honeycomb Relief",
+    "equation": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v))",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#1e1b4b",
+    "patternColor1": "#ec4899",
+    "patternColor2": "#06b6d4",
+    "overlapColor": "#f59e0b",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

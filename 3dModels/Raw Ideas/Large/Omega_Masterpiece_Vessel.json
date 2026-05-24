@@ -1,0 +1,68 @@
+{
+  "name": "Omega Masterpiece Vessel",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Perfect Sphere",
+    "equation": "R * (1 + 0.14 * pow(sin(phi), 2) - 0.04 * cos(phi)) * (1 + 0.05 * (sin(1.414 * theta + 1.732 * phi) + sin(2.236 * theta - 2.645 * phi)))",
+    "baseRadius": 10.0,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "0.4 * sin(16 * theta) * cos(18 * phi) + 0.2 * sin(24 * theta - 10 * phi)",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "Double Helix Mask",
+    "equation1": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#0a0a0a",
+    "patternColor1": "#d4af37",
+    "patternColor2": "#00f0ff",
+    "overlapColor": "#ffffff",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "interference",
+    "preset": "Cymatic Sweep",
+    "equation": "sin(6*theta + 4*pi*v) * cos(4*theta - 6*pi*v)",
+    "strength": 0.35,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "custom",
+    "preset": "Torsion Twist",
+    "dx": "x * cos(0.35 * sin(pi * v)) - z * sin(0.35 * sin(pi * v)) - x",
+    "dy": "-0.10 * pow(v, 1.8)",
+    "dz": "x * sin(0.35 * sin(pi * v)) + z * cos(0.35 * sin(pi * v)) - z",
+    "strength": 0.6,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

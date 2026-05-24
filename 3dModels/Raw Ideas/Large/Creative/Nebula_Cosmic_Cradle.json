@@ -1,0 +1,68 @@
+{
+  "name": "Nebula Cosmic Cradle",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Perfect Sphere",
+    "equation": "R * (1 + 0.15 * sin(8 * theta + 5 * phi) * pow(sin(phi), 1.4)) * (1 - 0.05 * cos(phi))",
+    "baseRadius": 10.0,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "0",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#0b001a",
+    "patternColor1": "#8200c9",
+    "patternColor2": "#00d9ff",
+    "overlapColor": "#ff00d4",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Twist Drift",
+    "equation": "sin(3 * pi * v) + 0.2 * sin(4 * theta)",
+    "strength": 0.35,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "torsion",
+    "preset": "Torsion Twist",
+    "dx": "x * cos(0.38 * sin(pi * v)) - z * sin(0.38 * sin(pi * v)) - x",
+    "dy": "-0.08 * pow(v, 1.6)",
+    "dz": "x * sin(0.38 * sin(pi * v)) + z * cos(0.38 * sin(pi * v)) - z",
+    "strength": 0.75,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

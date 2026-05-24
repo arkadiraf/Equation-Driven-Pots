@@ -1,0 +1,68 @@
+{
+  "name": "Pumice Sponge Orb",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Perfect Sphere",
+    "equation": "R * (1 + 0.10 * sin(10 * theta) * cos(10 * phi))",
+    "baseRadius": 10.0,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "0",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "Outer Radius Deviation",
+    "equation1": "sin(10 * theta) * cos(10 * phi) - 0.3",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#242424",
+    "patternColor1": "#ff3333",
+    "patternColor2": "#ff9999",
+    "overlapColor": "#ffffff",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "interference",
+    "preset": "Braided Drift",
+    "equation": "sin(12 * theta + 6 * pi * v)",
+    "strength": 0.35,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

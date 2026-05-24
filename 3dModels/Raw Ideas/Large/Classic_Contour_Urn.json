@@ -1,0 +1,68 @@
+{
+  "name": "Classic Contour Urn",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 + 0.15 * sin(pi * v))",
+    "baseRadius": 10.0,
+    "height": 18.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "bands",
+    "preset": "Basic Horizontal Bands",
+    "equation": "sin(24 * pi * v)",
+    "intensity": 0.1
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#6f8a91",
+    "patternColor1": "#e5e9ec",
+    "patternColor2": "#3e525a",
+    "overlapColor": "#eac435",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

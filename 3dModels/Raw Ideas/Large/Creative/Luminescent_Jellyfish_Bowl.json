@@ -1,0 +1,68 @@
+{
+  "name": "Luminescent Jellyfish Bowl",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Rim Flare",
+    "equation": "R * (1 + 0.28 * pow(v, 2))",
+    "baseRadius": 10.0,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Basic Vertical Ribs",
+    "equation": "cos(16 * theta + 4 * pi * v)",
+    "intensity": 0.16
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#03001e",
+    "patternColor1": "#ec38bc",
+    "patternColor2": "#7303c0",
+    "overlapColor": "#fdeff9",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "gravity",
+    "preset": "Basic Sag",
+    "dx": "0",
+    "dy": "-0.20 * pow(v, 1.8)",
+    "dz": "0",
+    "strength": 0.85,
+    "region": "rim",
+    "anchor": "bottomHalfStiff",
+    "space": "xyz"
+  }
+}

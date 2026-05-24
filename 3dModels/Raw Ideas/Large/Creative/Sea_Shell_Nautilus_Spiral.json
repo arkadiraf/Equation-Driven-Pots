@@ -1,0 +1,68 @@
+{
+  "name": "Sea Shell Nautilus Spiral",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "nonlinear",
+    "preset": "Perfect Sphere",
+    "equation": "R * (1 + 0.16 * sin(theta + 8 * phi) * pow(sin(phi), 1.2))",
+    "baseRadius": 10.0,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "carved",
+    "preset": "Arc Shell Carving",
+    "equation": "asin(0.96 * sin(8 * theta + 6 * pi * v))",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#fdfbf7",
+    "patternColor1": "#ffccd5",
+    "patternColor2": "#c7f9cc",
+    "overlapColor": "#ffea00",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "petal",
+    "preset": "Petal Migration",
+    "equation": "sin(2 * pi * v) + 0.3 * sin(5 * theta)",
+    "strength": 0.25,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

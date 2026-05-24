@@ -1,0 +1,68 @@
+{
+  "name": "Starlight Lattice Lantern",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "polygon",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 + 0.08 * cos(6 * theta)) * (1 + 0.12 * sin(pi * v))",
+    "baseRadius": 10.0,
+    "height": 19.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "0",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "Double Helix Mask",
+    "equation1": "cos(6 * theta + 10 * pi * v) * cos(6 * theta - 10 * pi * v)",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#0b0b26",
+    "patternColor1": "#ffea00",
+    "patternColor2": "#1890ff",
+    "overlapColor": "#ffffff",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Basic Local Twist",
+    "equation": "exp(-pow(v - 0.8, 2) * 24)",
+    "strength": 0.35,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

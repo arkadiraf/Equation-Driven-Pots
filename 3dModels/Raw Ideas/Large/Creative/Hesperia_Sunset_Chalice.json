@@ -1,0 +1,68 @@
+{
+  "name": "Hesperia Sunset Chalice",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Rim Flare",
+    "equation": "R * (1 - 0.12 * sin(pi * v) + 0.4 * pow(v, 2.5))",
+    "baseRadius": 10.0,
+    "height": 18.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "0",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(6 * pi * v)",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#200122",
+    "patternColor1": "#f43b47",
+    "patternColor2": "#ffeb3b",
+    "overlapColor": "#ff9800",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "gravity",
+    "preset": "Basic Sag",
+    "dx": "0",
+    "dy": "-0.15 * pow(v, 2)",
+    "dz": "0",
+    "strength": 0.6,
+    "region": "rim",
+    "anchor": "bottomHalfStiff",
+    "space": "xyz"
+  }
+}

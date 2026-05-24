@@ -1,0 +1,68 @@
+{
+  "name": "Cosmic Singularity Masterpiece",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Perfect Sphere",
+    "equation": "R * (1 - 0.15 * pow(sin(phi), 2)) * (1 + 0.06 * (sin(1.414 * theta + 1.732 * phi) + sin(2.236 * theta - 2.645 * phi) + 0.5 * sin(3.141 * theta + phi)))",
+    "baseRadius": 10.0,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "0.3 * sin(20 * theta) * cos(24 * phi) + 0.2 * sin(30 * theta - 12 * phi)",
+    "intensity": 0.16
+  },
+  "patterns": {
+    "preset1": "Double Helix Mask",
+    "equation1": "cos(8*theta + 12*pi*v) * cos(8*theta - 12*pi*v)",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#020205",
+    "patternColor1": "#ff007f",
+    "patternColor2": "#00ffff",
+    "overlapColor": "#ffffff",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "interference",
+    "preset": "Cymatic Sweep",
+    "equation": "sin(8*theta + 6*pi*v) * cos(6*theta - 8*pi*v)",
+    "strength": 0.38,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "custom",
+    "preset": "Torsion Twist",
+    "dx": "x * cos(0.45 * sin(pi * v)) - z * sin(0.45 * sin(pi * v)) - x",
+    "dy": "-0.15 * pow(v, 1.8)",
+    "dz": "x * sin(0.45 * sin(pi * v)) + z * cos(0.45 * sin(pi * v)) - z",
+    "strength": 0.75,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

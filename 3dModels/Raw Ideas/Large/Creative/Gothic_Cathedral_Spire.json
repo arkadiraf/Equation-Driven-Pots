@@ -1,0 +1,68 @@
+{
+  "name": "Gothic Cathedral Spire",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "polygon",
+    "preset": "Soft Hexagon",
+    "equation": "R * (1 + 0.15 * atan(10 * cos(6 * theta))) * (1 - 0.08 * v)",
+    "baseRadius": 10.0,
+    "height": 24.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "0",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#1c1c1c",
+    "patternColor1": "#9b0000",
+    "patternColor2": "#3c3c3c",
+    "overlapColor": "#ffffff",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "regional",
+    "preset": "None (No Modifier)",
+    "equation": "cos(6 * theta + floor(8 * v) * pi / 8)",
+    "strength": 0.28,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

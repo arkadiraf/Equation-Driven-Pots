@@ -1,0 +1,68 @@
+{
+  "name": "Cymatic Soundwave Urn",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Fourier Bloom",
+    "equation": "R * (1 + 0.16 * (cos(4 * theta) + 0.4 * cos(9 * theta + pi * v) + 0.2 * cos(15 * theta - 2 * pi * v)))",
+    "baseRadius": 10.0,
+    "height": 21.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "None (Flat Surface)",
+    "equation": "sin(16 * theta) * cos(18 * pi * v)",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#140126",
+    "patternColor1": "#f15025",
+    "patternColor2": "#e6e6ea",
+    "overlapColor": "#ffea00",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Twist Drift",
+    "equation": "sin(3 * pi * v)",
+    "strength": 0.3,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

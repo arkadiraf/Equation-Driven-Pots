@@ -1,0 +1,68 @@
+{
+  "name": "Chromatic Moire Vessel",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Fourier Bloom",
+    "equation": "R * (1 + 0.12 * (cos(3 * theta) + 0.45 * cos(7 * theta + pi * v)))",
+    "baseRadius": 10.0,
+    "height": 19.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.45,
+    "bottomThickness": 0.65,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "sin(12 * theta + 10 * pi * v) + sin(13 * theta - 10 * pi * v)",
+    "intensity": 0.16
+  },
+  "patterns": {
+    "preset1": "Moire Windows",
+    "equation1": "smoothstep(0.2, 0.28, sin(10 * theta + 8 * pi * v) + sin(11 * theta - 8 * pi * v)) - 0.5",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#311b92",
+    "patternColor1": "#ff1744",
+    "patternColor2": "#00e5ff",
+    "overlapColor": "#ffea00",
+    "depthMm": 1.5
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 200,
+    "patternResV": 150,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}
