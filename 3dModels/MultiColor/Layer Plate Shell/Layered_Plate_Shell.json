@@ -9,7 +9,7 @@
     "height": 10
   },
   "structure": {
-    "modelMode": "pot",
+    "modelMode": "potplate",
     "wall": 0.35,
     "bottomThickness": 0.35,
     "cylDrain": 0.5,
@@ -18,10 +18,13 @@
     "sphBotCut": 175
   },
   "plate": {
-    "enabled": false,
+    "enabled": true,
     "plateHeight": 1.5,
     "plateOpeningAngle": 25,
-    "plateRadiusExtra": 0.5
+    "plateDiameterExtra": 0.5,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
   },
   "texture": {
     "type": "utility",
