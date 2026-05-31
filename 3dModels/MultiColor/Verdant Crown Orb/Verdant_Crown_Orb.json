@@ -1,0 +1,70 @@
+{
+  "name": "Verdant Crown Orb",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "nonlinear",
+    "preset": "Band-Limited Lobes",
+    "equation": "R * (1 + 0.16 * exp(-pow(phi - 1.1, 2) * 8) * atan(6 * cos(10*theta)))",
+    "baseRadius": 7,
+    "height": 10
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.5,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 35,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": true,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 0.5,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "0",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "Outer Radius Deviation",
+    "equation1": "outerDeviation(0.25)",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#3f812c",
+    "patternColor1": "#f0d966",
+    "patternColor2": "#5f4a8b",
+    "overlapColor": "#8ab04d",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}
