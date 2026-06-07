@@ -1,0 +1,68 @@
+{
+    "name": "Twilight Groove Orb 190",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "primitive",
+        "preset": "Equatorial Cushion",
+        "equation": "R * (1 + 0.22 * exp(-pow(phi - pi/2, 2)*12) - 0.04*cos(2*phi))",
+        "baseRadius": 7.57,
+        "height": 15.6
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.4,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 145,
+        "sphBotCut": 177
+    },
+    "plate": {
+        "plateHeight": 1.42,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 90,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "nonlinear",
+        "preset": "Saturated Flutes",
+        "equation": "atan(7 * cos(12*theta))",
+        "intensity": 0.077
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#6F5034",
+        "patternColor1": "#847D48",
+        "patternColor2": "#3F8E43",
+        "overlapColor": "#BECF00",
+        "depthMm": 1.4
+    },
+    "mesh": {
+        "resV": 141,
+        "resT": 215,
+        "patternResV": 141,
+        "patternResT": 193
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.13,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.15,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

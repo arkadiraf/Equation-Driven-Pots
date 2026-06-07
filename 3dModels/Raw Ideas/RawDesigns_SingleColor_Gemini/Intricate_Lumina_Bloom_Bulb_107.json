@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Lumina Bloom Bulb 107",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "interference",
+        "preset": "Quasi Lattice Orb",
+        "equation": "R * (1 + 0.06*cos(10*theta + 1.414*8*phi) + 0.06*cos(15*theta - 1.732*6*phi))",
+        "baseRadius": 8.47,
+        "height": 16.8
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.43,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 154,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.68,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "cos(16*theta) * sin(20*pi*v)",
+        "intensity": 0.081
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#BECF00",
+        "patternColor1": "#BECF00",
+        "patternColor2": "#BECF00",
+        "overlapColor": "#BECF00",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 126,
+        "resT": 187,
+        "patternResV": 136,
+        "patternResT": 214
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Braided Drift",
+        "equation": "sin(6*theta + 3*pi*v) + 0.5*sin(6*theta - 3*pi*v)",
+        "strength": 0.09,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Palm Press",
+        "dx": "-0.45 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dy": "-0.05 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dz": "0",
+        "strength": 0.14,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

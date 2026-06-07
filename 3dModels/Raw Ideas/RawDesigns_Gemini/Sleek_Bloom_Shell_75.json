@@ -1,0 +1,68 @@
+{
+    "name": "Sleek Bloom Shell 75",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "basicEffect",
+        "preset": "Hourglass Pinch",
+        "equation": "R * (1 - 0.18*pow(sin(phi), 2))",
+        "baseRadius": 4.31,
+        "height": 8.1
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.4,
+        "bottomThickness": 0.64,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 147,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.66,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.57,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "nonlinear",
+        "preset": "Saturated Flutes",
+        "equation": "atan(7 * cos(12*theta))",
+        "intensity": 0.051
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#3F8E43",
+        "patternColor1": "#F7E6DE",
+        "patternColor2": "#6F5034",
+        "overlapColor": "#BECF00",
+        "depthMm": 1.02
+    },
+    "mesh": {
+        "resV": 139,
+        "resT": 212,
+        "patternResV": 123,
+        "patternResT": 220
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.13,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

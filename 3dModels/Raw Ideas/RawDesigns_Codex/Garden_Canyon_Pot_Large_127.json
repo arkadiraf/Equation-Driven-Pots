@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Garden Canyon Pot Large 127",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "interference",
+                 "preset":  "Quasi Spiral Shell",
+                 "equation":  "R * (1 + 0.045*cos(6*theta + 2*pi*v) + 0.035*cos(19*theta - 2*pi*sqrt(2)*v) + 0.06*sin(pi*v))",
+                 "baseRadius":  7.5,
+                 "height":  22.4
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Diamond Weave",
+                    "equation":  "0.5*cos(6*theta + 8*pi*v) + 0.5*cos(6*theta - 8*pi*v)",
+                    "intensity":  0.094
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "outerDeviation(0.14)",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "cos(19*theta - 3*pi*v)",
+                     "baseColor":  "#EC008C",
+                     "patternColor1":  "#9D432C",
+                     "patternColor2":  "#5B6579",
+                     "overlapColor":  "#5E43B7",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Gentle Torsion",
+                     "equation":  "sin(6*theta + 2*pi*v) + 0.35*sin(19*theta - 2*pi*v)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

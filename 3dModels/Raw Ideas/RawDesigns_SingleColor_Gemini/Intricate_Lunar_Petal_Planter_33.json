@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Lunar Petal Planter 33",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Rosette Bloom",
+        "equation": "R * (1 + 0.2 * cos(5 * (theta + 0.25 * sin(2*pi*v))) * sin(pi*v)) * (1 + 0.15 * pow(v, 2.0))",
+        "baseRadius": 6.58,
+        "height": 23.2
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.4,
+        "bottomThickness": 0.51,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 147,
+        "sphBotCut": 177
+    },
+    "plate": {
+        "plateHeight": 1.41,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.56,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "nonlinear",
+        "preset": "Log Ripple Compression",
+        "equation": "log(1 + 3*abs(sin(14*theta + 12*pi*v)))",
+        "intensity": 0.11
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#F4EE2A",
+        "patternColor1": "#F4EE2A",
+        "patternColor2": "#F4EE2A",
+        "overlapColor": "#F4EE2A",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 142,
+        "resT": 195,
+        "patternResV": 123,
+        "patternResT": 209
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

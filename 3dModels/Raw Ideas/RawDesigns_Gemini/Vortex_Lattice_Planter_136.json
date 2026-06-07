@@ -1,0 +1,68 @@
+{
+    "name": "Vortex Lattice Planter 136",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "interference",
+        "preset": "Fourier Bloom",
+        "equation": "R * (1 + 0.18 * (cos(3*theta) + 0.45*cos(7*theta + pi*v) + 0.20*cos(13*theta - 2*pi*v)))",
+        "baseRadius": 9.5,
+        "height": 17.9
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.36,
+        "bottomThickness": 0.51,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 145,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.58,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.64,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "sin(12*theta + 10*pi*v) + sin(13*theta - 10*pi*v)",
+        "intensity": 0.101
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#5B6579",
+        "patternColor1": "#0086D6",
+        "patternColor2": "#0A2989",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.26
+    },
+    "mesh": {
+        "resV": 130,
+        "resT": 207,
+        "patternResV": 122,
+        "patternResT": 201
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.2,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

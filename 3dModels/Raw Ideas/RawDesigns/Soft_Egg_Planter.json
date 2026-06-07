@@ -1,0 +1,68 @@
+{
+  "name": "Soft Egg Planter",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "primitive",
+    "preset": "Soft Egg",
+    "equation": "R * (1 + 0.18*cos(phi) - 0.10*cos(2*phi)) * (1 + 0.06*cos(4*theta)*pow(sin(phi), 1.5))",
+    "baseRadius": 5.0,
+    "height": 10.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 28,
+    "sphBotFlatten": 152,
+    "sphBotCut": 178
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Cellular Organic",
+    "equation": "0.6*(sin(8*theta)*cos(10*phi) + sin(11*theta)*cos(5*phi))",
+    "intensity": 0.07
+  },
+  "patterns": {
+    "preset1": "Basic Horizontal Split",
+    "equation1": "v - 0.48",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#f0e8d8",
+    "patternColor1": "#a87848",
+    "patternColor2": "#c8a868",
+    "overlapColor": "#d8c888",
+    "depthMm": 1.0
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

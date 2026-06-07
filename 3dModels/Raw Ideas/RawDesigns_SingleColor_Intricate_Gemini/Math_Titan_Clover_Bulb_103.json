@@ -1,0 +1,68 @@
+{
+    "name": "Math Titan Clover Bulb 103",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Twisted Bloom",
+        "equation": "R * (1 + 0.15 * asin(0.95 * sin(5 * theta + 1.5 * phi)) * pow(sin(phi), 1.5))",
+        "baseRadius": 10.53,
+        "height": 19.3
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.41,
+        "bottomThickness": 0.55,
+        "cylDrain": 0.5,
+        "sphTopCut": 30,
+        "sphBotFlatten": 147,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.45,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.68,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "smoothstep(-0.5, 0.5, sin(10*theta + 8*pi*v) + sin(11*theta - 8*pi*v))",
+        "intensity": 0.064
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#FEC600",
+        "patternColor1": "#FEC600",
+        "patternColor2": "#FEC600",
+        "overlapColor": "#FEC600",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 125,
+        "resT": 196,
+        "patternResV": 135,
+        "patternResT": 198
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "clamp(sin(6*theta) * sin(pi*v), -0.8, 0.8)",
+        "strength": 0.15,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Pressed Shoulder",
+        "dx": "-0.5 * exp(-pow(theta - pi/8, 2)*10) * exp(-pow(v - 0.72, 2)*24)",
+        "dy": "-0.08 * exp(-pow(v - 0.72, 2)*18)",
+        "dz": "0",
+        "strength": 0.13,
+        "region": "shoulder",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

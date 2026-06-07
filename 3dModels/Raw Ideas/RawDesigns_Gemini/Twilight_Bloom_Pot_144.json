@@ -1,0 +1,68 @@
+{
+    "name": "Twilight Bloom Pot 144",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "interference",
+        "preset": "Fourier Bloom",
+        "equation": "R * (1 + 0.18 * (cos(3*theta) + 0.45*cos(7*theta + pi*v) + 0.20*cos(13*theta - 2*pi*v)))",
+        "baseRadius": 9.37,
+        "height": 24.6
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.37,
+        "bottomThickness": 0.55,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 150,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.35,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.64,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Basic Vertical Ribs",
+        "equation": "cos(10*theta)",
+        "intensity": 0.114
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#D1D3D5",
+        "patternColor1": "#000000",
+        "patternColor2": "#F7E6DE",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.12
+    },
+    "mesh": {
+        "resV": 133,
+        "resT": 195,
+        "patternResV": 130,
+        "patternResT": 214
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.18,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.14,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Lunar Bloom Urn 8",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Rounded Square",
+        "equation": "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125)",
+        "baseRadius": 4.91,
+        "height": 15.4
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.38,
+        "bottomThickness": 0.6,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 147,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.49,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.58,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 248
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "sin(12*theta + 10*pi*v) + sin(13*theta - 10*pi*v)",
+        "intensity": 0.134
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#5B6579",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#545454",
+        "overlapColor": "#8E9089",
+        "depthMm": 1.07
+    },
+    "mesh": {
+        "resV": 150,
+        "resT": 220,
+        "patternResV": 140,
+        "patternResT": 206
+    },
+    "modifier": {
+        "type": "petal",
+        "preset": "Petal Migration",
+        "equation": "sin(2*pi*v) + 0.25*sin(5*theta)",
+        "strength": 0.18,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.18,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

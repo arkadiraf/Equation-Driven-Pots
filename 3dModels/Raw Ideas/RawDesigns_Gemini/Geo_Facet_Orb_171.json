@@ -1,0 +1,68 @@
+{
+    "name": "Geo Facet Orb 171",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "primitive",
+        "preset": "Equatorial Cushion",
+        "equation": "R * (1 + 0.22 * exp(-pow(phi - pi/2, 2)*12) - 0.04*cos(2*phi))",
+        "baseRadius": 7.57,
+        "height": 16.9
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.4,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 30,
+        "sphBotFlatten": 147,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.37,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Arc Shell Carving",
+        "equation": "asin(0.98*sin(8*theta + 6*pi*v))",
+        "intensity": 0.056
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#8E9089",
+        "patternColor1": "#A6A9AA",
+        "patternColor2": "#545454",
+        "overlapColor": "#000000",
+        "depthMm": 1.17
+    },
+    "mesh": {
+        "resV": 133,
+        "resT": 213,
+        "patternResV": 143,
+        "patternResT": 199
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.15,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.17,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

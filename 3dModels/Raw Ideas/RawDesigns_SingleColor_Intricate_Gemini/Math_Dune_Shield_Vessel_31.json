@@ -1,0 +1,68 @@
+{
+    "name": "Math Dune Shield Vessel 31",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "interference",
+        "preset": "Fourier Bloom",
+        "equation": "R * (1 + 0.16 * smoothstep(0.3, 0.7, sin(6 * theta + 3 * pi * v)))",
+        "baseRadius": 9.65,
+        "height": 12.1
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.38,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 145,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.41,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 90,
+        "plateSphBotFlatten": 245
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Domain Warp Ribs",
+        "equation": "asin(0.96 * sin(12 * (theta + 0.1 * sin(5*pi*v))))",
+        "intensity": 0.058
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#000000",
+        "patternColor1": "#000000",
+        "patternColor2": "#000000",
+        "overlapColor": "#000000",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 139,
+        "resT": 210,
+        "patternResV": 137,
+        "patternResT": 187
+    },
+    "modifier": {
+        "type": "regional",
+        "preset": "Body Swirl Window",
+        "equation": "smoothstep(0.2, 0.8, sin(pi*v)) * sin(5*theta)",
+        "strength": 0.1,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "wave",
+        "preset": "Sway Wave",
+        "dx": "0.12*sin(3*pi*v)",
+        "dy": "0.02*sin(2*pi*v)",
+        "dz": "0",
+        "strength": 0.14,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

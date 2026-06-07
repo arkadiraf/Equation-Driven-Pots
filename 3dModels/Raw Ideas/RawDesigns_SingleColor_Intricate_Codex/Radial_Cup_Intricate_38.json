@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Radial Cup Intricate 38",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "nonlinear",
+                 "preset":  "Arc Compression",
+                 "equation":  "R * (1 + 0.10*(0.5 - abs(fract(12*theta/(2*pi) + 2.5*v) - 0.5))*sin(pi*v) + 0.035*pow(v, 1.6))",
+                 "baseRadius":  11.4,
+                 "height":  11.3
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "nonlinear",
+                    "preset":  "Saturated Flutes",
+                    "equation":  "atan(6*(cos(27*theta + 2*pi*v) + 0.35*sign(sin(12*theta))))",
+                    "intensity":  0.125
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#00B1B7",
+                     "patternColor1":  "#00B1B7",
+                     "patternColor2":  "#00B1B7",
+                     "overlapColor":  "#00B1B7",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "fold",
+                     "preset":  "Chevron Drift",
+                     "equation":  "abs(sin(12*theta + 2*pi*v)) - abs(sin(12*theta - 2*pi*v))",
+                     "strength":  0.106,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

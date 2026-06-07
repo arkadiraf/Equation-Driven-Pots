@@ -1,0 +1,68 @@
+{
+    "name": "Crest Ridge Vessel 138",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Rounded Square",
+        "equation": "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125)",
+        "baseRadius": 7.52,
+        "height": 14.8
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.36,
+        "bottomThickness": 0.5,
+        "cylDrain": 0.5,
+        "sphTopCut": 29,
+        "sphBotFlatten": 149,
+        "sphBotCut": 177
+    },
+    "plate": {
+        "plateHeight": 1.46,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.55,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "cos(8*theta) * sin(10*pi*v)",
+        "intensity": 0.067
+    },
+    "patterns": {
+        "preset1": "Basic Band Mask",
+        "equation1": "sin(8*pi*v)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#A6A9AA",
+        "patternColor1": "#D1D3D5",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#0A2989",
+        "depthMm": 1.32
+    },
+    "mesh": {
+        "resV": 137,
+        "resT": 212,
+        "patternResV": 138,
+        "patternResT": 206
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "sin(5*theta + 2*pi*v)",
+        "strength": 0.2,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Torsion Twist",
+        "dx": "x*cos(0.35*sin(pi*v)) - z*sin(0.35*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.35*sin(pi*v)) + z*cos(0.35*sin(pi*v)) - z",
+        "strength": 0.15,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

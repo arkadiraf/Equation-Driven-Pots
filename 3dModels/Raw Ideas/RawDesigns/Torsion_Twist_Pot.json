@@ -1,0 +1,68 @@
+{
+  "name": "Torsion Twist Pot",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "basicEffect",
+    "preset": "Mid Bulge",
+    "equation": "R * (1 + 0.24*sin(pi*v)) * (1 + 0.08*cos(6*theta))",
+    "baseRadius": 5.0,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Twisted Ribs",
+    "equation": "cos(10*theta + 6*pi*v)",
+    "intensity": 0.13
+  },
+  "patterns": {
+    "preset1": "Surface Texture Top %",
+    "equation1": "textureFill(texPosNorm, 58)",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#8a6050",
+    "patternColor1": "#f0c8a0",
+    "patternColor2": "#5a3020",
+    "overlapColor": "#d8a070",
+    "depthMm": 1.1
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Twist Drift",
+    "equation": "sin(2*pi*v)",
+    "strength": 0.20,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "torsion",
+    "preset": "Torsion Twist",
+    "dx": "x*cos(0.30*sin(pi*v)) - z*sin(0.30*sin(pi*v)) - x",
+    "dy": "0",
+    "dz": "x*sin(0.30*sin(pi*v)) + z*cos(0.30*sin(pi*v)) - z",
+    "strength": 0.8,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

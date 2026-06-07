@@ -1,0 +1,68 @@
+{
+    "name": "Organic Wave Pod 58",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Dragon Egg",
+        "equation": "R * (1 + 0.08 * cos(10*theta + 8*phi) + 0.08 * cos(10*theta - 8*phi))",
+        "baseRadius": 3.78,
+        "height": 16.7
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.37,
+        "bottomThickness": 0.51,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 154,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.61,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Arc Shell Carving",
+        "equation": "asin(0.98*sin(8*theta + 6*pi*v))",
+        "intensity": 0.058
+    },
+    "patterns": {
+        "preset1": "Basic Band Mask",
+        "equation1": "sin(8*pi*v)",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#5B6579",
+        "patternColor1": "#545454",
+        "patternColor2": "#000000",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.38
+    },
+    "mesh": {
+        "resV": 134,
+        "resT": 215,
+        "patternResV": 121,
+        "patternResT": 183
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Local Twist",
+        "equation": "exp(-pow(v - 0.8, 2)*24)",
+        "strength": 0.13,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

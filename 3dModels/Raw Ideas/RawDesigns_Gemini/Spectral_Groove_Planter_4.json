@@ -1,0 +1,68 @@
+{
+    "name": "Spectral Groove Planter 4",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "nonlinear",
+        "preset": "ATan Fluting",
+        "equation": "R * (1 + 0.16 * atan(6 * cos(10 * theta + 2*pi*v)))",
+        "baseRadius": 4.33,
+        "height": 24.4
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 146,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.45,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.51,
+        "plateSphTopCut": 90,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#5E43B7",
+        "patternColor1": "#482960",
+        "patternColor2": "#A6A9AA",
+        "overlapColor": "#E4BD68",
+        "depthMm": 1.18
+    },
+    "mesh": {
+        "resV": 144,
+        "resT": 213,
+        "patternResV": 130,
+        "patternResT": 201
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Diagonal Drift",
+        "equation": "sin(4*theta + 2*pi*v)",
+        "strength": 0.11,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.15,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

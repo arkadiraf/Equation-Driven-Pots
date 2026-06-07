@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Terra Lattice Shell 101",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Lotus Pod",
+        "equation": "R * (1 + 0.16 * cos(6*theta) * pow(sin(phi), 2.2) - 0.08 * cos(3*phi))",
+        "baseRadius": 3.92,
+        "height": 16.4
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.38,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 147,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.52,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.57,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Folded Chevron",
+        "equation": "abs(sin(8*theta + 10*pi*v)) - 0.5*abs(sin(8*theta - 10*pi*v))",
+        "intensity": 0.127
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#545454",
+        "patternColor1": "#545454",
+        "patternColor2": "#545454",
+        "overlapColor": "#545454",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 138,
+        "resT": 219,
+        "patternResV": 142,
+        "patternResT": 181
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Body Swirl",
+        "equation": "exp(-pow(v - 0.55, 2)*14) * sin(4*theta + 2*pi*v)",
+        "strength": 0.19,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Palm Press",
+        "dx": "-0.45 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dy": "-0.05 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dz": "0",
+        "strength": 0.13,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

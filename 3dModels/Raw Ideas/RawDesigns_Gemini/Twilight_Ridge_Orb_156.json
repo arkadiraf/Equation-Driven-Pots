@@ -1,0 +1,68 @@
+{
+    "name": "Twilight Ridge Orb 156",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "basicEffect",
+        "preset": "Equator Bulge",
+        "equation": "R * (1 + 0.24*pow(sin(phi), 2))",
+        "baseRadius": 8.67,
+        "height": 22.4
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.38,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 149,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.31,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.64,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 248
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Basic Vertical Ribs",
+        "equation": "cos(10*theta)",
+        "intensity": 0.109
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#C12E1F",
+        "patternColor1": "#F4EE2A",
+        "patternColor2": "#FEC600",
+        "overlapColor": "#FF9016",
+        "depthMm": 1.02
+    },
+    "mesh": {
+        "resV": 125,
+        "resT": 203,
+        "patternResV": 128,
+        "patternResT": 180
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Diagonal Drift",
+        "equation": "sin(4*theta + 2*pi*v)",
+        "strength": 0.13,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.18,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

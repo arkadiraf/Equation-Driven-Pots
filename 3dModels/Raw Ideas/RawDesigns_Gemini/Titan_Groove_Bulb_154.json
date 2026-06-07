@@ -1,0 +1,68 @@
+{
+    "name": "Titan Groove Bulb 154",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Lotus Pod",
+        "equation": "R * (1 + 0.16 * cos(6 * theta) * pow(sin(phi), 2.2) - 0.04 * cos(2 * phi))",
+        "baseRadius": 8.49,
+        "height": 21.0
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.36,
+        "bottomThickness": 0.56,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 150,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.49,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.64,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Diamond Weave",
+        "equation": "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)",
+        "intensity": 0.14
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#847D48",
+        "patternColor1": "#9D432C",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#6F5034",
+        "depthMm": 1.17
+    },
+    "mesh": {
+        "resV": 147,
+        "resT": 204,
+        "patternResV": 142,
+        "patternResT": 180
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Torsion Twist",
+        "dx": "x*cos(0.35*sin(pi*v)) - z*sin(0.35*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.35*sin(pi*v)) + z*cos(0.35*sin(pi*v)) - z",
+        "strength": 0.17,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "Braided Helix Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Braided Helix",
+    "equation": "R * (1 + 0.14*cos(6*theta + 3*pi*v) + 0.10*cos(6*theta - 3*pi*v)) * (1 + 0.12*sin(pi*v))",
+    "baseRadius": 4.5,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.33,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "weave",
+    "preset": "Braided Lattice",
+    "equation": "0.5*cos(6*theta + 5*pi*v) + 0.5*cos(6*theta - 5*pi*v)",
+    "intensity": 0.12
+  },
+  "patterns": {
+    "preset1": "Double Helix Mask",
+    "equation1": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#e8dcc8",
+    "patternColor1": "#8a5030",
+    "patternColor2": "#5a3018",
+    "overlapColor": "#c07840",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 200,
+    "patternResV": 140,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "diagonal",
+    "preset": "Braided Drift",
+    "equation": "sin(6*theta + 3*pi*v) + 0.5*sin(6*theta - 3*pi*v)",
+    "strength": 0.16,
+    "target": "texture"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

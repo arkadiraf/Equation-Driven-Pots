@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Vortex Wave Globe 162",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "interference",
+        "preset": "Quasi Lattice Orb",
+        "equation": "R * (1 + 0.06*cos(10*theta + 1.414*8*phi) + 0.06*cos(15*theta - 1.732*6*phi))",
+        "baseRadius": 10.46,
+        "height": 13.5
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.37,
+        "bottomThickness": 0.51,
+        "cylDrain": 0.5,
+        "sphTopCut": 28,
+        "sphBotFlatten": 150,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.31,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Honeycomb Relief",
+        "equation": "max(cos(12*theta), cos(12*theta + 16*pi*v), cos(12*theta - 16*pi*v))",
+        "intensity": 0.069
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#A6A9AA",
+        "patternColor1": "#A6A9AA",
+        "patternColor2": "#A6A9AA",
+        "overlapColor": "#A6A9AA",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 123,
+        "resT": 212,
+        "patternResV": 122,
+        "patternResT": 192
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Palm Press",
+        "dx": "-0.45 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dy": "-0.05 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dz": "0",
+        "strength": 0.16,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

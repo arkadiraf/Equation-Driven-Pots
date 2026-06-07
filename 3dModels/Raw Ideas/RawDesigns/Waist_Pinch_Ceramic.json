@@ -1,0 +1,68 @@
+{
+  "name": "Waist Pinch Ceramic",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "basicEffect",
+    "preset": "Waist Pinch",
+    "equation": "R * (1 - 0.22*sin(pi*v)) * (1 + 0.14*exp(-pow(v - 0.15, 2)*40)) * (1 + 0.10*exp(-pow(v - 0.88, 2)*30))",
+    "baseRadius": 5.5,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.36,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.6,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.6,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "bands",
+    "preset": "Topographic Rings",
+    "equation": "sin(18*pi*v) * exp(-pow(v - 0.5, 2)*8)",
+    "intensity": 0.09
+  },
+  "patterns": {
+    "preset1": "Basic Horizontal Split",
+    "equation1": "v - 0.5",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#d4956a",
+    "patternColor1": "#8a4828",
+    "patternColor2": "#c07040",
+    "overlapColor": "#b06030",
+    "depthMm": 1.0
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

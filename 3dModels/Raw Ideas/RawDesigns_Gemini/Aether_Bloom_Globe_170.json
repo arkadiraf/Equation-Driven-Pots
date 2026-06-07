@@ -1,0 +1,68 @@
+{
+    "name": "Aether Bloom Globe 170",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "nonlinear",
+        "preset": "Sharp 6-Lobe Shell",
+        "equation": "R * (1 + 0.16 * pow(sin(phi), 2.0) * atan(5 * cos(6*theta)))",
+        "baseRadius": 7.85,
+        "height": 16.6
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.37,
+        "bottomThickness": 0.57,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 146,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.56,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Honeycomb Relief",
+        "equation": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v))",
+        "intensity": 0.081
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#9D2235",
+        "patternColor1": "#FF6A13",
+        "patternColor2": "#F55A74",
+        "overlapColor": "#C12E1F",
+        "depthMm": 1.1
+    },
+    "mesh": {
+        "resV": 143,
+        "resT": 193,
+        "patternResV": 129,
+        "patternResT": 212
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.09,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.19,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

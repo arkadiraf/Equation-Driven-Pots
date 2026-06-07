@@ -1,0 +1,68 @@
+{
+    "name": "Titan Clover Pod 159",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "4-Petal Flower",
+        "equation": "R * (1 + 0.20 * cos(4 * theta) * pow(sin(phi), 1.5))",
+        "baseRadius": 9.25,
+        "height": 17.8
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.37,
+        "bottomThickness": 0.56,
+        "cylDrain": 0.5,
+        "sphTopCut": 28,
+        "sphBotFlatten": 153,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.38,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.55,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "nonlinear",
+        "preset": "Saturated Flutes",
+        "equation": "atan(7 * cos(12*theta))",
+        "intensity": 0.125
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#545454",
+        "patternColor1": "#A6A9AA",
+        "patternColor2": "#5B6579",
+        "overlapColor": "#8E9089",
+        "depthMm": 1.11
+    },
+    "mesh": {
+        "resV": 126,
+        "resT": 184,
+        "patternResV": 130,
+        "patternResT": 208
+    },
+    "modifier": {
+        "type": "petal",
+        "preset": "Petal Migration",
+        "equation": "sin(2*pi*v) + 0.25*sin(5*theta)",
+        "strength": 0.16,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.14,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

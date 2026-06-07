@@ -1,0 +1,68 @@
+{
+    "name": "Math Spectral Pillow Pod 151",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "nonlinear",
+        "preset": "Polar Compression",
+        "equation": "R * (1 + 0.12 * log(1.0 + 4.0 * abs(sin(3 * theta + phi))))",
+        "baseRadius": 11.93,
+        "height": 23.5
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.45,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 154,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.31,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.52,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "smoothstep(-0.5, 0.5, sin(10*theta + 8*pi*v) + sin(11*theta - 8*pi*v))",
+        "intensity": 0.092
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#3F8E43",
+        "patternColor1": "#3F8E43",
+        "patternColor2": "#3F8E43",
+        "overlapColor": "#3F8E43",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 123,
+        "resT": 182,
+        "patternResV": 131,
+        "patternResT": 218
+    },
+    "modifier": {
+        "type": "regional",
+        "preset": "Body Swirl Window",
+        "equation": "smoothstep(0.2, 0.8, sin(pi*v)) * sin(5*theta)",
+        "strength": 0.15,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "gravity",
+        "preset": "Heavy Crown",
+        "dx": "0",
+        "dy": "-clamp(pow(v, 2.2), 0.0, 0.8)",
+        "dz": "0",
+        "strength": 0.16,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

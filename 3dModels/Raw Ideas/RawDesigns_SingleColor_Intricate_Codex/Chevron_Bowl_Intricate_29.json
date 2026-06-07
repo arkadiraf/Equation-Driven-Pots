@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Chevron Bowl Intricate 29",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "interference",
+                 "preset":  "Quasi Spiral Shell",
+                 "equation":  "R * (1 + 0.04*clamp(log(1 + 4*v), 0, 1.4) - 0.035*sqrt(max(0, 1 - v)) + 0.035*min(cos(11*theta + pi*v), cos(11*theta - 2*pi*v)))",
+                 "baseRadius":  9.6,
+                 "height":  15
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(20*theta + 9*pi*v) + sin(22*theta - 8*pi*v)",
+                    "intensity":  0.114
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#000000",
+                     "patternColor1":  "#000000",
+                     "patternColor2":  "#000000",
+                     "overlapColor":  "#000000",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "interference",
+                     "preset":  "Quasi Drift",
+                     "equation":  "sin(11*theta + 2*pi*v) + 0.35*sin(20*theta - 2*pi*sqrt(2)*v)",
+                     "strength":  0.124,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "torsion",
+                       "preset":  "Counter Twist",
+                       "dx":  "x*cos(0.13*sin(2*pi*v)) - z*sin(0.13*sin(2*pi*v)) - x",
+                       "dy":  "0",
+                       "dz":  "x*sin(0.13*sin(2*pi*v)) + z*cos(0.13*sin(2*pi*v)) - z",
+                       "strength":  0.14,
+                       "region":  "all",
+                       "anchor":  "baseAnchored",
+                       "space":  "xyz"
+                   }
+}

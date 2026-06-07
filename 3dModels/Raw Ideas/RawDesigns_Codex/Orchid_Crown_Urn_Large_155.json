@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Orchid Crown Urn Large 155",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "interference",
+                 "preset":  "Quasi Spiral Shell",
+                 "equation":  "R * (1 + 0.045*cos(10*theta + 2*pi*v) + 0.035*cos(16*theta - 2*pi*sqrt(2)*v) + 0.06*sin(pi*v))",
+                 "baseRadius":  7.9,
+                 "height":  21.9
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "ribs",
+                    "preset":  "Basic Vertical Ribs",
+                    "equation":  "cos(16*theta + 0.7*pi*v)",
+                    "intensity":  0.136
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "sin(6*pi*v + 0.4*cos(10*theta)) - 0.08",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "cos(2*theta + pi*v)",
+                     "baseColor":  "#FFFFFF",
+                     "patternColor1":  "#0A2989",
+                     "patternColor2":  "#8E9089",
+                     "overlapColor":  "#545454",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Gentle Torsion",
+                     "equation":  "0.7*sin(pi*v)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

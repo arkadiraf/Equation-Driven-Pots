@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Vortex Lattice Vessel 80",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "folded",
+        "preset": "Chevron Fold",
+        "equation": "R * (1 + 0.12 * abs(cos(5 * theta + 2*pi*v)) - 0.06 * abs(sin(10*theta)))",
+        "baseRadius": 8.57,
+        "height": 24.1
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.44,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 147,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.47,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.68,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 245
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Honeycomb Relief",
+        "equation": "max(cos(12*theta), cos(12*theta + 16*pi*v), cos(12*theta - 16*pi*v))",
+        "intensity": 0.122
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#FF9016",
+        "patternColor1": "#FF9016",
+        "patternColor2": "#FF9016",
+        "overlapColor": "#FF9016",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 141,
+        "resT": 181,
+        "patternResV": 149,
+        "patternResT": 201
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Body Swirl",
+        "equation": "exp(-pow(v - 0.55, 2)*14) * sin(4*theta + 2*pi*v)",
+        "strength": 0.14,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.11,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

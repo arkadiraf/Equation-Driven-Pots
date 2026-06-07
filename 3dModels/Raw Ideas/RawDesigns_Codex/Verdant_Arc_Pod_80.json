@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Verdant Arc Pod 80",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "interference",
+                 "preset":  "Perfect Sphere",
+                 "equation":  "R * (1 + 0.08*cos(5*theta + 2*phi)*pow(sin(phi), 1.4) + 0.05*sin(11*theta - 5*phi))",
+                 "baseRadius":  4.84,
+                 "height":  9.2
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.36,
+                      "bottomThickness":  0.55,
+                      "cylDrain":  0.5,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.5,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.55,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "nonlinear",
+                    "preset":  "Saturated Flutes",
+                    "equation":  "atan(6*cos(11*theta - 2*phi))*pow(sin(phi), 1.1)",
+                    "intensity":  0.099
+                },
+    "patterns":  {
+                     "preset1":  "Outer Radius Deviation",
+                     "equation1":  "max(cos(5*theta), cos(5*theta + 6*phi), cos(5*theta - 6*phi)) - 0.5",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "smoothstep(0.18, 0.27, sin(5*theta + 5*phi) + sin(6*theta - 4*phi)) - 0.5",
+                     "baseColor":  "#D1D3D5",
+                     "patternColor1":  "#5E43B7",
+                     "patternColor2":  "#F5547C",
+                     "overlapColor":  "#F5547C",
+                     "depthMm":  1.15
+                 },
+    "mesh":  {
+                 "resV":  140,
+                 "resT":  200,
+                 "patternResV":  140,
+                 "patternResT":  200
+             },
+    "modifier":  {
+                     "type":  "petal",
+                     "preset":  "Petal Migration",
+                     "equation":  "exp(-pow(v - 0.65, 2)*18) * sin(5*theta)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

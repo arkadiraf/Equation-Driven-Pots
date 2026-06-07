@@ -1,0 +1,68 @@
+{
+    "name": "Crest Swirl Shell 151",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Crystalline Geode",
+        "equation": "R * (1 + 0.08 * (abs(sin(5*theta)) + abs(cos(5*theta))) * (abs(sin(4*phi)) + abs(cos(4*phi))))",
+        "baseRadius": 9.74,
+        "height": 21.0
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.35,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 153,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.65,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.52,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Honeycomb Relief",
+        "equation": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v))",
+        "intensity": 0.117
+    },
+    "patterns": {
+        "preset1": "Hex Window Grid",
+        "equation1": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v)) - 0.55",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#EC008C",
+        "patternColor1": "#000000",
+        "patternColor2": "#5E43B7",
+        "overlapColor": "#A6A9AA",
+        "depthMm": 1.02
+    },
+    "mesh": {
+        "resV": 136,
+        "resT": 190,
+        "patternResV": 122,
+        "patternResT": 213
+    },
+    "modifier": {
+        "type": "petal",
+        "preset": "Petal Migration",
+        "equation": "sin(2*pi*v) + 0.25*sin(5*theta)",
+        "strength": 0.06,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Fjord Flute Planter Large 146",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "primitive",
+                 "preset":  "Rounded Square",
+                 "equation":  "R * pow(pow(abs(cos(theta)), 5.5) + pow(abs(sin(theta)), 5.5), -0.1818181818) * (1 + 0.045*sin(pi*v))",
+                 "baseRadius":  11.3,
+                 "height":  22.5
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "carved",
+                    "preset":  "Arc Shell Carving",
+                    "equation":  "asin(0.95*sin(9*theta + 0.94*pi*v))",
+                    "intensity":  0.08
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "textureFill(texPosNorm, 60)",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "v - 0.55",
+                     "baseColor":  "#FEC600",
+                     "patternColor1":  "#3F8E43",
+                     "patternColor2":  "#482960",
+                     "overlapColor":  "#F7E6DE",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "utility",
+                     "preset":  "None (No Modifier)",
+                     "equation":  "0",
+                     "strength":  0,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

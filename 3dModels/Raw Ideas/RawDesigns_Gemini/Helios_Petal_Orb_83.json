@@ -1,0 +1,68 @@
+{
+    "name": "Helios Petal Orb 83",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Crystalline Geode",
+        "equation": "R * (1 + 0.08 * (abs(sin(5*theta)) + abs(cos(5*theta))) * (abs(sin(4*phi)) + abs(cos(4*phi))))",
+        "baseRadius": 4.51,
+        "height": 14.7
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.41,
+        "bottomThickness": 0.64,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 155,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.4,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 98,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Honeycomb Relief",
+        "equation": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v))",
+        "intensity": 0.06
+    },
+    "patterns": {
+        "preset1": "Hex Window Grid",
+        "equation1": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v)) - 0.55",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#A6A9AA",
+        "patternColor1": "#000000",
+        "patternColor2": "#5B6579",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.18
+    },
+    "mesh": {
+        "resV": 148,
+        "resT": 190,
+        "patternResV": 135,
+        "patternResT": 219
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "sin(5*theta + 2*pi*v)",
+        "strength": 0.11,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.14,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

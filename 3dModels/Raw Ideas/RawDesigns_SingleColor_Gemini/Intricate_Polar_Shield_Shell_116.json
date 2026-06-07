@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Polar Shield Shell 116",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Twisted Bloom",
+        "equation": "R * (1 + 0.15 * cos(8*theta + 2.5*phi) * pow(sin(phi), 2.0))",
+        "baseRadius": 7.53,
+        "height": 17.1
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.36,
+        "bottomThickness": 0.55,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 148,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.59,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.64,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Terraced Contours",
+        "equation": "floor(10 * (0.5 + 0.5*sin(24*pi*v))) / 10",
+        "intensity": 0.127
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#F4EE2A",
+        "patternColor1": "#F4EE2A",
+        "patternColor2": "#F4EE2A",
+        "overlapColor": "#F4EE2A",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 135,
+        "resT": 194,
+        "patternResV": 133,
+        "patternResT": 218
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

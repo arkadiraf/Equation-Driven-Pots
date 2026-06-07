@@ -1,0 +1,68 @@
+{
+    "name": "Terra Shield Vessel 22",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Rounded Square",
+        "equation": "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125)",
+        "baseRadius": 4.62,
+        "height": 21.3
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.39,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 29,
+        "sphBotFlatten": 155,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.67,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.57,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Basic Horizontal Bands",
+        "equation": "sin(12*pi*v)",
+        "intensity": 0.114
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#847D48",
+        "patternColor1": "#F7E6DE",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#9D432C",
+        "depthMm": 1.31
+    },
+    "mesh": {
+        "resV": 131,
+        "resT": 217,
+        "patternResV": 150,
+        "patternResT": 182
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.18,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

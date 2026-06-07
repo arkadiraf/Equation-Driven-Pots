@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Harbor Spiral Pod Large 188",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "folded",
+                 "preset":  "Dragon Egg",
+                 "equation":  "R * (1 + 0.045*cos(16*theta + 7*phi) + 0.045*cos(16*theta - 7*phi)) * (1 + 0.05*cos(phi))",
+                 "baseRadius":  11.9,
+                 "height":  21.4
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.5,
+                      "bottomThickness":  0.85,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "carved",
+                    "preset":  "Arc Shell Carving",
+                    "equation":  "asin(0.95*sin(5*theta + 4*phi))",
+                    "intensity":  0.089
+                },
+    "patterns":  {
+                     "preset1":  "Outer Radius Deviation",
+                     "equation1":  "textureFill(texPosNorm, 62)",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "cos(16*theta - 5*phi)",
+                     "baseColor":  "#FFFFFF",
+                     "patternColor1":  "#F4EE2A",
+                     "patternColor2":  "#F4EE2A",
+                     "overlapColor":  "#8E9089",
+                     "depthMm":  1.3
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "utility",
+                     "preset":  "None (No Modifier)",
+                     "equation":  "0",
+                     "strength":  0,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

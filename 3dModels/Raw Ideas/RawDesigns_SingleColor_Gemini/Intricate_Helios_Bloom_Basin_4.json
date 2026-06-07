@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Helios Bloom Basin 4",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "nonlinear",
+        "preset": "Turbine Blade",
+        "equation": "R * (1 + 0.15 * atan(4 * cos(5*theta + 3*pi*v + 0.5*sin(theta))))",
+        "baseRadius": 9.46,
+        "height": 15.4
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.41,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 148,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.45,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.59,
+        "plateSphTopCut": 99,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "sin(18*theta + 12*pi*v) + sin(19*theta - 12*pi*v)",
+        "intensity": 0.066
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#F55A74",
+        "patternColor1": "#F55A74",
+        "patternColor2": "#F55A74",
+        "overlapColor": "#F55A74",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 121,
+        "resT": 218,
+        "patternResV": 137,
+        "patternResT": 194
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Braided Drift",
+        "equation": "sin(6*theta + 3*pi*v) + 0.5*sin(6*theta - 3*pi*v)",
+        "strength": 0.14,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

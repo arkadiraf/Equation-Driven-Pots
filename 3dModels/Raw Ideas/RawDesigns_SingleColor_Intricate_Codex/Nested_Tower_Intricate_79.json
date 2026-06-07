@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Nested Tower Intricate 79",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "interference",
+                 "preset":  "Fourier Bloom",
+                 "equation":  "R * (1 + 0.055*max(cos(6*theta + 3*pi*v), cos(13*theta - 2*pi*v))*sin(pi*v) + 0.035*sin(pi*v))",
+                 "baseRadius":  11,
+                 "height":  16.9
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Diamond Weave",
+                    "equation":  "abs(fract(13*theta/(2*pi) + 4*v) - 0.5) + abs(fract(13*theta/(2*pi) - 4*v) - 0.5)",
+                    "intensity":  0.136
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#3F8E43",
+                     "patternColor1":  "#3F8E43",
+                     "patternColor2":  "#3F8E43",
+                     "overlapColor":  "#3F8E43",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "interference",
+                     "preset":  "Quasi Drift",
+                     "equation":  "sin(6*theta + 2*pi*v) + 0.35*sin(23*theta - 2*pi*sqrt(2)*v)",
+                     "strength":  0.124,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

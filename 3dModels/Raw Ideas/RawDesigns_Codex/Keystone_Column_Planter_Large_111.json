@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Keystone Column Planter Large 111",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "primitive",
+                 "preset":  "Rounded Square",
+                 "equation":  "R * pow(pow(abs(cos(theta)), 5.5) + pow(abs(sin(theta)), 5.5), -0.1818181818) * (1 + 0.045*sin(pi*v))",
+                 "baseRadius":  9.5,
+                 "height":  15.1
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(16*theta + 9*pi*v) + sin(17*theta - 8*pi*v)",
+                    "intensity":  0.08
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "textureFill(texPosNorm, 60)",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "v - 0.55",
+                     "baseColor":  "#00B1B7",
+                     "patternColor1":  "#FF9016",
+                     "patternColor2":  "#FFFFFF",
+                     "overlapColor":  "#5B6579",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Gentle Torsion",
+                     "equation":  "exp(-pow(v - 0.82, 2)*24) * sin(6*theta)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "torsion",
+                       "preset":  "Basic Torsion",
+                       "dx":  "x*cos(0.12*sin(pi*v)) - z*sin(0.12*sin(pi*v)) - x",
+                       "dy":  "0",
+                       "dz":  "x*sin(0.12*sin(pi*v)) + z*cos(0.12*sin(pi*v)) - z",
+                       "strength":  0.14,
+                       "region":  "all",
+                       "anchor":  "baseAnchored",
+                       "space":  "xyz"
+                   }
+}

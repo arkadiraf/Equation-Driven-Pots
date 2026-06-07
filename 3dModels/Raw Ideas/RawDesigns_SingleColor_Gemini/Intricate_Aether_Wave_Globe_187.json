@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Aether Wave Globe 187",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "interference",
+        "preset": "Quasi Lattice Orb",
+        "equation": "R * (1 + 0.06*cos(10*theta + 1.414*8*phi) + 0.06*cos(15*theta - 1.732*6*phi))",
+        "baseRadius": 10.34,
+        "height": 19.6
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.42,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 29,
+        "sphBotFlatten": 153,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.44,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.56,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 251
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Domain Warp Ribs",
+        "equation": "cos(16*(theta + 0.15*sin(8*pi*v)))",
+        "intensity": 0.134
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#F7E6DE",
+        "patternColor1": "#F7E6DE",
+        "patternColor2": "#F7E6DE",
+        "overlapColor": "#F7E6DE",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 121,
+        "resT": 180,
+        "patternResV": 150,
+        "patternResT": 219
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Body Swirl",
+        "equation": "exp(-pow(v - 0.55, 2)*14) * sin(4*theta + 2*pi*v)",
+        "strength": 0.2,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "swirl",
+        "preset": "Swirl Pull",
+        "dx": "-0.12*z*exp(-pow(v - 0.7, 2)*10)",
+        "dy": "0",
+        "dz": "0.12*x*exp(-pow(v - 0.7, 2)*10)",
+        "strength": 0.15,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

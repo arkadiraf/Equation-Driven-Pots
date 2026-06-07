@@ -1,0 +1,68 @@
+{
+    "name": "Mirage Lattice Shell 162",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "4-Petal Flower",
+        "equation": "R * (1 + 0.20 * cos(4 * theta) * pow(sin(phi), 1.5))",
+        "baseRadius": 9.41,
+        "height": 23.0
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.41,
+        "bottomThickness": 0.53,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 155,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.42,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.51,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Basic Vertical Ribs",
+        "equation": "cos(10*theta)",
+        "intensity": 0.103
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#6F5034",
+        "patternColor1": "#F7E6DE",
+        "patternColor2": "#9D432C",
+        "overlapColor": "#000000",
+        "depthMm": 1.19
+    },
+    "mesh": {
+        "resV": 123,
+        "resT": 211,
+        "patternResV": 138,
+        "patternResT": 209
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "sin(5*theta + 2*pi*v)",
+        "strength": 0.12,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.16,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

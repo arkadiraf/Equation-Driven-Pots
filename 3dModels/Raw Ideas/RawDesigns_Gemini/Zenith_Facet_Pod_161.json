@@ -1,0 +1,68 @@
+{
+    "name": "Zenith Facet Pod 161",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Lotus Pod",
+        "equation": "R * (1 + 0.16 * cos(6 * theta) * pow(sin(phi), 2.2) - 0.04 * cos(2 * phi))",
+        "baseRadius": 7.68,
+        "height": 18.8
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.37,
+        "bottomThickness": 0.51,
+        "cylDrain": 0.5,
+        "sphTopCut": 29,
+        "sphBotFlatten": 154,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.51,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Arc Shell Carving",
+        "equation": "asin(0.98*sin(8*theta + 6*pi*v))",
+        "intensity": 0.129
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#F4EE2A",
+        "patternColor1": "#FEC600",
+        "patternColor2": "#9D2235",
+        "overlapColor": "#C12E1F",
+        "depthMm": 1.23
+    },
+    "mesh": {
+        "resV": 144,
+        "resT": 207,
+        "patternResV": 132,
+        "patternResT": 220
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.15,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.15,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

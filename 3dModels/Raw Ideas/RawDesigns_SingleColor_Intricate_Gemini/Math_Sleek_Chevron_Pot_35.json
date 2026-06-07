@@ -1,0 +1,68 @@
+{
+    "name": "Math Sleek Chevron Pot 35",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Lotus Crown Vase",
+        "equation": "R * (1 + 0.15 * acos(0.9 * cos(5 * theta)) * v * (1.0 - v))",
+        "baseRadius": 6.94,
+        "height": 16.0
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.4,
+        "bottomThickness": 0.64,
+        "cylDrain": 0.5,
+        "sphTopCut": 30,
+        "sphBotFlatten": 155,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.48,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.53,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Domain Warp Ribs",
+        "equation": "asin(0.96 * sin(12 * (theta + 0.1 * sin(5*pi*v))))",
+        "intensity": 0.072
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#6F5034",
+        "patternColor1": "#6F5034",
+        "patternColor2": "#6F5034",
+        "overlapColor": "#6F5034",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 129,
+        "resT": 213,
+        "patternResV": 126,
+        "patternResT": 205
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Gentle Torsion",
+        "equation": "floor(6.0 * v) / 6.0",
+        "strength": 0.12,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "gravity",
+        "preset": "Heavy Crown",
+        "dx": "0",
+        "dy": "-clamp(pow(v, 2.2), 0.0, 0.8)",
+        "dz": "0",
+        "strength": 0.17,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

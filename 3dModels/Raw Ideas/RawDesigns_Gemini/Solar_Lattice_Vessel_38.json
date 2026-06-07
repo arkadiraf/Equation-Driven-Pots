@@ -1,0 +1,68 @@
+{
+    "name": "Solar Lattice Vessel 38",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Soft Hexagon",
+        "equation": "R * (1 + 0.10 * cos(6 * theta))",
+        "baseRadius": 4.94,
+        "height": 17.2
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.65,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 146,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.46,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Diamond Weave",
+        "equation": "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)",
+        "intensity": 0.114
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#0A2989",
+        "patternColor1": "#0056B8",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#0086D6",
+        "depthMm": 1.19
+    },
+    "mesh": {
+        "resV": 125,
+        "resT": 195,
+        "patternResV": 144,
+        "patternResT": 207
+    },
+    "modifier": {
+        "type": "petal",
+        "preset": "Petal Migration",
+        "equation": "sin(2*pi*v) + 0.25*sin(5*theta)",
+        "strength": 0.13,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Side Pressure Dent",
+        "dx": "-0.6 * exp(-pow(theta - 0, 2)*8) * exp(-pow(v - 0.6, 2)*20)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.09,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Lumina Swirl Bulb 192",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "basicEffect",
+        "preset": "Hourglass Pinch",
+        "equation": "R * (1 - 0.18*pow(sin(phi), 2))",
+        "baseRadius": 9.75,
+        "height": 23.2
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.38,
+        "bottomThickness": 0.55,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 149,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.44,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.59,
+        "plateSphTopCut": 99,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "nonlinear",
+        "preset": "Saturated Flutes",
+        "equation": "atan(7 * cos(12*theta))",
+        "intensity": 0.139
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#D1D3D5",
+        "patternColor1": "#0A2989",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#5B6579",
+        "depthMm": 1.15
+    },
+    "mesh": {
+        "resV": 142,
+        "resT": 206,
+        "patternResV": 129,
+        "patternResT": 216
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Local Twist",
+        "equation": "exp(-pow(v - 0.8, 2)*24)",
+        "strength": 0.09,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Torsion Twist",
+        "dx": "x*cos(0.35*sin(pi*v)) - z*sin(0.35*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.35*sin(pi*v)) + z*cos(0.35*sin(pi*v)) - z",
+        "strength": 0.12,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Stellar Wave Basin 102",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "nonlinear",
+        "preset": "ATan Fluting",
+        "equation": "R * (1 + 0.16 * atan(6 * cos(10 * theta + 2*pi*v)))",
+        "baseRadius": 7.76,
+        "height": 13.2
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.42,
+        "bottomThickness": 0.63,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 146,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.33,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.55,
+        "plateSphTopCut": 99,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Basic Horizontal Bands",
+        "equation": "sin(12*pi*v)",
+        "intensity": 0.107
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#EC008C",
+        "patternColor1": "#000000",
+        "patternColor2": "#482960",
+        "overlapColor": "#F5547C",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 131,
+        "resT": 186,
+        "patternResV": 122,
+        "patternResT": 180
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.15,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Torsion Twist",
+        "dx": "x*cos(0.35*sin(pi*v)) - z*sin(0.35*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.35*sin(pi*v)) + z*cos(0.35*sin(pi*v)) - z",
+        "strength": 0.11,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

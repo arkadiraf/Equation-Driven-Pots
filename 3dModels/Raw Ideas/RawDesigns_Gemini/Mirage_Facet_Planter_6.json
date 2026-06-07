@@ -1,0 +1,68 @@
+{
+    "name": "Mirage Facet Planter 6",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Lobed Body",
+        "equation": "R * (1 + 0.16*cos(6*theta)*sin(pi*v))",
+        "baseRadius": 4.89,
+        "height": 17.2
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.36,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 30,
+        "sphBotFlatten": 145,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.3,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.58,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "nonlinear",
+        "preset": "Saturated Flutes",
+        "equation": "atan(7 * cos(12*theta))",
+        "intensity": 0.117
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#F7E6DE",
+        "patternColor1": "#847D48",
+        "patternColor2": "#000000",
+        "overlapColor": "#6F5034",
+        "depthMm": 1.37
+    },
+    "mesh": {
+        "resV": 127,
+        "resT": 220,
+        "patternResV": 132,
+        "patternResT": 220
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.13,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.09,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

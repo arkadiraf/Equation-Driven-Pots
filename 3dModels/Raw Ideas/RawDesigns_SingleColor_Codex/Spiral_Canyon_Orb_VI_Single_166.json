@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Spiral Canyon Orb VI Single 166",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "folded",
+                 "preset":  "Perfect Sphere",
+                 "equation":  "R * (1 + 0.07*abs(cos(5*theta + 5*phi))*pow(sin(phi), 1.7) + 0.035*abs(cos(12*theta - 4*phi)))",
+                 "baseRadius":  6.04,
+                 "height":  20.6
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Diamond Weave",
+                    "equation":  "0.5*cos(5*theta + 7*phi) + 0.5*cos(5*theta - 7*phi)",
+                    "intensity":  0.108
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#00B1B7",
+                     "patternColor1":  "#00B1B7",
+                     "patternColor2":  "#00B1B7",
+                     "overlapColor":  "#00B1B7",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "diagonal",
+                     "preset":  "Diagonal Drift",
+                     "equation":  "sin(5*theta + 2*phi)",
+                     "strength":  0.09,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

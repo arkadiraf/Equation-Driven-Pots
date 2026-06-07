@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Harbor Spiral Vessel Large 148",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "interference",
+                 "preset":  "Quasi Spiral Shell",
+                 "equation":  "R * (1 + 0.045*cos(11*theta + 2*pi*v) + 0.035*cos(14*theta - 2*pi*sqrt(2)*v) + 0.06*sin(pi*v))",
+                 "baseRadius":  11.7,
+                 "height":  24.7
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "nonlinear",
+                    "preset":  "Saturated Flutes",
+                    "equation":  "atan(5*cos(14*theta - 2*pi*v))",
+                    "intensity":  0.108
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "cos(11*theta + 2*pi*v) - 0.12",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "smoothstep(0.18, 0.27, sin(11*theta + 6*pi*v) + sin(12*theta - 5*pi*v)) - 0.5",
+                     "baseColor":  "#482960",
+                     "patternColor1":  "#A6A9AA",
+                     "patternColor2":  "#BECF00",
+                     "overlapColor":  "#D1D3D5",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Gentle Torsion",
+                     "equation":  "sin(11*theta + 2*pi*v) + 0.35*sin(14*theta - 2*pi*v)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

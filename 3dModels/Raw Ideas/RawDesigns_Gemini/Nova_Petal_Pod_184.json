@@ -1,0 +1,68 @@
+{
+    "name": "Nova Petal Pod 184",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Crystalline Geode",
+        "equation": "R * (1 + 0.08 * (abs(sin(5*theta)) + abs(cos(5*theta))) * (abs(sin(4*phi)) + abs(cos(4*phi))))",
+        "baseRadius": 9.63,
+        "height": 15.5
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.42,
+        "bottomThickness": 0.59,
+        "cylDrain": 0.5,
+        "sphTopCut": 30,
+        "sphBotFlatten": 150,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.7,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.65,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Honeycomb Relief",
+        "equation": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v))",
+        "intensity": 0.088
+    },
+    "patterns": {
+        "preset1": "Basic Band Mask",
+        "equation1": "sin(8*pi*v)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#000000",
+        "patternColor1": "#847D48",
+        "patternColor2": "#F7E6DE",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.31
+    },
+    "mesh": {
+        "resV": 130,
+        "resT": 215,
+        "patternResV": 141,
+        "patternResT": 213
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Diagonal Drift",
+        "equation": "sin(4*theta + 2*pi*v)",
+        "strength": 0.14,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.08,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

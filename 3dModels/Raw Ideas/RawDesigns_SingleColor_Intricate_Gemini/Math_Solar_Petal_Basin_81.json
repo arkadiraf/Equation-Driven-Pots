@@ -1,0 +1,68 @@
+{
+    "name": "Math Solar Petal Basin 81",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Shoulder Bulge",
+        "equation": "R * (1 + 0.22 * exp(-pow(v - 0.5, 2) * 25) * cos(12 * theta))",
+        "baseRadius": 11.69,
+        "height": 12.0
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.4,
+        "bottomThickness": 0.53,
+        "cylDrain": 0.5,
+        "sphTopCut": 23,
+        "sphBotFlatten": 150,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.33,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.51,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 251
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Modulo Tile Relief",
+        "equation": "fract(6.0 * theta / pi + 6.0 * v)",
+        "intensity": 0.138
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#F4EE2A",
+        "patternColor1": "#F4EE2A",
+        "patternColor2": "#F4EE2A",
+        "overlapColor": "#F4EE2A",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 132,
+        "resT": 187,
+        "patternResV": 145,
+        "patternResT": 211
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "clamp(sin(6*theta) * sin(pi*v), -0.8, 0.8)",
+        "strength": 0.1,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.13,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

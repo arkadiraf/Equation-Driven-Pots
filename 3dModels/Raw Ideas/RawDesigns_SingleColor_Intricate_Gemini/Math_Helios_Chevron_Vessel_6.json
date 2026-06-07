@@ -1,0 +1,68 @@
+{
+    "name": "Math Helios Chevron Vessel 6",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Lotus Crown Vase",
+        "equation": "R * (1 + 0.15 * acos(0.9 * cos(5 * theta)) * v * (1.0 - v))",
+        "baseRadius": 6.14,
+        "height": 15.4
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.39,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 28,
+        "sphBotFlatten": 152,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.49,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.51,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Terraced Contours",
+        "equation": "floor(10 * v) / 10",
+        "intensity": 0.131
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#D1D3D5",
+        "patternColor1": "#D1D3D5",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#D1D3D5",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 122,
+        "resT": 211,
+        "patternResV": 120,
+        "patternResT": 211
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "fract(4.0 * theta / pi + 3.0 * v)",
+        "strength": 0.08,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Helios Wave Orb 140",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "interference",
+        "preset": "Fibonacci Spirals",
+        "equation": "R * (1 + 0.08 * pow(max(0, sin(13*theta - 8*phi)), 2) + 0.08 * pow(max(0, sin(8*theta + 13*phi)), 2))",
+        "baseRadius": 8.06,
+        "height": 15.9
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.4,
+        "bottomThickness": 0.59,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 146,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.59,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.53,
+        "plateSphTopCut": 98,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Honeycomb Relief",
+        "equation": "max(cos(12*theta), cos(12*theta + 16*pi*v), cos(12*theta - 16*pi*v))",
+        "intensity": 0.062
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#E4BD68",
+        "patternColor1": "#E4BD68",
+        "patternColor2": "#E4BD68",
+        "overlapColor": "#E4BD68",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 136,
+        "resT": 214,
+        "patternResV": 149,
+        "patternResT": 192
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Palm Press",
+        "dx": "-0.45 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dy": "-0.05 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dz": "0",
+        "strength": 0.12,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

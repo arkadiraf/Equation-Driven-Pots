@@ -1,0 +1,68 @@
+{
+    "name": "Sunset Rib Planter 123",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Linear Taper",
+        "equation": "R * (1 - 0.28*v)",
+        "baseRadius": 7.57,
+        "height": 18.5
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.39,
+        "bottomThickness": 0.56,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 152,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.53,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.63,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 255
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Basic Vertical Ribs",
+        "equation": "cos(10*theta)",
+        "intensity": 0.108
+    },
+    "patterns": {
+        "preset1": "Basic Band Mask",
+        "equation1": "sin(8*pi*v)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#0086D6",
+        "patternColor1": "#0056B8",
+        "patternColor2": "#5B6579",
+        "overlapColor": "#A6A9AA",
+        "depthMm": 1.29
+    },
+    "mesh": {
+        "resV": 145,
+        "resT": 204,
+        "patternResV": 134,
+        "patternResT": 187
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Local Twist",
+        "equation": "exp(-pow(v - 0.8, 2)*24)",
+        "strength": 0.12,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.09,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

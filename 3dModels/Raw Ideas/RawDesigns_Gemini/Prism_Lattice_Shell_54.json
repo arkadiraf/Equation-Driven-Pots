@@ -1,0 +1,68 @@
+{
+    "name": "Prism Lattice Shell 54",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Crystalline Geode",
+        "equation": "R * (1 + 0.08 * (abs(sin(5*theta)) + abs(cos(5*theta))) * (abs(sin(4*phi)) + abs(cos(4*phi))))",
+        "baseRadius": 4.3,
+        "height": 16.1
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.37,
+        "bottomThickness": 0.63,
+        "cylDrain": 0.5,
+        "sphTopCut": 31,
+        "sphBotFlatten": 151,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.62,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.56,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "sin(12*theta + 10*pi*v) + sin(13*theta - 10*pi*v)",
+        "intensity": 0.125
+    },
+    "patterns": {
+        "preset1": "Basic Band Mask",
+        "equation1": "sin(8*pi*v)",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#847D48",
+        "patternColor1": "#000000",
+        "patternColor2": "#F7E6DE",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.21
+    },
+    "mesh": {
+        "resV": 122,
+        "resT": 187,
+        "patternResV": 123,
+        "patternResT": 198
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.15,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Side Pressure Dent",
+        "dx": "-0.6 * exp(-pow(theta - 0, 2)*8) * exp(-pow(v - 0.6, 2)*20)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.12,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Organic Ridge Globe 77",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Lotus Pod",
+        "equation": "R * (1 + 0.16 * cos(6 * theta) * pow(sin(phi), 2.2) - 0.04 * cos(2 * phi))",
+        "baseRadius": 4.97,
+        "height": 11.1
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.64,
+        "cylDrain": 0.5,
+        "sphTopCut": 30,
+        "sphBotFlatten": 149,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.38,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.64,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Diamond Weave",
+        "equation": "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)",
+        "intensity": 0.109
+    },
+    "patterns": {
+        "preset1": "Hex Window Grid",
+        "equation1": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v)) - 0.55",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#E4BD68",
+        "patternColor1": "#BECF00",
+        "patternColor2": "#3F8E43",
+        "overlapColor": "#00AE42",
+        "depthMm": 1.39
+    },
+    "mesh": {
+        "resV": 136,
+        "resT": 201,
+        "patternResV": 128,
+        "patternResT": 196
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.19,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.14,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

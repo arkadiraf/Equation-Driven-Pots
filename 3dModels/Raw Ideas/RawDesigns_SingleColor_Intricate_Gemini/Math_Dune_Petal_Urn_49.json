@@ -1,0 +1,68 @@
+{
+    "name": "Math Dune Petal Urn 49",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "nonlinear",
+        "preset": "Progressive Fluting",
+        "equation": "R * (1 + 0.14 * log(1.0 + 3.0 * abs(sin(5 * theta + pi * v))))",
+        "baseRadius": 8.67,
+        "height": 19.7
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.42,
+        "bottomThickness": 0.6,
+        "cylDrain": 0.5,
+        "sphTopCut": 23,
+        "sphBotFlatten": 148,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.38,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Terraced Contours",
+        "equation": "floor(10 * v) / 10",
+        "intensity": 0.057
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#545454",
+        "patternColor1": "#545454",
+        "patternColor2": "#545454",
+        "overlapColor": "#545454",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 146,
+        "resT": 189,
+        "patternResV": 143,
+        "patternResT": 206
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "fract(4.0 * theta / pi + 3.0 * v)",
+        "strength": 0.12,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.11,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

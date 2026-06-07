@@ -1,0 +1,68 @@
+{
+    "name": "Twilight Bands Globe 73",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Dragon Egg",
+        "equation": "R * (1 + 0.08 * cos(10*theta + 8*phi) + 0.08 * cos(10*theta - 8*phi))",
+        "baseRadius": 4.8,
+        "height": 16.5
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.38,
+        "bottomThickness": 0.56,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 151,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.39,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.63,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 255
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Topographic Rings",
+        "equation": "sin(24*pi*v)",
+        "intensity": 0.125
+    },
+    "patterns": {
+        "preset1": "Hex Window Grid",
+        "equation1": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v)) - 0.55",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#FF6A13",
+        "patternColor1": "#F4EE2A",
+        "patternColor2": "#E4BD68",
+        "overlapColor": "#C12E1F",
+        "depthMm": 1.33
+    },
+    "mesh": {
+        "resV": 142,
+        "resT": 218,
+        "patternResV": 138,
+        "patternResT": 190
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Torsion Twist",
+        "dx": "x*cos(0.35*sin(pi*v)) - z*sin(0.35*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.35*sin(pi*v)) + z*cos(0.35*sin(pi*v)) - z",
+        "strength": 0.09,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

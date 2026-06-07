@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Organic Flute Orb 172",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Woven Basket",
+        "equation": "R * (1 + 0.06 * sin(12*theta + 8*phi) * sin(12*theta - 8*phi) * pow(sin(phi), 1.5))",
+        "baseRadius": 5.07,
+        "height": 21.4
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.4,
+        "bottomThickness": 0.57,
+        "cylDrain": 0.5,
+        "sphTopCut": 28,
+        "sphBotFlatten": 151,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.63,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.63,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Arc Shell Carving",
+        "equation": "asin(0.98*sin(10*theta + 8*pi*v))",
+        "intensity": 0.128
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#FF9016",
+        "patternColor1": "#FF9016",
+        "patternColor2": "#FF9016",
+        "overlapColor": "#FF9016",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 126,
+        "resT": 208,
+        "patternResV": 134,
+        "patternResT": 195
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "swirl",
+        "preset": "Swirl Pull",
+        "dx": "-0.12*z*exp(-pow(v - 0.7, 2)*10)",
+        "dy": "0",
+        "dz": "0.12*x*exp(-pow(v - 0.7, 2)*10)",
+        "strength": 0.09,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

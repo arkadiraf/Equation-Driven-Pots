@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Geo Clover Planter 86",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Bloomfold Vase",
+        "equation": "(R-1.0) + 1.5*sin(pi*v) + (0.4 + 0.4*sin(pi*v)) * (pow(cos(pi*v),2)*cos(3*theta) + 1.5*pow(sin(pi*v),2)*cos(6*theta))",
+        "baseRadius": 5.31,
+        "height": 18.4
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.38,
+        "bottomThickness": 0.64,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 153,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.42,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "cos(16*theta) * sin(20*pi*v)",
+        "intensity": 0.094
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#3F8E43",
+        "patternColor1": "#3F8E43",
+        "patternColor2": "#3F8E43",
+        "overlapColor": "#3F8E43",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 148,
+        "resT": 187,
+        "patternResV": 137,
+        "patternResT": 192
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Body Swirl",
+        "equation": "exp(-pow(v - 0.55, 2)*14) * sin(4*theta + 2*pi*v)",
+        "strength": 0.15,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

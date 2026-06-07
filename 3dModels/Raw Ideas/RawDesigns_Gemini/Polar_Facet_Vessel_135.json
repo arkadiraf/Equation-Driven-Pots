@@ -1,0 +1,68 @@
+{
+    "name": "Polar Facet Vessel 135",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Rounded Square",
+        "equation": "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125)",
+        "baseRadius": 9.66,
+        "height": 12.3
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.4,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 24,
+        "sphBotFlatten": 149,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.57,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.58,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 255
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Basic Vertical Ribs",
+        "equation": "cos(10*theta)",
+        "intensity": 0.106
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#FFFFFF",
+        "patternColor1": "#5E43B7",
+        "patternColor2": "#E4BD68",
+        "overlapColor": "#EC008C",
+        "depthMm": 1.07
+    },
+    "mesh": {
+        "resV": 120,
+        "resT": 219,
+        "patternResV": 132,
+        "patternResT": 207
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Local Twist",
+        "equation": "exp(-pow(v - 0.8, 2)*24)",
+        "strength": 0.07,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

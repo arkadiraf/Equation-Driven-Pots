@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Quasar Cup VIII Single 58",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "basicEffect",
+                 "preset":  "Shoulder Bulge",
+                 "equation":  "R * (1 + 0.12*exp(-pow(v - 0.68, 2)*18) - 0.055*exp(-pow(v - 0.34, 2)*20) + 0.035*cos(12*theta + pi*v))",
+                 "baseRadius":  6.8,
+                 "height":  24.7
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.42,
+                      "bottomThickness":  0.7,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "nonlinear",
+                    "preset":  "Saturated Flutes",
+                    "equation":  "atan(6*cos(12*theta - 2*pi*v))",
+                    "intensity":  0.101
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#FF9016",
+                     "patternColor1":  "#FF9016",
+                     "patternColor2":  "#FF9016",
+                     "overlapColor":  "#FF9016",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "petal",
+                     "preset":  "Petal Migration",
+                     "equation":  "sin(2*pi*v) + 0.22*sin(12*theta)",
+                     "strength":  0.105,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

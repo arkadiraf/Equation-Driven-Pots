@@ -1,0 +1,68 @@
+{
+    "name": "Zenith Groove Urn 104",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Waist Pinch",
+        "equation": "R * (1 - 0.18*sin(pi*v))",
+        "baseRadius": 7.64,
+        "height": 17.5
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.4,
+        "bottomThickness": 0.5,
+        "cylDrain": 0.5,
+        "sphTopCut": 31,
+        "sphBotFlatten": 150,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.34,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.57,
+        "plateSphTopCut": 99,
+        "plateSphBotFlatten": 251
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Diamond Weave",
+        "equation": "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)",
+        "intensity": 0.095
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#6F5034",
+        "patternColor1": "#D1D3D5",
+        "patternColor2": "#000000",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.38
+    },
+    "mesh": {
+        "resV": 149,
+        "resT": 210,
+        "patternResV": 130,
+        "patternResT": 200
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.08,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

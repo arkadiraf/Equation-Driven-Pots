@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Harbor Spiral Vessel Large 128",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "basicEffect",
+                 "preset":  "Shoulder Bulge",
+                 "equation":  "R * (1 + 0.13*exp(-pow(v - 0.70, 2)*18) - 0.04*pow(1 - v, 1.8) + 0.04*cos(7*theta - pi*v))",
+                 "baseRadius":  7.7,
+                 "height":  23.5
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "carved",
+                    "preset":  "Arc Shell Carving",
+                    "equation":  "asin(0.95*sin(7*theta + 1.33*pi*v))",
+                    "intensity":  0.108
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "cos(7*theta + 2*pi*v) - 0.12",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "smoothstep(0.18, 0.27, sin(7*theta + 6*pi*v) + sin(8*theta - 5*pi*v)) - 0.5",
+                     "baseColor":  "#FEC600",
+                     "patternColor1":  "#FF6A13",
+                     "patternColor2":  "#6F5034",
+                     "overlapColor":  "#6F5034",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Gentle Torsion",
+                     "equation":  "0.7*sin(pi*v)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

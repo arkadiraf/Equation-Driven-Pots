@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Quantized Pot Intricate 41",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "interference",
+                 "preset":  "Quasi Spiral Shell",
+                 "equation":  "R * (1 + 0.04*clamp(log(1 + 4*v), 0, 1.4) - 0.035*sqrt(max(0, 1 - v)) + 0.035*min(cos(12*theta + pi*v), cos(7*theta - 2*pi*v)))",
+                 "baseRadius":  12,
+                 "height":  14.9
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(23*theta + 9*pi*v) + sin(25*theta - 8*pi*v)",
+                    "intensity":  0.07
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#BECF00",
+                     "patternColor1":  "#BECF00",
+                     "patternColor2":  "#BECF00",
+                     "overlapColor":  "#BECF00",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "diagonal",
+                     "preset":  "Cross-Diagonal Weave",
+                     "equation":  "0.55*sin(12*theta + 2*pi*v) + 0.55*sin(12*theta - 2*pi*v)",
+                     "strength":  0.07,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

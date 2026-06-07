@@ -1,0 +1,68 @@
+{
+    "name": "Astral Rib Vessel 10",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "folded",
+        "preset": "Chevron Fold",
+        "equation": "R * (1 + 0.12 * abs(sin(6*theta + 4*pi*v)) - 0.05 * abs(sin(6*theta - 4*pi*v)))",
+        "baseRadius": 4.38,
+        "height": 16.0
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.36,
+        "bottomThickness": 0.57,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 149,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.32,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.54,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#A6A9AA",
+        "patternColor1": "#E4BD68",
+        "patternColor2": "#F5547C",
+        "overlapColor": "#000000",
+        "depthMm": 1.08
+    },
+    "mesh": {
+        "resV": 145,
+        "resT": 214,
+        "patternResV": 127,
+        "patternResT": 206
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.16,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.13,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

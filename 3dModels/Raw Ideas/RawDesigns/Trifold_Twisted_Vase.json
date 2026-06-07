@@ -1,0 +1,68 @@
+{
+  "name": "Trifold Twisted Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "Twisted Trifold Bloom",
+    "equation": "(R - 1.0) + 1.1*sin(pi*z/12.0) + (0.32+0.40*sin(pi*z/12.0))*(pow(cos(pi*z/12.0), 2)*cos(3*(theta - pi*z/14.0)) + 1.5*pow(sin(pi*z/12.0), 2)*cos(6*(theta - pi*z/14.0)))",
+    "baseRadius": 5.0,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.33,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "bands",
+    "preset": "Topographic Rings",
+    "equation": "sin(24*pi*v) * 0.6",
+    "intensity": 0.08
+  },
+  "patterns": {
+    "preset1": "4-Petal Mask",
+    "equation1": "asin(0.97*sin(3*theta - pi*v*0.6)) * sin(pi*v)",
+    "preset2": "Surface Texture Top %",
+    "equation2": "textureFill(texPosNorm, 60)",
+    "baseColor": "#f0ece4",
+    "patternColor1": "#c86840",
+    "patternColor2": "#903820",
+    "overlapColor": "#e09060",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 220,
+    "patternResV": 150,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Twist Drift",
+    "equation": "sin(2.5*pi*v)",
+    "strength": 0.16,
+    "target": "texture"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

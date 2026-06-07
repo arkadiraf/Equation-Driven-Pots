@@ -1,0 +1,68 @@
+{
+    "name": "Helios Flute Urn 140",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Waist Pinch",
+        "equation": "R * (1 - 0.18*sin(pi*v))",
+        "baseRadius": 9.51,
+        "height": 23.9
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.37,
+        "bottomThickness": 0.59,
+        "cylDrain": 0.5,
+        "sphTopCut": 28,
+        "sphBotFlatten": 149,
+        "sphBotCut": 175
+    },
+    "plate": {
+        "plateHeight": 1.47,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.52,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 255
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "cos(8*theta) * sin(10*pi*v)",
+        "intensity": 0.064
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#A6A9AA",
+        "patternColor1": "#E4BD68",
+        "patternColor2": "#5E43B7",
+        "overlapColor": "#EC008C",
+        "depthMm": 1.16
+    },
+    "mesh": {
+        "resV": 123,
+        "resT": 188,
+        "patternResV": 136,
+        "patternResT": 185
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.14,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Side Pressure Dent",
+        "dx": "-0.6 * exp(-pow(theta - 0, 2)*8) * exp(-pow(v - 0.6, 2)*20)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.13,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

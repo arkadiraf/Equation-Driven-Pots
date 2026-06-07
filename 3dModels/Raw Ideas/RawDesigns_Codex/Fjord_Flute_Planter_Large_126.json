@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Fjord Flute Planter Large 126",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "nonlinear",
+                 "preset":  "Progressive Fluting",
+                 "equation":  "R * (1 + (0.035 + 0.065*pow(v, 1.5))*atan(5*cos(5*theta + 1.5*pi*v)))",
+                 "baseRadius":  12.5,
+                 "height":  21.3
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "bands",
+                    "preset":  "Basic Horizontal Bands",
+                    "equation":  "sin(14*pi*v + 0.25*cos(5*theta))",
+                    "intensity":  0.08
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "textureFill(texPosNorm, 60)",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "v - 0.55",
+                     "baseColor":  "#847D48",
+                     "patternColor1":  "#000000",
+                     "patternColor2":  "#FEC600",
+                     "overlapColor":  "#F55A74",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "utility",
+                     "preset":  "None (No Modifier)",
+                     "equation":  "0",
+                     "strength":  0,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

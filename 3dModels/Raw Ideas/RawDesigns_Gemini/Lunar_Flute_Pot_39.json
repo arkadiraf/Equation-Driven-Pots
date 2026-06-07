@@ -1,0 +1,68 @@
+{
+    "name": "Lunar Flute Pot 39",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Rim Flare",
+        "equation": "R * (1 + 0.26*pow(v, 1.8))",
+        "baseRadius": 4.67,
+        "height": 18.1
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.4,
+        "bottomThickness": 0.5,
+        "cylDrain": 0.5,
+        "sphTopCut": 30,
+        "sphBotFlatten": 147,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.48,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 248
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Honeycomb Relief",
+        "equation": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v))",
+        "intensity": 0.139
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#9D2235",
+        "patternColor1": "#FEC600",
+        "patternColor2": "#F4EE2A",
+        "overlapColor": "#F55A74",
+        "depthMm": 1.17
+    },
+    "mesh": {
+        "resV": 135,
+        "resT": 181,
+        "patternResV": 137,
+        "patternResT": 219
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Torsion Twist",
+        "dx": "x*cos(0.35*sin(pi*v)) - z*sin(0.35*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.35*sin(pi*v)) + z*cos(0.35*sin(pi*v)) - z",
+        "strength": 0.09,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Math Helios Wave Urn 80",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Shoulder Bulge",
+        "equation": "R * (1 + 0.22 * exp(-pow(v - 0.5, 2) * 25) * cos(12 * theta))",
+        "baseRadius": 6.91,
+        "height": 20.0
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.39,
+        "bottomThickness": 0.53,
+        "cylDrain": 0.5,
+        "sphTopCut": 31,
+        "sphBotFlatten": 154,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.33,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.52,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Stepped Weave",
+        "equation": "round(6 * cos(8*theta + floor(10*v)*pi/5)) / 6",
+        "intensity": 0.091
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#C12E1F",
+        "patternColor1": "#C12E1F",
+        "patternColor2": "#C12E1F",
+        "overlapColor": "#C12E1F",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 131,
+        "resT": 211,
+        "patternResV": 121,
+        "patternResT": 190
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "fract(4.0 * theta / pi + 3.0 * v)",
+        "strength": 0.18,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "wave",
+        "preset": "Sway Wave",
+        "dx": "0.12*sin(3*pi*v)",
+        "dy": "0.02*sin(2*pi*v)",
+        "dz": "0",
+        "strength": 0.15,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

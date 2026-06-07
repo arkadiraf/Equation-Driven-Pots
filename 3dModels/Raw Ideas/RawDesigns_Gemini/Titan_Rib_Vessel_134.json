@@ -1,0 +1,68 @@
+{
+    "name": "Titan Rib Vessel 134",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Shoulder Bulge",
+        "equation": "R * (1 + 0.20*exp(-pow(v - 0.72, 2)*18))",
+        "baseRadius": 8.74,
+        "height": 15.2
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.38,
+        "bottomThickness": 0.64,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 146,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.53,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.65,
+        "plateSphTopCut": 98,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Basic Horizontal Bands",
+        "equation": "sin(12*pi*v)",
+        "intensity": 0.076
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#847D48",
+        "patternColor1": "#F7E6DE",
+        "patternColor2": "#3F8E43",
+        "overlapColor": "#6F5034",
+        "depthMm": 1.34
+    },
+    "mesh": {
+        "resV": 128,
+        "resT": 217,
+        "patternResV": 131,
+        "patternResT": 186
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Side Pressure Dent",
+        "dx": "-0.6 * exp(-pow(theta - 0, 2)*8) * exp(-pow(v - 0.6, 2)*20)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.1,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

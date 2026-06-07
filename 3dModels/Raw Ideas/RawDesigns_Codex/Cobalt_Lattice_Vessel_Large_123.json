@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Cobalt Lattice Vessel Large 123",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "floral",
+                 "preset":  "10-Petal Flower",
+                 "equation":  "R * (1 + 0.08*cos(10*theta + 0.68*pi*v)*sin(pi*v)) * (1 + 0.08*exp(-pow(v - 0.62, 2)*14))",
+                 "baseRadius":  11.9,
+                 "height":  17.9
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(10*theta + 9*pi*v) + sin(11*theta - 8*pi*v)",
+                    "intensity":  0.108
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "cos(10*theta + 2*pi*v) - 0.12",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "smoothstep(0.18, 0.27, sin(10*theta + 6*pi*v) + sin(11*theta - 5*pi*v)) - 0.5",
+                     "baseColor":  "#00B1B7",
+                     "patternColor1":  "#9D2235",
+                     "patternColor2":  "#F5547C",
+                     "overlapColor":  "#E4BD68",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Gentle Torsion",
+                     "equation":  "exp(-pow(v - 0.82, 2)*24) * sin(10*theta)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

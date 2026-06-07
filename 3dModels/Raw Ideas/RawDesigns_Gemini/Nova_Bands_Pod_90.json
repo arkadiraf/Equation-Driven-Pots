@@ -1,0 +1,68 @@
+{
+    "name": "Nova Bands Pod 90",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Crystalline Geode",
+        "equation": "R * (1 + 0.08 * (abs(sin(5*theta)) + abs(cos(5*theta))) * (abs(sin(4*phi)) + abs(cos(4*phi))))",
+        "baseRadius": 4.34,
+        "height": 10.0
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.4,
+        "bottomThickness": 0.64,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 155,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.62,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.52,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Basic Horizontal Bands",
+        "equation": "sin(12*pi*v)",
+        "intensity": 0.137
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#6F5034",
+        "patternColor1": "#F7E6DE",
+        "patternColor2": "#9D432C",
+        "overlapColor": "#D1D3D5",
+        "depthMm": 1.27
+    },
+    "mesh": {
+        "resV": 128,
+        "resT": 215,
+        "patternResV": 125,
+        "patternResT": 220
+    },
+    "modifier": {
+        "type": "petal",
+        "preset": "Petal Migration",
+        "equation": "sin(2*pi*v) + 0.25*sin(5*theta)",
+        "strength": 0.16,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Side Pressure Dent",
+        "dx": "-0.6 * exp(-pow(theta - 0, 2)*8) * exp(-pow(v - 0.6, 2)*20)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.09,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

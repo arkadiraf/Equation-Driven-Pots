@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Astral Wave Bulb 175",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "interference",
+        "preset": "Quasi Lattice Orb",
+        "equation": "R * (1 + 0.06*cos(10*theta + 1.414*8*phi) + 0.06*cos(15*theta - 1.732*6*phi))",
+        "baseRadius": 6.67,
+        "height": 17.4
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.62,
+        "cylDrain": 0.5,
+        "sphTopCut": 31,
+        "sphBotFlatten": 149,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.68,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.55,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#00B1B7",
+        "patternColor1": "#00B1B7",
+        "patternColor2": "#00B1B7",
+        "overlapColor": "#00B1B7",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 130,
+        "resT": 185,
+        "patternResV": 138,
+        "patternResT": 213
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "sin(8*theta) * sin(pi*v)",
+        "strength": 0.18,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.16,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

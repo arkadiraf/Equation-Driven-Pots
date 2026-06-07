@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Twilight Helix Shell 190",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Dragon Egg",
+        "equation": "R * (1 + 0.08*cos(10*theta + 8*phi) + 0.08*cos(10*theta - 8*phi))",
+        "baseRadius": 4.7,
+        "height": 17.8
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.41,
+        "bottomThickness": 0.64,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 154,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.52,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.58,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Domain Warp Ribs",
+        "equation": "cos(16*(theta + 0.15*sin(8*pi*v)))",
+        "intensity": 0.139
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#9D432C",
+        "patternColor1": "#9D432C",
+        "patternColor2": "#9D432C",
+        "overlapColor": "#9D432C",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 122,
+        "resT": 207,
+        "patternResV": 128,
+        "patternResT": 196
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Counter-Diagonal Drift",
+        "equation": "sin(5*theta - 2*pi*v)",
+        "strength": 0.06,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Palm Press",
+        "dx": "-0.45 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dy": "-0.05 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dz": "0",
+        "strength": 0.19,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

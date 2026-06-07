@@ -1,0 +1,68 @@
+{
+    "name": "Titan Clover Urn 3",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Linear Taper",
+        "equation": "R * (1 - 0.28*v)",
+        "baseRadius": 4.19,
+        "height": 17.4
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.37,
+        "bottomThickness": 0.52,
+        "cylDrain": 0.5,
+        "sphTopCut": 31,
+        "sphBotFlatten": 145,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.31,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.59,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 251
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Diamond Weave",
+        "equation": "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)",
+        "intensity": 0.079
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#A6A9AA",
+        "patternColor1": "#00B1B7",
+        "patternColor2": "#0056B8",
+        "overlapColor": "#0A2989",
+        "depthMm": 1.0
+    },
+    "mesh": {
+        "resV": 144,
+        "resT": 206,
+        "patternResV": 123,
+        "patternResT": 196
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "sin(5*theta + 2*pi*v)",
+        "strength": 0.11,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.18,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

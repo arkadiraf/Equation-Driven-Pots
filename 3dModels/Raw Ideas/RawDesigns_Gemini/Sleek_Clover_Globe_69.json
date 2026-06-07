@@ -1,0 +1,68 @@
+{
+    "name": "Sleek Clover Globe 69",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "4-Petal Flower",
+        "equation": "R * (1 + 0.20 * cos(4 * theta) * pow(sin(phi), 1.5))",
+        "baseRadius": 4.27,
+        "height": 8.7
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.36,
+        "bottomThickness": 0.59,
+        "cylDrain": 0.5,
+        "sphTopCut": 28,
+        "sphBotFlatten": 148,
+        "sphBotCut": 177
+    },
+    "plate": {
+        "plateHeight": 1.6,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.63,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Basic Vertical Ribs",
+        "equation": "cos(10*theta)",
+        "intensity": 0.1
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#F7E6DE",
+        "patternColor1": "#000000",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#9D432C",
+        "depthMm": 1.08
+    },
+    "mesh": {
+        "resV": 146,
+        "resT": 183,
+        "patternResV": 120,
+        "patternResT": 198
+    },
+    "modifier": {
+        "type": "petal",
+        "preset": "Petal Migration",
+        "equation": "sin(2*pi*v) + 0.25*sin(5*theta)",
+        "strength": 0.09,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.12,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Glow Clover Planter 131",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Soft Hexagon",
+        "equation": "R * (1 + 0.10 * cos(6 * theta))",
+        "baseRadius": 9.42,
+        "height": 16.5
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.36,
+        "bottomThickness": 0.55,
+        "cylDrain": 0.5,
+        "sphTopCut": 24,
+        "sphBotFlatten": 154,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.57,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.65,
+        "plateSphTopCut": 99,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Honeycomb Relief",
+        "equation": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v))",
+        "intensity": 0.136
+    },
+    "patterns": {
+        "preset1": "Hex Window Grid",
+        "equation1": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v)) - 0.55",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#FFFFFF",
+        "patternColor1": "#D1D3D5",
+        "patternColor2": "#847D48",
+        "overlapColor": "#6F5034",
+        "depthMm": 1.37
+    },
+    "mesh": {
+        "resV": 120,
+        "resT": 185,
+        "patternResV": 143,
+        "patternResT": 198
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Torsion Twist",
+        "dx": "x*cos(0.35*sin(pi*v)) - z*sin(0.35*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.35*sin(pi*v)) + z*cos(0.35*sin(pi*v)) - z",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

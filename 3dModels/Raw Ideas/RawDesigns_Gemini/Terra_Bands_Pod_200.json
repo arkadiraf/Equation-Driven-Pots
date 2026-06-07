@@ -1,0 +1,68 @@
+{
+    "name": "Terra Bands Pod 200",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "primitive",
+        "preset": "Perfect Sphere",
+        "equation": "R",
+        "baseRadius": 8.85,
+        "height": 18.9
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.37,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 149,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.61,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Topographic Rings",
+        "equation": "sin(24*pi*v)",
+        "intensity": 0.121
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#5B6579",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#000000",
+        "overlapColor": "#D1D3D5",
+        "depthMm": 1.35
+    },
+    "mesh": {
+        "resV": 133,
+        "resT": 218,
+        "patternResV": 130,
+        "patternResT": 194
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Diagonal Drift",
+        "equation": "sin(4*theta + 2*pi*v)",
+        "strength": 0.17,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.14,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Vortex Helix Globe 99",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "primitive",
+        "preset": "Perfect Sphere",
+        "equation": "R",
+        "baseRadius": 4.39,
+        "height": 10.1
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 24,
+        "sphBotFlatten": 146,
+        "sphBotCut": 177
+    },
+    "plate": {
+        "plateHeight": 1.62,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.6,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Basic Vertical Ribs",
+        "equation": "cos(10*theta)",
+        "intensity": 0.083
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#D1D3D5",
+        "patternColor1": "#000000",
+        "patternColor2": "#545454",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.06
+    },
+    "mesh": {
+        "resV": 132,
+        "resT": 215,
+        "patternResV": 132,
+        "patternResT": 200
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Diagonal Drift",
+        "equation": "sin(4*theta + 2*pi*v)",
+        "strength": 0.17,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Torsion Twist",
+        "dx": "x*cos(0.35*sin(pi*v)) - z*sin(0.35*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.35*sin(pi*v)) + z*cos(0.35*sin(pi*v)) - z",
+        "strength": 0.09,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

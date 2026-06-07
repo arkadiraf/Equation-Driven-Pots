@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Verdant Arc Pod 100",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "interference",
+                 "preset":  "Perfect Sphere",
+                 "equation":  "R * (1 + 0.08*cos(7*theta + 2*phi)*pow(sin(phi), 1.4) + 0.05*sin(15*theta - 5*phi))",
+                 "baseRadius":  4.84,
+                 "height":  10.4
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.36,
+                      "bottomThickness":  0.55,
+                      "cylDrain":  0.5,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.5,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.55,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "nonlinear",
+                    "preset":  "Saturated Flutes",
+                    "equation":  "atan(6*cos(15*theta - 2*phi))*pow(sin(phi), 1.1)",
+                    "intensity":  0.099
+                },
+    "patterns":  {
+                     "preset1":  "Outer Radius Deviation",
+                     "equation1":  "max(cos(7*theta), cos(7*theta + 6*phi), cos(7*theta - 6*phi)) - 0.5",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "smoothstep(0.18, 0.27, sin(7*theta + 5*phi) + sin(8*theta - 4*phi)) - 0.5",
+                     "baseColor":  "#BECF00",
+                     "patternColor1":  "#8E9089",
+                     "patternColor2":  "#E4BD68",
+                     "overlapColor":  "#0A2989",
+                     "depthMm":  1.15
+                 },
+    "mesh":  {
+                 "resV":  140,
+                 "resT":  200,
+                 "patternResV":  140,
+                 "patternResT":  200
+             },
+    "modifier":  {
+                     "type":  "utility",
+                     "preset":  "None (No Modifier)",
+                     "equation":  "0",
+                     "strength":  0,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Facet Column Orb V Single 165",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "interference",
+                 "preset":  "Perfect Sphere",
+                 "equation":  "R * (1 + 0.06*cos(13*theta + 2*phi)*pow(sin(phi), 1.4) + 0.045*sin(23*theta - 5*phi) + 0.03*cos(28*theta + 3*phi))",
+                 "baseRadius":  5.82,
+                 "height":  19.7
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "ribs",
+                    "preset":  "Basic Vertical Ribs",
+                    "equation":  "cos(23*theta)*pow(sin(phi), 1.25)",
+                    "intensity":  0.097
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#A6A9AA",
+                     "patternColor1":  "#A6A9AA",
+                     "patternColor2":  "#A6A9AA",
+                     "overlapColor":  "#A6A9AA",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "petal",
+                     "preset":  "Petal Migration",
+                     "equation":  "sin(13*theta)*pow(sin(phi), 1.2) + 0.25*sin(2*phi)",
+                     "strength":  0.07,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

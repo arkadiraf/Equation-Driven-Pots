@@ -1,0 +1,68 @@
+{
+    "name": "Math Titan Bloom Bulb 161",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "nonlinear",
+        "preset": "Polar Compression",
+        "equation": "R * (1 + 0.12 * log(1.0 + 4.0 * abs(sin(3 * theta + phi))))",
+        "baseRadius": 11.33,
+        "height": 24.6
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.39,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 145,
+        "sphBotCut": 177
+    },
+    "plate": {
+        "plateHeight": 1.37,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.56,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Domain Warp Ribs",
+        "equation": "asin(0.96 * sin(12 * (theta + 0.1 * sin(5*pi*v))))",
+        "intensity": 0.122
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#F55A74",
+        "patternColor1": "#F55A74",
+        "patternColor2": "#F55A74",
+        "overlapColor": "#F55A74",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 142,
+        "resT": 182,
+        "patternResV": 130,
+        "patternResT": 180
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "clamp(sin(6*theta) * sin(pi*v), -0.8, 0.8)",
+        "strength": 0.16,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.18,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

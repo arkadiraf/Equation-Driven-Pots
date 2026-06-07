@@ -1,0 +1,68 @@
+{
+    "name": "Math Stellar Wave Pot 94",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Lotus Crown Vase",
+        "equation": "R * (1 + 0.15 * acos(0.9 * cos(5 * theta)) * v * (1.0 - v))",
+        "baseRadius": 7.16,
+        "height": 24.3
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.4,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 150,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.69,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.5,
+        "plateSphTopCut": 90,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "nonlinear",
+        "preset": "Log Ripple Compression",
+        "equation": "log(1.0 + 4.0 * abs(sin(12*theta + 8*pi*v)))",
+        "intensity": 0.074
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#E4BD68",
+        "patternColor1": "#E4BD68",
+        "patternColor2": "#E4BD68",
+        "overlapColor": "#E4BD68",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 135,
+        "resT": 188,
+        "patternResV": 145,
+        "patternResT": 194
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "clamp(sin(6*theta) * sin(pi*v), -0.8, 0.8)",
+        "strength": 0.07,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Abyss Bloom Pot 44",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "5-Petal Flower",
+        "equation": "R * (1 + 0.25 * cos(5 * theta))",
+        "baseRadius": 4.14,
+        "height": 24.8
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.39,
+        "bottomThickness": 0.55,
+        "cylDrain": 0.5,
+        "sphTopCut": 31,
+        "sphBotFlatten": 147,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.46,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.54,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#545454",
+        "patternColor1": "#D1D3D5",
+        "patternColor2": "#5B6579",
+        "overlapColor": "#8E9089",
+        "depthMm": 1.02
+    },
+    "mesh": {
+        "resV": 129,
+        "resT": 213,
+        "patternResV": 145,
+        "patternResT": 207
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Local Twist",
+        "equation": "exp(-pow(v - 0.8, 2)*24)",
+        "strength": 0.09,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.19,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

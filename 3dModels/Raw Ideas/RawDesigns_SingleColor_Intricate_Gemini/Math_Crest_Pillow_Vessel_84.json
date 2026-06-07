@@ -1,0 +1,68 @@
+{
+    "name": "Math Crest Pillow Vessel 84",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "folded",
+        "preset": "Stepped Crown Phase",
+        "equation": "R * (1 + 0.12 * (floor(5 * sin(8 * theta + 2*pi*v)) / 5))",
+        "baseRadius": 7.04,
+        "height": 23.5
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.44,
+        "bottomThickness": 0.6,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 149,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.6,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.5,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Modulo Tile Relief",
+        "equation": "fract(6.0 * theta / pi + 6.0 * v)",
+        "intensity": 0.057
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#00AE42",
+        "patternColor1": "#00AE42",
+        "patternColor2": "#00AE42",
+        "overlapColor": "#00AE42",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 142,
+        "resT": 216,
+        "patternResV": 138,
+        "patternResT": 216
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "clamp(sin(6*theta) * sin(pi*v), -0.8, 0.8)",
+        "strength": 0.19,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.14,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

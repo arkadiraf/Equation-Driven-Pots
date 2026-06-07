@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Magenta Orbit Pod 78",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "folded",
+                 "preset":  "Dragon Egg",
+                 "equation":  "R * (1 + 0.07*cos(16*theta + 7*phi) + 0.07*cos(16*theta - 7*phi)) * (1 + 0.05*cos(phi))",
+                 "baseRadius":  4.62,
+                 "height":  12.8
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.36,
+                      "bottomThickness":  0.55,
+                      "cylDrain":  0.5,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.5,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.55,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "carved",
+                    "preset":  "Arc Shell Carving",
+                    "equation":  "asin(0.96*sin(9*theta + 4*phi))",
+                    "intensity":  0.077
+                },
+    "patterns":  {
+                     "preset1":  "Outer Radius Deviation",
+                     "equation1":  "cos(9*theta + 3*phi) - 0.05",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "sin(6*phi + 0.4*cos(9*theta))",
+                     "baseColor":  "#FF6A13",
+                     "patternColor1":  "#E4BD68",
+                     "patternColor2":  "#F4EE2A",
+                     "overlapColor":  "#9D2235",
+                     "depthMm":  1.15
+                 },
+    "mesh":  {
+                 "resV":  140,
+                 "resT":  200,
+                 "patternResV":  140,
+                 "patternResT":  200
+             },
+    "modifier":  {
+                     "type":  "petal",
+                     "preset":  "Petal Migration",
+                     "equation":  "sin(9*theta + 2*phi) + 0.35*sin(16*theta - 3*phi)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

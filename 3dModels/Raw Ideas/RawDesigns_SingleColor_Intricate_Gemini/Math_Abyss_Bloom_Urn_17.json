@@ -1,0 +1,68 @@
+{
+    "name": "Math Abyss Bloom Urn 17",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Shoulder Bulge",
+        "equation": "R * (1 + 0.22 * exp(-pow(v - 0.5, 2) * 25) * cos(12 * theta))",
+        "baseRadius": 9.24,
+        "height": 24.9
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.44,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 23,
+        "sphBotFlatten": 145,
+        "sphBotCut": 175
+    },
+    "plate": {
+        "plateHeight": 1.6,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.56,
+        "plateSphTopCut": 90,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Stepped Weave",
+        "equation": "round(6 * cos(8*theta + floor(10*v)*pi/5)) / 6",
+        "intensity": 0.052
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#0A2989",
+        "patternColor1": "#0A2989",
+        "patternColor2": "#0A2989",
+        "overlapColor": "#0A2989",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 143,
+        "resT": 220,
+        "patternResV": 124,
+        "patternResT": 201
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

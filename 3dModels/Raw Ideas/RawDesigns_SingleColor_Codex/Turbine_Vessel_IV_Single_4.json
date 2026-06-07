@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Turbine Vessel IV Single 4",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "floral",
+                 "preset":  "5-Petal Flower",
+                 "equation":  "R * (1 + 0.11*cos(8*theta + 1.6*pi*v)*pow(sin(pi*v), 1.2) + 0.035*cos(16*theta - pi*v))",
+                 "baseRadius":  4.6,
+                 "height":  13.9
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.42,
+                      "bottomThickness":  0.7,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "nonlinear",
+                    "preset":  "Saturated Flutes",
+                    "equation":  "atan(6*cos(20*theta - 2*pi*v))",
+                    "intensity":  0.123
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#5B6579",
+                     "patternColor1":  "#5B6579",
+                     "patternColor2":  "#5B6579",
+                     "overlapColor":  "#5B6579",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "diagonal",
+                     "preset":  "Cross-Diagonal Weave",
+                     "equation":  "0.65*sin(8*theta + 2*pi*v) + 0.65*sin(8*theta - 2*pi*v)",
+                     "strength":  0.155,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

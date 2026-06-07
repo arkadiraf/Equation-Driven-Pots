@@ -1,0 +1,68 @@
+{
+    "name": "Crest Bloom Vessel 125",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Mid Bulge",
+        "equation": "R * (1 + 0.28*sin(pi*v))",
+        "baseRadius": 9.91,
+        "height": 14.5
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 151,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.55,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.52,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 255
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Diamond Weave",
+        "equation": "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)",
+        "intensity": 0.12
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#A6A9AA",
+        "patternColor1": "#5B6579",
+        "patternColor2": "#00B1B7",
+        "overlapColor": "#0086D6",
+        "depthMm": 1.37
+    },
+    "mesh": {
+        "resV": 131,
+        "resT": 196,
+        "patternResV": 120,
+        "patternResT": 188
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Abyss Pillow Planter 117",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Rounded Square",
+        "equation": "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125)",
+        "baseRadius": 8.68,
+        "height": 20.6
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 148,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.64,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.59,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "cos(8*theta) * sin(10*pi*v)",
+        "intensity": 0.113
+    },
+    "patterns": {
+        "preset1": "Basic Band Mask",
+        "equation1": "sin(8*pi*v)",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#9D432C",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#F7E6DE",
+        "overlapColor": "#D1D3D5",
+        "depthMm": 1.16
+    },
+    "mesh": {
+        "resV": 134,
+        "resT": 216,
+        "patternResV": 136,
+        "patternResT": 187
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "sin(5*theta + 2*pi*v)",
+        "strength": 0.13,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Side Pressure Dent",
+        "dx": "-0.6 * exp(-pow(theta - 0, 2)*8) * exp(-pow(v - 0.6, 2)*20)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.19,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

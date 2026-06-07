@@ -1,0 +1,68 @@
+{
+    "name": "Organic Pillow Planter 43",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Shoulder Bulge",
+        "equation": "R * (1 + 0.20*exp(-pow(v - 0.72, 2)*18))",
+        "baseRadius": 4.46,
+        "height": 19.2
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.4,
+        "bottomThickness": 0.57,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 154,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.51,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.55,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Fine Vertical Ribs",
+        "equation": "cos(16*theta)",
+        "intensity": 0.107
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#3F8E43",
+        "patternColor1": "#E4BD68",
+        "patternColor2": "#BECF00",
+        "overlapColor": "#F7E6DE",
+        "depthMm": 1.09
+    },
+    "mesh": {
+        "resV": 125,
+        "resT": 181,
+        "patternResV": 132,
+        "patternResT": 211
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Torsion Twist",
+        "dx": "x*cos(0.35*sin(pi*v)) - z*sin(0.35*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.35*sin(pi*v)) + z*cos(0.35*sin(pi*v)) - z",
+        "strength": 0.19,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

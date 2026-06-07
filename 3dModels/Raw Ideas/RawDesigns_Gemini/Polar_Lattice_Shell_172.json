@@ -1,0 +1,68 @@
+{
+    "name": "Polar Lattice Shell 172",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "primitive",
+        "preset": "Soft Egg",
+        "equation": "R * (1 + 0.16*cos(phi) - 0.08*cos(2*phi))",
+        "baseRadius": 9.1,
+        "height": 22.6
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.39,
+        "bottomThickness": 0.56,
+        "cylDrain": 0.5,
+        "sphTopCut": 24,
+        "sphBotFlatten": 148,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.6,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.58,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "sin(12*theta + 10*pi*v) + sin(13*theta - 10*pi*v)",
+        "intensity": 0.1
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#0056B8",
+        "patternColor1": "#0A2989",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.33
+    },
+    "mesh": {
+        "resV": 148,
+        "resT": 198,
+        "patternResV": 136,
+        "patternResT": 201
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.1,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.09,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

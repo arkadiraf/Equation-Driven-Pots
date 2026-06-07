@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Mesa Lattice Vessel Large 133",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "nonlinear",
+                 "preset":  "Progressive Fluting",
+                 "equation":  "R * (1 + (0.035 + 0.065*pow(v, 1.5))*atan(5*cos(4*theta + 1.5*pi*v)))",
+                 "baseRadius":  8.7,
+                 "height":  18.5
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Diamond Weave",
+                    "equation":  "0.5*cos(4*theta + 8*pi*v) + 0.5*cos(4*theta - 8*pi*v)",
+                    "intensity":  0.108
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "cos(4*theta + 2*pi*v) - 0.12",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "smoothstep(0.18, 0.27, sin(4*theta + 6*pi*v) + sin(5*theta - 5*pi*v)) - 0.5",
+                     "baseColor":  "#EC008C",
+                     "patternColor1":  "#00AE42",
+                     "patternColor2":  "#E4BD68",
+                     "overlapColor":  "#F5547C",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Gentle Torsion",
+                     "equation":  "sin(4*theta + 2*pi*v) + 0.35*sin(16*theta - 2*pi*v)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

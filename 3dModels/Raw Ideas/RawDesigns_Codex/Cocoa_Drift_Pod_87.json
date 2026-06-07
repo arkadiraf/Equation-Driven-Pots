@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Cocoa Drift Pod 87",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "basicEffect",
+                 "preset":  "Equator Bulge",
+                 "equation":  "R * (1 + 0.20*pow(sin(phi), 2) - 0.06*cos(2*phi) + 0.05*cos(6*theta)*pow(sin(phi), 1.8))",
+                 "baseRadius":  4.51,
+                 "height":  12.9
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.36,
+                      "bottomThickness":  0.55,
+                      "cylDrain":  0.5,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.5,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.55,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Diamond Weave",
+                    "equation":  "0.5*cos(6*theta + 6*phi) + 0.5*cos(6*theta - 6*phi)",
+                    "intensity":  0.066
+                },
+    "patterns":  {
+                     "preset1":  "Outer Radius Deviation",
+                     "equation1":  "textureFill(texPosNorm, 60)",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "cos(16*theta - 5*phi)",
+                     "baseColor":  "#F4EE2A",
+                     "patternColor1":  "#F55A74",
+                     "patternColor2":  "#FF6A13",
+                     "overlapColor":  "#F55A74",
+                     "depthMm":  1.15
+                 },
+    "mesh":  {
+                 "resV":  140,
+                 "resT":  200,
+                 "patternResV":  140,
+                 "patternResT":  200
+             },
+    "modifier":  {
+                     "type":  "petal",
+                     "preset":  "Petal Migration",
+                     "equation":  "sin(6*theta + 2*phi) + 0.35*sin(16*theta - 3*phi)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

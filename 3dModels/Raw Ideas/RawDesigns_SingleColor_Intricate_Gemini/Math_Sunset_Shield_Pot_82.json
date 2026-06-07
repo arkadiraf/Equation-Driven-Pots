@@ -1,0 +1,68 @@
+{
+    "name": "Math Sunset Shield Pot 82",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "folded",
+        "preset": "Hex Panel Shell",
+        "equation": "R * (1 + 0.12 * abs(mod(theta + pi * v, pi / 3) - pi / 6))",
+        "baseRadius": 5.56,
+        "height": 18.9
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.44,
+        "bottomThickness": 0.62,
+        "cylDrain": 0.5,
+        "sphTopCut": 29,
+        "sphBotFlatten": 149,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.45,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.5,
+        "plateSphTopCut": 99,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Panel Relief",
+        "equation": "clamp(cos(8*theta) * sin(8*pi*v), -0.5, 0.5)",
+        "intensity": 0.139
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#0A2989",
+        "patternColor1": "#0A2989",
+        "patternColor2": "#0A2989",
+        "overlapColor": "#0A2989",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 143,
+        "resT": 195,
+        "patternResV": 139,
+        "patternResT": 198
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.14,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

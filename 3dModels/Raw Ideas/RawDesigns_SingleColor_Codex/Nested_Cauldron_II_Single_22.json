@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Nested Cauldron II Single 22",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "folded",
+                 "preset":  "Folded Mod Panels",
+                 "equation":  "R * (1 + 0.075*cos(6*abs(mod(theta + 0.75*pi*v, 2*pi/6) - pi/6)) + 0.035*abs(cos(23*theta - 4*pi*v)))",
+                 "baseRadius":  8.2,
+                 "height":  22.5
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.42,
+                      "bottomThickness":  0.7,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "nonlinear",
+                    "preset":  "Saturated Flutes",
+                    "equation":  "atan(6*cos(23*theta - 2*pi*v))",
+                    "intensity":  0.09
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#E4BD68",
+                     "patternColor1":  "#E4BD68",
+                     "patternColor2":  "#E4BD68",
+                     "overlapColor":  "#E4BD68",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Crown Rotation",
+                     "equation":  "exp(-pow(v - 0.86, 2)*36) * sin(2*pi*v)",
+                     "strength":  0.105,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

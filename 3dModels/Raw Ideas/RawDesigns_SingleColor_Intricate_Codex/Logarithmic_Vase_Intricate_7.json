@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Logarithmic Vase Intricate 7",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "interference",
+                 "preset":  "Fourier Bloom",
+                 "equation":  "R * (1 + 0.055*max(cos(11*theta + 3*pi*v), cos(13*theta - 2*pi*v))*sin(pi*v) + 0.035*sin(pi*v))",
+                 "baseRadius":  5.2,
+                 "height":  17.6
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Diamond Weave",
+                    "equation":  "abs(fract(13*theta/(2*pi) + 4*v) - 0.5) + abs(fract(13*theta/(2*pi) - 4*v) - 0.5)",
+                    "intensity":  0.136
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#F7E6DE",
+                     "patternColor1":  "#F7E6DE",
+                     "patternColor2":  "#F7E6DE",
+                     "overlapColor":  "#F7E6DE",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "regional",
+                     "preset":  "Body Swirl Window",
+                     "equation":  "smoothstep(0.18, 0.42, v)*(1 - smoothstep(0.70, 0.92, v))*sin(13*theta)",
+                     "strength":  0.088,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "pressure",
+                       "preset":  "Front Squeeze",
+                       "dx":  "-0.12*smoothstep(0.25, 0.55, v)*(1 - smoothstep(0.68, 0.90, v))",
+                       "dy":  "0",
+                       "dz":  "0.06*cos(theta)*smoothstep(0.25, 0.55, v)",
+                       "strength":  0.11,
+                       "region":  "all",
+                       "anchor":  "bottomHalfStiff",
+                       "space":  "xyz"
+                   }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Mirage Helix Pot 50",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "interference",
+        "preset": "Braided Helix",
+        "equation": "R * (1 + 0.12*cos(6*theta + 3*pi*v) + 0.08*cos(6*theta - 3*pi*v))",
+        "baseRadius": 4.34,
+        "height": 22.8
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.41,
+        "bottomThickness": 0.63,
+        "cylDrain": 0.5,
+        "sphTopCut": 24,
+        "sphBotFlatten": 149,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.53,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.64,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "sin(12*theta + 10*pi*v) + sin(13*theta - 10*pi*v)",
+        "intensity": 0.133
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#E4BD68",
+        "patternColor1": "#EC008C",
+        "patternColor2": "#A6A9AA",
+        "overlapColor": "#F5547C",
+        "depthMm": 1.1
+    },
+    "mesh": {
+        "resV": 124,
+        "resT": 214,
+        "patternResV": 135,
+        "patternResT": 197
+    },
+    "modifier": {
+        "type": "petal",
+        "preset": "Petal Migration",
+        "equation": "sin(2*pi*v) + 0.25*sin(5*theta)",
+        "strength": 0.12,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

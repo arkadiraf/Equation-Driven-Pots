@@ -1,0 +1,68 @@
+{
+  "name": "DNA Helix Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "nonlinear",
+    "preset": "DNA Helix (S-Curve)",
+    "equation": "R * (1 + 0.36*cos(2*(theta + 1.2*sin(2*pi*v)))) * (1 - 0.08*pow(v, 1.5))",
+    "baseRadius": 4.8,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.33,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Alternating Ribs",
+    "equation": "cos(8*theta + 4*pi*v) + 0.30*cos(16*theta + 8*pi*v)",
+    "intensity": 0.10
+  },
+  "patterns": {
+    "preset1": "Double Helix Mask",
+    "equation1": "cos(4*theta + 8*pi*v) * cos(4*theta - 8*pi*v)",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#1c2c3c",
+    "patternColor1": "#4ab8e0",
+    "patternColor2": "#2888b0",
+    "overlapColor": "#80d8f0",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 200,
+    "patternResV": 140,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Gentle Torsion",
+    "equation": "0.5*sin(pi*v)",
+    "strength": 0.18,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

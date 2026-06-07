@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Terra Clover Planter 10",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Rosette Bloom",
+        "equation": "R * (1 + 0.2 * cos(5 * (theta + 0.25 * sin(2*pi*v))) * sin(pi*v)) * (1 + 0.15 * pow(v, 2.0))",
+        "baseRadius": 10.64,
+        "height": 15.3
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.39,
+        "bottomThickness": 0.59,
+        "cylDrain": 0.5,
+        "sphTopCut": 30,
+        "sphBotFlatten": 149,
+        "sphBotCut": 177
+    },
+    "plate": {
+        "plateHeight": 1.44,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.64,
+        "plateSphTopCut": 90,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "cos(16*theta) * sin(20*pi*v)",
+        "intensity": 0.075
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#5B6579",
+        "patternColor1": "#5B6579",
+        "patternColor2": "#5B6579",
+        "overlapColor": "#5B6579",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 125,
+        "resT": 211,
+        "patternResV": 139,
+        "patternResT": 187
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Body Swirl",
+        "equation": "exp(-pow(v - 0.55, 2)*14) * sin(4*theta + 2*pi*v)",
+        "strength": 0.14,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

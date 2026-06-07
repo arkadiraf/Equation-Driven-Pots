@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Alpine Column Planter Large 121",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "basicEffect",
+                 "preset":  "Shoulder Bulge",
+                 "equation":  "R * (1 + 0.13*exp(-pow(v - 0.70, 2)*18) - 0.04*pow(1 - v, 1.8) + 0.04*cos(8*theta - pi*v))",
+                 "baseRadius":  11.5,
+                 "height":  15.7
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Diamond Weave",
+                    "equation":  "0.5*cos(8*theta + 8*pi*v) + 0.5*cos(8*theta - 8*pi*v)",
+                    "intensity":  0.08
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "textureFill(texPosNorm, 60)",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "v - 0.55",
+                     "baseColor":  "#EC008C",
+                     "patternColor1":  "#5E43B7",
+                     "patternColor2":  "#00B1B7",
+                     "overlapColor":  "#9D432C",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Gentle Torsion",
+                     "equation":  "sin(8*theta + 2*pi*v) + 0.35*sin(11*theta - 2*pi*v)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "torsion",
+                       "preset":  "Basic Torsion",
+                       "dx":  "x*cos(0.12*sin(pi*v)) - z*sin(0.12*sin(pi*v)) - x",
+                       "dy":  "0",
+                       "dz":  "x*sin(0.12*sin(pi*v)) + z*cos(0.12*sin(pi*v)) - z",
+                       "strength":  0.14,
+                       "region":  "all",
+                       "anchor":  "baseAnchored",
+                       "space":  "xyz"
+                   }
+}

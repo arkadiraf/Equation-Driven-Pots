@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Lagoon Ridge Pot Large 152",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "folded",
+                 "preset":  "Hex Panel Shell",
+                 "equation":  "R * (1 + 0.055*cos(7 * abs(mod(theta + pi*v, 2*pi/7) - pi/7))) * (1 + 0.07*pow(v, 1.3))",
+                 "baseRadius":  12.5,
+                 "height":  18.6
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "carved",
+                    "preset":  "Arc Shell Carving",
+                    "equation":  "asin(0.95*sin(7*theta + 0.81*pi*v))",
+                    "intensity":  0.094
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "outerDeviation(0.14)",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "cos(12*theta - 3*pi*v)",
+                     "baseColor":  "#FEC600",
+                     "patternColor1":  "#F7E6DE",
+                     "patternColor2":  "#F7E6DE",
+                     "overlapColor":  "#3F8E43",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Gentle Torsion",
+                     "equation":  "0.7*sin(pi*v)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

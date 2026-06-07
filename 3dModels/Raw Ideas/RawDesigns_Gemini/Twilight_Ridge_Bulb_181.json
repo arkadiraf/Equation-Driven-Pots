@@ -1,0 +1,68 @@
+{
+    "name": "Twilight Ridge Bulb 181",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Twisted Bloom",
+        "equation": "R * (1 + 0.18 * cos(5 * theta + 1.6 * phi) * pow(sin(phi), 1.5))",
+        "baseRadius": 8.84,
+        "height": 20.2
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.39,
+        "bottomThickness": 0.56,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 146,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.34,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.63,
+        "plateSphTopCut": 90,
+        "plateSphBotFlatten": 248
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "cos(8*theta) * sin(10*pi*v)",
+        "intensity": 0.06
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#545454",
+        "patternColor1": "#A6A9AA",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#5B6579",
+        "depthMm": 1.06
+    },
+    "mesh": {
+        "resV": 127,
+        "resT": 199,
+        "patternResV": 127,
+        "patternResT": 184
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.2,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.09,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

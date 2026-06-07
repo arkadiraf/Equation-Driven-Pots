@@ -1,0 +1,68 @@
+{
+    "name": "Math Terra Groove Globe 157",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Crystalline Geode",
+        "equation": "R * (1 + 0.08 * ceil(4.0 * fract(theta / pi)) / 4.0 * sin(phi))",
+        "baseRadius": 6.49,
+        "height": 20.0
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.4,
+        "bottomThickness": 0.59,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 153,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.57,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.57,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "sign(sin(12*theta)) * sign(sin(12*pi*v))",
+        "intensity": 0.076
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#BECF00",
+        "patternColor1": "#BECF00",
+        "patternColor2": "#BECF00",
+        "overlapColor": "#BECF00",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 145,
+        "resT": 215,
+        "patternResV": 133,
+        "patternResT": 202
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "fract(4.0 * theta / pi + 3.0 * v)",
+        "strength": 0.11,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.15,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

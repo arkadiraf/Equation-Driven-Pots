@@ -1,0 +1,68 @@
+{
+    "name": "Math Solar Chevron Bulb 197",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Dragon Egg",
+        "equation": "R * (1 + 0.08 * abs(mod(theta + phi, pi/2) - pi/4))",
+        "baseRadius": 6.62,
+        "height": 17.6
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.43,
+        "bottomThickness": 0.56,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 152,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.45,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.55,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "sign(sin(12*theta)) * sign(sin(12*pi*v))",
+        "intensity": 0.081
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#D1D3D5",
+        "patternColor1": "#D1D3D5",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#D1D3D5",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 143,
+        "resT": 198,
+        "patternResV": 139,
+        "patternResT": 181
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "clamp(sin(6*theta) * sin(pi*v), -0.8, 0.8)",
+        "strength": 0.14,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "wave",
+        "preset": "Sway Wave",
+        "dx": "0.12*sin(3*pi*v)",
+        "dy": "0.02*sin(2*pi*v)",
+        "dz": "0",
+        "strength": 0.19,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

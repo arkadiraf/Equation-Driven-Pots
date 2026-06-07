@@ -1,0 +1,68 @@
+{
+    "name": "Sunset Bands Vessel 41",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Mid Bulge",
+        "equation": "R * (1 + 0.28*sin(pi*v))",
+        "baseRadius": 4.18,
+        "height": 12.5
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.39,
+        "bottomThickness": 0.52,
+        "cylDrain": 0.5,
+        "sphTopCut": 29,
+        "sphBotFlatten": 150,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.39,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.5,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Basic Vertical Ribs",
+        "equation": "cos(10*theta)",
+        "intensity": 0.095
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#847D48",
+        "patternColor1": "#F7E6DE",
+        "patternColor2": "#00AE42",
+        "overlapColor": "#BECF00",
+        "depthMm": 1.23
+    },
+    "mesh": {
+        "resV": 132,
+        "resT": 196,
+        "patternResV": 123,
+        "patternResT": 207
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Local Twist",
+        "equation": "exp(-pow(v - 0.8, 2)*24)",
+        "strength": 0.19,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Side Pressure Dent",
+        "dx": "-0.6 * exp(-pow(theta - 0, 2)*8) * exp(-pow(v - 0.6, 2)*20)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.19,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

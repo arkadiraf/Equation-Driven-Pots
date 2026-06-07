@@ -1,0 +1,68 @@
+{
+  "name": "Turbine Blade Pot",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "nonlinear",
+    "preset": "Turbine Blade",
+    "equation": "R * (1 + 0.20*cos(5*theta + 0.40*sin(theta))) * (1 - 0.10*pow(v, 1.3))",
+    "baseRadius": 5.0,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "nonlinear",
+    "preset": "Arc Compression Relief",
+    "equation": "asin(0.94*sin(10*theta + 7*pi*v)) * (0.4 + 0.6*(1-v))",
+    "intensity": 0.12
+  },
+  "patterns": {
+    "preset1": "Surface Texture Top %",
+    "equation1": "textureFill(texPosNorm, 55)",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#2a3040",
+    "patternColor1": "#8090c0",
+    "patternColor2": "#606888",
+    "overlapColor": "#a0b0d8",
+    "depthMm": 1.1
+  },
+  "mesh": {
+    "resV": 130,
+    "resT": 200,
+    "patternResV": 130,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Crown Rotation",
+    "equation": "exp(-pow(v - 0.82, 2)*36) * sin(2*pi*v)",
+    "strength": 0.20,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "swirl",
+    "preset": "Rim Vortex",
+    "dx": "-0.14*pow(v, 1.8)*sin(theta)",
+    "dy": "0",
+    "dz": "0.14*pow(v, 1.8)*cos(theta)",
+    "strength": 0.6,
+    "region": "rim",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

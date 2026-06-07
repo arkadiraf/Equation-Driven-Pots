@@ -1,0 +1,68 @@
+{
+    "name": "Polar Pillow Orb 175",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Dragon Egg",
+        "equation": "R * (1 + 0.08 * cos(10*theta + 8*phi) + 0.08 * cos(10*theta - 8*phi))",
+        "baseRadius": 8.59,
+        "height": 16.7
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.4,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 29,
+        "sphBotFlatten": 147,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.42,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.55,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Fine Vertical Ribs",
+        "equation": "cos(16*theta)",
+        "intensity": 0.135
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#FFFFFF",
+        "patternColor1": "#D1D3D5",
+        "patternColor2": "#545454",
+        "overlapColor": "#5B6579",
+        "depthMm": 1.09
+    },
+    "mesh": {
+        "resV": 140,
+        "resT": 216,
+        "patternResV": 132,
+        "patternResT": 198
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.17,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

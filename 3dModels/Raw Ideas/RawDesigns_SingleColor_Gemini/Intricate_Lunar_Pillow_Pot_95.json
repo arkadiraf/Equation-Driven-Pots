@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Lunar Pillow Pot 95",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Lobed Body",
+        "equation": "R * (1 + 0.18 * cos(10 * theta) * (0.8 + 0.2 * sin(4*pi*v)))",
+        "baseRadius": 12.5,
+        "height": 15.0
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.44,
+        "bottomThickness": 0.5,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 154,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.5,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.52,
+        "plateSphTopCut": 91,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "nonlinear",
+        "preset": "Log Ripple Compression",
+        "equation": "log(1 + 3*abs(sin(14*theta + 12*pi*v)))",
+        "intensity": 0.127
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#F5547C",
+        "patternColor1": "#F5547C",
+        "patternColor2": "#F5547C",
+        "overlapColor": "#F5547C",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 140,
+        "resT": 199,
+        "patternResV": 127,
+        "patternResT": 188
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "sin(8*theta) * sin(pi*v)",
+        "strength": 0.18,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Fluid Twist XYZ",
+        "dx": "x*cos(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) - z*sin(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) + z*cos(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) - z",
+        "strength": 0.13,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Glyphic Vase Intricate 71",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "folded",
+                 "preset":  "Chevron Fold",
+                 "equation":  "R * (1 + 0.055*abs(fract(9*theta/(2*pi) + v) - fract(9*theta/(2*pi) - v)) + 0.035*cos(21*theta + pi*v))",
+                 "baseRadius":  9.4,
+                 "height":  21.8
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(21*theta + 9*pi*v) + sin(23*theta - 8*pi*v)",
+                    "intensity":  0.136
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#BECF00",
+                     "patternColor1":  "#BECF00",
+                     "patternColor2":  "#BECF00",
+                     "overlapColor":  "#BECF00",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "diagonal",
+                     "preset":  "Cross-Diagonal Weave",
+                     "equation":  "0.55*sin(9*theta + 2*pi*v) + 0.55*sin(9*theta - 2*pi*v)",
+                     "strength":  0.07,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "torsion",
+                       "preset":  "Counter Twist",
+                       "dx":  "x*cos(0.13*sin(2*pi*v)) - z*sin(0.13*sin(2*pi*v)) - x",
+                       "dy":  "0",
+                       "dz":  "x*sin(0.13*sin(2*pi*v)) + z*cos(0.13*sin(2*pi*v)) - z",
+                       "strength":  0.14,
+                       "region":  "all",
+                       "anchor":  "baseAnchored",
+                       "space":  "xyz"
+                   }
+}

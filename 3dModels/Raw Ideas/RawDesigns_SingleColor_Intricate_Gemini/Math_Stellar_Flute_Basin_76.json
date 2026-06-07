@@ -1,0 +1,68 @@
+{
+    "name": "Math Stellar Flute Basin 76",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "folded",
+        "preset": "Folded Mod Panels",
+        "equation": "R * (1 + 0.08 * sign(sin(6 * theta + 2 * pi * v)))",
+        "baseRadius": 11.26,
+        "height": 14.5
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.42,
+        "bottomThickness": 0.63,
+        "cylDrain": 0.5,
+        "sphTopCut": 30,
+        "sphBotFlatten": 147,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.54,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.63,
+        "plateSphTopCut": 98,
+        "plateSphBotFlatten": 251
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Modulo Tile Relief",
+        "equation": "fract(6.0 * theta / pi + 6.0 * v)",
+        "intensity": 0.057
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#FF6A13",
+        "patternColor1": "#FF6A13",
+        "patternColor2": "#FF6A13",
+        "overlapColor": "#FF6A13",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 142,
+        "resT": 197,
+        "patternResV": 123,
+        "patternResT": 195
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.15,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

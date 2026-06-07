@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Indexed Planter Intricate 14",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "nonlinear",
+                 "preset":  "Arc Compression",
+                 "equation":  "R * (1 + 0.10*(0.5 - abs(fract(12*theta/(2*pi) + 2.5*v) - 0.5))*sin(pi*v) + 0.035*pow(v, 1.6))",
+                 "baseRadius":  6.6,
+                 "height":  11.6
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "nonlinear",
+                    "preset":  "Saturated Flutes",
+                    "equation":  "atan(6*(cos(21*theta + 2*pi*v) + 0.35*sign(sin(12*theta))))",
+                    "intensity":  0.125
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#FF9016",
+                     "patternColor1":  "#FF9016",
+                     "patternColor2":  "#FF9016",
+                     "overlapColor":  "#FF9016",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "interference",
+                     "preset":  "Quasi Drift",
+                     "equation":  "sin(7*theta + 2*pi*v) + 0.35*sin(21*theta - 2*pi*sqrt(2)*v)",
+                     "strength":  0.124,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

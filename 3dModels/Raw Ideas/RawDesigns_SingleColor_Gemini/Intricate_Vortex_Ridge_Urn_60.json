@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Vortex Ridge Urn 60",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "nonlinear",
+        "preset": "DNA Helix (S-Curve)",
+        "equation": "R * (1 + 0.15 * cos(2 * theta + 4*pi*v)) * (1 + 0.12 * sin(12*pi*v))",
+        "baseRadius": 9.19,
+        "height": 21.3
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.41,
+        "bottomThickness": 0.5,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 148,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.4,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.6,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Terraced Contours",
+        "equation": "floor(10 * (0.5 + 0.5*sin(24*pi*v))) / 10",
+        "intensity": 0.13
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#BECF00",
+        "patternColor1": "#BECF00",
+        "patternColor2": "#BECF00",
+        "overlapColor": "#BECF00",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 131,
+        "resT": 218,
+        "patternResV": 129,
+        "patternResT": 196
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Counter-Diagonal Drift",
+        "equation": "sin(5*theta - 2*pi*v)",
+        "strength": 0.06,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.13,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

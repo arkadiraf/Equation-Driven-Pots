@@ -1,0 +1,68 @@
+{
+    "name": "Dune Shield Shell 76",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Lotus Pod",
+        "equation": "R * (1 + 0.16 * cos(6 * theta) * pow(sin(phi), 2.2) - 0.04 * cos(2 * phi))",
+        "baseRadius": 4.3,
+        "height": 14.5
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.4,
+        "bottomThickness": 0.59,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 145,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.42,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 99,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "nonlinear",
+        "preset": "Saturated Flutes",
+        "equation": "atan(7 * cos(12*theta))",
+        "intensity": 0.126
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#FFFFFF",
+        "patternColor1": "#0A2989",
+        "patternColor2": "#A6A9AA",
+        "overlapColor": "#0086D6",
+        "depthMm": 1.16
+    },
+    "mesh": {
+        "resV": 131,
+        "resT": 196,
+        "patternResV": 150,
+        "patternResT": 220
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.09,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.2,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

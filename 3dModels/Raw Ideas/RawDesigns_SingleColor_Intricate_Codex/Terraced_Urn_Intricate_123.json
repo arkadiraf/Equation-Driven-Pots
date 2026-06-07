@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Terraced Urn Intricate 123",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "folded",
+                 "preset":  "Folded Mod Panels",
+                 "equation":  "R * (1 + 0.07*cos(6*abs(mod(theta + 1.4*pi*v, 2*pi/6) - pi/6)) + 0.025*cos(15*theta))",
+                 "baseRadius":  11.2,
+                 "height":  11.7
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Honeycomb Relief",
+                    "equation":  "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v))",
+                    "intensity":  0.092
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#FEC600",
+                     "patternColor1":  "#FEC600",
+                     "patternColor2":  "#FEC600",
+                     "overlapColor":  "#FEC600",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "fold",
+                     "preset":  "Chevron Drift",
+                     "equation":  "abs(sin(9*theta + 2*pi*v)) - abs(sin(9*theta - 2*pi*v))",
+                     "strength":  0.106,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Stellar Pillow Shell 158",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Crystalline Geode",
+        "equation": "R * (1 + 0.08 * (abs(sin(5*theta)) + abs(cos(5*theta))) * (abs(sin(4*phi)) + abs(cos(4*phi))))",
+        "baseRadius": 8.44,
+        "height": 15.4
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.59,
+        "cylDrain": 0.5,
+        "sphTopCut": 30,
+        "sphBotFlatten": 154,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.55,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.65,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Basic Vertical Ribs",
+        "equation": "cos(10*theta)",
+        "intensity": 0.082
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#F7E6DE",
+        "patternColor1": "#D1D3D5",
+        "patternColor2": "#9D432C",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.17
+    },
+    "mesh": {
+        "resV": 129,
+        "resT": 201,
+        "patternResV": 132,
+        "patternResT": 186
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.15,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.17,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

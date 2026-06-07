@@ -1,0 +1,68 @@
+{
+    "name": "Math Mirage Swirl Pot 90",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "nonlinear",
+        "preset": "Progressive Fluting",
+        "equation": "R * (1 + 0.14 * log(1.0 + 3.0 * abs(sin(5 * theta + pi * v))))",
+        "baseRadius": 10.4,
+        "height": 18.0
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.35,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 23,
+        "sphBotFlatten": 152,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.6,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.69,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Panel Relief",
+        "equation": "clamp(cos(8*theta) * sin(8*pi*v), -0.5, 0.5)",
+        "intensity": 0.054
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#0056B8",
+        "patternColor1": "#0056B8",
+        "patternColor2": "#0056B8",
+        "overlapColor": "#0056B8",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 131,
+        "resT": 208,
+        "patternResV": 130,
+        "patternResT": 208
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "fract(4.0 * theta / pi + 3.0 * v)",
+        "strength": 0.12,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Pressed Shoulder",
+        "dx": "-0.5 * exp(-pow(theta - pi/8, 2)*10) * exp(-pow(v - 0.72, 2)*24)",
+        "dy": "-0.08 * exp(-pow(v - 0.72, 2)*18)",
+        "dz": "0",
+        "strength": 0.16,
+        "region": "shoulder",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

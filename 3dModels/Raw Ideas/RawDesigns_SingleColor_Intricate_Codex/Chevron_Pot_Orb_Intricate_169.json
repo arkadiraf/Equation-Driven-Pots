@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Chevron Pot Orb Intricate 169",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "basicEffect",
+                 "preset":  "Equator Bulge",
+                 "equation":  "R * (1 + 0.13*pow(sin(phi), 2) + 0.04*cos(13*theta + ceil(8*v)*pi/6)*pow(sin(phi), 1.3))",
+                 "baseRadius":  5.04,
+                 "height":  18
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.45,
+                      "bottomThickness":  0.74,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "nonlinear",
+                    "preset":  "Saturated Flutes",
+                    "equation":  "atan(6*(cos(28*theta - 2*phi) + 0.25*sign(sin(9*theta))))*pow(sin(phi), 1.1)",
+                    "intensity":  0.098
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#3F8E43",
+                     "patternColor1":  "#3F8E43",
+                     "patternColor2":  "#3F8E43",
+                     "overlapColor":  "#3F8E43",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "interference",
+                     "preset":  "Interference Drift",
+                     "equation":  "sin(13*theta + 2*phi) + 0.4*sin(28*theta - sqrt(2)*phi)",
+                     "strength":  0.113,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

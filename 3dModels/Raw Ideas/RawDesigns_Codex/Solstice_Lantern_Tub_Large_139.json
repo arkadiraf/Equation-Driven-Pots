@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Solstice Lantern Tub Large 139",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "primitive",
+                 "preset":  "Rounded Square",
+                 "equation":  "R * pow(pow(abs(cos(theta)), 5.5) + pow(abs(sin(theta)), 5.5), -0.1818181818) * (1 + 0.045*sin(pi*v))",
+                 "baseRadius":  9.9,
+                 "height":  14.7
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Diamond Weave",
+                    "equation":  "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)",
+                    "intensity":  0.122
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "max(cos(10*theta), cos(10*theta + 8*pi*v), cos(10*theta - 8*pi*v)) - 0.58",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "sin(5*pi*v) - 0.12",
+                     "baseColor":  "#EC008C",
+                     "patternColor1":  "#FFFFFF",
+                     "patternColor2":  "#9D2235",
+                     "overlapColor":  "#FFFFFF",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Gentle Torsion",
+                     "equation":  "sin(10*theta + 2*pi*v) + 0.35*sin(13*theta - 2*pi*v)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

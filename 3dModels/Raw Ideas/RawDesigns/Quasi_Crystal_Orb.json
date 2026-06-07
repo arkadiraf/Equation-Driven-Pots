@@ -1,0 +1,68 @@
+{
+  "name": "Quasi Crystal Orb",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "interference",
+    "preset": "Quasi-Spiral Shell",
+    "equation": "R * (1 + 0.09*cos(13*theta - 8*phi) + 0.09*cos(8*theta + 13*phi) + 0.05*cos(21*theta - 5*phi))",
+    "baseRadius": 5.5,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 28,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Quasi Interference",
+    "equation": "sin(7*theta + 9*phi) + 0.55*sin(11*theta - sqrt(2)*8*phi) + 0.35*cos(13*theta + sqrt(3)*5*phi)",
+    "intensity": 0.07
+  },
+  "patterns": {
+    "preset1": "Outer Radius Deviation",
+    "equation1": "outerDeviation(0.18)",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#1a1a2e",
+    "patternColor1": "#7060c0",
+    "patternColor2": "#4040a0",
+    "overlapColor": "#a090e0",
+    "depthMm": 1.0
+  },
+  "mesh": {
+    "resV": 130,
+    "resT": 200,
+    "patternResV": 130,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

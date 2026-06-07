@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Vortex Swirl Vessel 85",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Islamic Rosette",
+        "equation": "R * (1 + 0.14*cos(8*theta) + 0.06*cos(4*theta)) * (1 + 0.2*pow(v, 1.8))",
+        "baseRadius": 4.09,
+        "height": 18.3
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.39,
+        "bottomThickness": 0.53,
+        "cylDrain": 0.5,
+        "sphTopCut": 23,
+        "sphBotFlatten": 145,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.66,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.56,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 248
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "sin(18*theta + 12*pi*v) + sin(19*theta - 12*pi*v)",
+        "intensity": 0.122
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#8E9089",
+        "patternColor1": "#8E9089",
+        "patternColor2": "#8E9089",
+        "overlapColor": "#8E9089",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 145,
+        "resT": 217,
+        "patternResV": 120,
+        "patternResT": 213
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "sin(8*theta) * sin(pi*v)",
+        "strength": 0.17,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

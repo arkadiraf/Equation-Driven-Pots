@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Serrated Tower Intricate 95",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "folded",
+                 "preset":  "Chevron Fold",
+                 "equation":  "R * (1 + 0.055*abs(fract(11*theta/(2*pi) + v) - fract(11*theta/(2*pi) - v)) + 0.035*cos(27*theta + pi*v))",
+                 "baseRadius":  5.6,
+                 "height":  21.6
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(27*theta + 9*pi*v) + sin(29*theta - 8*pi*v)",
+                    "intensity":  0.136
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#0056B8",
+                     "patternColor1":  "#0056B8",
+                     "patternColor2":  "#0056B8",
+                     "overlapColor":  "#0056B8",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Crown Rotation",
+                     "equation":  "exp(-pow(v - 0.86, 2)*34) * sin(round(8*v)*pi/4)",
+                     "strength":  0.142,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

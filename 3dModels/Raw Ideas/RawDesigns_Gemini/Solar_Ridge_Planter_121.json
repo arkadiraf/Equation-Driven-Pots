@@ -1,0 +1,68 @@
+{
+    "name": "Solar Ridge Planter 121",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Rim Flare",
+        "equation": "R * (1 + 0.26*pow(v, 1.8))",
+        "baseRadius": 8.61,
+        "height": 13.6
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.6,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 149,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.38,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.51,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "sin(12*theta + 10*pi*v) + sin(13*theta - 10*pi*v)",
+        "intensity": 0.069
+    },
+    "patterns": {
+        "preset1": "Basic Band Mask",
+        "equation1": "sin(8*pi*v)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#D1D3D5",
+        "patternColor1": "#0086D6",
+        "patternColor2": "#A6A9AA",
+        "overlapColor": "#5B6579",
+        "depthMm": 1.11
+    },
+    "mesh": {
+        "resV": 134,
+        "resT": 216,
+        "patternResV": 131,
+        "patternResT": 200
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.2,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Binary Pot Intricate 57",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "primitive",
+                 "preset":  "Rounded Square",
+                 "equation":  "R * pow(pow(abs(cos(theta)), 4 + 6*smoothstep(0.2, 0.8, v)) + pow(abs(sin(theta)), 4 + 6*smoothstep(0.2, 0.8, v)), -1/(4 + 6*smoothstep(0.2, 0.8, v))) * (1 + 0.035*cos(6*theta))",
+                 "baseRadius":  6.6,
+                 "height":  19.5
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Honeycomb Relief",
+                    "equation":  "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v))",
+                    "intensity":  0.07
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#0086D6",
+                     "patternColor1":  "#0086D6",
+                     "patternColor2":  "#0086D6",
+                     "overlapColor":  "#0086D6",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "regional",
+                     "preset":  "Body Swirl Window",
+                     "equation":  "smoothstep(0.18, 0.42, v)*(1 - smoothstep(0.70, 0.92, v))*sin(7*theta)",
+                     "strength":  0.088,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "torsion",
+                       "preset":  "Counter Twist",
+                       "dx":  "x*cos(0.13*sin(2*pi*v)) - z*sin(0.13*sin(2*pi*v)) - x",
+                       "dy":  "0",
+                       "dz":  "x*sin(0.13*sin(2*pi*v)) + z*cos(0.13*sin(2*pi*v)) - z",
+                       "strength":  0.14,
+                       "region":  "all",
+                       "anchor":  "baseAnchored",
+                       "space":  "xyz"
+                   }
+}

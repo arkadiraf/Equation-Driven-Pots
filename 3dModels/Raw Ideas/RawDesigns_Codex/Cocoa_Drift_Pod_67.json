@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Cocoa Drift Pod 67",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "basicEffect",
+                 "preset":  "Equator Bulge",
+                 "equation":  "R * (1 + 0.20*pow(sin(phi), 2) - 0.06*cos(2*phi) + 0.05*cos(4*theta)*pow(sin(phi), 1.8))",
+                 "baseRadius":  4.51,
+                 "height":  11.7
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.36,
+                      "bottomThickness":  0.55,
+                      "cylDrain":  0.5,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.5,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.55,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Diamond Weave",
+                    "equation":  "0.5*cos(4*theta + 6*phi) + 0.5*cos(4*theta - 6*phi)",
+                    "intensity":  0.066
+                },
+    "patterns":  {
+                     "preset1":  "Outer Radius Deviation",
+                     "equation1":  "textureFill(texPosNorm, 60)",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "cos(12*theta - 5*phi)",
+                     "baseColor":  "#5B6579",
+                     "patternColor1":  "#F7E6DE",
+                     "patternColor2":  "#0056B8",
+                     "overlapColor":  "#F7E6DE",
+                     "depthMm":  1.15
+                 },
+    "mesh":  {
+                 "resV":  140,
+                 "resT":  200,
+                 "patternResV":  140,
+                 "patternResT":  200
+             },
+    "modifier":  {
+                     "type":  "utility",
+                     "preset":  "None (No Modifier)",
+                     "equation":  "0",
+                     "strength":  0,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

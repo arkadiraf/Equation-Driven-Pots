@@ -1,0 +1,68 @@
+{
+    "name": "Solar Pillow Orb 182",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Crystalline Geode",
+        "equation": "R * (1 + 0.08 * (abs(sin(5*theta)) + abs(cos(5*theta))) * (abs(sin(4*phi)) + abs(cos(4*phi))))",
+        "baseRadius": 9.03,
+        "height": 19.8
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.56,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 145,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.66,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.54,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 248
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Topographic Rings",
+        "equation": "sin(24*pi*v)",
+        "intensity": 0.095
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#F7E6DE",
+        "patternColor1": "#3F8E43",
+        "patternColor2": "#BECF00",
+        "overlapColor": "#6F5034",
+        "depthMm": 1.18
+    },
+    "mesh": {
+        "resV": 123,
+        "resT": 196,
+        "patternResV": 147,
+        "patternResT": 195
+    },
+    "modifier": {
+        "type": "petal",
+        "preset": "Petal Migration",
+        "equation": "sin(2*pi*v) + 0.25*sin(5*theta)",
+        "strength": 0.16,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.08,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

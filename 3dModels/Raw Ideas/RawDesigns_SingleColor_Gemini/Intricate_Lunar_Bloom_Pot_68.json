@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Lunar Bloom Pot 68",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "folded",
+        "preset": "Basket Fold",
+        "equation": "R * (1 + 0.08 * sin(8*theta + 6*pi*v) * sin(8*theta - 6*pi*v)) * (1 + 0.15 * pow(v, 1.5))",
+        "baseRadius": 11.46,
+        "height": 22.1
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.43,
+        "bottomThickness": 0.53,
+        "cylDrain": 0.5,
+        "sphTopCut": 31,
+        "sphBotFlatten": 155,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.53,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.57,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "nonlinear",
+        "preset": "Log Ripple Compression",
+        "equation": "log(1 + 3*abs(sin(14*theta + 12*pi*v)))",
+        "intensity": 0.1
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#3F8E43",
+        "patternColor1": "#3F8E43",
+        "patternColor2": "#3F8E43",
+        "overlapColor": "#3F8E43",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 131,
+        "resT": 186,
+        "patternResV": 122,
+        "patternResT": 180
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Braided Drift",
+        "equation": "sin(6*theta + 3*pi*v) + 0.5*sin(6*theta - 3*pi*v)",
+        "strength": 0.19,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Palm Press",
+        "dx": "-0.45 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dy": "-0.05 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dz": "0",
+        "strength": 0.19,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

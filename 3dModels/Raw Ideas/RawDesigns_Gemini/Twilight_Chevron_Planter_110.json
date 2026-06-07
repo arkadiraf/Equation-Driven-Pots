@@ -1,0 +1,68 @@
+{
+    "name": "Twilight Chevron Planter 110",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Mid Bulge",
+        "equation": "R * (1 + 0.28*sin(pi*v))",
+        "baseRadius": 9.21,
+        "height": 20.6
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.4,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 146,
+        "sphBotCut": 177
+    },
+    "plate": {
+        "plateHeight": 1.43,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.6,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 255
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Fine Vertical Ribs",
+        "equation": "cos(16*theta)",
+        "intensity": 0.084
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#F7E6DE",
+        "patternColor1": "#3F8E43",
+        "patternColor2": "#6F5034",
+        "overlapColor": "#BECF00",
+        "depthMm": 1.25
+    },
+    "mesh": {
+        "resV": 127,
+        "resT": 216,
+        "patternResV": 132,
+        "patternResT": 204
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.1,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Torsion Twist",
+        "dx": "x*cos(0.35*sin(pi*v)) - z*sin(0.35*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.35*sin(pi*v)) + z*cos(0.35*sin(pi*v)) - z",
+        "strength": 0.18,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Math Cosmic Facet Basin 79",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Lotus Crown Vase",
+        "equation": "R * (1 + 0.15 * acos(0.9 * cos(5 * theta)) * v * (1.0 - v))",
+        "baseRadius": 6.84,
+        "height": 14.7
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.39,
+        "bottomThickness": 0.63,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 150,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.42,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.63,
+        "plateSphTopCut": 99,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Terraced Contours",
+        "equation": "floor(10 * v) / 10",
+        "intensity": 0.132
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#000000",
+        "patternColor1": "#000000",
+        "patternColor2": "#000000",
+        "overlapColor": "#000000",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 141,
+        "resT": 191,
+        "patternResV": 136,
+        "patternResT": 208
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "gravity",
+        "preset": "Heavy Crown",
+        "dx": "0",
+        "dy": "-clamp(pow(v, 2.2), 0.0, 0.8)",
+        "dz": "0",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Math Twilight Pillow Planter 73",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Shoulder Bulge",
+        "equation": "R * (1 + 0.22 * exp(-pow(v - 0.5, 2) * 25) * cos(12 * theta))",
+        "baseRadius": 5.69,
+        "height": 13.6
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.41,
+        "bottomThickness": 0.59,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 145,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.34,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.64,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "smoothstep(-0.5, 0.5, sin(10*theta + 8*pi*v) + sin(11*theta - 8*pi*v))",
+        "intensity": 0.119
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#D1D3D5",
+        "patternColor1": "#D1D3D5",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#D1D3D5",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 123,
+        "resT": 184,
+        "patternResV": 132,
+        "patternResT": 205
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "clamp(sin(6*theta) * sin(pi*v), -0.8, 0.8)",
+        "strength": 0.17,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

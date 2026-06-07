@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Coral Weave Pot 17",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "nonlinear",
+                 "preset":  "ATan Fluting",
+                 "equation":  "R * (1 + 0.09*atan(5*cos(6*theta + 2*pi*v))*sin(pi*v) + 0.09*pow(v, 1.8))",
+                 "baseRadius":  4.35,
+                 "height":  20.9
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.36,
+                      "bottomThickness":  0.55,
+                      "cylDrain":  0.5,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.5,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.55,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(11*theta + 8*pi*v) + sin(12*theta - 7*pi*v)",
+                    "intensity":  0.118
+                },
+    "patterns":  {
+                     "preset1":  "Basic Stripe Mask",
+                     "equation1":  "sin(11*pi*v) - 0.15",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "cos(11*theta - 3*pi*v)",
+                     "baseColor":  "#0A2989",
+                     "patternColor1":  "#000000",
+                     "patternColor2":  "#6F5034",
+                     "overlapColor":  "#BECF00",
+                     "depthMm":  1.2
+                 },
+    "mesh":  {
+                 "resV":  140,
+                 "resT":  200,
+                 "patternResV":  140,
+                 "patternResT":  200
+             },
+    "modifier":  {
+                     "type":  "utility",
+                     "preset":  "None (No Modifier)",
+                     "equation":  "0",
+                     "strength":  0,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

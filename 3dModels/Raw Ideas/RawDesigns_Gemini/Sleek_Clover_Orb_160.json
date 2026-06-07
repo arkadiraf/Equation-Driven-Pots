@@ -1,0 +1,68 @@
+{
+    "name": "Sleek Clover Orb 160",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "basicEffect",
+        "preset": "Hourglass Pinch",
+        "equation": "R * (1 - 0.18*pow(sin(phi), 2))",
+        "baseRadius": 8.24,
+        "height": 17.5
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 31,
+        "sphBotFlatten": 150,
+        "sphBotCut": 177
+    },
+    "plate": {
+        "plateHeight": 1.48,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.64,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Arc Shell Carving",
+        "equation": "asin(0.98*sin(8*theta + 6*pi*v))",
+        "intensity": 0.118
+    },
+    "patterns": {
+        "preset1": "Hex Window Grid",
+        "equation1": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v)) - 0.55",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#F4EE2A",
+        "patternColor1": "#E4BD68",
+        "patternColor2": "#F55A74",
+        "overlapColor": "#C12E1F",
+        "depthMm": 1.36
+    },
+    "mesh": {
+        "resV": 137,
+        "resT": 183,
+        "patternResV": 138,
+        "patternResT": 191
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.19,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

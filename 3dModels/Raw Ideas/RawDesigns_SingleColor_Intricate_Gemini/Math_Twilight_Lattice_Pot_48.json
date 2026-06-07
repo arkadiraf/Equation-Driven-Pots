@@ -1,0 +1,68 @@
+{
+    "name": "Math Twilight Lattice Pot 48",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Lotus Crown Vase",
+        "equation": "R * (1 + 0.15 * acos(0.9 * cos(5 * theta)) * v * (1.0 - v))",
+        "baseRadius": 6.27,
+        "height": 17.7
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.42,
+        "bottomThickness": 0.63,
+        "cylDrain": 0.5,
+        "sphTopCut": 23,
+        "sphBotFlatten": 150,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.32,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.7,
+        "plateSphTopCut": 99,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "sign(sin(12*theta)) * sign(sin(12*pi*v))",
+        "intensity": 0.137
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#847D48",
+        "patternColor1": "#847D48",
+        "patternColor2": "#847D48",
+        "overlapColor": "#847D48",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 131,
+        "resT": 182,
+        "patternResV": 128,
+        "patternResT": 198
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "clamp(sin(6*theta) * sin(pi*v), -0.8, 0.8)",
+        "strength": 0.07,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.17,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Math Astral Lattice Orb 198",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "5-Petal Flower",
+        "equation": "R * (1 + 0.12 * smoothstep(0.1, 0.9, cos(5 * theta + 2 * phi)))",
+        "baseRadius": 5.11,
+        "height": 23.9
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.4,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 154,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.4,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.57,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Modulo Tile Relief",
+        "equation": "fract(6.0 * theta / pi + 6.0 * v)",
+        "intensity": 0.095
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#847D48",
+        "patternColor1": "#847D48",
+        "patternColor2": "#847D48",
+        "overlapColor": "#847D48",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 121,
+        "resT": 215,
+        "patternResV": 122,
+        "patternResT": 213
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "fract(4.0 * theta / pi + 3.0 * v)",
+        "strength": 0.09,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

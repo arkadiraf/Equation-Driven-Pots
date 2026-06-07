@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Gold Lattice Planter 55",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "floral",
+                 "preset":  "9-Petal Flower",
+                 "equation":  "R * (1 + 0.13*cos(9*theta + 0.45*pi*v)*sin(pi*v)) * (1 + 0.10*pow(v, 1.7) - 0.04*exp(-pow(v - 0.12, 2)*30))",
+                 "baseRadius":  4.95,
+                 "height":  21
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.36,
+                      "bottomThickness":  0.55,
+                      "cylDrain":  0.5,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.5,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.55,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "ribs",
+                    "preset":  "Basic Vertical Ribs",
+                    "equation":  "cos(8*theta + 0.45*pi*v)",
+                    "intensity":  0.07
+                },
+    "patterns":  {
+                     "preset1":  "Basic Stripe Mask",
+                     "equation1":  "max(cos(9*theta), cos(9*theta + 8*pi*v), cos(9*theta - 8*pi*v)) - 0.55",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "cos(2*theta)",
+                     "baseColor":  "#00AE42",
+                     "patternColor1":  "#D1D3D5",
+                     "patternColor2":  "#0086D6",
+                     "overlapColor":  "#A6A9AA",
+                     "depthMm":  1.2
+                 },
+    "mesh":  {
+                 "resV":  140,
+                 "resT":  200,
+                 "patternResV":  140,
+                 "patternResT":  200
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Basic Twist",
+                     "equation":  "sin(pi*v)",
+                     "strength":  0.12,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "torsion",
+                       "preset":  "Basic Torsion",
+                       "dx":  "x*cos(0.16*sin(pi*v)) - z*sin(0.16*sin(pi*v)) - x",
+                       "dy":  "0",
+                       "dz":  "x*sin(0.16*sin(pi*v)) + z*cos(0.16*sin(pi*v)) - z",
+                       "strength":  0.18,
+                       "region":  "all",
+                       "anchor":  "baseAnchored",
+                       "space":  "xyz"
+                   }
+}

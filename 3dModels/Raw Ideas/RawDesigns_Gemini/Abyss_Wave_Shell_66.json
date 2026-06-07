@@ -1,0 +1,68 @@
+{
+    "name": "Abyss Wave Shell 66",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "nonlinear",
+        "preset": "Sharp 6-Lobe Shell",
+        "equation": "R * (1 + 0.16 * pow(sin(phi), 2.0) * atan(5 * cos(6*theta)))",
+        "baseRadius": 4.13,
+        "height": 15.5
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.37,
+        "bottomThickness": 0.51,
+        "cylDrain": 0.5,
+        "sphTopCut": 30,
+        "sphBotFlatten": 147,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.52,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.64,
+        "plateSphTopCut": 90,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Arc Shell Carving",
+        "equation": "asin(0.98*sin(8*theta + 6*pi*v))",
+        "intensity": 0.062
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#545454",
+        "patternColor1": "#A6A9AA",
+        "patternColor2": "#000000",
+        "overlapColor": "#8E9089",
+        "depthMm": 1.34
+    },
+    "mesh": {
+        "resV": 148,
+        "resT": 180,
+        "patternResV": 122,
+        "patternResT": 193
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.15,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

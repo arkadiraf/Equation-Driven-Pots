@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Serrated Lantern Intricate 35",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "folded",
+                 "preset":  "Chevron Fold",
+                 "equation":  "R * (1 + 0.055*abs(fract(6*theta/(2*pi) + v) - fract(6*theta/(2*pi) - v)) + 0.035*cos(31*theta + pi*v))",
+                 "baseRadius":  10.8,
+                 "height":  22.2
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(31*theta + 9*pi*v) + sin(33*theta - 8*pi*v)",
+                    "intensity":  0.092
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#0056B8",
+                     "patternColor1":  "#0056B8",
+                     "patternColor2":  "#0056B8",
+                     "overlapColor":  "#0056B8",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Crown Rotation",
+                     "equation":  "exp(-pow(v - 0.86, 2)*34) * sin(round(8*v)*pi/4)",
+                     "strength":  0.142,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "pressure",
+                       "preset":  "Front Squeeze",
+                       "dx":  "-0.12*smoothstep(0.25, 0.55, v)*(1 - smoothstep(0.68, 0.90, v))",
+                       "dy":  "0",
+                       "dz":  "0.06*cos(theta)*smoothstep(0.25, 0.55, v)",
+                       "strength":  0.11,
+                       "region":  "all",
+                       "anchor":  "bottomHalfStiff",
+                       "space":  "xyz"
+                   }
+}

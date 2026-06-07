@@ -1,0 +1,68 @@
+{
+    "name": "Math Twilight Groove Orb 101",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Arc-Lobed Shell",
+        "equation": "R * (1 + 0.12 * acos(0.9 * cos(4 * theta)) * sin(phi))",
+        "baseRadius": 5.85,
+        "height": 16.0
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.41,
+        "bottomThickness": 0.56,
+        "cylDrain": 0.5,
+        "sphTopCut": 28,
+        "sphBotFlatten": 152,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.61,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.66,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "sign(sin(12*theta)) * sign(sin(12*pi*v))",
+        "intensity": 0.115
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#EC008C",
+        "patternColor1": "#EC008C",
+        "patternColor2": "#EC008C",
+        "overlapColor": "#EC008C",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 137,
+        "resT": 190,
+        "patternResV": 139,
+        "patternResT": 188
+    },
+    "modifier": {
+        "type": "regional",
+        "preset": "Body Swirl Window",
+        "equation": "smoothstep(0.2, 0.8, sin(pi*v)) * sin(5*theta)",
+        "strength": 0.13,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Pressed Shoulder",
+        "dx": "-0.5 * exp(-pow(theta - pi/8, 2)*10) * exp(-pow(v - 0.72, 2)*24)",
+        "dy": "-0.08 * exp(-pow(v - 0.72, 2)*18)",
+        "dz": "0",
+        "strength": 0.16,
+        "region": "shoulder",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

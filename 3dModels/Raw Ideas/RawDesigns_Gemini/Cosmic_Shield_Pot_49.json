@@ -1,0 +1,68 @@
+{
+    "name": "Cosmic Shield Pot 49",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Rounded Square",
+        "equation": "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125)",
+        "baseRadius": 4.49,
+        "height": 18.6
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.36,
+        "bottomThickness": 0.65,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 152,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.6,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 98,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Honeycomb Relief",
+        "equation": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v))",
+        "intensity": 0.068
+    },
+    "patterns": {
+        "preset1": "Hex Window Grid",
+        "equation1": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v)) - 0.55",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#00B1B7",
+        "patternColor1": "#0A2989",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#A6A9AA",
+        "depthMm": 1.02
+    },
+    "mesh": {
+        "resV": 144,
+        "resT": 191,
+        "patternResV": 128,
+        "patternResT": 214
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.18,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

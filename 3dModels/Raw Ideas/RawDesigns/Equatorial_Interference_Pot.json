@@ -1,0 +1,68 @@
+{
+  "name": "Equatorial Interference Pot",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Equatorial Interference Belt",
+    "equation": "R * (1 + 0.18*exp(-pow(v - 0.5, 2)*16)*(cos(6*theta + 2*pi*v) + 0.5*cos(11*theta - 3*pi*v))) * (1 + 0.10*sin(pi*v))",
+    "baseRadius": 5.5,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.36,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.7,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.7,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Equatorial Interference",
+    "equation": "exp(-pow(v - 0.5, 2)*12) * (sin(8*theta + 8*pi*v) + 0.5*sin(13*theta - 6*pi*v))",
+    "intensity": 0.12
+  },
+  "patterns": {
+    "preset1": "Equatorial Arc Belt",
+    "equation1": "asin(0.96*sin(8*theta)) * exp(-pow(v - 0.5, 2)*22)",
+    "preset2": "Basic Horizontal Split",
+    "equation2": "v - 0.5",
+    "baseColor": "#e8e8e0",
+    "patternColor1": "#2858a0",
+    "patternColor2": "#5080c0",
+    "overlapColor": "#80b0e8",
+    "depthMm": 1.1
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 200,
+    "patternResV": 140,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

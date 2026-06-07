@@ -1,0 +1,68 @@
+{
+    "name": "Stellar Chevron Globe 53",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "4-Petal Flower",
+        "equation": "R * (1 + 0.20 * cos(4 * theta) * pow(sin(phi), 1.5))",
+        "baseRadius": 4.85,
+        "height": 8.9
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.41,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 31,
+        "sphBotFlatten": 150,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.5,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.51,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Topographic Rings",
+        "equation": "sin(24*pi*v)",
+        "intensity": 0.104
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#000000",
+        "patternColor1": "#8E9089",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#5B6579",
+        "depthMm": 1.17
+    },
+    "mesh": {
+        "resV": 122,
+        "resT": 201,
+        "patternResV": 138,
+        "patternResT": 190
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Local Twist",
+        "equation": "exp(-pow(v - 0.8, 2)*24)",
+        "strength": 0.11,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.19,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

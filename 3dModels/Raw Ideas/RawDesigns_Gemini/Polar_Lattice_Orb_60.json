@@ -1,0 +1,68 @@
+{
+    "name": "Polar Lattice Orb 60",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "nonlinear",
+        "preset": "Sharp 6-Lobe Shell",
+        "equation": "R * (1 + 0.16 * pow(sin(phi), 2.0) * atan(5 * cos(6*theta)))",
+        "baseRadius": 3.97,
+        "height": 12.6
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.4,
+        "bottomThickness": 0.6,
+        "cylDrain": 0.5,
+        "sphTopCut": 24,
+        "sphBotFlatten": 155,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.64,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.51,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#6F5034",
+        "patternColor1": "#E4BD68",
+        "patternColor2": "#00AE42",
+        "overlapColor": "#3F8E43",
+        "depthMm": 1.3
+    },
+    "mesh": {
+        "resV": 123,
+        "resT": 217,
+        "patternResV": 126,
+        "patternResT": 209
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

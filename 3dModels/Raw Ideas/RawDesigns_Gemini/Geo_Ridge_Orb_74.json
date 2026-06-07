@@ -1,0 +1,68 @@
+{
+    "name": "Geo Ridge Orb 74",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "basicEffect",
+        "preset": "Equator Bulge",
+        "equation": "R * (1 + 0.24*pow(sin(phi), 2))",
+        "baseRadius": 3.77,
+        "height": 13.5
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.41,
+        "bottomThickness": 0.57,
+        "cylDrain": 0.5,
+        "sphTopCut": 29,
+        "sphBotFlatten": 150,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.49,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "nonlinear",
+        "preset": "Saturated Flutes",
+        "equation": "atan(7 * cos(12*theta))",
+        "intensity": 0.121
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#9D432C",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#000000",
+        "overlapColor": "#6F5034",
+        "depthMm": 1.19
+    },
+    "mesh": {
+        "resV": 140,
+        "resT": 183,
+        "patternResV": 142,
+        "patternResT": 198
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.16,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

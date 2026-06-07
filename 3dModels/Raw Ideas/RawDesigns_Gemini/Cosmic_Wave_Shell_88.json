@@ -1,0 +1,68 @@
+{
+    "name": "Cosmic Wave Shell 88",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "basicEffect",
+        "preset": "Equator Bulge",
+        "equation": "R * (1 + 0.24*pow(sin(phi), 2))",
+        "baseRadius": 4.46,
+        "height": 10.7
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.41,
+        "bottomThickness": 0.62,
+        "cylDrain": 0.5,
+        "sphTopCut": 28,
+        "sphBotFlatten": 152,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.53,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.55,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 255
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Arc Shell Carving",
+        "equation": "asin(0.98*sin(8*theta + 6*pi*v))",
+        "intensity": 0.11
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#9D432C",
+        "patternColor1": "#847D48",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#6F5034",
+        "depthMm": 1.25
+    },
+    "mesh": {
+        "resV": 131,
+        "resT": 190,
+        "patternResV": 140,
+        "patternResT": 217
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Local Twist",
+        "equation": "exp(-pow(v - 0.8, 2)*24)",
+        "strength": 0.14,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Torsion Twist",
+        "dx": "x*cos(0.35*sin(pi*v)) - z*sin(0.35*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.35*sin(pi*v)) + z*cos(0.35*sin(pi*v)) - z",
+        "strength": 0.12,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

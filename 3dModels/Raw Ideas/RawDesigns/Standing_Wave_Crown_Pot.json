@@ -1,0 +1,68 @@
+{
+  "name": "Standing Wave Crown Pot",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Standing Wave Crown",
+    "equation": "R * (1 + 0.16*exp(-pow(v - 0.84, 2)*38)*(cos(8*theta) + 0.38*cos(16*theta + pi*v))) * (1 + 0.12*sin(pi*v))",
+    "baseRadius": 5.5,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Crown Interference",
+    "equation": "exp(-pow(v - 0.84, 2)*28) * (cos(8*theta) + 0.40*cos(16*theta + 8*pi*v))",
+    "intensity": 0.11
+  },
+  "patterns": {
+    "preset1": "Surface Texture Top %",
+    "equation1": "textureFill(texPosNorm, 60)",
+    "preset2": "Basic Band Mask",
+    "equation2": "exp(-pow(v - 0.84, 2)*30) - 0.4",
+    "baseColor": "#f4f0e8",
+    "patternColor1": "#4060a0",
+    "patternColor2": "#204070",
+    "overlapColor": "#6080c0",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 200,
+    "patternResV": 140,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Crown Rotation",
+    "equation": "exp(-pow(v - 0.84, 2)*38) * sin(2*pi*v)",
+    "strength": 0.16,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

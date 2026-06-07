@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Garden Canyon Pot Large 147",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "nonlinear",
+                 "preset":  "Progressive Fluting",
+                 "equation":  "R * (1 + (0.035 + 0.065*pow(v, 1.5))*atan(5*cos(10*theta + 1.5*pi*v)))",
+                 "baseRadius":  11.5,
+                 "height":  23.6
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(20*theta + 9*pi*v) + sin(21*theta - 8*pi*v)",
+                    "intensity":  0.094
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "outerDeviation(0.14)",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "cos(20*theta - 3*pi*v)",
+                     "baseColor":  "#00B1B7",
+                     "patternColor1":  "#5B6579",
+                     "patternColor2":  "#9D432C",
+                     "overlapColor":  "#FF9016",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Gentle Torsion",
+                     "equation":  "exp(-pow(v - 0.82, 2)*24) * sin(10*theta)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

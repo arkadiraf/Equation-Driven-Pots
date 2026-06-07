@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Astral Pillow Basin 83",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Rosette Bloom",
+        "equation": "R * (1 + 0.2 * cos(5 * (theta + 0.25 * sin(2*pi*v))) * sin(pi*v)) * (1 + 0.15 * pow(v, 2.0))",
+        "baseRadius": 8.34,
+        "height": 14.8
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.39,
+        "bottomThickness": 0.63,
+        "cylDrain": 0.5,
+        "sphTopCut": 24,
+        "sphBotFlatten": 153,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.36,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.55,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 251
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Folded Chevron",
+        "equation": "abs(sin(8*theta + 10*pi*v)) - 0.5*abs(sin(8*theta - 10*pi*v))",
+        "intensity": 0.083
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#A6A9AA",
+        "patternColor1": "#A6A9AA",
+        "patternColor2": "#A6A9AA",
+        "overlapColor": "#A6A9AA",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 124,
+        "resT": 206,
+        "patternResV": 122,
+        "patternResT": 192
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Counter-Diagonal Drift",
+        "equation": "sin(5*theta - 2*pi*v)",
+        "strength": 0.1,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

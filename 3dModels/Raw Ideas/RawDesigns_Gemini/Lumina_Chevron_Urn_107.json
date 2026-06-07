@@ -1,0 +1,68 @@
+{
+    "name": "Lumina Chevron Urn 107",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "folded",
+        "preset": "Chevron Fold",
+        "equation": "R * (1 + 0.12 * abs(sin(6*theta + 4*pi*v)) - 0.05 * abs(sin(6*theta - 4*pi*v)))",
+        "baseRadius": 9.31,
+        "height": 15.0
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.38,
+        "bottomThickness": 0.64,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 153,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.67,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.55,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Honeycomb Relief",
+        "equation": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v))",
+        "intensity": 0.063
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#D1D3D5",
+        "patternColor1": "#5B6579",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#545454",
+        "depthMm": 1.05
+    },
+    "mesh": {
+        "resV": 120,
+        "resT": 218,
+        "patternResV": 143,
+        "patternResT": 203
+    },
+    "modifier": {
+        "type": "petal",
+        "preset": "Petal Migration",
+        "equation": "sin(2*pi*v) + 0.25*sin(5*theta)",
+        "strength": 0.19,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.16,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

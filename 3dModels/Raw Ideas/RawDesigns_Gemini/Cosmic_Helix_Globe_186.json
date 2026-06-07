@@ -1,0 +1,68 @@
+{
+    "name": "Cosmic Helix Globe 186",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Lotus Pod",
+        "equation": "R * (1 + 0.16 * cos(6 * theta) * pow(sin(phi), 2.2) - 0.04 * cos(2 * phi))",
+        "baseRadius": 9.62,
+        "height": 15.2
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.38,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 31,
+        "sphBotFlatten": 146,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.68,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.6,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 245
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Fine Vertical Ribs",
+        "equation": "cos(16*theta)",
+        "intensity": 0.128
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#0A2989",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#0086D6",
+        "overlapColor": "#00B1B7",
+        "depthMm": 1.11
+    },
+    "mesh": {
+        "resV": 148,
+        "resT": 197,
+        "patternResV": 141,
+        "patternResT": 219
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Local Twist",
+        "equation": "exp(-pow(v - 0.8, 2)*24)",
+        "strength": 0.15,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Torsion Twist",
+        "dx": "x*cos(0.35*sin(pi*v)) - z*sin(0.35*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.35*sin(pi*v)) + z*cos(0.35*sin(pi*v)) - z",
+        "strength": 0.08,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

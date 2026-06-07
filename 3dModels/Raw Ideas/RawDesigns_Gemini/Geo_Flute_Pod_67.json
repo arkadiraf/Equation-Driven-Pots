@@ -1,0 +1,68 @@
+{
+    "name": "Geo Flute Pod 67",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "nonlinear",
+        "preset": "Sharp 6-Lobe Shell",
+        "equation": "R * (1 + 0.16 * pow(sin(phi), 2.0) * atan(5 * cos(6*theta)))",
+        "baseRadius": 3.94,
+        "height": 15.3
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.35,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 151,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.43,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.54,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#0056B8",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#00B1B7",
+        "overlapColor": "#0A2989",
+        "depthMm": 1.06
+    },
+    "mesh": {
+        "resV": 149,
+        "resT": 212,
+        "patternResV": 137,
+        "patternResT": 196
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.2,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.18,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

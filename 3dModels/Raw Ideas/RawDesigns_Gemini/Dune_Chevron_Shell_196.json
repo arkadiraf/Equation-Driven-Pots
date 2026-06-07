@@ -1,0 +1,68 @@
+{
+    "name": "Dune Chevron Shell 196",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Lotus Pod",
+        "equation": "R * (1 + 0.16 * cos(6 * theta) * pow(sin(phi), 2.2) - 0.04 * cos(2 * phi))",
+        "baseRadius": 9.5,
+        "height": 16.9
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.35,
+        "bottomThickness": 0.55,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 145,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.44,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 251
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "cos(8*theta) * sin(10*pi*v)",
+        "intensity": 0.123
+    },
+    "patterns": {
+        "preset1": "Basic Band Mask",
+        "equation1": "sin(8*pi*v)",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#D1D3D5",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#00B1B7",
+        "overlapColor": "#0A2989",
+        "depthMm": 1.03
+    },
+    "mesh": {
+        "resV": 140,
+        "resT": 202,
+        "patternResV": 121,
+        "patternResT": 194
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Diagonal Drift",
+        "equation": "sin(4*theta + 2*pi*v)",
+        "strength": 0.18,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

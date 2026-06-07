@@ -1,0 +1,68 @@
+{
+    "name": "Titan Bloom Bulb 81",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Twisted Bloom",
+        "equation": "R * (1 + 0.18 * cos(5 * theta + 1.6 * phi) * pow(sin(phi), 1.5))",
+        "baseRadius": 4.54,
+        "height": 17.3
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.41,
+        "bottomThickness": 0.56,
+        "cylDrain": 0.5,
+        "sphTopCut": 31,
+        "sphBotFlatten": 149,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.35,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.51,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "sin(12*theta + 10*pi*v) + sin(13*theta - 10*pi*v)",
+        "intensity": 0.137
+    },
+    "patterns": {
+        "preset1": "Basic Band Mask",
+        "equation1": "sin(8*pi*v)",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#000000",
+        "patternColor1": "#9D432C",
+        "patternColor2": "#847D48",
+        "overlapColor": "#6F5034",
+        "depthMm": 1.16
+    },
+    "mesh": {
+        "resV": 143,
+        "resT": 207,
+        "patternResV": 147,
+        "patternResT": 185
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Diagonal Drift",
+        "equation": "sin(4*theta + 2*pi*v)",
+        "strength": 0.09,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.16,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

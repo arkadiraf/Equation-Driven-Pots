@@ -1,0 +1,68 @@
+{
+    "name": "Zephyr Bloom Basin 16",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "folded",
+        "preset": "Chevron Fold",
+        "equation": "R * (1 + 0.12 * abs(sin(6*theta + 4*pi*v)) - 0.05 * abs(sin(6*theta - 4*pi*v)))",
+        "baseRadius": 4.29,
+        "height": 14.7
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.38,
+        "bottomThickness": 0.51,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 153,
+        "sphBotCut": 177
+    },
+    "plate": {
+        "plateHeight": 1.68,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.57,
+        "plateSphTopCut": 90,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "nonlinear",
+        "preset": "Saturated Flutes",
+        "equation": "atan(7 * cos(12*theta))",
+        "intensity": 0.089
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#000000",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#A6A9AA",
+        "overlapColor": "#545454",
+        "depthMm": 1.09
+    },
+    "mesh": {
+        "resV": 120,
+        "resT": 195,
+        "patternResV": 131,
+        "patternResT": 201
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.11,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Side Pressure Dent",
+        "dx": "-0.6 * exp(-pow(theta - 0, 2)*8) * exp(-pow(v - 0.6, 2)*20)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.14,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Nova Chevron Vessel 2",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Rounded Square",
+        "equation": "R * pow(pow(abs(cos(theta)), 8) + pow(abs(sin(theta)), 8), -0.125)",
+        "baseRadius": 3.93,
+        "height": 19.7
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.52,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 146,
+        "sphBotCut": 175
+    },
+    "plate": {
+        "plateHeight": 1.43,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Honeycomb Relief",
+        "equation": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v))",
+        "intensity": 0.064
+    },
+    "patterns": {
+        "preset1": "Hex Window Grid",
+        "equation1": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v)) - 0.55",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#F7E6DE",
+        "patternColor1": "#E4BD68",
+        "patternColor2": "#3F8E43",
+        "overlapColor": "#6F5034",
+        "depthMm": 1.01
+    },
+    "mesh": {
+        "resV": 125,
+        "resT": 184,
+        "patternResV": 150,
+        "patternResT": 191
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Local Twist",
+        "equation": "exp(-pow(v - 0.8, 2)*24)",
+        "strength": 0.13,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

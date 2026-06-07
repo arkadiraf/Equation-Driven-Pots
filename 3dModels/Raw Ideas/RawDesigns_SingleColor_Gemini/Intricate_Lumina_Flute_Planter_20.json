@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Lumina Flute Planter 20",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "nonlinear",
+        "preset": "Turbine Blade",
+        "equation": "R * (1 + 0.15 * atan(4 * cos(5*theta + 3*pi*v + 0.5*sin(theta))))",
+        "baseRadius": 11.49,
+        "height": 10.8
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.38,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 24,
+        "sphBotFlatten": 149,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.45,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.66,
+        "plateSphTopCut": 99,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Terraced Contours",
+        "equation": "floor(10 * (0.5 + 0.5*sin(24*pi*v))) / 10",
+        "intensity": 0.068
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#8E9089",
+        "patternColor1": "#8E9089",
+        "patternColor2": "#8E9089",
+        "overlapColor": "#8E9089",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 121,
+        "resT": 203,
+        "patternResV": 141,
+        "patternResT": 212
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Body Swirl",
+        "equation": "exp(-pow(v - 0.55, 2)*14) * sin(4*theta + 2*pi*v)",
+        "strength": 0.1,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.19,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

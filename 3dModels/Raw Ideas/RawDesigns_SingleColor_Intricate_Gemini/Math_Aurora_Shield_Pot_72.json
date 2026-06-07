@@ -1,0 +1,68 @@
+{
+    "name": "Math Aurora Shield Pot 72",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Arc-Petal Crown",
+        "equation": "R * (1 + 0.15 * asin(0.98 * sin(6 * theta + 2 * pi * v)))",
+        "baseRadius": 6.42,
+        "height": 15.7
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.45,
+        "bottomThickness": 0.56,
+        "cylDrain": 0.5,
+        "sphTopCut": 28,
+        "sphBotFlatten": 151,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.66,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.56,
+        "plateSphTopCut": 90,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "smoothstep(-0.5, 0.5, sin(10*theta + 8*pi*v) + sin(11*theta - 8*pi*v))",
+        "intensity": 0.107
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#0056B8",
+        "patternColor1": "#0056B8",
+        "patternColor2": "#0056B8",
+        "overlapColor": "#0056B8",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 136,
+        "resT": 212,
+        "patternResV": 137,
+        "patternResT": 195
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Gentle Torsion",
+        "equation": "floor(6.0 * v) / 6.0",
+        "strength": 0.11,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.19,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

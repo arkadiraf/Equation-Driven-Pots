@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Glow Facet Planter 90",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Rosette Bloom",
+        "equation": "R * (1 + 0.2 * cos(5 * (theta + 0.25 * sin(2*pi*v))) * sin(pi*v)) * (1 + 0.15 * pow(v, 2.0))",
+        "baseRadius": 10.17,
+        "height": 13.7
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.43,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 29,
+        "sphBotFlatten": 151,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.63,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#482960",
+        "patternColor1": "#482960",
+        "patternColor2": "#482960",
+        "overlapColor": "#482960",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 134,
+        "resT": 184,
+        "patternResV": 138,
+        "patternResT": 187
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

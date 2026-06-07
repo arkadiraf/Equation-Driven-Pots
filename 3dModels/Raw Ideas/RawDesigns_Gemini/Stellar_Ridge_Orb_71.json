@@ -1,0 +1,68 @@
+{
+    "name": "Stellar Ridge Orb 71",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Lotus Pod",
+        "equation": "R * (1 + 0.16 * cos(6 * theta) * pow(sin(phi), 2.2) - 0.04 * cos(2 * phi))",
+        "baseRadius": 4.13,
+        "height": 12.6
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.38,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 29,
+        "sphBotFlatten": 149,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.68,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.64,
+        "plateSphTopCut": 91,
+        "plateSphBotFlatten": 248
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Topographic Rings",
+        "equation": "sin(24*pi*v)",
+        "intensity": 0.122
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#00AE42",
+        "patternColor1": "#F7E6DE",
+        "patternColor2": "#3F8E43",
+        "overlapColor": "#E4BD68",
+        "depthMm": 1.37
+    },
+    "mesh": {
+        "resV": 136,
+        "resT": 216,
+        "patternResV": 150,
+        "patternResT": 205
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "sin(5*theta + 2*pi*v)",
+        "strength": 0.2,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Side Pressure Dent",
+        "dx": "-0.6 * exp(-pow(theta - 0, 2)*8) * exp(-pow(v - 0.6, 2)*20)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.1,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

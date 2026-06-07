@@ -1,0 +1,68 @@
+{
+    "name": "Math Aurora Wave Basin 95",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Lotus Crown Vase",
+        "equation": "R * (1 + 0.15 * acos(0.9 * cos(5 * theta)) * v * (1.0 - v))",
+        "baseRadius": 12.49,
+        "height": 20.8
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.55,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 148,
+        "sphBotCut": 175
+    },
+    "plate": {
+        "plateHeight": 1.46,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.56,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Terraced Contours",
+        "equation": "floor(10 * v) / 10",
+        "intensity": 0.131
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#E4BD68",
+        "patternColor1": "#E4BD68",
+        "patternColor2": "#E4BD68",
+        "overlapColor": "#E4BD68",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 143,
+        "resT": 210,
+        "patternResV": 131,
+        "patternResT": 198
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "clamp(sin(6*theta) * sin(pi*v), -0.8, 0.8)",
+        "strength": 0.13,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.14,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

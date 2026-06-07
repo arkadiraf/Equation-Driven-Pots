@@ -1,0 +1,68 @@
+{
+    "name": "Geo Petal Basin 108",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Shoulder Bulge",
+        "equation": "R * (1 + 0.20*exp(-pow(v - 0.72, 2)*18))",
+        "baseRadius": 9.69,
+        "height": 23.9
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.36,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 24,
+        "sphBotFlatten": 155,
+        "sphBotCut": 177
+    },
+    "plate": {
+        "plateHeight": 1.55,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Diamond Weave",
+        "equation": "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)",
+        "intensity": 0.085
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#FFFFFF",
+        "patternColor1": "#482960",
+        "patternColor2": "#5E43B7",
+        "overlapColor": "#F5547C",
+        "depthMm": 1.29
+    },
+    "mesh": {
+        "resV": 128,
+        "resT": 190,
+        "patternResV": 134,
+        "patternResT": 199
+    },
+    "modifier": {
+        "type": "petal",
+        "preset": "Petal Migration",
+        "equation": "sin(2*pi*v) + 0.25*sin(5*theta)",
+        "strength": 0.1,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

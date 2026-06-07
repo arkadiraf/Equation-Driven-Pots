@@ -1,0 +1,68 @@
+{
+    "name": "Math Stellar Lattice Shell 166",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Crystalline Geode",
+        "equation": "R * (1 + 0.08 * ceil(4.0 * fract(theta / pi)) / 4.0 * sin(phi))",
+        "baseRadius": 10.93,
+        "height": 24.3
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.39,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 147,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.34,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.65,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Domain Warp Ribs",
+        "equation": "asin(0.96 * sin(12 * (theta + 0.1 * sin(5*pi*v))))",
+        "intensity": 0.07
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#F5547C",
+        "patternColor1": "#F5547C",
+        "patternColor2": "#F5547C",
+        "overlapColor": "#F5547C",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 143,
+        "resT": 183,
+        "patternResV": 126,
+        "patternResT": 191
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Pressed Shoulder",
+        "dx": "-0.5 * exp(-pow(theta - pi/8, 2)*10) * exp(-pow(v - 0.72, 2)*24)",
+        "dy": "-0.08 * exp(-pow(v - 0.72, 2)*18)",
+        "dz": "0",
+        "strength": 0.13,
+        "region": "shoulder",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

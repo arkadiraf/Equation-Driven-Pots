@@ -1,0 +1,68 @@
+{
+    "name": "Mirage Chevron Urn 112",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Circle (Pure Base)",
+        "equation": "R",
+        "baseRadius": 8.55,
+        "height": 16.0
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.37,
+        "bottomThickness": 0.55,
+        "cylDrain": 0.5,
+        "sphTopCut": 23,
+        "sphBotFlatten": 151,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.39,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Topographic Rings",
+        "equation": "sin(24*pi*v)",
+        "intensity": 0.134
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#00AE42",
+        "patternColor1": "#E4BD68",
+        "patternColor2": "#3F8E43",
+        "overlapColor": "#6F5034",
+        "depthMm": 1.38
+    },
+    "mesh": {
+        "resV": 139,
+        "resT": 195,
+        "patternResV": 131,
+        "patternResT": 186
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "sin(5*theta + 2*pi*v)",
+        "strength": 0.19,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

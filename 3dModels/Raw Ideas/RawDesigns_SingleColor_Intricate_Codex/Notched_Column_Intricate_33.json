@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Notched Column Intricate 33",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "primitive",
+                 "preset":  "Rounded Square",
+                 "equation":  "R * pow(pow(abs(cos(theta)), 4 + 6*smoothstep(0.2, 0.8, v)) + pow(abs(sin(theta)), 4 + 6*smoothstep(0.2, 0.8, v)), -1/(4 + 6*smoothstep(0.2, 0.8, v))) * (1 + 0.035*cos(15*theta))",
+                 "baseRadius":  10.4,
+                 "height":  19.8
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Honeycomb Relief",
+                    "equation":  "max(cos(15*theta), cos(15*theta + 8*pi*v), cos(15*theta - 8*pi*v))",
+                    "intensity":  0.07
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#FEC600",
+                     "patternColor1":  "#FEC600",
+                     "patternColor2":  "#FEC600",
+                     "overlapColor":  "#FEC600",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "fold",
+                     "preset":  "Chevron Drift",
+                     "equation":  "abs(sin(7*theta + 2*pi*v)) - abs(sin(7*theta - 2*pi*v))",
+                     "strength":  0.106,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

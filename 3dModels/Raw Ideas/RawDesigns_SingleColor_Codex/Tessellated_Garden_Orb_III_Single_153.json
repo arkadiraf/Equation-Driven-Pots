@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Tessellated Garden Orb III Single 153",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "floral",
+                 "preset":  "Twisted Bloom",
+                 "equation":  "R * (1 + 0.105*cos(10*theta + 1.4*phi)*pow(sin(phi), 1.5) + 0.045*cos(20*theta - 2*phi)*pow(sin(phi), 2))",
+                 "baseRadius":  11.54,
+                 "height":  24
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(20*theta + 8*phi) + sin(21*theta - 7*phi)",
+                    "intensity":  0.097
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#C12E1F",
+                     "patternColor1":  "#C12E1F",
+                     "patternColor2":  "#C12E1F",
+                     "overlapColor":  "#C12E1F",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "petal",
+                     "preset":  "Petal Migration",
+                     "equation":  "sin(10*theta)*pow(sin(phi), 1.2) + 0.25*sin(2*phi)",
+                     "strength":  0.07,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

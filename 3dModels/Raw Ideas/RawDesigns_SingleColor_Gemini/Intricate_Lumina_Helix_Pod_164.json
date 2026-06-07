@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Lumina Helix Pod 164",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "interference",
+        "preset": "Fibonacci Spirals",
+        "equation": "R * (1 + 0.08 * pow(max(0, sin(13*theta - 8*phi)), 2) + 0.08 * pow(max(0, sin(8*theta + 13*phi)), 2))",
+        "baseRadius": 6.66,
+        "height": 24.1
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.4,
+        "bottomThickness": 0.59,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 152,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.67,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 255
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Honeycomb Relief",
+        "equation": "max(cos(12*theta), cos(12*theta + 16*pi*v), cos(12*theta - 16*pi*v))",
+        "intensity": 0.072
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#545454",
+        "patternColor1": "#545454",
+        "patternColor2": "#545454",
+        "overlapColor": "#545454",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 142,
+        "resT": 202,
+        "patternResV": 144,
+        "patternResT": 188
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Braided Drift",
+        "equation": "sin(6*theta + 3*pi*v) + 0.5*sin(6*theta - 3*pi*v)",
+        "strength": 0.19,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Fluid Twist XYZ",
+        "dx": "x*cos(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) - z*sin(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) + z*cos(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) - z",
+        "strength": 0.08,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

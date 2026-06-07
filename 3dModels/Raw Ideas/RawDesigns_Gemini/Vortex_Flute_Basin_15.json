@@ -1,0 +1,68 @@
+{
+    "name": "Vortex Flute Basin 15",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Mid Bulge",
+        "equation": "R * (1 + 0.28*sin(pi*v))",
+        "baseRadius": 4.22,
+        "height": 19.0
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.4,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 23,
+        "sphBotFlatten": 150,
+        "sphBotCut": 177
+    },
+    "plate": {
+        "plateHeight": 1.68,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.59,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Topographic Rings",
+        "equation": "sin(24*pi*v)",
+        "intensity": 0.13
+    },
+    "patterns": {
+        "preset1": "Basic Band Mask",
+        "equation1": "sin(8*pi*v)",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#545454",
+        "patternColor1": "#8E9089",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.02
+    },
+    "mesh": {
+        "resV": 146,
+        "resT": 196,
+        "patternResV": 146,
+        "patternResT": 185
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "sin(5*theta + 2*pi*v)",
+        "strength": 0.1,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

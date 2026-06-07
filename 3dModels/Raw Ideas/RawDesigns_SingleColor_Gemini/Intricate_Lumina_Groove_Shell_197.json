@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Lumina Groove Shell 197",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "interference",
+        "preset": "Fibonacci Spirals",
+        "equation": "R * (1 + 0.08 * pow(max(0, sin(13*theta - 8*phi)), 2) + 0.08 * pow(max(0, sin(8*theta + 13*phi)), 2))",
+        "baseRadius": 5.46,
+        "height": 21.3
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.37,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 155,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.42,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.51,
+        "plateSphTopCut": 90,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Arc Shell Carving",
+        "equation": "asin(0.98*sin(10*theta + 8*pi*v))",
+        "intensity": 0.122
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#0056B8",
+        "patternColor1": "#0056B8",
+        "patternColor2": "#0056B8",
+        "overlapColor": "#0056B8",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 142,
+        "resT": 184,
+        "patternResV": 139,
+        "patternResT": 215
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Braided Drift",
+        "equation": "sin(6*theta + 3*pi*v) + 0.5*sin(6*theta - 3*pi*v)",
+        "strength": 0.17,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

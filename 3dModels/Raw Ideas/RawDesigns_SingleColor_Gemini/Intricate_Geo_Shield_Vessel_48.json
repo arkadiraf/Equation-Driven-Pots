@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Geo Shield Vessel 48",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Islamic Rosette",
+        "equation": "R * (1 + 0.14*cos(8*theta) + 0.06*cos(4*theta)) * (1 + 0.2*pow(v, 1.8))",
+        "baseRadius": 4.57,
+        "height": 20.6
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.44,
+        "bottomThickness": 0.63,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 155,
+        "sphBotCut": 177
+    },
+    "plate": {
+        "plateHeight": 1.69,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.68,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Terraced Contours",
+        "equation": "floor(10 * (0.5 + 0.5*sin(24*pi*v))) / 10",
+        "intensity": 0.092
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#000000",
+        "patternColor1": "#000000",
+        "patternColor2": "#000000",
+        "overlapColor": "#000000",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 135,
+        "resT": 191,
+        "patternResV": 138,
+        "patternResT": 190
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

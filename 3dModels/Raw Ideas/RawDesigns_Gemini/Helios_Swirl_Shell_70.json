@@ -1,0 +1,68 @@
+{
+    "name": "Helios Swirl Shell 70",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "4-Petal Flower",
+        "equation": "R * (1 + 0.20 * cos(4 * theta) * pow(sin(phi), 1.5))",
+        "baseRadius": 4.23,
+        "height": 14.7
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.35,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 29,
+        "sphBotFlatten": 153,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.47,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.55,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 251
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Basic Vertical Ribs",
+        "equation": "cos(10*theta)",
+        "intensity": 0.105
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#000000",
+        "patternColor1": "#9D432C",
+        "patternColor2": "#847D48",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.12
+    },
+    "mesh": {
+        "resV": 143,
+        "resT": 207,
+        "patternResV": 140,
+        "patternResT": 203
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.13,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.09,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

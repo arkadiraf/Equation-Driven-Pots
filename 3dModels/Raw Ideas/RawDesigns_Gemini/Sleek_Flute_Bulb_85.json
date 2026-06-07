@@ -1,0 +1,68 @@
+{
+    "name": "Sleek Flute Bulb 85",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Lotus Pod",
+        "equation": "R * (1 + 0.16 * cos(6 * theta) * pow(sin(phi), 2.2) - 0.04 * cos(2 * phi))",
+        "baseRadius": 4.07,
+        "height": 10.7
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.41,
+        "bottomThickness": 0.64,
+        "cylDrain": 0.5,
+        "sphTopCut": 29,
+        "sphBotFlatten": 146,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.3,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Diamond Weave",
+        "equation": "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)",
+        "intensity": 0.079
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#BECF00",
+        "patternColor1": "#00AE42",
+        "patternColor2": "#E4BD68",
+        "overlapColor": "#3F8E43",
+        "depthMm": 1.26
+    },
+    "mesh": {
+        "resV": 122,
+        "resT": 199,
+        "patternResV": 144,
+        "patternResT": 219
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Local Twist",
+        "equation": "exp(-pow(v - 0.8, 2)*24)",
+        "strength": 0.2,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.13,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

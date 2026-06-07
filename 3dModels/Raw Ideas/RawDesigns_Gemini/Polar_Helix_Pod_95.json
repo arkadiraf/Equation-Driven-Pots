@@ -1,0 +1,68 @@
+{
+    "name": "Polar Helix Pod 95",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "basicEffect",
+        "preset": "Hourglass Pinch",
+        "equation": "R * (1 - 0.18*pow(sin(phi), 2))",
+        "baseRadius": 4.56,
+        "height": 13.0
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.4,
+        "bottomThickness": 0.52,
+        "cylDrain": 0.5,
+        "sphTopCut": 30,
+        "sphBotFlatten": 151,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.32,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.56,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "sin(12*theta + 10*pi*v) + sin(13*theta - 10*pi*v)",
+        "intensity": 0.051
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#D1D3D5",
+        "patternColor1": "#6F5034",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#847D48",
+        "depthMm": 1.08
+    },
+    "mesh": {
+        "resV": 145,
+        "resT": 184,
+        "patternResV": 139,
+        "patternResT": 185
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "sin(5*theta + 2*pi*v)",
+        "strength": 0.2,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.19,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

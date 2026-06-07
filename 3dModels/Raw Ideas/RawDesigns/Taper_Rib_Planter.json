@@ -1,0 +1,68 @@
+{
+  "name": "Taper Rib Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "basicEffect",
+    "preset": "Linear Taper",
+    "equation": "R * (1 - 0.22*v) * (1 + 0.06*cos(8*theta))",
+    "baseRadius": 5.5,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Fine Vertical Ribs",
+    "equation": "cos(16*theta) * (0.4 + 0.6*v)",
+    "intensity": 0.12
+  },
+  "patterns": {
+    "preset1": "Basic Horizontal Split",
+    "equation1": "v - 0.55",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#6b4c2a",
+    "patternColor1": "#c8a46e",
+    "patternColor2": "#3e2a12",
+    "overlapColor": "#9a7240",
+    "depthMm": 1.0
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

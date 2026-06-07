@@ -1,0 +1,68 @@
+{
+    "name": "Stellar Clover Bulb 57",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "basicEffect",
+        "preset": "Equator Bulge",
+        "equation": "R * (1 + 0.24*pow(sin(phi), 2))",
+        "baseRadius": 3.89,
+        "height": 13.3
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.41,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 28,
+        "sphBotFlatten": 148,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.58,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.5,
+        "plateSphTopCut": 90,
+        "plateSphBotFlatten": 255
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "sin(12*theta + 10*pi*v) + sin(13*theta - 10*pi*v)",
+        "intensity": 0.074
+    },
+    "patterns": {
+        "preset1": "Hex Window Grid",
+        "equation1": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v)) - 0.55",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#F55A74",
+        "patternColor1": "#C12E1F",
+        "patternColor2": "#9D2235",
+        "overlapColor": "#FF6A13",
+        "depthMm": 1.35
+    },
+    "mesh": {
+        "resV": 149,
+        "resT": 202,
+        "patternResV": 150,
+        "patternResT": 202
+    },
+    "modifier": {
+        "type": "petal",
+        "preset": "Petal Migration",
+        "equation": "sin(2*pi*v) + 0.25*sin(5*theta)",
+        "strength": 0.18,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Side Pressure Dent",
+        "dx": "-0.6 * exp(-pow(theta - 0, 2)*8) * exp(-pow(v - 0.6, 2)*20)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.17,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

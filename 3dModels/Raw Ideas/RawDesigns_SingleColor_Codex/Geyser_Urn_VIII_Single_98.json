@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Geyser Urn VIII Single 98",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "basicEffect",
+                 "preset":  "Shoulder Bulge",
+                 "equation":  "R * (1 + 0.12*exp(-pow(v - 0.68, 2)*18) - 0.055*exp(-pow(v - 0.34, 2)*20) + 0.035*cos(12*theta + pi*v))",
+                 "baseRadius":  6.2,
+                 "height":  17.1
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.42,
+                      "bottomThickness":  0.7,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "carved",
+                    "preset":  "Arc Shell Carving",
+                    "equation":  "asin(0.96*sin(13*theta + 4*pi*v))",
+                    "intensity":  0.156
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#8E9089",
+                     "patternColor1":  "#8E9089",
+                     "patternColor2":  "#8E9089",
+                     "overlapColor":  "#8E9089",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "petal",
+                     "preset":  "Petal Migration",
+                     "equation":  "sin(2*pi*v) + 0.22*sin(12*theta)",
+                     "strength":  0.105,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Zephyr Flute Globe 173",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "4-Petal Flower",
+        "equation": "R * (1 + 0.20 * cos(4 * theta) * pow(sin(phi), 1.5))",
+        "baseRadius": 9.8,
+        "height": 24.6
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.38,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 149,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.64,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.51,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Topographic Rings",
+        "equation": "sin(24*pi*v)",
+        "intensity": 0.138
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#A6A9AA",
+        "patternColor1": "#545454",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#5B6579",
+        "depthMm": 1.02
+    },
+    "mesh": {
+        "resV": 137,
+        "resT": 200,
+        "patternResV": 136,
+        "patternResT": 217
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.06,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

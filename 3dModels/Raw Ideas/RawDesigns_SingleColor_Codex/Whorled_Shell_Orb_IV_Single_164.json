@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Whorled Shell Orb IV Single 164",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "nonlinear",
+                 "preset":  "Hourglass Pinch",
+                 "equation":  "R * (1 - 0.10*pow(sin(phi), 2) + 0.08*atan(5*cos(12*theta + 1.2*phi))*pow(sin(phi), 1.5))",
+                 "baseRadius":  5.6,
+                 "height":  18.7
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "nonlinear",
+                    "preset":  "Saturated Flutes",
+                    "equation":  "atan(6*cos(19*theta - 2*phi))*pow(sin(phi), 1.1)",
+                    "intensity":  0.086
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#F4EE2A",
+                     "patternColor1":  "#F4EE2A",
+                     "patternColor2":  "#F4EE2A",
+                     "overlapColor":  "#F4EE2A",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Crown Rotation",
+                     "equation":  "exp(-pow(v - 0.72, 2)*18) * sin(2*phi)",
+                     "strength":  0.13,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

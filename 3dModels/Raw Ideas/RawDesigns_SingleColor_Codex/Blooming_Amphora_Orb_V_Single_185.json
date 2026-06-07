@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Blooming Amphora Orb V Single 185",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "floral",
+                 "preset":  "Twisted Bloom",
+                 "equation":  "R * (1 + 0.105*cos(6*theta + 1.4*phi)*pow(sin(phi), 1.5) + 0.045*cos(12*theta - 2*phi)*pow(sin(phi), 2))",
+                 "baseRadius":  10.22,
+                 "height":  23.1
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "ribs",
+                    "preset":  "Basic Vertical Ribs",
+                    "equation":  "cos(13*theta)*pow(sin(phi), 1.25)",
+                    "intensity":  0.119
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#FF6A13",
+                     "patternColor1":  "#FF6A13",
+                     "patternColor2":  "#FF6A13",
+                     "overlapColor":  "#FF6A13",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "petal",
+                     "preset":  "Petal Migration",
+                     "equation":  "sin(6*theta)*pow(sin(phi), 1.2) + 0.25*sin(2*phi)",
+                     "strength":  0.07,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

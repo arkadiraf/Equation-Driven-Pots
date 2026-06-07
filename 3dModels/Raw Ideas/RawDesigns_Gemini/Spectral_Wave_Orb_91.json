@@ -1,0 +1,68 @@
+{
+    "name": "Spectral Wave Orb 91",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Twisted Bloom",
+        "equation": "R * (1 + 0.18 * cos(5 * theta + 1.6 * phi) * pow(sin(phi), 1.5))",
+        "baseRadius": 4.69,
+        "height": 13.4
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.38,
+        "bottomThickness": 0.53,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 149,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.61,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.58,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 255
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Arc Shell Carving",
+        "equation": "asin(0.98*sin(8*theta + 6*pi*v))",
+        "intensity": 0.066
+    },
+    "patterns": {
+        "preset1": "Basic Band Mask",
+        "equation1": "sin(8*pi*v)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#3F8E43",
+        "patternColor1": "#BECF00",
+        "patternColor2": "#847D48",
+        "overlapColor": "#00AE42",
+        "depthMm": 1.13
+    },
+    "mesh": {
+        "resV": 131,
+        "resT": 197,
+        "patternResV": 139,
+        "patternResT": 207
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.11,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Side Pressure Dent",
+        "dx": "-0.6 * exp(-pow(theta - 0, 2)*8) * exp(-pow(v - 0.6, 2)*20)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.12,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

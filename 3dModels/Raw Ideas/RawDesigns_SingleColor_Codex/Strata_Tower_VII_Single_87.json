@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Strata Tower VII Single 87",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "folded",
+                 "preset":  "Diamond Facets",
+                 "equation":  "R * (1 + 0.05*abs(cos(11*theta + 5*pi*v)) + 0.045*abs(cos(11*theta - 6*pi*v)) + 0.025*cos(14*theta))",
+                 "baseRadius":  4,
+                 "height":  17.7
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.42,
+                      "bottomThickness":  0.7,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(14*theta + 9*pi*v) + sin(15*theta - 8*pi*v)",
+                    "intensity":  0.112
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#D1D3D5",
+                     "patternColor1":  "#D1D3D5",
+                     "patternColor2":  "#D1D3D5",
+                     "overlapColor":  "#D1D3D5",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Crown Rotation",
+                     "equation":  "exp(-pow(v - 0.86, 2)*36) * sin(2*pi*v)",
+                     "strength":  0.13,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

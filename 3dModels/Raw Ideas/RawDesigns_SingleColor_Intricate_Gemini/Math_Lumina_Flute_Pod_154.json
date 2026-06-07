@@ -1,0 +1,68 @@
+{
+    "name": "Math Lumina Flute Pod 154",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "5-Petal Flower",
+        "equation": "R * (1 + 0.12 * smoothstep(0.1, 0.9, cos(5 * theta + 2 * phi)))",
+        "baseRadius": 8.97,
+        "height": 10.6
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.44,
+        "bottomThickness": 0.6,
+        "cylDrain": 0.5,
+        "sphTopCut": 24,
+        "sphBotFlatten": 154,
+        "sphBotCut": 177
+    },
+    "plate": {
+        "plateHeight": 1.53,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.66,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#000000",
+        "patternColor1": "#000000",
+        "patternColor2": "#000000",
+        "overlapColor": "#000000",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 141,
+        "resT": 208,
+        "patternResV": 131,
+        "patternResT": 218
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "fract(4.0 * theta / pi + 3.0 * v)",
+        "strength": 0.16,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.19,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

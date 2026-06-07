@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Cellular Cauldron Intricate 112",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "nonlinear",
+                 "preset":  "Progressive Fluting",
+                 "equation":  "R * (1 + 0.09*smoothstep(0.20, 0.52, v)*(1 - smoothstep(0.72, 0.94, v))*atan(5*cos(6*theta + 2*pi*v)))",
+                 "baseRadius":  9,
+                 "height":  13
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "carved",
+                    "preset":  "Arc Shell Carving",
+                    "equation":  "asin(0.94*sin(17*theta + floor(10*v)*pi/3))",
+                    "intensity":  0.147
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#F4EE2A",
+                     "patternColor1":  "#F4EE2A",
+                     "patternColor2":  "#F4EE2A",
+                     "overlapColor":  "#F4EE2A",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "regional",
+                     "preset":  "Body Swirl Window",
+                     "equation":  "smoothstep(0.18, 0.42, v)*(1 - smoothstep(0.70, 0.92, v))*sin(14*theta)",
+                     "strength":  0.088,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

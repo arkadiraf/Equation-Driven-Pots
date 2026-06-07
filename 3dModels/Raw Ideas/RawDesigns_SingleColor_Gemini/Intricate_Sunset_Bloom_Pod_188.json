@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Sunset Bloom Pod 188",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "interference",
+        "preset": "Quasi Lattice Orb",
+        "equation": "R * (1 + 0.06*cos(10*theta + 1.414*8*phi) + 0.06*cos(15*theta - 1.732*6*phi))",
+        "baseRadius": 8.13,
+        "height": 22.9
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.45,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 31,
+        "sphBotFlatten": 147,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.49,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.59,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#5B6579",
+        "patternColor1": "#5B6579",
+        "patternColor2": "#5B6579",
+        "overlapColor": "#5B6579",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 138,
+        "resT": 205,
+        "patternResV": 129,
+        "patternResT": 184
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "sin(8*theta) * sin(pi*v)",
+        "strength": 0.18,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

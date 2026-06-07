@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Quantized Bowl Intricate 61",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "folded",
+                 "preset":  "Stepped Crown Phase",
+                 "equation":  "R * (1 + 0.045*(floor(12*v)/12) + 0.055*cos(10*theta + floor(9*v)*pi/5)*sin(pi*v))",
+                 "baseRadius":  7.4,
+                 "height":  24.3
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Diamond Weave",
+                    "equation":  "abs(fract(11*theta/(2*pi) + 4*v) - 0.5) + abs(fract(11*theta/(2*pi) - 4*v) - 0.5)",
+                    "intensity":  0.114
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#6F5034",
+                     "patternColor1":  "#6F5034",
+                     "patternColor2":  "#6F5034",
+                     "overlapColor":  "#6F5034",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "diagonal",
+                     "preset":  "Cross-Diagonal Weave",
+                     "equation":  "0.55*sin(10*theta + 2*pi*v) + 0.55*sin(10*theta - 2*pi*v)",
+                     "strength":  0.07,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

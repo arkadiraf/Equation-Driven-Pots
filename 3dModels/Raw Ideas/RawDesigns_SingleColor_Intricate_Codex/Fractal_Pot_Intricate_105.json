@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Fractal Pot Intricate 105",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "primitive",
+                 "preset":  "Rounded Square",
+                 "equation":  "R * pow(pow(abs(cos(theta)), 4 + 6*smoothstep(0.2, 0.8, v)) + pow(abs(sin(theta)), 4 + 6*smoothstep(0.2, 0.8, v)), -1/(4 + 6*smoothstep(0.2, 0.8, v))) * (1 + 0.035*cos(10*theta))",
+                 "baseRadius":  7.6,
+                 "height":  19.1
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Honeycomb Relief",
+                    "equation":  "max(cos(10*theta), cos(10*theta + 8*pi*v), cos(10*theta - 8*pi*v))",
+                    "intensity":  0.07
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#A6A9AA",
+                     "patternColor1":  "#A6A9AA",
+                     "patternColor2":  "#A6A9AA",
+                     "overlapColor":  "#A6A9AA",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Crown Rotation",
+                     "equation":  "exp(-pow(v - 0.86, 2)*34) * sin(round(8*v)*pi/4)",
+                     "strength":  0.142,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "pressure",
+                       "preset":  "Front Squeeze",
+                       "dx":  "-0.12*smoothstep(0.25, 0.55, v)*(1 - smoothstep(0.68, 0.90, v))",
+                       "dy":  "0",
+                       "dz":  "0.06*cos(theta)*smoothstep(0.25, 0.55, v)",
+                       "strength":  0.11,
+                       "region":  "all",
+                       "anchor":  "bottomHalfStiff",
+                       "space":  "xyz"
+                   }
+}

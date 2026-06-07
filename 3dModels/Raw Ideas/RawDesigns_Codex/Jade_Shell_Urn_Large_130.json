@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Jade Shell Urn Large 130",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "floral",
+                 "preset":  "9-Petal Flower",
+                 "equation":  "R * (1 + 0.08*cos(9*theta + 0.68*pi*v)*sin(pi*v)) * (1 + 0.08*exp(-pow(v - 0.62, 2)*14))",
+                 "baseRadius":  8.1,
+                 "height":  15.2
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "nonlinear",
+                    "preset":  "Saturated Flutes",
+                    "equation":  "atan(5*cos(12*theta - 2*pi*v))",
+                    "intensity":  0.136
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "sin(6*pi*v + 0.4*cos(9*theta)) - 0.08",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "cos(2*theta + pi*v)",
+                     "baseColor":  "#482960",
+                     "patternColor1":  "#D1D3D5",
+                     "patternColor2":  "#000000",
+                     "overlapColor":  "#A6A9AA",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "utility",
+                     "preset":  "None (No Modifier)",
+                     "equation":  "0",
+                     "strength":  0,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

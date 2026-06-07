@@ -1,0 +1,68 @@
+{
+    "name": "Lunar Facet Orb 72",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "primitive",
+        "preset": "Equatorial Cushion",
+        "equation": "R * (1 + 0.22 * exp(-pow(phi - pi/2, 2)*12) - 0.04*cos(2*phi))",
+        "baseRadius": 4.93,
+        "height": 11.2
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.37,
+        "bottomThickness": 0.51,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 155,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.46,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 245
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "Hex Window Grid",
+        "equation1": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v)) - 0.55",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#FFFFFF",
+        "patternColor1": "#D1D3D5",
+        "patternColor2": "#5B6579",
+        "overlapColor": "#0086D6",
+        "depthMm": 1.4
+    },
+    "mesh": {
+        "resV": 128,
+        "resT": 201,
+        "patternResV": 133,
+        "patternResT": 210
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Diagonal Drift",
+        "equation": "sin(4*theta + 2*pi*v)",
+        "strength": 0.12,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.12,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

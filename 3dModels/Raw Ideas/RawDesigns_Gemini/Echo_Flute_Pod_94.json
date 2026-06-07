@@ -1,0 +1,68 @@
+{
+    "name": "Echo Flute Pod 94",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "primitive",
+        "preset": "Perfect Sphere",
+        "equation": "R",
+        "baseRadius": 4.6,
+        "height": 15.8
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.37,
+        "bottomThickness": 0.56,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 152,
+        "sphBotCut": 175
+    },
+    "plate": {
+        "plateHeight": 1.68,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.57,
+        "plateSphTopCut": 91,
+        "plateSphBotFlatten": 255
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Fine Vertical Ribs",
+        "equation": "cos(16*theta)",
+        "intensity": 0.076
+    },
+    "patterns": {
+        "preset1": "Basic Band Mask",
+        "equation1": "sin(8*pi*v)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#9D432C",
+        "patternColor1": "#847D48",
+        "patternColor2": "#000000",
+        "overlapColor": "#F7E6DE",
+        "depthMm": 1.03
+    },
+    "mesh": {
+        "resV": 140,
+        "resT": 202,
+        "patternResV": 148,
+        "patternResT": 215
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.2,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.17,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

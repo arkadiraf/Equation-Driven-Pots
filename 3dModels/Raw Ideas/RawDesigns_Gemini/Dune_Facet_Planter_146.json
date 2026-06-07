@@ -1,0 +1,68 @@
+{
+    "name": "Dune Facet Planter 146",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Circle (Pure Base)",
+        "equation": "R",
+        "baseRadius": 7.72,
+        "height": 22.5
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.38,
+        "bottomThickness": 0.63,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 148,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.38,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 248
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Fine Vertical Ribs",
+        "equation": "cos(16*theta)",
+        "intensity": 0.088
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#A6A9AA",
+        "patternColor1": "#EC008C",
+        "patternColor2": "#000000",
+        "overlapColor": "#F5547C",
+        "depthMm": 1.04
+    },
+    "mesh": {
+        "resV": 121,
+        "resT": 185,
+        "patternResV": 135,
+        "patternResT": 190
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Polar Wave Orb 198",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "primitive",
+        "preset": "Perfect Sphere",
+        "equation": "R",
+        "baseRadius": 9.82,
+        "height": 23.8
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.38,
+        "bottomThickness": 0.59,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 146,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.51,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.6,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Diamond Weave",
+        "equation": "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)",
+        "intensity": 0.103
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#A6A9AA",
+        "patternColor1": "#482960",
+        "patternColor2": "#E4BD68",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.13
+    },
+    "mesh": {
+        "resV": 136,
+        "resT": 197,
+        "patternResV": 131,
+        "patternResT": 209
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.17,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.14,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "Arc Shell Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "nonlinear",
+    "preset": "Arc Compression",
+    "equation": "R * (1 + 0.14*asin(0.96*sin(7*theta + pi*v))) * (1 + 0.16*sin(pi*v))",
+    "baseRadius": 5.5,
+    "height": 10.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.36,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "carved",
+    "preset": "Arc Shell Carving",
+    "equation": "asin(0.96*sin(8*theta + 6*pi*v)) * (0.5 + 0.5*(1 - v))",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Equatorial Arc Belt",
+    "equation1": "asin(0.96 * sin(7*theta)) * exp(-pow(v - 0.52, 2) * 28)",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#d0c8b8",
+    "patternColor1": "#5a7888",
+    "patternColor2": "#3a5868",
+    "overlapColor": "#7a98a8",
+    "depthMm": 1.3
+  },
+  "mesh": {
+    "resV": 130,
+    "resT": 200,
+    "patternResV": 130,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

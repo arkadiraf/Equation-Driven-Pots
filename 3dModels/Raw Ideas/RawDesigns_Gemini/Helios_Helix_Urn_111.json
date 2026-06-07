@@ -1,0 +1,68 @@
+{
+    "name": "Helios Helix Urn 111",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Soft Hexagon",
+        "equation": "R * (1 + 0.10 * cos(6 * theta))",
+        "baseRadius": 9.77,
+        "height": 12.0
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.41,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 148,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.4,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.58,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Diamond Weave",
+        "equation": "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)",
+        "intensity": 0.069
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#5E43B7",
+        "patternColor1": "#A6A9AA",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#E4BD68",
+        "depthMm": 1.04
+    },
+    "mesh": {
+        "resV": 146,
+        "resT": 217,
+        "patternResV": 144,
+        "patternResT": 202
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

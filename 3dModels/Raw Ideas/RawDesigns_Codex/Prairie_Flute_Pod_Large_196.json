@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Prairie Flute Pod Large 196",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "floral",
+                 "preset":  "Twisted Bloom",
+                 "equation":  "R * (1 + 0.09*cos(6*theta + 1.3*phi)*pow(sin(phi), 1.5) + 0.05*cos(phi))",
+                 "baseRadius":  8.3,
+                 "height":  19.1
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.5,
+                      "bottomThickness":  0.85,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "ribs",
+                    "preset":  "Basic Vertical Ribs",
+                    "equation":  "cos(10*theta)*pow(sin(phi), 1.2)",
+                    "intensity":  0.065
+                },
+    "patterns":  {
+                     "preset1":  "Outer Radius Deviation",
+                     "equation1":  "textureFill(texPosNorm, 62)",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "cos(10*theta - 5*phi)",
+                     "baseColor":  "#EC008C",
+                     "patternColor1":  "#F5547C",
+                     "patternColor2":  "#FF9016",
+                     "overlapColor":  "#00AE42",
+                     "depthMm":  1.3
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "petal",
+                     "preset":  "Petal Migration",
+                     "equation":  "sin(phi)",
+                     "strength":  0.09,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

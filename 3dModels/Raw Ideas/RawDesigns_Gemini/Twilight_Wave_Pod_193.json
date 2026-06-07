@@ -1,0 +1,68 @@
+{
+    "name": "Twilight Wave Pod 193",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "nonlinear",
+        "preset": "Sharp 6-Lobe Shell",
+        "equation": "R * (1 + 0.16 * pow(sin(phi), 2.0) * atan(5 * cos(6*theta)))",
+        "baseRadius": 7.89,
+        "height": 15.4
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 30,
+        "sphBotFlatten": 152,
+        "sphBotCut": 175
+    },
+    "plate": {
+        "plateHeight": 1.54,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.59,
+        "plateSphTopCut": 99,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Fine Vertical Ribs",
+        "equation": "cos(16*theta)",
+        "intensity": 0.063
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#000000",
+        "patternColor1": "#5E43B7",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#EC008C",
+        "depthMm": 1.12
+    },
+    "mesh": {
+        "resV": 124,
+        "resT": 213,
+        "patternResV": 130,
+        "patternResT": 195
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.13,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

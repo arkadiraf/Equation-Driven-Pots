@@ -1,0 +1,68 @@
+{
+    "name": "Math Lumina Flute Bulb 133",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "nonlinear",
+        "preset": "Equatorial Saturation",
+        "equation": "R * (1 + 0.08 * clamp(tan(3 * phi), -1.0, 1.0) * cos(4 * theta))",
+        "baseRadius": 12.4,
+        "height": 18.4
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.37,
+        "bottomThickness": 0.51,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 146,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.59,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.65,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "sign(sin(12*theta)) * sign(sin(12*pi*v))",
+        "intensity": 0.052
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#9D432C",
+        "patternColor1": "#9D432C",
+        "patternColor2": "#9D432C",
+        "overlapColor": "#9D432C",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 133,
+        "resT": 187,
+        "patternResV": 135,
+        "patternResT": 191
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "fract(4.0 * theta / pi + 3.0 * v)",
+        "strength": 0.19,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

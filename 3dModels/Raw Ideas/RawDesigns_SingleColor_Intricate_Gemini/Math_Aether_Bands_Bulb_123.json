@@ -1,0 +1,68 @@
+{
+    "name": "Math Aether Bands Bulb 123",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Twisted Bloom",
+        "equation": "R * (1 + 0.15 * asin(0.95 * sin(5 * theta + 1.5 * phi)) * pow(sin(phi), 1.5))",
+        "baseRadius": 4.78,
+        "height": 14.6
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.45,
+        "bottomThickness": 0.52,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 152,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.56,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.65,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 255
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Domain Warp Ribs",
+        "equation": "asin(0.96 * sin(12 * (theta + 0.1 * sin(5*pi*v))))",
+        "intensity": 0.109
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#847D48",
+        "patternColor1": "#847D48",
+        "patternColor2": "#847D48",
+        "overlapColor": "#847D48",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 142,
+        "resT": 207,
+        "patternResV": 126,
+        "patternResT": 192
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "clamp(sin(6*theta) * sin(pi*v), -0.8, 0.8)",
+        "strength": 0.14,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "wave",
+        "preset": "Sway Wave",
+        "dx": "0.12*sin(3*pi*v)",
+        "dy": "0.02*sin(2*pi*v)",
+        "dz": "0",
+        "strength": 0.09,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

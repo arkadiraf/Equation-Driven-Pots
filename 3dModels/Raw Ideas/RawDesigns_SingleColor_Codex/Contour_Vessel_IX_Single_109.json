@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Contour Vessel IX Single 109",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "nonlinear",
+                 "preset":  "Compressed Wave Stack",
+                 "equation":  "R * (1 + 0.06*atan(4*(sin(13*theta + 3*pi*v) + 0.55*sin(12*theta - 2*pi*v))) * sin(pi*v))",
+                 "baseRadius":  8.4,
+                 "height":  16.5
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.42,
+                      "bottomThickness":  0.7,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Diamond Weave",
+                    "equation":  "0.5*cos(13*theta + 10*pi*v) + 0.5*cos(13*theta - 10*pi*v)",
+                    "intensity":  0.123
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#F55A74",
+                     "patternColor1":  "#F55A74",
+                     "patternColor2":  "#F55A74",
+                     "overlapColor":  "#F55A74",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "diagonal",
+                     "preset":  "Cross-Diagonal Weave",
+                     "equation":  "0.65*sin(13*theta + 2*pi*v) + 0.65*sin(13*theta - 2*pi*v)",
+                     "strength":  0.08,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "torsion",
+                       "preset":  "Torsion Twist",
+                       "dx":  "x*cos(0.16*sin(pi*v)) - z*sin(0.16*sin(pi*v)) - x",
+                       "dy":  "0",
+                       "dz":  "x*sin(0.16*sin(pi*v)) + z*cos(0.16*sin(pi*v)) - z",
+                       "strength":  0.16,
+                       "region":  "all",
+                       "anchor":  "baseAnchored",
+                       "space":  "xyz"
+                   }
+}

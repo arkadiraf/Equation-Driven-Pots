@@ -1,0 +1,68 @@
+{
+    "name": "Math Nova Helix Orb 159",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "nonlinear",
+        "preset": "Equatorial Saturation",
+        "equation": "R * (1 + 0.08 * clamp(tan(3 * phi), -1.0, 1.0) * cos(4 * theta))",
+        "baseRadius": 4.63,
+        "height": 18.3
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.42,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 151,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.43,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.58,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "smoothstep(-0.5, 0.5, sin(10*theta + 8*pi*v) + sin(11*theta - 8*pi*v))",
+        "intensity": 0.104
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#D1D3D5",
+        "patternColor1": "#D1D3D5",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#D1D3D5",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 144,
+        "resT": 205,
+        "patternResV": 126,
+        "patternResT": 204
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "fract(4.0 * theta / pi + 3.0 * v)",
+        "strength": 0.11,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Pressed Shoulder",
+        "dx": "-0.5 * exp(-pow(theta - pi/8, 2)*10) * exp(-pow(v - 0.72, 2)*24)",
+        "dy": "-0.08 * exp(-pow(v - 0.72, 2)*18)",
+        "dz": "0",
+        "strength": 0.14,
+        "region": "shoulder",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

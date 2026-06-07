@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Nested Vase Intricate 119",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "folded",
+                 "preset":  "Chevron Fold",
+                 "equation":  "R * (1 + 0.055*abs(fract(13*theta/(2*pi) + v) - fract(13*theta/(2*pi) - v)) + 0.035*cos(14*theta + pi*v))",
+                 "baseRadius":  10.4,
+                 "height":  21.3
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(14*theta + 9*pi*v) + sin(16*theta - 8*pi*v)",
+                    "intensity":  0.136
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#000000",
+                     "patternColor1":  "#000000",
+                     "patternColor2":  "#000000",
+                     "overlapColor":  "#000000",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "interference",
+                     "preset":  "Quasi Drift",
+                     "equation":  "sin(13*theta + 2*pi*v) + 0.35*sin(14*theta - 2*pi*sqrt(2)*v)",
+                     "strength":  0.124,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "pressure",
+                       "preset":  "Front Squeeze",
+                       "dx":  "-0.12*smoothstep(0.25, 0.55, v)*(1 - smoothstep(0.68, 0.90, v))",
+                       "dy":  "0",
+                       "dz":  "0.06*cos(theta)*smoothstep(0.25, 0.55, v)",
+                       "strength":  0.11,
+                       "region":  "all",
+                       "anchor":  "bottomHalfStiff",
+                       "space":  "xyz"
+                   }
+}

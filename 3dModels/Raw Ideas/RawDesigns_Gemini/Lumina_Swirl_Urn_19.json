@@ -1,0 +1,68 @@
+{
+    "name": "Lumina Swirl Urn 19",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "folded",
+        "preset": "Chevron Fold",
+        "equation": "R * (1 + 0.12 * abs(sin(6*theta + 4*pi*v)) - 0.05 * abs(sin(6*theta - 4*pi*v)))",
+        "baseRadius": 4.81,
+        "height": 16.0
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.35,
+        "bottomThickness": 0.5,
+        "cylDrain": 0.5,
+        "sphTopCut": 24,
+        "sphBotFlatten": 154,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.59,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.58,
+        "plateSphTopCut": 91,
+        "plateSphBotFlatten": 248
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Arc Shell Carving",
+        "equation": "asin(0.98*sin(8*theta + 6*pi*v))",
+        "intensity": 0.052
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#F55A74",
+        "patternColor1": "#F4EE2A",
+        "patternColor2": "#E4BD68",
+        "overlapColor": "#FEC600",
+        "depthMm": 1.27
+    },
+    "mesh": {
+        "resV": 128,
+        "resT": 191,
+        "patternResV": 122,
+        "patternResT": 181
+    },
+    "modifier": {
+        "type": "petal",
+        "preset": "Petal Migration",
+        "equation": "sin(2*pi*v) + 0.25*sin(5*theta)",
+        "strength": 0.1,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Torsion Twist",
+        "dx": "x*cos(0.35*sin(pi*v)) - z*sin(0.35*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.35*sin(pi*v)) + z*cos(0.35*sin(pi*v)) - z",
+        "strength": 0.2,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

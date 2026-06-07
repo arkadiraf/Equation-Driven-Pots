@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Iris Lantern Tub Large 129",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "basicEffect",
+                 "preset":  "Rim Flare",
+                 "equation":  "R * (1 + 0.14*pow(v, 1.8) - 0.05*exp(-pow(v - 0.25, 2)*18) + 0.035*cos(8*theta)*sin(pi*v))",
+                 "baseRadius":  7.9,
+                 "height":  24.6
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(18*theta + 9*pi*v) + sin(19*theta - 8*pi*v)",
+                    "intensity":  0.122
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "max(cos(8*theta), cos(8*theta + 8*pi*v), cos(8*theta - 8*pi*v)) - 0.58",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "sin(5*pi*v) - 0.12",
+                     "baseColor":  "#00B1B7",
+                     "patternColor1":  "#00B1B7",
+                     "patternColor2":  "#00AE42",
+                     "overlapColor":  "#00B1B7",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Gentle Torsion",
+                     "equation":  "exp(-pow(v - 0.82, 2)*24) * sin(8*theta)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

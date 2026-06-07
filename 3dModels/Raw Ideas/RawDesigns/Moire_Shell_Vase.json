@@ -1,0 +1,68 @@
+{
+  "name": "Moire Shell Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Moire Shell",
+    "equation": "R * (1 + 0.12*cos(9*theta + 7*pi*v) + 0.12*cos(10*theta - 7*pi*v)) * (1 + 0.14*sin(pi*v))",
+    "baseRadius": 4.5,
+    "height": 13.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.33,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "sin(14*theta + 11*pi*v) + sin(15*theta - 11*pi*v)",
+    "intensity": 0.10
+  },
+  "patterns": {
+    "preset1": "Moire Windows",
+    "equation1": "smoothstep(0.18, 0.26, sin(9*theta + 7*pi*v) + sin(10*theta - 7*pi*v)) - 0.5",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#e8e0d0",
+    "patternColor1": "#607890",
+    "patternColor2": "#405060",
+    "overlapColor": "#8090a8",
+    "depthMm": 1.1
+  },
+  "mesh": {
+    "resV": 150,
+    "resT": 220,
+    "patternResV": 150,
+    "patternResT": 220
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

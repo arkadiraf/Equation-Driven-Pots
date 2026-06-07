@@ -1,0 +1,68 @@
+{
+    "name": "Crest Groove Planter 14",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Shoulder Bulge",
+        "equation": "R * (1 + 0.20*exp(-pow(v - 0.72, 2)*18))",
+        "baseRadius": 4.26,
+        "height": 14.0
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 24,
+        "sphBotFlatten": 151,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.47,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.57,
+        "plateSphTopCut": 90,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Fine Vertical Ribs",
+        "equation": "cos(16*theta)",
+        "intensity": 0.064
+    },
+    "patterns": {
+        "preset1": "Basic Band Mask",
+        "equation1": "sin(8*pi*v)",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#F4EE2A",
+        "patternColor1": "#E4BD68",
+        "patternColor2": "#FEC600",
+        "overlapColor": "#FF6A13",
+        "depthMm": 1.28
+    },
+    "mesh": {
+        "resV": 149,
+        "resT": 194,
+        "patternResV": 150,
+        "patternResT": 195
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.1,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.19,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

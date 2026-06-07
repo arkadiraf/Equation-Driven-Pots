@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Columnar Vessel Orb IV Single 124",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "nonlinear",
+                 "preset":  "Hourglass Pinch",
+                 "equation":  "R * (1 - 0.10*pow(sin(phi), 2) + 0.08*atan(5*cos(8*theta + 1.2*phi))*pow(sin(phi), 1.5))",
+                 "baseRadius":  5.16,
+                 "height":  11.9
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "nonlinear",
+                    "preset":  "Saturated Flutes",
+                    "equation":  "atan(6*cos(24*theta - 2*phi))*pow(sin(phi), 1.1)",
+                    "intensity":  0.108
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#5B6579",
+                     "patternColor1":  "#5B6579",
+                     "patternColor2":  "#5B6579",
+                     "overlapColor":  "#5B6579",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Crown Rotation",
+                     "equation":  "exp(-pow(v - 0.72, 2)*18) * sin(2*phi)",
+                     "strength":  0.13,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

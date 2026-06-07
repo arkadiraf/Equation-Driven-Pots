@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Vortex Column Orb V Single 195",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "basicEffect",
+                 "preset":  "Equator Bulge",
+                 "equation":  "R * (1 + 0.18*pow(sin(phi), 2) - 0.05*cos(2*phi) + 0.04*cos(7*theta + phi)*pow(sin(phi), 1.4))",
+                 "baseRadius":  12.42,
+                 "height":  16.8
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "ribs",
+                    "preset":  "Basic Vertical Ribs",
+                    "equation":  "cos(23*theta)*pow(sin(phi), 1.25)",
+                    "intensity":  0.097
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#A6A9AA",
+                     "patternColor1":  "#A6A9AA",
+                     "patternColor2":  "#A6A9AA",
+                     "overlapColor":  "#A6A9AA",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "interference",
+                     "preset":  "Interference Drift",
+                     "equation":  "sin(7*theta + 2*phi) + 0.45*sin(23*theta - 3*phi)",
+                     "strength":  0.11,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

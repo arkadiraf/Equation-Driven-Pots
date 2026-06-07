@@ -1,0 +1,68 @@
+{
+    "name": "Titan Groove Shell 65",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "basicEffect",
+        "preset": "Equator Bulge",
+        "equation": "R * (1 + 0.24*pow(sin(phi), 2))",
+        "baseRadius": 3.86,
+        "height": 12.3
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.4,
+        "bottomThickness": 0.51,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 148,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.57,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.63,
+        "plateSphTopCut": 99,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Fine Vertical Ribs",
+        "equation": "cos(16*theta)",
+        "intensity": 0.111
+    },
+    "patterns": {
+        "preset1": "Basic Band Mask",
+        "equation1": "sin(8*pi*v)",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#000000",
+        "patternColor1": "#6F5034",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#847D48",
+        "depthMm": 1.11
+    },
+    "mesh": {
+        "resV": 133,
+        "resT": 202,
+        "patternResV": 134,
+        "patternResT": 184
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Diagonal Drift",
+        "equation": "sin(4*theta + 2*pi*v)",
+        "strength": 0.14,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.09,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

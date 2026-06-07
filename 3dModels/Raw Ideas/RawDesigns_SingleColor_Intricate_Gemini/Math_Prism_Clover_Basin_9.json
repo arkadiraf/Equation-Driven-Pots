@@ -1,0 +1,68 @@
+{
+    "name": "Math Prism Clover Basin 9",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "folded",
+        "preset": "Folded Mod Panels",
+        "equation": "R * (1 + 0.08 * sign(sin(6 * theta + 2 * pi * v)))",
+        "baseRadius": 11.97,
+        "height": 14.0
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.45,
+        "bottomThickness": 0.52,
+        "cylDrain": 0.5,
+        "sphTopCut": 24,
+        "sphBotFlatten": 151,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.64,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.54,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Domain Warp Ribs",
+        "equation": "asin(0.96 * sin(12 * (theta + 0.1 * sin(5*pi*v))))",
+        "intensity": 0.131
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#E4BD68",
+        "patternColor1": "#E4BD68",
+        "patternColor2": "#E4BD68",
+        "overlapColor": "#E4BD68",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 132,
+        "resT": 203,
+        "patternResV": 147,
+        "patternResT": 205
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Gentle Torsion",
+        "equation": "floor(6.0 * v) / 6.0",
+        "strength": 0.14,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.18,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

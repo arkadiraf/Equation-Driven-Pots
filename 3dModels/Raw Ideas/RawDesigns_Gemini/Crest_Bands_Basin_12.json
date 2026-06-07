@@ -1,0 +1,68 @@
+{
+    "name": "Crest Bands Basin 12",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Mid Bulge",
+        "equation": "R * (1 + 0.28*sin(pi*v))",
+        "baseRadius": 4.91,
+        "height": 16.8
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.38,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 148,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.47,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Basic Horizontal Bands",
+        "equation": "sin(12*pi*v)",
+        "intensity": 0.132
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#0A2989",
+        "patternColor1": "#0086D6",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#0056B8",
+        "depthMm": 1.35
+    },
+    "mesh": {
+        "resV": 134,
+        "resT": 214,
+        "patternResV": 143,
+        "patternResT": 187
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.19,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

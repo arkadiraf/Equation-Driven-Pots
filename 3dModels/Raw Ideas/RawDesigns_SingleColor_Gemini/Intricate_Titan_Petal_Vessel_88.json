@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Titan Petal Vessel 88",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "nonlinear",
+        "preset": "DNA Helix (S-Curve)",
+        "equation": "R * (1 + 0.15 * cos(2 * theta + 4*pi*v)) * (1 + 0.12 * sin(12*pi*v))",
+        "baseRadius": 4.44,
+        "height": 22.4
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.45,
+        "bottomThickness": 0.57,
+        "cylDrain": 0.5,
+        "sphTopCut": 28,
+        "sphBotFlatten": 146,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.53,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.68,
+        "plateSphTopCut": 91,
+        "plateSphBotFlatten": 255
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Arc Shell Carving",
+        "equation": "asin(0.98*sin(10*theta + 8*pi*v))",
+        "intensity": 0.117
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#EC008C",
+        "patternColor1": "#EC008C",
+        "patternColor2": "#EC008C",
+        "overlapColor": "#EC008C",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 127,
+        "resT": 198,
+        "patternResV": 143,
+        "patternResT": 181
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "sin(8*theta) * sin(pi*v)",
+        "strength": 0.19,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.11,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

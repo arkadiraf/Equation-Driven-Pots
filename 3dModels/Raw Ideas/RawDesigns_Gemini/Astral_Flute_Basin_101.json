@@ -1,0 +1,68 @@
+{
+    "name": "Astral Flute Basin 101",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "folded",
+        "preset": "Chevron Fold",
+        "equation": "R * (1 + 0.12 * abs(sin(6*theta + 4*pi*v)) - 0.05 * abs(sin(6*theta - 4*pi*v)))",
+        "baseRadius": 9.93,
+        "height": 17.7
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.42,
+        "bottomThickness": 0.51,
+        "cylDrain": 0.5,
+        "sphTopCut": 29,
+        "sphBotFlatten": 151,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.7,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.6,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 248
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "cos(8*theta) * sin(10*pi*v)",
+        "intensity": 0.066
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#5E43B7",
+        "patternColor1": "#F5547C",
+        "patternColor2": "#E4BD68",
+        "overlapColor": "#482960",
+        "depthMm": 1.25
+    },
+    "mesh": {
+        "resV": 143,
+        "resT": 211,
+        "patternResV": 142,
+        "patternResT": 196
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.12,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

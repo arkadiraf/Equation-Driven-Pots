@@ -1,0 +1,68 @@
+{
+    "name": "Math Sleek Helix Bulb 120",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Modulo Meridians",
+        "equation": "R * (1 + 0.06 * sign(cos(8 * theta) * sin(4 * phi)))",
+        "baseRadius": 10.75,
+        "height": 19.6
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.36,
+        "bottomThickness": 0.64,
+        "cylDrain": 0.5,
+        "sphTopCut": 28,
+        "sphBotFlatten": 147,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.4,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.55,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Modulo Tile Relief",
+        "equation": "fract(6.0 * theta / pi + 6.0 * v)",
+        "intensity": 0.122
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#0086D6",
+        "patternColor1": "#0086D6",
+        "patternColor2": "#0086D6",
+        "overlapColor": "#0086D6",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 144,
+        "resT": 197,
+        "patternResV": 130,
+        "patternResT": 197
+    },
+    "modifier": {
+        "type": "regional",
+        "preset": "Body Swirl Window",
+        "equation": "smoothstep(0.2, 0.8, sin(pi*v)) * sin(5*theta)",
+        "strength": 0.09,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "wave",
+        "preset": "Sway Wave",
+        "dx": "0.12*sin(3*pi*v)",
+        "dy": "0.02*sin(2*pi*v)",
+        "dz": "0",
+        "strength": 0.14,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

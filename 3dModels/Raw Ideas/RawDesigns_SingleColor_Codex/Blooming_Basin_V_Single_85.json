@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Blooming Basin V Single 85",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "primitive",
+                 "preset":  "Rounded Square",
+                 "equation":  "R * pow(pow(abs(cos(theta)), 5 + 3*sin(pi*v)*sin(pi*v)) + pow(abs(sin(theta)), 5 + 3*sin(pi*v)*sin(pi*v)), -1/(5 + 3*sin(pi*v)*sin(pi*v))) * (1 + 0.04*cos(9*theta + pi*v))",
+                 "baseRadius":  12.2,
+                 "height":  15
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.42,
+                      "bottomThickness":  0.7,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Diamond Weave",
+                    "equation":  "0.5*cos(9*theta + 10*pi*v) + 0.5*cos(9*theta - 10*pi*v)",
+                    "intensity":  0.09
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#0056B8",
+                     "patternColor1":  "#0056B8",
+                     "patternColor2":  "#0056B8",
+                     "overlapColor":  "#0056B8",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "interference",
+                     "preset":  "Quasi Drift",
+                     "equation":  "sin(9*theta + 2*pi*v) + 0.45*sin(25*theta - 2*pi*sqrt(2)*v)",
+                     "strength":  0.08,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "torsion",
+                       "preset":  "Torsion Twist",
+                       "dx":  "x*cos(0.16*sin(pi*v)) - z*sin(0.16*sin(pi*v)) - x",
+                       "dy":  "0",
+                       "dz":  "x*sin(0.16*sin(pi*v)) + z*cos(0.16*sin(pi*v)) - z",
+                       "strength":  0.16,
+                       "region":  "all",
+                       "anchor":  "baseAnchored",
+                       "space":  "xyz"
+                   }
+}

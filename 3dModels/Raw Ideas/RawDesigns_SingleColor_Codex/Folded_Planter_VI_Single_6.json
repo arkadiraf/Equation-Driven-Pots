@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Folded Planter VI Single 6",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "interference",
+                 "preset":  "Quasi Spiral Shell",
+                 "equation":  "R * (1 + 0.045*cos(10*theta + 2*pi*v) + 0.04*cos(26*theta - 2*pi*sqrt(2)*v) + 0.03*sin(23*theta + pi*sqrt(3)*v))",
+                 "baseRadius":  5,
+                 "height":  16.6
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.42,
+                      "bottomThickness":  0.7,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "ribs",
+                    "preset":  "Basic Twist Relief",
+                    "equation":  "cos(26*theta + 5*pi*v)",
+                    "intensity":  0.145
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#FFFFFF",
+                     "patternColor1":  "#FFFFFF",
+                     "patternColor2":  "#FFFFFF",
+                     "overlapColor":  "#FFFFFF",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "diagonal",
+                     "preset":  "Braided Drift",
+                     "equation":  "sin(10*theta + 3*pi*v) + 0.45*sin(10*theta - 3*pi*v)",
+                     "strength":  0.105,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "swirl",
+                       "preset":  "Mid-Body Vortex",
+                       "dx":  "-0.10*z*exp(-pow(v - 0.58, 2)*14)",
+                       "dy":  "0",
+                       "dz":  "0.10*x*exp(-pow(v - 0.58, 2)*14)",
+                       "strength":  0.12,
+                       "region":  "all",
+                       "anchor":  "bottomHalfStiff",
+                       "space":  "xyz"
+                   }
+}

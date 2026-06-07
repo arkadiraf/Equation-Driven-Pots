@@ -1,0 +1,68 @@
+{
+    "name": "Spectral Facet Vessel 34",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Soft Hexagon",
+        "equation": "R * (1 + 0.10 * cos(6 * theta))",
+        "baseRadius": 3.9,
+        "height": 24.3
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.39,
+        "bottomThickness": 0.55,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 154,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.41,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.63,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 245
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Fine Vertical Ribs",
+        "equation": "cos(16*theta)",
+        "intensity": 0.127
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#FF6A13",
+        "patternColor1": "#F4EE2A",
+        "patternColor2": "#C12E1F",
+        "overlapColor": "#9D2235",
+        "depthMm": 1.15
+    },
+    "mesh": {
+        "resV": 139,
+        "resT": 211,
+        "patternResV": 123,
+        "patternResT": 184
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Side Pressure Dent",
+        "dx": "-0.6 * exp(-pow(theta - 0, 2)*8) * exp(-pow(v - 0.6, 2)*20)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.14,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

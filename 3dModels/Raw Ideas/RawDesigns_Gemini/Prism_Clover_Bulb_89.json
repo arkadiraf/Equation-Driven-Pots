@@ -1,0 +1,68 @@
+{
+    "name": "Prism Clover Bulb 89",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "primitive",
+        "preset": "Soft Egg",
+        "equation": "R * (1 + 0.16*cos(phi) - 0.08*cos(2*phi))",
+        "baseRadius": 4.29,
+        "height": 8.1
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.41,
+        "bottomThickness": 0.57,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 152,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.58,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.54,
+        "plateSphTopCut": 91,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "nonlinear",
+        "preset": "Saturated Flutes",
+        "equation": "atan(7 * cos(12*theta))",
+        "intensity": 0.128
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#0056B8",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#00B1B7",
+        "overlapColor": "#D1D3D5",
+        "depthMm": 1.05
+    },
+    "mesh": {
+        "resV": 147,
+        "resT": 186,
+        "patternResV": 121,
+        "patternResT": 219
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.13,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

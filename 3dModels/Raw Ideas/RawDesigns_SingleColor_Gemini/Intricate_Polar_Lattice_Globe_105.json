@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Polar Lattice Globe 105",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "interference",
+        "preset": "Quasi Lattice Orb",
+        "equation": "R * (1 + 0.06*cos(10*theta + 1.414*8*phi) + 0.06*cos(15*theta - 1.732*6*phi))",
+        "baseRadius": 9.53,
+        "height": 21.9
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.62,
+        "cylDrain": 0.5,
+        "sphTopCut": 30,
+        "sphBotFlatten": 148,
+        "sphBotCut": 175
+    },
+    "plate": {
+        "plateHeight": 1.54,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.54,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 251
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Folded Chevron",
+        "equation": "abs(sin(8*theta + 10*pi*v)) - 0.5*abs(sin(8*theta - 10*pi*v))",
+        "intensity": 0.084
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#FFFFFF",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 129,
+        "resT": 189,
+        "patternResV": 126,
+        "patternResT": 218
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Body Swirl",
+        "equation": "exp(-pow(v - 0.55, 2)*14) * sin(4*theta + 2*pi*v)",
+        "strength": 0.13,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Fluid Twist XYZ",
+        "dx": "x*cos(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) - z*sin(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) + z*cos(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) - z",
+        "strength": 0.13,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

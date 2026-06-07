@@ -1,0 +1,68 @@
+{
+  "name": "Progressive Flute Column",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "nonlinear",
+    "preset": "Progressive Fluting",
+    "equation": "R * (1 + (0.05 + 0.18*pow(v, 1.5)) * atan(6*cos(10*theta))) * (1 - 0.08*v)",
+    "baseRadius": 4.5,
+    "height": 16.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.33,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "nonlinear",
+    "preset": "Saturated Flutes",
+    "equation": "atan(8*cos(10*theta)) * (0.3 + 0.7*pow(v, 1.2))",
+    "intensity": 0.10
+  },
+  "patterns": {
+    "preset1": "Basic Horizontal Split",
+    "equation1": "v - 0.6",
+    "preset2": "Basic Stripe Mask",
+    "equation2": "cos(10*theta) - 0.4",
+    "baseColor": "#d8d0c0",
+    "patternColor1": "#506880",
+    "patternColor2": "#a0b8c8",
+    "overlapColor": "#708898",
+    "depthMm": 1.0
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 180,
+    "patternResV": 140,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Prism Helix Pot 26",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Mid Bulge",
+        "equation": "R * (1 + 0.28*sin(pi*v))",
+        "baseRadius": 4.41,
+        "height": 22.5
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.37,
+        "bottomThickness": 0.63,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 153,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.61,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.51,
+        "plateSphTopCut": 98,
+        "plateSphBotFlatten": 245
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "sin(12*theta + 10*pi*v) + sin(13*theta - 10*pi*v)",
+        "intensity": 0.104
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#F55A74",
+        "patternColor1": "#F4EE2A",
+        "patternColor2": "#FEC600",
+        "overlapColor": "#C12E1F",
+        "depthMm": 1.36
+    },
+    "mesh": {
+        "resV": 130,
+        "resT": 216,
+        "patternResV": 150,
+        "patternResT": 204
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.12,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

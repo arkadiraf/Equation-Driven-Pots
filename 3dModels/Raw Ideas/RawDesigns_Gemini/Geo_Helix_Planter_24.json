@@ -1,0 +1,68 @@
+{
+    "name": "Geo Helix Planter 24",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Circle (Pure Base)",
+        "equation": "R",
+        "baseRadius": 4.64,
+        "height": 20.5
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.42,
+        "bottomThickness": 0.63,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 152,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.5,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.54,
+        "plateSphTopCut": 99,
+        "plateSphBotFlatten": 245
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Topographic Rings",
+        "equation": "sin(24*pi*v)",
+        "intensity": 0.078
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#E4BD68",
+        "patternColor1": "#C12E1F",
+        "patternColor2": "#FF6A13",
+        "overlapColor": "#F4EE2A",
+        "depthMm": 1.33
+    },
+    "mesh": {
+        "resV": 148,
+        "resT": 184,
+        "patternResV": 140,
+        "patternResT": 189
+    },
+    "modifier": {
+        "type": "petal",
+        "preset": "Petal Migration",
+        "equation": "sin(2*pi*v) + 0.25*sin(5*theta)",
+        "strength": 0.2,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.19,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

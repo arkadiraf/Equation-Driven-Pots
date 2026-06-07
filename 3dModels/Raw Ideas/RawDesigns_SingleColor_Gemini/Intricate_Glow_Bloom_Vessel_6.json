@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Glow Bloom Vessel 6",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Rosette Bloom",
+        "equation": "R * (1 + 0.2 * cos(5 * (theta + 0.25 * sin(2*pi*v))) * sin(pi*v)) * (1 + 0.15 * pow(v, 2.0))",
+        "baseRadius": 5.89,
+        "height": 14.5
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.45,
+        "bottomThickness": 0.63,
+        "cylDrain": 0.5,
+        "sphTopCut": 24,
+        "sphBotFlatten": 153,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.45,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.59,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "sin(18*theta + 12*pi*v) + sin(19*theta - 12*pi*v)",
+        "intensity": 0.131
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#F5547C",
+        "patternColor1": "#F5547C",
+        "patternColor2": "#F5547C",
+        "overlapColor": "#F5547C",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 137,
+        "resT": 209,
+        "patternResV": 143,
+        "patternResT": 215
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Braided Drift",
+        "equation": "sin(6*theta + 3*pi*v) + 0.5*sin(6*theta - 3*pi*v)",
+        "strength": 0.2,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

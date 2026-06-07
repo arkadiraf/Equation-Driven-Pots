@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Stepped Shell Intricate 28",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "nonlinear",
+                 "preset":  "Progressive Fluting",
+                 "equation":  "R * (1 + 0.09*smoothstep(0.20, 0.52, v)*(1 - smoothstep(0.72, 0.94, v))*atan(5*cos(10*theta + 2*pi*v)))",
+                 "baseRadius":  9.4,
+                 "height":  13.8
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "carved",
+                    "preset":  "Arc Shell Carving",
+                    "equation":  "asin(0.94*sin(15*theta + floor(10*v)*pi/3))",
+                    "intensity":  0.103
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#EC008C",
+                     "patternColor1":  "#EC008C",
+                     "patternColor2":  "#EC008C",
+                     "overlapColor":  "#EC008C",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "fold",
+                     "preset":  "Chevron Drift",
+                     "equation":  "abs(sin(10*theta + 2*pi*v)) - abs(sin(10*theta - 2*pi*v))",
+                     "strength":  0.106,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

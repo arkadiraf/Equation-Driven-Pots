@@ -1,0 +1,68 @@
+{
+    "name": "Astral Lattice Shell 183",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Lotus Pod",
+        "equation": "R * (1 + 0.16 * cos(6 * theta) * pow(sin(phi), 2.2) - 0.04 * cos(2 * phi))",
+        "baseRadius": 8.31,
+        "height": 23.0
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 155,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.44,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.52,
+        "plateSphTopCut": 91,
+        "plateSphBotFlatten": 245
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#A6A9AA",
+        "patternColor1": "#F5547C",
+        "patternColor2": "#E4BD68",
+        "overlapColor": "#482960",
+        "depthMm": 1.4
+    },
+    "mesh": {
+        "resV": 149,
+        "resT": 204,
+        "patternResV": 141,
+        "patternResT": 193
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.08,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Side Pressure Dent",
+        "dx": "-0.6 * exp(-pow(theta - 0, 2)*8) * exp(-pow(v - 0.6, 2)*20)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.1,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

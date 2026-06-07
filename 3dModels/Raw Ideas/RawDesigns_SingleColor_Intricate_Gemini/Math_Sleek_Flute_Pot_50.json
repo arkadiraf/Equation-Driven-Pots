@@ -1,0 +1,68 @@
+{
+    "name": "Math Sleek Flute Pot 50",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Lotus Crown Vase",
+        "equation": "R * (1 + 0.15 * acos(0.9 * cos(5 * theta)) * v * (1.0 - v))",
+        "baseRadius": 11.92,
+        "height": 16.8
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.37,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 147,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.67,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 91,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Terraced Contours",
+        "equation": "floor(10 * v) / 10",
+        "intensity": 0.123
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#FFFFFF",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 136,
+        "resT": 201,
+        "patternResV": 132,
+        "patternResT": 188
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Gentle Torsion",
+        "equation": "floor(6.0 * v) / 6.0",
+        "strength": 0.12,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "gravity",
+        "preset": "Heavy Crown",
+        "dx": "0",
+        "dy": "-clamp(pow(v, 2.2), 0.0, 0.8)",
+        "dz": "0",
+        "strength": 0.16,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

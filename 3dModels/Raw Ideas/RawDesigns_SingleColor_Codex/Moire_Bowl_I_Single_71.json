@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Moire Bowl I Single 71",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "interference",
+                 "preset":  "Fourier Bloom",
+                 "equation":  "R * (1 + 0.055*cos(5*theta + 2*pi*v) + 0.035*cos(17*theta - 3*pi*v) + 0.025*cos(25*theta + pi*v)) * (1 + 0.07*sin(pi*v))",
+                 "baseRadius":  9.4,
+                 "height":  11.7
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.42,
+                      "bottomThickness":  0.7,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Honeycomb Relief",
+                    "equation":  "max(cos(5*theta), cos(5*theta + 8*pi*v), cos(5*theta - 8*pi*v))",
+                    "intensity":  0.09
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#482960",
+                     "patternColor1":  "#482960",
+                     "patternColor2":  "#482960",
+                     "overlapColor":  "#482960",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "diagonal",
+                     "preset":  "Braided Drift",
+                     "equation":  "sin(5*theta + 3*pi*v) + 0.45*sin(5*theta - 3*pi*v)",
+                     "strength":  0.13,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Stepped Pod Orb Intricate 168",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "nonlinear",
+                 "preset":  "Perfect Sphere",
+                 "equation":  "R * (1 + 0.08*smoothstep(0.18, 0.48, v)*(1 - smoothstep(0.70, 0.94, v))*atan(4*cos(12*theta + 2*phi)))",
+                 "baseRadius":  4.82,
+                 "height":  17
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.45,
+                      "bottomThickness":  0.74,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(24*theta + 8*phi) + sin(26*theta - 7*phi)",
+                    "intensity":  0.087
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#FFFFFF",
+                     "patternColor1":  "#FFFFFF",
+                     "patternColor2":  "#FFFFFF",
+                     "overlapColor":  "#FFFFFF",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "diagonal",
+                     "preset":  "Diagonal Drift",
+                     "equation":  "sin(12*theta + 2*phi)",
+                     "strength":  0.097,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

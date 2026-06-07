@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Stellar Chevron Urn 34",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Lobed Body",
+        "equation": "R * (1 + 0.18 * cos(10 * theta) * (0.8 + 0.2 * sin(4*pi*v)))",
+        "baseRadius": 10.76,
+        "height": 15.7
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.35,
+        "bottomThickness": 0.63,
+        "cylDrain": 0.5,
+        "sphTopCut": 23,
+        "sphBotFlatten": 148,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.31,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.56,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "nonlinear",
+        "preset": "Log Ripple Compression",
+        "equation": "log(1 + 3*abs(sin(14*theta + 12*pi*v)))",
+        "intensity": 0.111
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#FFFFFF",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 131,
+        "resT": 183,
+        "patternResV": 145,
+        "patternResT": 212
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Counter-Diagonal Drift",
+        "equation": "sin(5*theta - 2*pi*v)",
+        "strength": 0.08,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.14,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Glow Facet Globe 79",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "nonlinear",
+        "preset": "Sharp 6-Lobe Shell",
+        "equation": "R * (1 + 0.16 * pow(sin(phi), 2.0) * atan(5 * cos(6*theta)))",
+        "baseRadius": 4.19,
+        "height": 10.0
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.37,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 31,
+        "sphBotFlatten": 149,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.41,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.51,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Diamond Weave",
+        "equation": "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)",
+        "intensity": 0.069
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#C12E1F",
+        "patternColor1": "#F55A74",
+        "patternColor2": "#FF6A13",
+        "overlapColor": "#E4BD68",
+        "depthMm": 1.16
+    },
+    "mesh": {
+        "resV": 146,
+        "resT": 210,
+        "patternResV": 125,
+        "patternResT": 204
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.13,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.17,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

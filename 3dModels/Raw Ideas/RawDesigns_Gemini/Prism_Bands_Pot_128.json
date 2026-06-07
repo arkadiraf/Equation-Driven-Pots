@@ -1,0 +1,68 @@
+{
+    "name": "Prism Bands Pot 128",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Soft Hexagon",
+        "equation": "R * (1 + 0.10 * cos(6 * theta))",
+        "baseRadius": 9.14,
+        "height": 13.3
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.59,
+        "cylDrain": 0.5,
+        "sphTopCut": 24,
+        "sphBotFlatten": 155,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.49,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 98,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#5B6579",
+        "patternColor1": "#0086D6",
+        "patternColor2": "#A6A9AA",
+        "overlapColor": "#D1D3D5",
+        "depthMm": 1.25
+    },
+    "mesh": {
+        "resV": 125,
+        "resT": 212,
+        "patternResV": 132,
+        "patternResT": 205
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.16,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.09,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

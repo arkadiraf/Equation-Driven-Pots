@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Alpine Column Planter Large 161",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "nonlinear",
+                 "preset":  "Progressive Fluting",
+                 "equation":  "R * (1 + (0.035 + 0.065*pow(v, 1.5))*atan(5*cos(8*theta + 1.5*pi*v)))",
+                 "baseRadius":  9.1,
+                 "height":  18.1
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "ribs",
+                    "preset":  "Basic Vertical Ribs",
+                    "equation":  "cos(13*theta + 0.7*pi*v)",
+                    "intensity":  0.08
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "textureFill(texPosNorm, 60)",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "v - 0.55",
+                     "baseColor":  "#FFFFFF",
+                     "patternColor1":  "#8E9089",
+                     "patternColor2":  "#EC008C",
+                     "overlapColor":  "#F4EE2A",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Gentle Torsion",
+                     "equation":  "0.7*sin(pi*v)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "torsion",
+                       "preset":  "Basic Torsion",
+                       "dx":  "x*cos(0.12*sin(pi*v)) - z*sin(0.12*sin(pi*v)) - x",
+                       "dy":  "0",
+                       "dz":  "x*sin(0.12*sin(pi*v)) + z*cos(0.12*sin(pi*v)) - z",
+                       "strength":  0.14,
+                       "region":  "all",
+                       "anchor":  "baseAnchored",
+                       "space":  "xyz"
+                   }
+}

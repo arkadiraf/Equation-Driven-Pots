@@ -1,0 +1,68 @@
+{
+    "name": "Organic Bloom Vessel 20",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Soft Hexagon",
+        "equation": "R * (1 + 0.10 * cos(6 * theta))",
+        "baseRadius": 4.24,
+        "height": 24.2
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.4,
+        "bottomThickness": 0.59,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 147,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.48,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.52,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Diamond Weave",
+        "equation": "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)",
+        "intensity": 0.089
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#000000",
+        "patternColor1": "#D1D3D5",
+        "patternColor2": "#9D432C",
+        "overlapColor": "#847D48",
+        "depthMm": 1.22
+    },
+    "mesh": {
+        "resV": 138,
+        "resT": 190,
+        "patternResV": 137,
+        "patternResT": 182
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Diagonal Drift",
+        "equation": "sin(4*theta + 2*pi*v)",
+        "strength": 0.13,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.18,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "Rosette Bloom Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "Rosette Bloom",
+    "equation": "R * (1 + 0.16*cos(8*theta) + 0.06*cos(4*theta) + 0.04*cos(16*theta)) * (1 + 0.20*sin(pi*v))",
+    "baseRadius": 6.0,
+    "height": 10.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.36,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 22,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Shoulder Ribs",
+    "equation": "exp(-pow(v - 0.68, 2)*20) * cos(16*theta) + 0.3*exp(-pow(v - 0.88, 2)*30)*cos(8*theta)",
+    "intensity": 0.11
+  },
+  "patterns": {
+    "preset1": "Outer Radius Deviation",
+    "equation1": "outerDeviation(0.18)",
+    "preset2": "4-Petal Mask",
+    "equation2": "asin(0.97 * sin(8*theta)) * sin(pi*v)",
+    "baseColor": "#fff0e8",
+    "patternColor1": "#e07850",
+    "patternColor2": "#a04028",
+    "overlapColor": "#f0a880",
+    "depthMm": 1.3
+  },
+  "mesh": {
+    "resV": 130,
+    "resT": 200,
+    "patternResV": 130,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "fold",
+    "preset": "Petal Fold",
+    "equation": "exp(-pow(v - 0.78, 2)*22) * sin(8*theta)",
+    "strength": 0.14,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

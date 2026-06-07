@@ -1,0 +1,68 @@
+{
+    "name": "Polar Groove Pod 191",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "nonlinear",
+        "preset": "Sharp 6-Lobe Shell",
+        "equation": "R * (1 + 0.16 * pow(sin(phi), 2.0) * atan(5 * cos(6*theta)))",
+        "baseRadius": 9.68,
+        "height": 18.6
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.4,
+        "bottomThickness": 0.6,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 155,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.3,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.54,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Basic Vertical Ribs",
+        "equation": "cos(10*theta)",
+        "intensity": 0.11
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#D1D3D5",
+        "patternColor1": "#6F5034",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#847D48",
+        "depthMm": 1.23
+    },
+    "mesh": {
+        "resV": 150,
+        "resT": 216,
+        "patternResV": 131,
+        "patternResT": 211
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Local Twist",
+        "equation": "exp(-pow(v - 0.8, 2)*24)",
+        "strength": 0.17,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.16,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

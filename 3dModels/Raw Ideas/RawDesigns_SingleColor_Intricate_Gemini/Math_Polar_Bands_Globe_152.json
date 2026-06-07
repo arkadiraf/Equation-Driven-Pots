@@ -1,0 +1,68 @@
+{
+    "name": "Math Polar Bands Globe 152",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "nonlinear",
+        "preset": "Equatorial Saturation",
+        "equation": "R * (1 + 0.08 * clamp(tan(3 * phi), -1.0, 1.0) * cos(4 * theta))",
+        "baseRadius": 8.04,
+        "height": 24.7
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.4,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 152,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.58,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.51,
+        "plateSphTopCut": 91,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#F7E6DE",
+        "patternColor1": "#F7E6DE",
+        "patternColor2": "#F7E6DE",
+        "overlapColor": "#F7E6DE",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 126,
+        "resT": 188,
+        "patternResV": 127,
+        "patternResT": 197
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.14,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

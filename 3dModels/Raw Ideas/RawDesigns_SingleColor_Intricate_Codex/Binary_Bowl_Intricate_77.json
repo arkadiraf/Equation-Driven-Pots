@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Binary Bowl Intricate 77",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "interference",
+                 "preset":  "Quasi Spiral Shell",
+                 "equation":  "R * (1 + 0.04*clamp(log(1 + 4*v), 0, 1.4) - 0.035*sqrt(max(0, 1 - v)) + 0.035*min(cos(15*theta + pi*v), cos(11*theta - 2*pi*v)))",
+                 "baseRadius":  10.6,
+                 "height":  14.5
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(13*theta + 9*pi*v) + sin(15*theta - 8*pi*v)",
+                    "intensity":  0.114
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#F55A74",
+                     "patternColor1":  "#F55A74",
+                     "patternColor2":  "#F55A74",
+                     "overlapColor":  "#F55A74",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "regional",
+                     "preset":  "Body Swirl Window",
+                     "equation":  "smoothstep(0.18, 0.42, v)*(1 - smoothstep(0.70, 0.92, v))*sin(11*theta)",
+                     "strength":  0.088,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "pressure",
+                       "preset":  "Front Squeeze",
+                       "dx":  "-0.12*smoothstep(0.25, 0.55, v)*(1 - smoothstep(0.68, 0.90, v))",
+                       "dy":  "0",
+                       "dz":  "0.06*cos(theta)*smoothstep(0.25, 0.55, v)",
+                       "strength":  0.11,
+                       "region":  "all",
+                       "anchor":  "bottomHalfStiff",
+                       "space":  "xyz"
+                   }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Lunar Flute Basin 33",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "folded",
+        "preset": "Chevron Fold",
+        "equation": "R * (1 + 0.12 * abs(sin(6*theta + 4*pi*v)) - 0.05 * abs(sin(6*theta - 4*pi*v)))",
+        "baseRadius": 4.14,
+        "height": 19.0
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.41,
+        "bottomThickness": 0.56,
+        "cylDrain": 0.5,
+        "sphTopCut": 23,
+        "sphBotFlatten": 147,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.61,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.57,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Arc Shell Carving",
+        "equation": "asin(0.98*sin(8*theta + 6*pi*v))",
+        "intensity": 0.065
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#FF9016",
+        "patternColor1": "#FF6A13",
+        "patternColor2": "#C12E1F",
+        "overlapColor": "#9D2235",
+        "depthMm": 1.18
+    },
+    "mesh": {
+        "resV": 121,
+        "resT": 193,
+        "patternResV": 145,
+        "patternResT": 194
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "sin(5*theta + 2*pi*v)",
+        "strength": 0.1,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Stellar Helix Bulb 197",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Twisted Bloom",
+        "equation": "R * (1 + 0.18 * cos(5 * theta + 1.6 * phi) * pow(sin(phi), 1.5))",
+        "baseRadius": 8.74,
+        "height": 18.3
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.63,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 154,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.65,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Arc Shell Carving",
+        "equation": "asin(0.98*sin(8*theta + 6*pi*v))",
+        "intensity": 0.052
+    },
+    "patterns": {
+        "preset1": "Basic Band Mask",
+        "equation1": "sin(8*pi*v)",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#5E43B7",
+        "patternColor1": "#482960",
+        "patternColor2": "#F5547C",
+        "overlapColor": "#EC008C",
+        "depthMm": 1.05
+    },
+    "mesh": {
+        "resV": 123,
+        "resT": 220,
+        "patternResV": 133,
+        "patternResT": 191
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Diagonal Drift",
+        "equation": "sin(4*theta + 2*pi*v)",
+        "strength": 0.06,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.14,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

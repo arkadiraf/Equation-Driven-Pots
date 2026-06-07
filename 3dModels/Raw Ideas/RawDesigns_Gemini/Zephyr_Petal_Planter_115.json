@@ -1,0 +1,68 @@
+{
+    "name": "Zephyr Petal Planter 115",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Soft Hexagon",
+        "equation": "R * (1 + 0.10 * cos(6 * theta))",
+        "baseRadius": 9.64,
+        "height": 14.4
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.39,
+        "bottomThickness": 0.57,
+        "cylDrain": 0.5,
+        "sphTopCut": 28,
+        "sphBotFlatten": 153,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.69,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.65,
+        "plateSphTopCut": 98,
+        "plateSphBotFlatten": 248
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Fine Vertical Ribs",
+        "equation": "cos(16*theta)",
+        "intensity": 0.078
+    },
+    "patterns": {
+        "preset1": "Hex Window Grid",
+        "equation1": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v)) - 0.55",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#FFFFFF",
+        "patternColor1": "#8E9089",
+        "patternColor2": "#A6A9AA",
+        "overlapColor": "#000000",
+        "depthMm": 1.25
+    },
+    "mesh": {
+        "resV": 135,
+        "resT": 215,
+        "patternResV": 140,
+        "patternResT": 199
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.06,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.18,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

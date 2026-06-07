@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Woven Amphora X Single 50",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "floral",
+                 "preset":  "Twisted Blossom",
+                 "equation":  "R * (1 + 0.085*cos(14*(theta + 0.22*sin(2*pi*v)) + pi*v)*sin(pi*v)) * (1 + 0.08*pow(v, 1.6) - 0.035*pow(1 - v, 2))",
+                 "baseRadius":  5.2,
+                 "height":  14.2
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.42,
+                      "bottomThickness":  0.7,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "carved",
+                    "preset":  "Arc Shell Carving",
+                    "equation":  "asin(0.96*sin(22*theta + 4*pi*v))",
+                    "intensity":  0.09
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#545454",
+                     "patternColor1":  "#545454",
+                     "patternColor2":  "#545454",
+                     "overlapColor":  "#545454",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "interference",
+                     "preset":  "Quasi Drift",
+                     "equation":  "sin(14*theta + 2*pi*v) + 0.45*sin(22*theta - 2*pi*sqrt(2)*v)",
+                     "strength":  0.105,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

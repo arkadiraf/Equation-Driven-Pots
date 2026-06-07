@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Nested Cauldron VII Single 97",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "folded",
+                 "preset":  "Diamond Facets",
+                 "equation":  "R * (1 + 0.05*abs(cos(11*theta + 5*pi*v)) + 0.045*abs(cos(11*theta - 6*pi*v)) + 0.025*cos(27*theta))",
+                 "baseRadius":  6,
+                 "height":  15.8
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.42,
+                      "bottomThickness":  0.7,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Diamond Weave",
+                    "equation":  "0.5*cos(11*theta + 10*pi*v) + 0.5*cos(11*theta - 10*pi*v)",
+                    "intensity":  0.145
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#BECF00",
+                     "patternColor1":  "#BECF00",
+                     "patternColor2":  "#BECF00",
+                     "overlapColor":  "#BECF00",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Crown Rotation",
+                     "equation":  "exp(-pow(v - 0.86, 2)*36) * sin(2*pi*v)",
+                     "strength":  0.08,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "torsion",
+                       "preset":  "Torsion Twist",
+                       "dx":  "x*cos(0.16*sin(pi*v)) - z*sin(0.16*sin(pi*v)) - x",
+                       "dy":  "0",
+                       "dz":  "x*sin(0.16*sin(pi*v)) + z*cos(0.16*sin(pi*v)) - z",
+                       "strength":  0.16,
+                       "region":  "all",
+                       "anchor":  "baseAnchored",
+                       "space":  "xyz"
+                   }
+}

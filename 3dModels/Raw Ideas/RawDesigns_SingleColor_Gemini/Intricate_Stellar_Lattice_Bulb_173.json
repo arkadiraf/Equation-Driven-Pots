@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Stellar Lattice Bulb 173",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "interference",
+        "preset": "Quasi Lattice Orb",
+        "equation": "R * (1 + 0.06*cos(10*theta + 1.414*8*phi) + 0.06*cos(15*theta - 1.732*6*phi))",
+        "baseRadius": 9.99,
+        "height": 16.7
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.4,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 23,
+        "sphBotFlatten": 148,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.62,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.58,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 251
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Folded Chevron",
+        "equation": "abs(sin(8*theta + 10*pi*v)) - 0.5*abs(sin(8*theta - 10*pi*v))",
+        "intensity": 0.085
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#0086D6",
+        "patternColor1": "#0086D6",
+        "patternColor2": "#0086D6",
+        "overlapColor": "#0086D6",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 147,
+        "resT": 207,
+        "patternResV": 127,
+        "patternResT": 204
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Counter-Diagonal Drift",
+        "equation": "sin(5*theta - 2*pi*v)",
+        "strength": 0.19,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Palm Press",
+        "dx": "-0.45 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dy": "-0.05 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dz": "0",
+        "strength": 0.13,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Quartz Canyon Pod Large 197",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "basicEffect",
+                 "preset":  "Equator Bulge",
+                 "equation":  "R * (1 + 0.16*pow(sin(phi), 2) - 0.04*cos(2*phi) + 0.035*cos(7*theta)*pow(sin(phi), 1.6))",
+                 "baseRadius":  8.5,
+                 "height":  19.9
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.5,
+                      "bottomThickness":  0.85,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Diamond Weave",
+                    "equation":  "0.5*cos(7*theta + 6*phi) + 0.5*cos(7*theta - 6*phi)",
+                    "intensity":  0.077
+                },
+    "patterns":  {
+                     "preset1":  "Outer Radius Deviation",
+                     "equation1":  "max(cos(7*theta), cos(7*theta + 6*phi), cos(7*theta - 6*phi)) - 0.55",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "smoothstep(0.18, 0.27, sin(7*theta + 5*phi) + sin(8*theta - 4*phi)) - 0.5",
+                     "baseColor":  "#FEC600",
+                     "patternColor1":  "#3F8E43",
+                     "patternColor2":  "#482960",
+                     "overlapColor":  "#F7E6DE",
+                     "depthMm":  1.3
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "utility",
+                     "preset":  "None (No Modifier)",
+                     "equation":  "0",
+                     "strength":  0,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Math Oasis Facet Globe 155",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Twisted Bloom",
+        "equation": "R * (1 + 0.15 * asin(0.95 * sin(5 * theta + 1.5 * phi)) * pow(sin(phi), 1.5))",
+        "baseRadius": 10.79,
+        "height": 18.5
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.37,
+        "bottomThickness": 0.51,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 150,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.35,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.69,
+        "plateSphTopCut": 98,
+        "plateSphBotFlatten": 251
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "smoothstep(-0.5, 0.5, sin(10*theta + 8*pi*v) + sin(11*theta - 8*pi*v))",
+        "intensity": 0.057
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#8E9089",
+        "patternColor1": "#8E9089",
+        "patternColor2": "#8E9089",
+        "overlapColor": "#8E9089",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 133,
+        "resT": 218,
+        "patternResV": 144,
+        "patternResT": 185
+    },
+    "modifier": {
+        "type": "regional",
+        "preset": "Body Swirl Window",
+        "equation": "smoothstep(0.2, 0.8, sin(pi*v)) * sin(5*theta)",
+        "strength": 0.1,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.14,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

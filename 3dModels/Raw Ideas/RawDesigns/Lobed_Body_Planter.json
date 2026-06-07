@@ -1,0 +1,68 @@
+{
+  "name": "Lobed Body Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "basicEffect",
+    "preset": "Lobed Body",
+    "equation": "R * (1 + 0.20*cos(6*theta)*sin(pi*v)) * (1 + 0.14*sin(pi*v)) * (1 - 0.06*pow(v, 2))",
+    "baseRadius": 6.0,
+    "height": 10.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.36,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.8,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "carved",
+    "preset": "Meridian Carving",
+    "equation": "cos(6 * abs(mod(theta, pi/3) - pi/6)) * sin(pi*v)",
+    "intensity": 0.12
+  },
+  "patterns": {
+    "preset1": "Outer Radius Deviation",
+    "equation1": "outerDeviation(0.18)",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#e8c8a0",
+    "patternColor1": "#784828",
+    "patternColor2": "#a06840",
+    "overlapColor": "#c89060",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Lumina Rib Urn 129",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Circle (Pure Base)",
+        "equation": "R",
+        "baseRadius": 9.43,
+        "height": 12.5
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.41,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 152,
+        "sphBotCut": 175
+    },
+    "plate": {
+        "plateHeight": 1.41,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.59,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Arc Shell Carving",
+        "equation": "asin(0.98*sin(8*theta + 6*pi*v))",
+        "intensity": 0.052
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#FFFFFF",
+        "patternColor1": "#A6A9AA",
+        "patternColor2": "#0A2989",
+        "overlapColor": "#0056B8",
+        "depthMm": 1.26
+    },
+    "mesh": {
+        "resV": 121,
+        "resT": 209,
+        "patternResV": 123,
+        "patternResT": 182
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Local Twist",
+        "equation": "exp(-pow(v - 0.8, 2)*24)",
+        "strength": 0.16,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.11,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

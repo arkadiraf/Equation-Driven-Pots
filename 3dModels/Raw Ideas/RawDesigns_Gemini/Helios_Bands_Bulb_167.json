@@ -1,0 +1,68 @@
+{
+    "name": "Helios Bands Bulb 167",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "nonlinear",
+        "preset": "Sharp 6-Lobe Shell",
+        "equation": "R * (1 + 0.16 * pow(sin(phi), 2.0) * atan(5 * cos(6*theta)))",
+        "baseRadius": 8.21,
+        "height": 15.7
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.41,
+        "bottomThickness": 0.62,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 148,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.62,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.57,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Fine Vertical Ribs",
+        "equation": "cos(16*theta)",
+        "intensity": 0.137
+    },
+    "patterns": {
+        "preset1": "Hex Window Grid",
+        "equation1": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v)) - 0.55",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#847D48",
+        "patternColor1": "#9D432C",
+        "patternColor2": "#F7E6DE",
+        "overlapColor": "#D1D3D5",
+        "depthMm": 1.17
+    },
+    "mesh": {
+        "resV": 125,
+        "resT": 193,
+        "patternResV": 130,
+        "patternResT": 198
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Local Twist",
+        "equation": "exp(-pow(v - 0.8, 2)*24)",
+        "strength": 0.12,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.09,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

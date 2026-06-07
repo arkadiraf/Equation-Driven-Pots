@@ -1,0 +1,68 @@
+{
+    "name": "Math Sunset Clover Bulb 124",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Dragon Egg",
+        "equation": "R * (1 + 0.08 * abs(mod(theta + phi, pi/2) - pi/4))",
+        "baseRadius": 5.23,
+        "height": 10.9
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.35,
+        "bottomThickness": 0.57,
+        "cylDrain": 0.5,
+        "sphTopCut": 31,
+        "sphBotFlatten": 150,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.43,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 251
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Panel Relief",
+        "equation": "clamp(cos(8*theta) * sin(8*pi*v), -0.5, 0.5)",
+        "intensity": 0.121
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#EC008C",
+        "patternColor1": "#EC008C",
+        "patternColor2": "#EC008C",
+        "overlapColor": "#EC008C",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 150,
+        "resT": 193,
+        "patternResV": 145,
+        "patternResT": 209
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Gentle Torsion",
+        "equation": "floor(6.0 * v) / 6.0",
+        "strength": 0.06,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Pressed Shoulder",
+        "dx": "-0.5 * exp(-pow(theta - pi/8, 2)*10) * exp(-pow(v - 0.72, 2)*24)",
+        "dy": "-0.08 * exp(-pow(v - 0.72, 2)*18)",
+        "dz": "0",
+        "strength": 0.09,
+        "region": "shoulder",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Vortex Amphora Orb X Single 170",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "folded",
+                 "preset":  "Dragon Egg",
+                 "equation":  "R * (1 + 0.055*cos(13*theta + 7*phi) + 0.055*cos(13*theta - 7*phi) + 0.035*cos(9*theta)*pow(sin(phi), 1.6))",
+                 "baseRadius":  6.92,
+                 "height":  24.5
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "ribs",
+                    "preset":  "Basic Vertical Ribs",
+                    "equation":  "cos(13*theta)*pow(sin(phi), 1.25)",
+                    "intensity":  0.086
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#545454",
+                     "patternColor1":  "#545454",
+                     "patternColor2":  "#545454",
+                     "overlapColor":  "#545454",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "diagonal",
+                     "preset":  "Diagonal Drift",
+                     "equation":  "sin(9*theta + 2*phi)",
+                     "strength":  0.09,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

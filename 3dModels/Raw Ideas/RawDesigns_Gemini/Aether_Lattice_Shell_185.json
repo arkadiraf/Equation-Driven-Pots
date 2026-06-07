@@ -1,0 +1,68 @@
+{
+    "name": "Aether Lattice Shell 185",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "primitive",
+        "preset": "Perfect Sphere",
+        "equation": "R",
+        "baseRadius": 9.31,
+        "height": 22.7
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.4,
+        "bottomThickness": 0.55,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 150,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.69,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.55,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 251
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "sin(12*theta + 10*pi*v) + sin(13*theta - 10*pi*v)",
+        "intensity": 0.122
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#545454",
+        "patternColor1": "#5B6579",
+        "patternColor2": "#8E9089",
+        "overlapColor": "#000000",
+        "depthMm": 1.21
+    },
+    "mesh": {
+        "resV": 143,
+        "resT": 200,
+        "patternResV": 132,
+        "patternResT": 217
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Diagonal Drift",
+        "equation": "sin(4*theta + 2*pi*v)",
+        "strength": 0.18,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

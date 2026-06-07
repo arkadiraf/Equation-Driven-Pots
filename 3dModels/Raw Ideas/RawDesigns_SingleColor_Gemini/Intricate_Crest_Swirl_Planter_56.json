@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Crest Swirl Planter 56",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Lobed Body",
+        "equation": "R * (1 + 0.18 * cos(10 * theta) * (0.8 + 0.2 * sin(4*pi*v)))",
+        "baseRadius": 6.36,
+        "height": 10.0
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.42,
+        "bottomThickness": 0.62,
+        "cylDrain": 0.5,
+        "sphTopCut": 23,
+        "sphBotFlatten": 151,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.59,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.65,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 248
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Domain Warp Ribs",
+        "equation": "cos(16*(theta + 0.15*sin(8*pi*v)))",
+        "intensity": 0.101
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#00AE42",
+        "patternColor1": "#00AE42",
+        "patternColor2": "#00AE42",
+        "overlapColor": "#00AE42",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 133,
+        "resT": 220,
+        "patternResV": 125,
+        "patternResT": 210
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Braided Drift",
+        "equation": "sin(6*theta + 3*pi*v) + 0.5*sin(6*theta - 3*pi*v)",
+        "strength": 0.13,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Palm Press",
+        "dx": "-0.45 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dy": "-0.05 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dz": "0",
+        "strength": 0.12,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

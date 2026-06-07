@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Terra Helix Shell 129",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Lotus Pod",
+        "equation": "R * (1 + 0.16 * cos(6*theta) * pow(sin(phi), 2.2) - 0.08 * cos(3*phi))",
+        "baseRadius": 3.84,
+        "height": 13.1
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.38,
+        "bottomThickness": 0.52,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 145,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.46,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "cos(16*theta) * sin(20*pi*v)",
+        "intensity": 0.062
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#0A2989",
+        "patternColor1": "#0A2989",
+        "patternColor2": "#0A2989",
+        "overlapColor": "#0A2989",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 131,
+        "resT": 182,
+        "patternResV": 133,
+        "patternResT": 192
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "sin(8*theta) * sin(pi*v)",
+        "strength": 0.15,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

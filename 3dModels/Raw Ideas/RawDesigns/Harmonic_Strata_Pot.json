@@ -1,0 +1,68 @@
+{
+  "name": "Harmonic Strata Pot",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Harmonic Strata Modeling",
+    "equation": "R + 0.9*(min(max(1-abs(z-1),0),1)*cos(3*theta) + min(max(1-abs(z-3),0),1)*cos(5*theta) + min(max(1-abs(z-5),0),1)*cos(7*theta) + min(max(1-abs(z-7),0),1)*cos(9*theta) + min(max(1-abs(z-9),0),1)*cos(11*theta))",
+    "baseRadius": 5.0,
+    "height": 10.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "bands",
+    "preset": "Broad Bands",
+    "equation": "sin(8*pi*v) * 0.7",
+    "intensity": 0.09
+  },
+  "patterns": {
+    "preset1": "Surface Texture Top %",
+    "equation1": "textureFill(texPosNorm, 55)",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(5*pi*v) - 0.15",
+    "baseColor": "#c0b8a0",
+    "patternColor1": "#405030",
+    "patternColor2": "#708060",
+    "overlapColor": "#908870",
+    "depthMm": 1.1
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 200,
+    "patternResV": 140,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

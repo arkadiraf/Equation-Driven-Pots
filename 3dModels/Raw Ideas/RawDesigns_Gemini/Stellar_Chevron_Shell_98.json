@@ -1,0 +1,68 @@
+{
+    "name": "Stellar Chevron Shell 98",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "primitive",
+        "preset": "Equatorial Cushion",
+        "equation": "R * (1 + 0.22 * exp(-pow(phi - pi/2, 2)*12) - 0.04*cos(2*phi))",
+        "baseRadius": 4.77,
+        "height": 15.2
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.41,
+        "bottomThickness": 0.55,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 149,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.43,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.5,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#FF6A13",
+        "patternColor1": "#FF9016",
+        "patternColor2": "#9D2235",
+        "overlapColor": "#F4EE2A",
+        "depthMm": 1.08
+    },
+    "mesh": {
+        "resV": 142,
+        "resT": 196,
+        "patternResV": 138,
+        "patternResT": 208
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Diagonal Drift",
+        "equation": "sin(4*theta + 2*pi*v)",
+        "strength": 0.08,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

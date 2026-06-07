@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Echo Ridge Orb 178",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "interference",
+        "preset": "Quasi Lattice Orb",
+        "equation": "R * (1 + 0.06*cos(10*theta + 1.414*8*phi) + 0.06*cos(15*theta - 1.732*6*phi))",
+        "baseRadius": 10.27,
+        "height": 22.0
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.55,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 146,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.59,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.55,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Terraced Contours",
+        "equation": "floor(10 * (0.5 + 0.5*sin(24*pi*v))) / 10",
+        "intensity": 0.099
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#F5547C",
+        "patternColor1": "#F5547C",
+        "patternColor2": "#F5547C",
+        "overlapColor": "#F5547C",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 121,
+        "resT": 210,
+        "patternResV": 150,
+        "patternResT": 216
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Body Swirl",
+        "equation": "exp(-pow(v - 0.55, 2)*14) * sin(4*theta + 2*pi*v)",
+        "strength": 0.19,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

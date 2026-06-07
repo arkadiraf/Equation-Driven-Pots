@@ -1,0 +1,68 @@
+{
+  "name": "Twisted Blossom Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "floral",
+    "preset": "Twisted Blossom",
+    "equation": "R * (1 + 0.22*cos(5*theta + pi*z/14)) * (1 + 0.16*sin(pi*v))",
+    "baseRadius": 4.0,
+    "height": 14.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.32,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "nonlinear",
+    "preset": "Saturated Flutes",
+    "equation": "atan(5 * cos(10*theta + 4*pi*v)) * (0.3 + 0.7*sin(pi*v))",
+    "intensity": 0.11
+  },
+  "patterns": {
+    "preset1": "Surface Texture Top %",
+    "equation1": "textureFill(texPosNorm, 55)",
+    "preset2": "Double Helix Mask",
+    "equation2": "cos(5*theta + 8*pi*v) * cos(5*theta - 8*pi*v)",
+    "baseColor": "#f8f0e0",
+    "patternColor1": "#d06040",
+    "patternColor2": "#4080a0",
+    "overlapColor": "#c0a030",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 200,
+    "patternResV": 140,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Twist Drift",
+    "equation": "sin(3*pi*v)",
+    "strength": 0.22,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

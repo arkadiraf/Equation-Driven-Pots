@@ -1,0 +1,68 @@
+{
+    "name": "Math Sunset Bands Vessel 2",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Arc-Petal Crown",
+        "equation": "R * (1 + 0.15 * asin(0.98 * sin(6 * theta + 2 * pi * v)))",
+        "baseRadius": 4.63,
+        "height": 14.4
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.42,
+        "bottomThickness": 0.56,
+        "cylDrain": 0.5,
+        "sphTopCut": 23,
+        "sphBotFlatten": 150,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.67,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 251
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Terraced Contours",
+        "equation": "floor(10 * v) / 10",
+        "intensity": 0.101
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#0056B8",
+        "patternColor1": "#0056B8",
+        "patternColor2": "#0056B8",
+        "overlapColor": "#0056B8",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 149,
+        "resT": 187,
+        "patternResV": 125,
+        "patternResT": 215
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Gentle Torsion",
+        "equation": "floor(6.0 * v) / 6.0",
+        "strength": 0.08,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "gravity",
+        "preset": "Heavy Crown",
+        "dx": "0",
+        "dy": "-clamp(pow(v, 2.2), 0.0, 0.8)",
+        "dz": "0",
+        "strength": 0.09,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

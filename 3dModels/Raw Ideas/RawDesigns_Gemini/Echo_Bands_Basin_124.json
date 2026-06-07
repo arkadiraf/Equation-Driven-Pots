@@ -1,0 +1,68 @@
+{
+    "name": "Echo Bands Basin 124",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Waist Pinch",
+        "equation": "R * (1 - 0.18*sin(pi*v))",
+        "baseRadius": 8.79,
+        "height": 13.0
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.36,
+        "bottomThickness": 0.51,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 154,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.34,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.51,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 251
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Topographic Rings",
+        "equation": "sin(24*pi*v)",
+        "intensity": 0.103
+    },
+    "patterns": {
+        "preset1": "Basic Band Mask",
+        "equation1": "sin(8*pi*v)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#F55A74",
+        "patternColor1": "#E4BD68",
+        "patternColor2": "#FEC600",
+        "overlapColor": "#F4EE2A",
+        "depthMm": 1.33
+    },
+    "mesh": {
+        "resV": 126,
+        "resT": 188,
+        "patternResV": 134,
+        "patternResT": 198
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.13,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

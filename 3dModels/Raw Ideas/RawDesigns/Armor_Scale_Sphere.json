@@ -1,0 +1,68 @@
+{
+  "name": "Armor Scale Sphere",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "folded",
+    "preset": "Overlapping Armor Scales",
+    "equation": "R * (1 + 0.14*pow(max(0, sin(10*theta - 6*phi)), 2)*sin(phi)) * (1 + 0.06*cos(phi))",
+    "baseRadius": 5.5,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 30,
+    "sphBotFlatten": 155,
+    "sphBotCut": 178
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Audio Ripple Shell",
+    "equation": "0.5*sin(16*theta)*cos(14*phi) + 0.4*sin(22*theta - 8*phi)",
+    "intensity": 0.06
+  },
+  "patterns": {
+    "preset1": "Outer Radius Deviation",
+    "equation1": "outerDeviation(0.22)",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#383020",
+    "patternColor1": "#807050",
+    "patternColor2": "#584828",
+    "overlapColor": "#a09060",
+    "depthMm": 1.1
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 200,
+    "patternResV": 140,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

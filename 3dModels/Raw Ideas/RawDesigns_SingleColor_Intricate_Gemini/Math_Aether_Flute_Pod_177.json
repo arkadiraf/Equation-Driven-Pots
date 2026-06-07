@@ -1,0 +1,68 @@
+{
+    "name": "Math Aether Flute Pod 177",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "5-Petal Flower",
+        "equation": "R * (1 + 0.12 * smoothstep(0.1, 0.9, cos(5 * theta + 2 * phi)))",
+        "baseRadius": 10.8,
+        "height": 15.1
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.43,
+        "bottomThickness": 0.59,
+        "cylDrain": 0.5,
+        "sphTopCut": 24,
+        "sphBotFlatten": 155,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.36,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.64,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 247
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Stepped Weave",
+        "equation": "round(6 * cos(8*theta + floor(10*v)*pi/5)) / 6",
+        "intensity": 0.127
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#FEC600",
+        "patternColor1": "#FEC600",
+        "patternColor2": "#FEC600",
+        "overlapColor": "#FEC600",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 149,
+        "resT": 215,
+        "patternResV": 133,
+        "patternResT": 196
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "fract(4.0 * theta / pi + 3.0 * v)",
+        "strength": 0.09,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

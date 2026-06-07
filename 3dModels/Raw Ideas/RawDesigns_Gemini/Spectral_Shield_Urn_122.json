@@ -1,0 +1,68 @@
+{
+    "name": "Spectral Shield Urn 122",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Circle (Pure Base)",
+        "equation": "R",
+        "baseRadius": 7.91,
+        "height": 20.5
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.37,
+        "bottomThickness": 0.55,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 149,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.68,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.52,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Topographic Rings",
+        "equation": "sin(24*pi*v)",
+        "intensity": 0.056
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#A6A9AA",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#8E9089",
+        "overlapColor": "#5B6579",
+        "depthMm": 1.06
+    },
+    "mesh": {
+        "resV": 127,
+        "resT": 191,
+        "patternResV": 145,
+        "patternResT": 212
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.11,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Side Pressure Dent",
+        "dx": "-0.6 * exp(-pow(theta - 0, 2)*8) * exp(-pow(v - 0.6, 2)*20)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.13,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

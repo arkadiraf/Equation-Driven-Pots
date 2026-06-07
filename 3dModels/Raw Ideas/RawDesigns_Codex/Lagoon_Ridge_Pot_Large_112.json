@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Lagoon Ridge Pot Large 112",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "nonlinear",
+                 "preset":  "Progressive Fluting",
+                 "equation":  "R * (1 + (0.035 + 0.065*pow(v, 1.5))*atan(5*cos(7*theta + 1.5*pi*v)))",
+                 "baseRadius":  9.7,
+                 "height":  16.2
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "nonlinear",
+                    "preset":  "Saturated Flutes",
+                    "equation":  "atan(5*cos(10*theta - 2*pi*v))",
+                    "intensity":  0.094
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "outerDeviation(0.14)",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "cos(10*theta - 3*pi*v)",
+                     "baseColor":  "#482960",
+                     "patternColor1":  "#0086D6",
+                     "patternColor2":  "#F55A74",
+                     "overlapColor":  "#C12E1F",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Gentle Torsion",
+                     "equation":  "sin(7*theta + 2*pi*v) + 0.35*sin(10*theta - 2*pi*v)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

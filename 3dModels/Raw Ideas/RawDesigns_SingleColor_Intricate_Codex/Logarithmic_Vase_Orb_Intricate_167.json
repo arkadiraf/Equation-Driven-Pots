@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Logarithmic Vase Orb Intricate 167",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "floral",
+                 "preset":  "4-Petal Flower",
+                 "equation":  "R * (1 + 0.045*sign(cos(11*theta + phi))*pow(sin(phi), 1.7) + 0.055*cos(14*theta - 2*phi)*pow(sin(phi), 1.4))",
+                 "baseRadius":  4.6,
+                 "height":  16
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.45,
+                      "bottomThickness":  0.74,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "carved",
+                    "preset":  "Arc Shell Carving",
+                    "equation":  "asin(0.94*sin(20*theta + floor(8*v)*phi/2))",
+                    "intensity":  0.076
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#F55A74",
+                     "patternColor1":  "#F55A74",
+                     "patternColor2":  "#F55A74",
+                     "overlapColor":  "#F55A74",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "petal",
+                     "preset":  "Petal Migration",
+                     "equation":  "sin(11*theta)*pow(sin(phi), 1.2) + 0.20*sign(sin(2*phi))",
+                     "strength":  0.081,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

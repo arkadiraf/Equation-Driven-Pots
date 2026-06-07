@@ -1,0 +1,68 @@
+{
+    "name": "Math Geo Bands Globe 126",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "5-Petal Flower",
+        "equation": "R * (1 + 0.12 * smoothstep(0.1, 0.9, cos(5 * theta + 2 * phi)))",
+        "baseRadius": 8.68,
+        "height": 17.5
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.42,
+        "bottomThickness": 0.62,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 154,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.57,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.56,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 251
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "sign(sin(12*theta)) * sign(sin(12*pi*v))",
+        "intensity": 0.134
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#FF6A13",
+        "patternColor1": "#FF6A13",
+        "patternColor2": "#FF6A13",
+        "overlapColor": "#FF6A13",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 150,
+        "resT": 180,
+        "patternResV": 124,
+        "patternResT": 218
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "fract(4.0 * theta / pi + 3.0 * v)",
+        "strength": 0.1,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "gravity",
+        "preset": "Heavy Crown",
+        "dx": "0",
+        "dy": "-clamp(pow(v, 2.2), 0.0, 0.8)",
+        "dz": "0",
+        "strength": 0.13,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

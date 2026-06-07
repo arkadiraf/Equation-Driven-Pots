@@ -1,0 +1,68 @@
+{
+    "name": "Math Crest Flute Urn 45",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Shoulder Bulge",
+        "equation": "R * (1 + 0.22 * exp(-pow(v - 0.5, 2) * 25) * cos(12 * theta))",
+        "baseRadius": 12.02,
+        "height": 23.7
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.38,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 150,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.54,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.57,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 255
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Terraced Contours",
+        "equation": "floor(10 * v) / 10",
+        "intensity": 0.081
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#0086D6",
+        "patternColor1": "#0086D6",
+        "patternColor2": "#0086D6",
+        "overlapColor": "#0086D6",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 125,
+        "resT": 215,
+        "patternResV": 134,
+        "patternResT": 206
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "fract(4.0 * theta / pi + 3.0 * v)",
+        "strength": 0.12,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

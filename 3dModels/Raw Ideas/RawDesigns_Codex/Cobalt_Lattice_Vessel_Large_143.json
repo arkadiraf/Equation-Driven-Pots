@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Cobalt Lattice Vessel Large 143",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "basicEffect",
+                 "preset":  "Rim Flare",
+                 "equation":  "R * (1 + 0.14*pow(v, 1.8) - 0.05*exp(-pow(v - 0.25, 2)*18) + 0.035*cos(6*theta)*sin(pi*v))",
+                 "baseRadius":  10.7,
+                 "height":  19.1
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "ribs",
+                    "preset":  "Basic Vertical Ribs",
+                    "equation":  "cos(11*theta + 0.7*pi*v)",
+                    "intensity":  0.108
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "cos(6*theta + 2*pi*v) - 0.12",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "smoothstep(0.18, 0.27, sin(6*theta + 6*pi*v) + sin(7*theta - 5*pi*v)) - 0.5",
+                     "baseColor":  "#FFFFFF",
+                     "patternColor1":  "#545454",
+                     "patternColor2":  "#0A2989",
+                     "overlapColor":  "#0A2989",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Gentle Torsion",
+                     "equation":  "0.7*sin(pi*v)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

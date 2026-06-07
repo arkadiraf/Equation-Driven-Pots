@@ -1,0 +1,68 @@
+{
+    "name": "Lunar Bands Globe 194",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Crystalline Geode",
+        "equation": "R * (1 + 0.08 * (abs(sin(5*theta)) + abs(cos(5*theta))) * (abs(sin(4*phi)) + abs(cos(4*phi))))",
+        "baseRadius": 9.15,
+        "height": 20.0
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.38,
+        "bottomThickness": 0.6,
+        "cylDrain": 0.5,
+        "sphTopCut": 23,
+        "sphBotFlatten": 153,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.7,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.54,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 248
+    },
+    "texture": {
+        "type": "nonlinear",
+        "preset": "Saturated Flutes",
+        "equation": "atan(7 * cos(12*theta))",
+        "intensity": 0.107
+    },
+    "patterns": {
+        "preset1": "Basic Band Mask",
+        "equation1": "sin(8*pi*v)",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#E4BD68",
+        "patternColor1": "#F4EE2A",
+        "patternColor2": "#F55A74",
+        "overlapColor": "#FF9016",
+        "depthMm": 1.31
+    },
+    "mesh": {
+        "resV": 120,
+        "resT": 208,
+        "patternResV": 147,
+        "patternResT": 197
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.14,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

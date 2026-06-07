@@ -1,0 +1,68 @@
+{
+    "name": "Solar Lattice Urn 119",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "interference",
+        "preset": "Fourier Bloom",
+        "equation": "R * (1 + 0.18 * (cos(3*theta) + 0.45*cos(7*theta + pi*v) + 0.20*cos(13*theta - 2*pi*v)))",
+        "baseRadius": 8.35,
+        "height": 13.5
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.39,
+        "bottomThickness": 0.55,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 145,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.48,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.58,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 248
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#FFFFFF",
+        "patternColor1": "#000000",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#F7E6DE",
+        "depthMm": 1.15
+    },
+    "mesh": {
+        "resV": 129,
+        "resT": 218,
+        "patternResV": 147,
+        "patternResT": 201
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Local Twist",
+        "equation": "exp(-pow(v - 0.8, 2)*24)",
+        "strength": 0.19,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.11,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

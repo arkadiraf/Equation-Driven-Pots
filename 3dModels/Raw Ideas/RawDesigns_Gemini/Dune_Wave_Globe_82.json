@@ -1,0 +1,68 @@
+{
+    "name": "Dune Wave Globe 82",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Crystalline Geode",
+        "equation": "R * (1 + 0.08 * (abs(sin(5*theta)) + abs(cos(5*theta))) * (abs(sin(4*phi)) + abs(cos(4*phi))))",
+        "baseRadius": 4.38,
+        "height": 13.6
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 152,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.53,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.58,
+        "plateSphTopCut": 90,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Honeycomb Relief",
+        "equation": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v))",
+        "intensity": 0.132
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#0056B8",
+        "patternColor1": "#D1D3D5",
+        "patternColor2": "#A6A9AA",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.35
+    },
+    "mesh": {
+        "resV": 127,
+        "resT": 220,
+        "patternResV": 123,
+        "patternResT": 198
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.17,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

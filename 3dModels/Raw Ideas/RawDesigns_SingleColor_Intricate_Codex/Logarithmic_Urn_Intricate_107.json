@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Logarithmic Urn Intricate 107",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "folded",
+                 "preset":  "Chevron Fold",
+                 "equation":  "R * (1 + 0.055*abs(fract(12*theta/(2*pi) + v) - fract(12*theta/(2*pi) - v)) + 0.035*cos(30*theta + pi*v))",
+                 "baseRadius":  8,
+                 "height":  21.4
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(30*theta + 9*pi*v) + sin(32*theta - 8*pi*v)",
+                    "intensity":  0.092
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#F55A74",
+                     "patternColor1":  "#F55A74",
+                     "patternColor2":  "#F55A74",
+                     "overlapColor":  "#F55A74",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "regional",
+                     "preset":  "Body Swirl Window",
+                     "equation":  "smoothstep(0.18, 0.42, v)*(1 - smoothstep(0.70, 0.92, v))*sin(9*theta)",
+                     "strength":  0.088,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

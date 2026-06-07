@@ -1,0 +1,68 @@
+{
+    "name": "Math Helios Groove Vessel 54",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "nonlinear",
+        "preset": "Progressive Fluting",
+        "equation": "R * (1 + 0.14 * log(1.0 + 3.0 * abs(sin(5 * theta + pi * v))))",
+        "baseRadius": 3.92,
+        "height": 16.9
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.39,
+        "bottomThickness": 0.56,
+        "cylDrain": 0.5,
+        "sphTopCut": 28,
+        "sphBotFlatten": 146,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.63,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 98,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Panel Relief",
+        "equation": "clamp(cos(8*theta) * sin(8*pi*v), -0.5, 0.5)",
+        "intensity": 0.117
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#FF9016",
+        "patternColor1": "#FF9016",
+        "patternColor2": "#FF9016",
+        "overlapColor": "#FF9016",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 127,
+        "resT": 215,
+        "patternResV": 122,
+        "patternResT": 199
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "clamp(sin(6*theta) * sin(pi*v), -0.8, 0.8)",
+        "strength": 0.08,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "gravity",
+        "preset": "Heavy Crown",
+        "dx": "0",
+        "dy": "-clamp(pow(v, 2.2), 0.0, 0.8)",
+        "dz": "0",
+        "strength": 0.16,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

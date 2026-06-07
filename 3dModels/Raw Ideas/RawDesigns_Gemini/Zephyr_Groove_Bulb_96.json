@@ -1,0 +1,68 @@
+{
+    "name": "Zephyr Groove Bulb 96",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Crystalline Geode",
+        "equation": "R * (1 + 0.08 * (abs(sin(5*theta)) + abs(cos(5*theta))) * (abs(sin(4*phi)) + abs(cos(4*phi))))",
+        "baseRadius": 4.41,
+        "height": 16.3
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.39,
+        "bottomThickness": 0.64,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 147,
+        "sphBotCut": 177
+    },
+    "plate": {
+        "plateHeight": 1.57,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 255
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Fine Vertical Ribs",
+        "equation": "cos(16*theta)",
+        "intensity": 0.095
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#000000",
+        "patternColor1": "#EC008C",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#A6A9AA",
+        "depthMm": 1.3
+    },
+    "mesh": {
+        "resV": 136,
+        "resT": 214,
+        "patternResV": 139,
+        "patternResT": 196
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "sin(5*theta + 2*pi*v)",
+        "strength": 0.14,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

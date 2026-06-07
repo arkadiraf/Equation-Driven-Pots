@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Arc Garden Orb VIII Single 168",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "nonlinear",
+                 "preset":  "Perfect Sphere",
+                 "equation":  "R * (1 + 0.08*atan(4*(sin(7*theta + 3*phi) + 0.5*sin(20*theta - 2*phi)))*pow(sin(phi), 1.3))",
+                 "baseRadius":  6.48,
+                 "height":  22.6
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(20*theta + 8*phi) + sin(21*theta - 7*phi)",
+                    "intensity":  0.13
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#5E43B7",
+                     "patternColor1":  "#5E43B7",
+                     "patternColor2":  "#5E43B7",
+                     "overlapColor":  "#5E43B7",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Crown Rotation",
+                     "equation":  "exp(-pow(v - 0.72, 2)*18) * sin(2*phi)",
+                     "strength":  0.13,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

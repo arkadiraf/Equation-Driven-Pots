@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Strata Tower Orb II Single 162",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "folded",
+                 "preset":  "Dragon Egg",
+                 "equation":  "R * (1 + 0.055*cos(26*theta + 7*phi) + 0.055*cos(26*theta - 7*phi) + 0.035*cos(10*theta)*pow(sin(phi), 1.6))",
+                 "baseRadius":  5.16,
+                 "height":  16.8
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "carved",
+                    "preset":  "Arc Shell Carving",
+                    "equation":  "asin(0.96*sin(26*theta + 4*phi))",
+                    "intensity":  0.13
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#F5547C",
+                     "patternColor1":  "#F5547C",
+                     "patternColor2":  "#F5547C",
+                     "overlapColor":  "#F5547C",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "diagonal",
+                     "preset":  "Diagonal Drift",
+                     "equation":  "sin(10*theta + 2*phi)",
+                     "strength":  0.09,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

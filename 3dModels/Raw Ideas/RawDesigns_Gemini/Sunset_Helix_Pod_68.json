@@ -1,0 +1,68 @@
+{
+    "name": "Sunset Helix Pod 68",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Twisted Bloom",
+        "equation": "R * (1 + 0.18 * cos(5 * theta + 1.6 * phi) * pow(sin(phi), 1.5))",
+        "baseRadius": 4.44,
+        "height": 10.3
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.37,
+        "bottomThickness": 0.63,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 152,
+        "sphBotCut": 177
+    },
+    "plate": {
+        "plateHeight": 1.5,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.54,
+        "plateSphTopCut": 90,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Topographic Rings",
+        "equation": "sin(24*pi*v)",
+        "intensity": 0.126
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#545454",
+        "patternColor1": "#000000",
+        "patternColor2": "#8E9089",
+        "overlapColor": "#5B6579",
+        "depthMm": 1.04
+    },
+    "mesh": {
+        "resV": 132,
+        "resT": 201,
+        "patternResV": 134,
+        "patternResT": 192
+    },
+    "modifier": {
+        "type": "petal",
+        "preset": "Petal Migration",
+        "equation": "sin(2*pi*v) + 0.25*sin(5*theta)",
+        "strength": 0.1,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.14,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

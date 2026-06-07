@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Stellar Wave Vessel 43",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Islamic Rosette",
+        "equation": "R * (1 + 0.14*cos(8*theta) + 0.06*cos(4*theta)) * (1 + 0.2*pow(v, 1.8))",
+        "baseRadius": 6.01,
+        "height": 10.4
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.4,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 155,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.43,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.57,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 251
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Terraced Contours",
+        "equation": "floor(10 * (0.5 + 0.5*sin(24*pi*v))) / 10",
+        "intensity": 0.075
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#5B6579",
+        "patternColor1": "#5B6579",
+        "patternColor2": "#5B6579",
+        "overlapColor": "#5B6579",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 133,
+        "resT": 194,
+        "patternResV": 139,
+        "patternResT": 205
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "sin(8*theta) * sin(pi*v)",
+        "strength": 0.06,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Palm Press",
+        "dx": "-0.45 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dy": "-0.05 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dz": "0",
+        "strength": 0.15,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

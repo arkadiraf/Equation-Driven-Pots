@@ -1,0 +1,68 @@
+{
+    "name": "Organic Wave Bulb 169",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "primitive",
+        "preset": "Soft Egg",
+        "equation": "R * (1 + 0.16*cos(phi) - 0.08*cos(2*phi))",
+        "baseRadius": 7.59,
+        "height": 19.9
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.37,
+        "bottomThickness": 0.6,
+        "cylDrain": 0.5,
+        "sphTopCut": 30,
+        "sphBotFlatten": 150,
+        "sphBotCut": 175
+    },
+    "plate": {
+        "plateHeight": 1.43,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.52,
+        "plateSphTopCut": 99,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Topographic Rings",
+        "equation": "sin(24*pi*v)",
+        "intensity": 0.099
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#5B6579",
+        "patternColor1": "#8E9089",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#000000",
+        "depthMm": 1.33
+    },
+    "mesh": {
+        "resV": 126,
+        "resT": 219,
+        "patternResV": 142,
+        "patternResT": 189
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.13,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

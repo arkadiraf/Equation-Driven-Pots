@@ -1,0 +1,68 @@
+{
+    "name": "Polar Flute Orb 64",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "basicEffect",
+        "preset": "Equator Bulge",
+        "equation": "R * (1 + 0.24*pow(sin(phi), 2))",
+        "baseRadius": 4.69,
+        "height": 13.4
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.5,
+        "cylDrain": 0.5,
+        "sphTopCut": 23,
+        "sphBotFlatten": 150,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.62,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.51,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "cos(8*theta) * sin(10*pi*v)",
+        "intensity": 0.134
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#EC008C",
+        "patternColor1": "#F5547C",
+        "patternColor2": "#E4BD68",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.24
+    },
+    "mesh": {
+        "resV": 134,
+        "resT": 205,
+        "patternResV": 123,
+        "patternResT": 216
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "sin(5*theta + 2*pi*v)",
+        "strength": 0.15,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

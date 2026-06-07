@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Mistletoe Ridge Pod 64",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "nonlinear",
+                 "preset":  "Hourglass Pinch",
+                 "equation":  "R * (1 - 0.12*pow(sin(phi), 2) + 0.12*atan(4*cos(7*theta + phi))*pow(sin(phi), 1.4))",
+                 "baseRadius":  4.18,
+                 "height":  10.1
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.36,
+                      "bottomThickness":  0.55,
+                      "cylDrain":  0.5,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.5,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.55,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(15*theta + 7*phi) + sin(16*theta - 6*phi)",
+                    "intensity":  0.088
+                },
+    "patterns":  {
+                     "preset1":  "Outer Radius Deviation",
+                     "equation1":  "max(cos(7*theta), cos(7*theta + 6*phi), cos(7*theta - 6*phi)) - 0.5",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "smoothstep(0.18, 0.27, sin(7*theta + 5*phi) + sin(8*theta - 4*phi)) - 0.5",
+                     "baseColor":  "#847D48",
+                     "patternColor1":  "#545454",
+                     "patternColor2":  "#FF9016",
+                     "overlapColor":  "#EC008C",
+                     "depthMm":  1.15
+                 },
+    "mesh":  {
+                 "resV":  140,
+                 "resT":  200,
+                 "patternResV":  140,
+                 "patternResT":  200
+             },
+    "modifier":  {
+                     "type":  "utility",
+                     "preset":  "None (No Modifier)",
+                     "equation":  "0",
+                     "strength":  0,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

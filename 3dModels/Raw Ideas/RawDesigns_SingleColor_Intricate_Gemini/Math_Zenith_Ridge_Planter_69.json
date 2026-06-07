@@ -1,0 +1,68 @@
+{
+    "name": "Math Zenith Ridge Planter 69",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Shoulder Bulge",
+        "equation": "R * (1 + 0.22 * exp(-pow(v - 0.5, 2) * 25) * cos(12 * theta))",
+        "baseRadius": 4.98,
+        "height": 10.5
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.36,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 147,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.51,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.51,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#0086D6",
+        "patternColor1": "#0086D6",
+        "patternColor2": "#0086D6",
+        "overlapColor": "#0086D6",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 150,
+        "resT": 198,
+        "patternResV": 132,
+        "patternResT": 198
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "clamp(sin(6*theta) * sin(pi*v), -0.8, 0.8)",
+        "strength": 0.09,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.15,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

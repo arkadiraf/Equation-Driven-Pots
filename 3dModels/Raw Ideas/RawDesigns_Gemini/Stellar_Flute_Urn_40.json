@@ -1,0 +1,68 @@
+{
+    "name": "Stellar Flute Urn 40",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "interference",
+        "preset": "Braided Helix",
+        "equation": "R * (1 + 0.12*cos(6*theta + 3*pi*v) + 0.08*cos(6*theta - 3*pi*v))",
+        "baseRadius": 4.28,
+        "height": 23.1
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.37,
+        "bottomThickness": 0.59,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 151,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.33,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.63,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Diamond Weave",
+        "equation": "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)",
+        "intensity": 0.139
+    },
+    "patterns": {
+        "preset1": "Basic Band Mask",
+        "equation1": "sin(8*pi*v)",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#5B6579",
+        "patternColor1": "#0A2989",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#0086D6",
+        "depthMm": 1.14
+    },
+    "mesh": {
+        "resV": 129,
+        "resT": 188,
+        "patternResV": 120,
+        "patternResT": 216
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Diagonal Drift",
+        "equation": "sin(4*theta + 2*pi*v)",
+        "strength": 0.17,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.15,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

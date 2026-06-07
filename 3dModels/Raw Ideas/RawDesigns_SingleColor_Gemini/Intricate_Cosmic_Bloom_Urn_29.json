@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Cosmic Bloom Urn 29",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "nonlinear",
+        "preset": "DNA Helix (S-Curve)",
+        "equation": "R * (1 + 0.15 * cos(2 * theta + 4*pi*v)) * (1 + 0.12 * sin(12*pi*v))",
+        "baseRadius": 10.48,
+        "height": 12.2
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.38,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 29,
+        "sphBotFlatten": 150,
+        "sphBotCut": 175
+    },
+    "plate": {
+        "plateHeight": 1.64,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.52,
+        "plateSphTopCut": 91,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "sin(18*theta + 12*pi*v) + sin(19*theta - 12*pi*v)",
+        "intensity": 0.085
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#EC008C",
+        "patternColor1": "#EC008C",
+        "patternColor2": "#EC008C",
+        "overlapColor": "#EC008C",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 130,
+        "resT": 208,
+        "patternResV": 137,
+        "patternResT": 193
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "sin(8*theta) * sin(pi*v)",
+        "strength": 0.11,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Fluid Twist XYZ",
+        "dx": "x*cos(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) - z*sin(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) + z*cos(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) - z",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

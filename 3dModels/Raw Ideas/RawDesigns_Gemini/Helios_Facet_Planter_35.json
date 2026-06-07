@@ -1,0 +1,68 @@
+{
+    "name": "Helios Facet Planter 35",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "5-Petal Flower",
+        "equation": "R * (1 + 0.25 * cos(5 * theta))",
+        "baseRadius": 4.05,
+        "height": 16.0
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.37,
+        "bottomThickness": 0.57,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 150,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.62,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.64,
+        "plateSphTopCut": 97,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#A6A9AA",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#545454",
+        "overlapColor": "#8E9089",
+        "depthMm": 1.06
+    },
+    "mesh": {
+        "resV": 121,
+        "resT": 188,
+        "patternResV": 125,
+        "patternResT": 187
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Local Twist",
+        "equation": "exp(-pow(v - 0.8, 2)*24)",
+        "strength": 0.15,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.18,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

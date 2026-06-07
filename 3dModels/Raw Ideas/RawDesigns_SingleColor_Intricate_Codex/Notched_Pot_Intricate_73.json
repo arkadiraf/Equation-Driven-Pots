@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Notched Pot Intricate 73",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "folded",
+                 "preset":  "Stepped Crown Phase",
+                 "equation":  "R * (1 + 0.045*(floor(12*v)/12) + 0.055*cos(11*theta + floor(9*v)*pi/5)*sin(pi*v))",
+                 "baseRadius":  9.8,
+                 "height":  24.2
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Diamond Weave",
+                    "equation":  "abs(fract(7*theta/(2*pi) + 4*v) - 0.5) + abs(fract(7*theta/(2*pi) - 4*v) - 0.5)",
+                    "intensity":  0.07
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#482960",
+                     "patternColor1":  "#482960",
+                     "patternColor2":  "#482960",
+                     "overlapColor":  "#482960",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "fold",
+                     "preset":  "Chevron Drift",
+                     "equation":  "abs(sin(7*theta + 2*pi*v)) - abs(sin(7*theta - 2*pi*v))",
+                     "strength":  0.106,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

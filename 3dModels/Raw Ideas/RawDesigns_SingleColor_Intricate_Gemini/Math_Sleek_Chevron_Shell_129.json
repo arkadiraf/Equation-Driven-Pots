@@ -1,0 +1,68 @@
+{
+    "name": "Math Sleek Chevron Shell 129",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Ribbed Art Deco",
+        "equation": "R * (1 + 0.08 * (round(4 * cos(phi)) / 4) * cos(6 * theta))",
+        "baseRadius": 7.99,
+        "height": 15.4
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.42,
+        "bottomThickness": 0.64,
+        "cylDrain": 0.5,
+        "sphTopCut": 30,
+        "sphBotFlatten": 146,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.7,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.65,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Terraced Contours",
+        "equation": "floor(10 * v) / 10",
+        "intensity": 0.095
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#D1D3D5",
+        "patternColor1": "#D1D3D5",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#D1D3D5",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 148,
+        "resT": 212,
+        "patternResV": 140,
+        "patternResT": 216
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "wave",
+        "preset": "Sway Wave",
+        "dx": "0.12*sin(3*pi*v)",
+        "dy": "0.02*sin(2*pi*v)",
+        "dz": "0",
+        "strength": 0.18,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

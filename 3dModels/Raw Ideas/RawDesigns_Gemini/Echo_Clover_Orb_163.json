@@ -1,0 +1,68 @@
+{
+    "name": "Echo Clover Orb 163",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Dragon Egg",
+        "equation": "R * (1 + 0.08 * cos(10*theta + 8*phi) + 0.08 * cos(10*theta - 8*phi))",
+        "baseRadius": 9.57,
+        "height": 19.8
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.42,
+        "bottomThickness": 0.55,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 154,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.54,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.64,
+        "plateSphTopCut": 99,
+        "plateSphBotFlatten": 248
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#F5547C",
+        "patternColor1": "#5E43B7",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#E4BD68",
+        "depthMm": 1.34
+    },
+    "mesh": {
+        "resV": 144,
+        "resT": 183,
+        "patternResV": 130,
+        "patternResT": 218
+    },
+    "modifier": {
+        "type": "petal",
+        "preset": "Petal Migration",
+        "equation": "sin(2*pi*v) + 0.25*sin(5*theta)",
+        "strength": 0.16,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.09,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

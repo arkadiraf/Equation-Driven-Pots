@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Silver Lantern Vessel 30",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "interference",
+                 "preset":  "Fourier Bloom",
+                 "equation":  "R * (1 + 0.07*cos(5*theta + 2*pi*v) + 0.05*cos(14*theta - 3*pi*v) + 0.08*sin(pi*v))",
+                 "baseRadius":  4.59,
+                 "height":  12.7
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.36,
+                      "bottomThickness":  0.55,
+                      "cylDrain":  0.5,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.5,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.55,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "nonlinear",
+                    "preset":  "Saturated Flutes",
+                    "equation":  "atan(6*cos(14*theta - 2*pi*v))",
+                    "intensity":  0.13
+                },
+    "patterns":  {
+                     "preset1":  "Basic Stripe Mask",
+                     "equation1":  "max(cos(5*theta), cos(5*theta + 8*pi*v), cos(5*theta - 8*pi*v)) - 0.55",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "cos(2*theta)",
+                     "baseColor":  "#0056B8",
+                     "patternColor1":  "#0A2989",
+                     "patternColor2":  "#5B6579",
+                     "overlapColor":  "#545454",
+                     "depthMm":  1.2
+                 },
+    "mesh":  {
+                 "resV":  140,
+                 "resT":  200,
+                 "patternResV":  140,
+                 "patternResT":  200
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Basic Twist",
+                     "equation":  "sin(5*theta + 2*pi*v) + 0.4*sin(14*theta - 2*pi*v)",
+                     "strength":  0.12,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

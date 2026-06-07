@@ -1,0 +1,68 @@
+{
+    "name": "Astral Lattice Vessel 29",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Shoulder Bulge",
+        "equation": "R * (1 + 0.20*exp(-pow(v - 0.72, 2)*18))",
+        "baseRadius": 4.55,
+        "height": 17.3
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.41,
+        "bottomThickness": 0.57,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 152,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.33,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.59,
+        "plateSphTopCut": 90,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Diamond Weave",
+        "equation": "0.5*cos(10*theta + 8*pi*v) + 0.5*cos(10*theta - 8*pi*v)",
+        "intensity": 0.123
+    },
+    "patterns": {
+        "preset1": "Hex Window Grid",
+        "equation1": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v)) - 0.55",
+        "preset2": "Basic Vertical Split",
+        "equation2": "cos(theta)",
+        "baseColor": "#482960",
+        "patternColor1": "#A6A9AA",
+        "patternColor2": "#EC008C",
+        "overlapColor": "#000000",
+        "depthMm": 1.29
+    },
+    "mesh": {
+        "resV": 124,
+        "resT": 207,
+        "patternResV": 137,
+        "patternResT": 183
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.18,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.09,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

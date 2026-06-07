@@ -1,0 +1,68 @@
+{
+    "name": "Math Organic Lattice Vessel 44",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Lotus Crown Vase",
+        "equation": "R * (1 + 0.15 * acos(0.9 * cos(5 * theta)) * v * (1.0 - v))",
+        "baseRadius": 9.72,
+        "height": 23.4
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.38,
+        "bottomThickness": 0.64,
+        "cylDrain": 0.5,
+        "sphTopCut": 23,
+        "sphBotFlatten": 146,
+        "sphBotCut": 177
+    },
+    "plate": {
+        "plateHeight": 1.63,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.57,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 255
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Stepped Weave",
+        "equation": "round(6 * cos(8*theta + floor(10*v)*pi/5)) / 6",
+        "intensity": 0.139
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#6F5034",
+        "patternColor1": "#6F5034",
+        "patternColor2": "#6F5034",
+        "overlapColor": "#6F5034",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 122,
+        "resT": 214,
+        "patternResV": 148,
+        "patternResT": 193
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.17,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

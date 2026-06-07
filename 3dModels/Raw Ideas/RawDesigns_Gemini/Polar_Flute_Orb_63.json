@@ -1,0 +1,68 @@
+{
+    "name": "Polar Flute Orb 63",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Crystalline Geode",
+        "equation": "R * (1 + 0.08 * (abs(sin(5*theta)) + abs(cos(5*theta))) * (abs(sin(4*phi)) + abs(cos(4*phi))))",
+        "baseRadius": 4.89,
+        "height": 15.5
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.4,
+        "bottomThickness": 0.57,
+        "cylDrain": 0.5,
+        "sphTopCut": 23,
+        "sphBotFlatten": 153,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.42,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "cos(8*theta) * sin(10*pi*v)",
+        "intensity": 0.136
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#0086D6",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#00B1B7",
+        "overlapColor": "#0056B8",
+        "depthMm": 1.09
+    },
+    "mesh": {
+        "resV": 145,
+        "resT": 198,
+        "patternResV": 132,
+        "patternResT": 199
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Diagonal Drift",
+        "equation": "sin(4*theta + 2*pi*v)",
+        "strength": 0.15,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.18,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

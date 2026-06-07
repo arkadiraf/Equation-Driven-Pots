@@ -1,0 +1,68 @@
+{
+    "name": "Sunset Bloom Pot 25",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Soft Hexagon",
+        "equation": "R * (1 + 0.10 * cos(6 * theta))",
+        "baseRadius": 3.87,
+        "height": 12.6
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.39,
+        "bottomThickness": 0.63,
+        "cylDrain": 0.5,
+        "sphTopCut": 30,
+        "sphBotFlatten": 154,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.53,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.63,
+        "plateSphTopCut": 92,
+        "plateSphBotFlatten": 254
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "Basic Stripe Mask",
+        "equation1": "cos(8*theta)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#D1D3D5",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#000000",
+        "overlapColor": "#8E9089",
+        "depthMm": 1.1
+    },
+    "mesh": {
+        "resV": 129,
+        "resT": 205,
+        "patternResV": 147,
+        "patternResT": 215
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Local Twist",
+        "equation": "exp(-pow(v - 0.8, 2)*24)",
+        "strength": 0.11,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Torsion Twist",
+        "dx": "x*cos(0.35*sin(pi*v)) - z*sin(0.35*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.35*sin(pi*v)) + z*cos(0.35*sin(pi*v)) - z",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

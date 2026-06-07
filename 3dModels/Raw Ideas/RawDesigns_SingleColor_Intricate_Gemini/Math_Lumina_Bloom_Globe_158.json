@@ -1,0 +1,68 @@
+{
+    "name": "Math Lumina Bloom Globe 158",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Arc-Lobed Shell",
+        "equation": "R * (1 + 0.12 * acos(0.9 * cos(4 * theta)) * sin(phi))",
+        "baseRadius": 10.88,
+        "height": 16.9
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.35,
+        "bottomThickness": 0.53,
+        "cylDrain": 0.5,
+        "sphTopCut": 28,
+        "sphBotFlatten": 145,
+        "sphBotCut": 176
+    },
+    "plate": {
+        "plateHeight": 1.57,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.56,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "smoothstep(-0.5, 0.5, sin(10*theta + 8*pi*v) + sin(11*theta - 8*pi*v))",
+        "intensity": 0.139
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#847D48",
+        "patternColor1": "#847D48",
+        "patternColor2": "#847D48",
+        "overlapColor": "#847D48",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 133,
+        "resT": 214,
+        "patternResV": 126,
+        "patternResT": 184
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Gentle Torsion",
+        "equation": "floor(6.0 * v) / 6.0",
+        "strength": 0.08,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.15,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

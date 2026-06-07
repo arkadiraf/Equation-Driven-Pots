@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Zenith Lattice Globe 113",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Twisted Bloom",
+        "equation": "R * (1 + 0.15 * cos(8*theta + 2.5*phi) * pow(sin(phi), 2.0))",
+        "baseRadius": 8.45,
+        "height": 23.4
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.38,
+        "bottomThickness": 0.62,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 153,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.39,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.52,
+        "plateSphTopCut": 91,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "cos(16*theta) * sin(20*pi*v)",
+        "intensity": 0.054
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#9D2235",
+        "patternColor1": "#9D2235",
+        "patternColor2": "#9D2235",
+        "overlapColor": "#9D2235",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 127,
+        "resT": 195,
+        "patternResV": 124,
+        "patternResT": 218
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

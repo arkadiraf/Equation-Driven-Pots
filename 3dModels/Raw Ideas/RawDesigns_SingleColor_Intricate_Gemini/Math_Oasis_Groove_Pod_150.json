@@ -1,0 +1,68 @@
+{
+    "name": "Math Oasis Groove Pod 150",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Twisted Bloom",
+        "equation": "R * (1 + 0.15 * asin(0.95 * sin(5 * theta + 1.5 * phi)) * pow(sin(phi), 1.5))",
+        "baseRadius": 6.28,
+        "height": 21.0
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.37,
+        "bottomThickness": 0.57,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 145,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.49,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.59,
+        "plateSphTopCut": 99,
+        "plateSphBotFlatten": 255
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "sign(sin(12*theta)) * sign(sin(12*pi*v))",
+        "intensity": 0.097
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#482960",
+        "patternColor1": "#482960",
+        "patternColor2": "#482960",
+        "overlapColor": "#482960",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 129,
+        "resT": 186,
+        "patternResV": 132,
+        "patternResT": 220
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "fract(4.0 * theta / pi + 3.0 * v)",
+        "strength": 0.13,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Lean",
+        "dx": "0.12*pow(v, 1.3)",
+        "dy": "0",
+        "dz": "0.06*pow(v, 1.3)",
+        "strength": 0.15,
+        "region": "all",
+        "anchor": "bottomHalfStiff",
+        "space": "xyz"
+    }
+}

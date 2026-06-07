@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Arc Garden VIII Single 18",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "basicEffect",
+                 "preset":  "Shoulder Bulge",
+                 "equation":  "R * (1 + 0.12*exp(-pow(v - 0.68, 2)*18) - 0.055*exp(-pow(v - 0.34, 2)*20) + 0.035*cos(12*theta + pi*v))",
+                 "baseRadius":  7.4,
+                 "height":  17.3
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.42,
+                      "bottomThickness":  0.7,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "ribs",
+                    "preset":  "Basic Twist Relief",
+                    "equation":  "cos(11*theta + 5*pi*v)",
+                    "intensity":  0.123
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#5E43B7",
+                     "patternColor1":  "#5E43B7",
+                     "patternColor2":  "#5E43B7",
+                     "overlapColor":  "#5E43B7",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "petal",
+                     "preset":  "Petal Migration",
+                     "equation":  "sin(2*pi*v) + 0.22*sin(12*theta)",
+                     "strength":  0.105,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "swirl",
+                       "preset":  "Mid-Body Vortex",
+                       "dx":  "-0.10*z*exp(-pow(v - 0.58, 2)*14)",
+                       "dy":  "0",
+                       "dz":  "0.10*x*exp(-pow(v - 0.58, 2)*14)",
+                       "strength":  0.12,
+                       "region":  "all",
+                       "anchor":  "bottomHalfStiff",
+                       "space":  "xyz"
+                   }
+}

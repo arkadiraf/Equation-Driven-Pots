@@ -1,0 +1,68 @@
+{
+    "name": "Sunset Bloom Shell 152",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Lotus Pod",
+        "equation": "R * (1 + 0.16 * cos(6 * theta) * pow(sin(phi), 2.2) - 0.04 * cos(2 * phi))",
+        "baseRadius": 8.37,
+        "height": 24.9
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.37,
+        "bottomThickness": 0.65,
+        "cylDrain": 0.5,
+        "sphTopCut": 29,
+        "sphBotFlatten": 150,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.66,
+        "plateOpeningAngle": 24,
+        "plateRadiusExtra": 0.53,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 248
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Basic Vertical Ribs",
+        "equation": "cos(10*theta)",
+        "intensity": 0.136
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#847D48",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#6F5034",
+        "depthMm": 1.05
+    },
+    "mesh": {
+        "resV": 140,
+        "resT": 182,
+        "patternResV": 130,
+        "patternResT": 190
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Local Twist",
+        "equation": "exp(-pow(v - 0.8, 2)*24)",
+        "strength": 0.09,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Side Pressure Dent",
+        "dx": "-0.6 * exp(-pow(theta - 0, 2)*8) * exp(-pow(v - 0.6, 2)*20)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.19,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

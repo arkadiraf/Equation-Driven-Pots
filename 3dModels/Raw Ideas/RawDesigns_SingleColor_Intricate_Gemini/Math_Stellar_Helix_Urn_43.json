@@ -1,0 +1,68 @@
+{
+    "name": "Math Stellar Helix Urn 43",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "folded",
+        "preset": "Hex Panel Shell",
+        "equation": "R * (1 + 0.12 * abs(mod(theta + pi * v, pi / 3) - pi / 6))",
+        "baseRadius": 6.33,
+        "height": 22.6
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.44,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 154,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.51,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 91,
+        "plateSphBotFlatten": 251
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "sign(sin(12*theta)) * sign(sin(12*pi*v))",
+        "intensity": 0.093
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#847D48",
+        "patternColor1": "#847D48",
+        "patternColor2": "#847D48",
+        "overlapColor": "#847D48",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 123,
+        "resT": 181,
+        "patternResV": 138,
+        "patternResT": 209
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

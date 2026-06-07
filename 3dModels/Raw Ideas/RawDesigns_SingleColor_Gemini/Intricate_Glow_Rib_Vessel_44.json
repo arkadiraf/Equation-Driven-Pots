@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Glow Rib Vessel 44",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "nonlinear",
+        "preset": "Turbine Blade",
+        "equation": "R * (1 + 0.15 * atan(4 * cos(5*theta + 3*pi*v + 0.5*sin(theta))))",
+        "baseRadius": 8.15,
+        "height": 24.9
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.42,
+        "bottomThickness": 0.65,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 155,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.64,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 245
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "cos(16*theta) * sin(20*pi*v)",
+        "intensity": 0.053
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#847D48",
+        "patternColor1": "#847D48",
+        "patternColor2": "#847D48",
+        "overlapColor": "#847D48",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 127,
+        "resT": 196,
+        "patternResV": 139,
+        "patternResT": 203
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Body Swirl",
+        "equation": "exp(-pow(v - 0.55, 2)*14) * sin(4*theta + 2*pi*v)",
+        "strength": 0.17,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Fluid Twist XYZ",
+        "dx": "x*cos(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) - z*sin(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) + z*cos(0.25*sin(2*pi*v) + 0.15*exp(-pow(v - 0.75, 2)*18)) - z",
+        "strength": 0.18,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

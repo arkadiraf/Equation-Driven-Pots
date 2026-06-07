@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Aether Pillow Urn 87",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "nonlinear",
+        "preset": "Turbine Blade",
+        "equation": "R * (1 + 0.15 * atan(4 * cos(5*theta + 3*pi*v + 0.5*sin(theta))))",
+        "baseRadius": 6.9,
+        "height": 13.8
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.42,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 28,
+        "sphBotFlatten": 151,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.59,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.56,
+        "plateSphTopCut": 99,
+        "plateSphBotFlatten": 248
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Folded Chevron",
+        "equation": "abs(sin(8*theta + 10*pi*v)) - 0.5*abs(sin(8*theta - 10*pi*v))",
+        "intensity": 0.101
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#0056B8",
+        "patternColor1": "#0056B8",
+        "patternColor2": "#0056B8",
+        "overlapColor": "#0056B8",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 125,
+        "resT": 210,
+        "patternResV": 136,
+        "patternResT": 193
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Palm Press",
+        "dx": "-0.45 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dy": "-0.05 * exp(-pow(theta - pi/10, 2)*7) * exp(-pow(v - 0.55, 2)*14)",
+        "dz": "0",
+        "strength": 0.11,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

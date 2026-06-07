@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Crown Pot IX Single 69",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "nonlinear",
+                 "preset":  "Compressed Wave Stack",
+                 "equation":  "R * (1 + 0.06*atan(4*(sin(13*theta + 3*pi*v) + 0.55*sin(11*theta - 2*pi*v))) * sin(pi*v))",
+                 "baseRadius":  9,
+                 "height":  24.1
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.42,
+                      "bottomThickness":  0.7,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "interference",
+                    "preset":  "Moire Texture",
+                    "equation":  "sin(11*theta + 9*pi*v) + sin(12*theta - 8*pi*v)",
+                    "intensity":  0.145
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#0086D6",
+                     "patternColor1":  "#0086D6",
+                     "patternColor2":  "#0086D6",
+                     "overlapColor":  "#0086D6",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "diagonal",
+                     "preset":  "Cross-Diagonal Weave",
+                     "equation":  "0.65*sin(13*theta + 2*pi*v) + 0.65*sin(13*theta - 2*pi*v)",
+                     "strength":  0.08,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

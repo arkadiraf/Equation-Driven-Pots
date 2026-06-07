@@ -1,0 +1,68 @@
+{
+    "name": "Polar Chevron Basin 133",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "interference",
+        "preset": "Braided Helix",
+        "equation": "R * (1 + 0.12*cos(6*theta + 3*pi*v) + 0.08*cos(6*theta - 3*pi*v))",
+        "baseRadius": 9.68,
+        "height": 16.1
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.4,
+        "bottomThickness": 0.65,
+        "cylDrain": 0.5,
+        "sphTopCut": 31,
+        "sphBotFlatten": 145,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.66,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.56,
+        "plateSphTopCut": 91,
+        "plateSphBotFlatten": 245
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Basic Vertical Ribs",
+        "equation": "cos(10*theta)",
+        "intensity": 0.123
+    },
+    "patterns": {
+        "preset1": "Hex Window Grid",
+        "equation1": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v)) - 0.55",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#000000",
+        "patternColor1": "#5E43B7",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#F5547C",
+        "depthMm": 1.17
+    },
+    "mesh": {
+        "resV": 125,
+        "resT": 204,
+        "patternResV": 148,
+        "patternResT": 202
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.19,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

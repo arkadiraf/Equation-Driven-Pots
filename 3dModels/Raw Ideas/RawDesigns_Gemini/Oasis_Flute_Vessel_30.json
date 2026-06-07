@@ -1,0 +1,68 @@
+{
+    "name": "Oasis Flute Vessel 30",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Rim Flare",
+        "equation": "R * (1 + 0.26*pow(v, 1.8))",
+        "baseRadius": 4.23,
+        "height": 22.7
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.36,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 154,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.31,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.61,
+        "plateSphTopCut": 98,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Topographic Rings",
+        "equation": "sin(24*pi*v)",
+        "intensity": 0.064
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#5B6579",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#D1D3D5",
+        "overlapColor": "#8E9089",
+        "depthMm": 1.37
+    },
+    "mesh": {
+        "resV": 136,
+        "resT": 195,
+        "patternResV": 122,
+        "patternResT": 188
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.06,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.12,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

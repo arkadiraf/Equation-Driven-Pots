@@ -1,0 +1,68 @@
+{
+    "name": "Elysian Pillow Vessel 17",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "folded",
+        "preset": "Chevron Fold",
+        "equation": "R * (1 + 0.12 * abs(sin(6*theta + 4*pi*v)) - 0.05 * abs(sin(6*theta - 4*pi*v)))",
+        "baseRadius": 4.86,
+        "height": 24.2
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.41,
+        "bottomThickness": 0.63,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 147,
+        "sphBotCut": 171
+    },
+    "plate": {
+        "plateHeight": 1.33,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.57,
+        "plateSphTopCut": 91,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "interference",
+        "preset": "Moire Texture",
+        "equation": "sin(12*theta + 10*pi*v) + sin(13*theta - 10*pi*v)",
+        "intensity": 0.135
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#FFFFFF",
+        "patternColor1": "#A6A9AA",
+        "patternColor2": "#0086D6",
+        "overlapColor": "#0056B8",
+        "depthMm": 1.22
+    },
+    "mesh": {
+        "resV": 138,
+        "resT": 195,
+        "patternResV": 131,
+        "patternResT": 203
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Diagonal Drift",
+        "equation": "sin(4*theta + 2*pi*v)",
+        "strength": 0.2,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.13,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

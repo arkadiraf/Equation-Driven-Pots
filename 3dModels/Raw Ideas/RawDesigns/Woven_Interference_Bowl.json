@@ -1,0 +1,68 @@
+{
+  "name": "Woven Interference Bowl",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Woven Interference",
+    "equation": "R * (1 + 0.10*cos(8*theta + 6*pi*v) + 0.10*cos(8*theta - 6*pi*v) + 0.05*cos(16*theta)) * (1 + 0.30*pow(v, 1.5))",
+    "baseRadius": 6.5,
+    "height": 7.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.38,
+    "bottomThickness": 0.6,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "weave",
+    "preset": "Basket Crosshatch",
+    "equation": "sin(10*theta + 8*pi*v) * sin(10*theta - 8*pi*v)",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "Hex Window Grid",
+    "equation1": "max(cos(8*theta), cos(8*theta + 10*pi*v), cos(8*theta - 10*pi*v)) - 0.55",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(4*pi*v) - 0.1",
+    "baseColor": "#b8a880",
+    "patternColor1": "#504020",
+    "patternColor2": "#806040",
+    "overlapColor": "#302010",
+    "depthMm": 1.4
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 200,
+    "patternResV": 120,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

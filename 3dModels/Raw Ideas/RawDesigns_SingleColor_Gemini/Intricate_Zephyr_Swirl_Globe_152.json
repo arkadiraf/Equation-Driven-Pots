@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Zephyr Swirl Globe 152",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Starfruit",
+        "equation": "R * (1 + 0.22 * cos(5 * theta) * sin(phi)) * (1 + 0.1 * pow(sin(phi), 2.0))",
+        "baseRadius": 6.97,
+        "height": 12.3
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.36,
+        "bottomThickness": 0.57,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 147,
+        "sphBotCut": 175
+    },
+    "plate": {
+        "plateHeight": 1.68,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.54,
+        "plateSphTopCut": 98,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#F5547C",
+        "patternColor1": "#F5547C",
+        "patternColor2": "#F5547C",
+        "overlapColor": "#F5547C",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 140,
+        "resT": 180,
+        "patternResV": 144,
+        "patternResT": 205
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Body Swirl",
+        "equation": "exp(-pow(v - 0.55, 2)*14) * sin(4*theta + 2*pi*v)",
+        "strength": 0.12,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.11,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

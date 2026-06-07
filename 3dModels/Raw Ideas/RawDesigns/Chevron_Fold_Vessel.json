@@ -1,0 +1,68 @@
+{
+  "name": "Chevron Fold Vessel",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "folded",
+    "preset": "Chevron Fold",
+    "equation": "R * (1 + 0.14*abs(sin(6*theta + 4*pi*v)) - 0.06*abs(sin(6*theta - 4*pi*v))) * (1 + 0.14*sin(pi*v))",
+    "baseRadius": 5.0,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "nonlinear",
+    "preset": "Nonlinear Chevron",
+    "equation": "atan(5 * (abs(sin(6*theta + 8*pi*v)) - 0.5*abs(sin(6*theta - 8*pi*v))))",
+    "intensity": 0.13
+  },
+  "patterns": {
+    "preset1": "Surface Texture Top %",
+    "equation1": "textureFill(texPosNorm, 60)",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(6*pi*v + pi*0.25) - 0.2",
+    "baseColor": "#404850",
+    "patternColor1": "#c8b880",
+    "patternColor2": "#808878",
+    "overlapColor": "#e0d8a0",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 130,
+    "resT": 190,
+    "patternResV": 130,
+    "patternResT": 190
+  },
+  "modifier": {
+    "type": "fold",
+    "preset": "Chevron Drift",
+    "equation": "abs(sin(4*theta + 2*pi*v)) - abs(sin(4*theta - 2*pi*v))",
+    "strength": 0.14,
+    "target": "texture"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

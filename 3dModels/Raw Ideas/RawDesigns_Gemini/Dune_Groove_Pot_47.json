@@ -1,0 +1,68 @@
+{
+    "name": "Dune Groove Pot 47",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "primitive",
+        "preset": "Circle (Pure Base)",
+        "equation": "R",
+        "baseRadius": 4.96,
+        "height": 25.0
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.41,
+        "bottomThickness": 0.59,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 152,
+        "sphBotCut": 175
+    },
+    "plate": {
+        "plateHeight": 1.52,
+        "plateOpeningAngle": 26,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 90,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Basic Horizontal Bands",
+        "equation": "sin(12*pi*v)",
+        "intensity": 0.074
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#000000",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#A6A9AA",
+        "overlapColor": "#EC008C",
+        "depthMm": 1.01
+    },
+    "mesh": {
+        "resV": 124,
+        "resT": 188,
+        "patternResV": 139,
+        "patternResT": 180
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "sin(5*theta + 2*pi*v)",
+        "strength": 0.18,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

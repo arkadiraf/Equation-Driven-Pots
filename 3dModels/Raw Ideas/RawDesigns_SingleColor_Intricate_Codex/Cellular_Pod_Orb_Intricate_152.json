@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Cellular Pod Orb Intricate 152",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "floral",
+                 "preset":  "Twisted Bloom",
+                 "equation":  "R * (1 + 0.10*(0.5 - abs(fract(6*theta/(2*pi) + phi/pi) - 0.5))*pow(sin(phi), 1.4) + 0.035*cos(phi))",
+                 "baseRadius":  9.22,
+                 "height":  15.8
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.45,
+                      "bottomThickness":  0.74,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "carved",
+                    "preset":  "Arc Shell Carving",
+                    "equation":  "asin(0.94*sin(28*theta + floor(8*v)*phi/2))",
+                    "intensity":  0.065
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#5B6579",
+                     "patternColor1":  "#5B6579",
+                     "patternColor2":  "#5B6579",
+                     "overlapColor":  "#5B6579",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "diagonal",
+                     "preset":  "Diagonal Drift",
+                     "equation":  "sin(6*theta + 2*phi)",
+                     "strength":  0.081,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

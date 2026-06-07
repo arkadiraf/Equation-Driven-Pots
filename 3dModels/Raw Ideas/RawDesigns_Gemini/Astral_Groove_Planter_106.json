@@ -1,0 +1,68 @@
+{
+    "name": "Astral Groove Planter 106",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "5-Petal Flower",
+        "equation": "R * (1 + 0.25 * cos(5 * theta))",
+        "baseRadius": 9.41,
+        "height": 24.1
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.37,
+        "bottomThickness": 0.55,
+        "cylDrain": 0.5,
+        "sphTopCut": 24,
+        "sphBotFlatten": 148,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.42,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.53,
+        "plateSphTopCut": 96,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "nonlinear",
+        "preset": "Saturated Flutes",
+        "equation": "atan(7 * cos(12*theta))",
+        "intensity": 0.06
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "Double Helix Mask",
+        "equation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
+        "baseColor": "#000000",
+        "patternColor1": "#FFFFFF",
+        "patternColor2": "#5B6579",
+        "overlapColor": "#A6A9AA",
+        "depthMm": 1.18
+    },
+    "mesh": {
+        "resV": 145,
+        "resT": 189,
+        "patternResV": 129,
+        "patternResT": 220
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.06,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Torsion Twist",
+        "dx": "x*cos(0.35*sin(pi*v)) - z*sin(0.35*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.35*sin(pi*v)) + z*cos(0.35*sin(pi*v)) - z",
+        "strength": 0.14,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

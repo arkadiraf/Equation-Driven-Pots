@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Keystone Column Planter Large 151",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "floral",
+                 "preset":  "6-Petal Flower",
+                 "equation":  "R * (1 + 0.08*cos(6*theta + 0.68*pi*v)*sin(pi*v)) * (1 + 0.08*exp(-pow(v - 0.62, 2)*14))",
+                 "baseRadius":  12.3,
+                 "height":  17.5
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.48,
+                      "bottomThickness":  0.8,
+                      "cylDrain":  0.8,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  2,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.8,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Diamond Weave",
+                    "equation":  "0.5*cos(6*theta + 8*pi*v) + 0.5*cos(6*theta - 8*pi*v)",
+                    "intensity":  0.08
+                },
+    "patterns":  {
+                     "preset1":  "Surface Texture Top %",
+                     "equation1":  "textureFill(texPosNorm, 60)",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "v - 0.55",
+                     "baseColor":  "#EC008C",
+                     "patternColor1":  "#5E43B7",
+                     "patternColor2":  "#00B1B7",
+                     "overlapColor":  "#9D432C",
+                     "depthMm":  1.35
+                 },
+    "mesh":  {
+                 "resV":  150,
+                 "resT":  220,
+                 "patternResV":  150,
+                 "patternResT":  220
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Gentle Torsion",
+                     "equation":  "sin(6*theta + 2*pi*v) + 0.35*sin(18*theta - 2*pi*v)",
+                     "strength":  0.1,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "torsion",
+                       "preset":  "Basic Torsion",
+                       "dx":  "x*cos(0.12*sin(pi*v)) - z*sin(0.12*sin(pi*v)) - x",
+                       "dy":  "0",
+                       "dz":  "x*sin(0.12*sin(pi*v)) + z*cos(0.12*sin(pi*v)) - z",
+                       "strength":  0.14,
+                       "region":  "all",
+                       "anchor":  "baseAnchored",
+                       "space":  "xyz"
+                   }
+}

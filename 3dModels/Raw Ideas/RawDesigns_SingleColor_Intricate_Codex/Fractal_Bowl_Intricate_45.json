@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Fractal Bowl Intricate 45",
+    "base":  {
+                 "coordSystem":  "cylindrical",
+                 "baseType":  "primitive",
+                 "preset":  "Rounded Square",
+                 "equation":  "R * pow(pow(abs(cos(theta)), 4 + 6*smoothstep(0.2, 0.8, v)) + pow(abs(sin(theta)), 4 + 6*smoothstep(0.2, 0.8, v)), -1/(4 + 6*smoothstep(0.2, 0.8, v))) * (1 + 0.035*cos(5*theta))",
+                 "baseRadius":  4.2,
+                 "height":  19.7
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.44,
+                      "bottomThickness":  0.72,
+                      "cylDrain":  0.7,
+                      "sphTopCut":  25,
+                      "sphBotFlatten":  150,
+                      "sphBotCut":  175
+                  },
+    "plate":  {
+                  "plateHeight":  1.8,
+                  "plateOpeningAngle":  24,
+                  "plateRadiusExtra":  0.7,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "weave",
+                    "preset":  "Honeycomb Relief",
+                    "equation":  "max(cos(5*theta), cos(5*theta + 8*pi*v), cos(5*theta - 8*pi*v))",
+                    "intensity":  0.114
+                },
+    "patterns":  {
+                     "preset1":  "None (Solid Base Color)",
+                     "equation1":  "-1",
+                     "preset2":  "None (Solid Base Color)",
+                     "equation2":  "-1",
+                     "baseColor":  "#A6A9AA",
+                     "patternColor1":  "#A6A9AA",
+                     "patternColor2":  "#A6A9AA",
+                     "overlapColor":  "#A6A9AA",
+                     "depthMm":  0
+                 },
+    "mesh":  {
+                 "resV":  160,
+                 "resT":  240,
+                 "patternResV":  120,
+                 "patternResT":  180
+             },
+    "modifier":  {
+                     "type":  "twist",
+                     "preset":  "Crown Rotation",
+                     "equation":  "exp(-pow(v - 0.86, 2)*34) * sin(round(8*v)*pi/4)",
+                     "strength":  0.142,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

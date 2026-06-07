@@ -1,0 +1,68 @@
+{
+    "name": "Math Nova Helix Urn 14",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "nonlinear",
+        "preset": "DNA Helix (S-Curve)",
+        "equation": "R * (1 + 0.15 * fract(6 * v + theta / pi))",
+        "baseRadius": 4.63,
+        "height": 18.3
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.41,
+        "bottomThickness": 0.56,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 149,
+        "sphBotCut": 174
+    },
+    "plate": {
+        "plateHeight": 1.33,
+        "plateOpeningAngle": 23,
+        "plateRadiusExtra": 0.68,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Terraced Contours",
+        "equation": "floor(10 * v) / 10",
+        "intensity": 0.076
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#847D48",
+        "patternColor1": "#847D48",
+        "patternColor2": "#847D48",
+        "overlapColor": "#847D48",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 124,
+        "resT": 183,
+        "patternResV": 129,
+        "patternResT": 189
+    },
+    "modifier": {
+        "type": "utility",
+        "preset": "None (No Modifier)",
+        "equation": "0",
+        "strength": 0.0,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "gravity",
+        "preset": "Heavy Crown",
+        "dx": "0",
+        "dy": "-clamp(pow(v, 2.2), 0.0, 0.8)",
+        "dz": "0",
+        "strength": 0.1,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

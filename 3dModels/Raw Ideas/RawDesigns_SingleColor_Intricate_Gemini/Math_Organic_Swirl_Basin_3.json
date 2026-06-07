@@ -1,0 +1,68 @@
+{
+    "name": "Math Organic Swirl Basin 3",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "nonlinear",
+        "preset": "Progressive Fluting",
+        "equation": "R * (1 + 0.14 * log(1.0 + 3.0 * abs(sin(5 * theta + pi * v))))",
+        "baseRadius": 4.65,
+        "height": 13.8
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.39,
+        "bottomThickness": 0.57,
+        "cylDrain": 0.5,
+        "sphTopCut": 22,
+        "sphBotFlatten": 147,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.38,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.58,
+        "plateSphTopCut": 100,
+        "plateSphBotFlatten": 245
+    },
+    "texture": {
+        "type": "weave",
+        "preset": "Stepped Weave",
+        "equation": "round(6 * cos(8*theta + floor(10*v)*pi/5)) / 6",
+        "intensity": 0.08
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#5E43B7",
+        "patternColor1": "#5E43B7",
+        "patternColor2": "#5E43B7",
+        "overlapColor": "#5E43B7",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 148,
+        "resT": 203,
+        "patternResV": 123,
+        "patternResT": 187
+    },
+    "modifier": {
+        "type": "regional",
+        "preset": "Body Swirl Window",
+        "equation": "smoothstep(0.2, 0.8, sin(pi*v)) * sin(5*theta)",
+        "strength": 0.11,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "wave",
+        "preset": "Sway Wave",
+        "dx": "0.12*sin(3*pi*v)",
+        "dy": "0.02*sin(2*pi*v)",
+        "dz": "0",
+        "strength": 0.19,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

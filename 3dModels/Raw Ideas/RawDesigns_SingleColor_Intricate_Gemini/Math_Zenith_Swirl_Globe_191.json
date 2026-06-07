@@ -1,0 +1,68 @@
+{
+    "name": "Math Zenith Swirl Globe 191",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "primitive",
+        "preset": "Oblate Sphere",
+        "equation": "R * (1 + 0.18 * exp(-pow(phi - pi/2, 2) * 15) * cos(8 * theta))",
+        "baseRadius": 4.91,
+        "height": 15.4
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.41,
+        "bottomThickness": 0.59,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 152,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.43,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.55,
+        "plateSphTopCut": 91,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "bands",
+        "preset": "Terraced Contours",
+        "equation": "floor(10 * v) / 10",
+        "intensity": 0.099
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#0A2989",
+        "patternColor1": "#0A2989",
+        "patternColor2": "#0A2989",
+        "overlapColor": "#0A2989",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 135,
+        "resT": 203,
+        "patternResV": 136,
+        "patternResT": 205
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "fract(4.0 * theta / pi + 3.0 * v)",
+        "strength": 0.1,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "gravity",
+        "preset": "Heavy Crown",
+        "dx": "0",
+        "dy": "-clamp(pow(v, 2.2), 0.0, 0.8)",
+        "dz": "0",
+        "strength": 0.12,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

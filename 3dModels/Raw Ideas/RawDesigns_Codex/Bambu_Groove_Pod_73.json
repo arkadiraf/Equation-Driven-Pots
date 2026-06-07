@@ -1,0 +1,68 @@
+﻿{
+    "name":  "Bambu Groove Pod 73",
+    "base":  {
+                 "coordSystem":  "spherical",
+                 "baseType":  "folded",
+                 "preset":  "Dragon Egg",
+                 "equation":  "R * (1 + 0.07*cos(15*theta + 7*phi) + 0.07*cos(15*theta - 7*phi)) * (1 + 0.05*cos(phi))",
+                 "baseRadius":  4.07,
+                 "height":  10.2
+             },
+    "structure":  {
+                      "modelMode":  "pot",
+                      "wall":  0.36,
+                      "bottomThickness":  0.55,
+                      "cylDrain":  0.5,
+                      "sphTopCut":  28,
+                      "sphBotFlatten":  155,
+                      "sphBotCut":  178
+                  },
+    "plate":  {
+                  "plateHeight":  1.5,
+                  "plateOpeningAngle":  22,
+                  "plateRadiusExtra":  0.55,
+                  "plateSphTopCut":  95,
+                  "plateSphBotFlatten":  250
+              },
+    "texture":  {
+                    "type":  "carved",
+                    "preset":  "Arc Shell Carving",
+                    "equation":  "asin(0.96*sin(4*theta + 4*phi))",
+                    "intensity":  0.077
+                },
+    "patterns":  {
+                     "preset1":  "Outer Radius Deviation",
+                     "equation1":  "outerDeviation(0.16)",
+                     "preset2":  "Basic Band Mask",
+                     "equation2":  "v - 0.5",
+                     "baseColor":  "#9D2235",
+                     "patternColor1":  "#6F5034",
+                     "patternColor2":  "#F55A74",
+                     "overlapColor":  "#FF6A13",
+                     "depthMm":  1.15
+                 },
+    "mesh":  {
+                 "resV":  140,
+                 "resT":  200,
+                 "patternResV":  140,
+                 "patternResT":  200
+             },
+    "modifier":  {
+                     "type":  "utility",
+                     "preset":  "None (No Modifier)",
+                     "equation":  "0",
+                     "strength":  0,
+                     "target":  "all"
+                 },
+    "distortion":  {
+                       "type":  "utility",
+                       "preset":  "None (No Distortion)",
+                       "dx":  "0",
+                       "dy":  "0",
+                       "dz":  "0",
+                       "strength":  0,
+                       "region":  "all",
+                       "anchor":  "none",
+                       "space":  "xyz"
+                   }
+}

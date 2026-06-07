@@ -1,0 +1,68 @@
+{
+    "name": "Math Nebula Pillow Globe 141",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "nonlinear",
+        "preset": "Polar Compression",
+        "equation": "R * (1 + 0.12 * log(1.0 + 4.0 * abs(sin(3 * theta + phi))))",
+        "baseRadius": 11.33,
+        "height": 23.5
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.41,
+        "bottomThickness": 0.61,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 151,
+        "sphBotCut": 179
+    },
+    "plate": {
+        "plateHeight": 1.65,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.58,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Modulo Tile Relief",
+        "equation": "fract(6.0 * theta / pi + 6.0 * v)",
+        "intensity": 0.079
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#0086D6",
+        "patternColor1": "#0086D6",
+        "patternColor2": "#0086D6",
+        "overlapColor": "#0086D6",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 131,
+        "resT": 202,
+        "patternResV": 149,
+        "patternResT": 182
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Diagonal Drift",
+        "equation": "fract(4.0 * theta / pi + 3.0 * v)",
+        "strength": 0.18,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}

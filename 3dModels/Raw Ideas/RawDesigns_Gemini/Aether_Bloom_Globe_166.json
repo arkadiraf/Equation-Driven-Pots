@@ -1,0 +1,68 @@
+{
+    "name": "Aether Bloom Globe 166",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Dragon Egg",
+        "equation": "R * (1 + 0.08 * cos(10*theta + 8*phi) + 0.08 * cos(10*theta - 8*phi))",
+        "baseRadius": 9.24,
+        "height": 23.6
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.36,
+        "bottomThickness": 0.62,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 149,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.39,
+        "plateOpeningAngle": 22,
+        "plateRadiusExtra": 0.56,
+        "plateSphTopCut": 94,
+        "plateSphBotFlatten": 248
+    },
+    "texture": {
+        "type": "nonlinear",
+        "preset": "Saturated Flutes",
+        "equation": "atan(7 * cos(12*theta))",
+        "intensity": 0.122
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#8E9089",
+        "patternColor1": "#000000",
+        "patternColor2": "#5B6579",
+        "overlapColor": "#545454",
+        "depthMm": 1.11
+    },
+    "mesh": {
+        "resV": 127,
+        "resT": 212,
+        "patternResV": 139,
+        "patternResT": 205
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.18,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Side Pressure Dent",
+        "dx": "-0.6 * exp(-pow(theta - 0, 2)*8) * exp(-pow(v - 0.6, 2)*20)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.16,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

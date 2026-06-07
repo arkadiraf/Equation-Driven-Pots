@@ -1,0 +1,68 @@
+{
+    "name": "Math Lumina Flute Bulb 183",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "folded",
+        "preset": "Modulo Meridians",
+        "equation": "R * (1 + 0.06 * sign(cos(8 * theta) * sin(4 * phi)))",
+        "baseRadius": 10.89,
+        "height": 16.0
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.35,
+        "bottomThickness": 0.51,
+        "cylDrain": 0.5,
+        "sphTopCut": 27,
+        "sphBotFlatten": 145,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.58,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.65,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 246
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#847D48",
+        "patternColor1": "#847D48",
+        "patternColor2": "#847D48",
+        "overlapColor": "#847D48",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 139,
+        "resT": 219,
+        "patternResV": 134,
+        "patternResT": 184
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Gentle Torsion",
+        "equation": "floor(6.0 * v) / 6.0",
+        "strength": 0.14,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "wave",
+        "preset": "Sway Wave",
+        "dx": "0.12*sin(3*pi*v)",
+        "dy": "0.02*sin(2*pi*v)",
+        "dz": "0",
+        "strength": 0.17,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

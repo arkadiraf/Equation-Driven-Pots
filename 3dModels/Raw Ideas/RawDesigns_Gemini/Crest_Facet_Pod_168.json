@@ -1,0 +1,68 @@
+{
+    "name": "Crest Facet Pod 168",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "nonlinear",
+        "preset": "Sharp 6-Lobe Shell",
+        "equation": "R * (1 + 0.16 * pow(sin(phi), 2.0) * atan(5 * cos(6*theta)))",
+        "baseRadius": 9.31,
+        "height": 23.7
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.38,
+        "bottomThickness": 0.58,
+        "cylDrain": 0.5,
+        "sphTopCut": 25,
+        "sphBotFlatten": 149,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.49,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.54,
+        "plateSphTopCut": 99,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "ribs",
+        "preset": "Basic Vertical Ribs",
+        "equation": "cos(10*theta)",
+        "intensity": 0.13
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#EC008C",
+        "patternColor1": "#482960",
+        "patternColor2": "#E4BD68",
+        "overlapColor": "#FFFFFF",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 124,
+        "resT": 220,
+        "patternResV": 130,
+        "patternResT": 213
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Diagonal Drift",
+        "equation": "sin(4*theta + 2*pi*v)",
+        "strength": 0.2,
+        "target": "base"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Swirl",
+        "dx": "-0.10*z*sin(pi*v)",
+        "dy": "0",
+        "dz": "0.10*x*sin(pi*v)",
+        "strength": 0.13,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

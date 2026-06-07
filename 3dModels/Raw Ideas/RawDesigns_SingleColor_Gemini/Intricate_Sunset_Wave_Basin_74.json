@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Sunset Wave Basin 74",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "floral",
+        "preset": "Bloomfold Vase",
+        "equation": "(R-1.0) + 1.5*sin(pi*v) + (0.4 + 0.4*sin(pi*v)) * (pow(cos(pi*v),2)*cos(3*theta) + 1.5*pow(sin(pi*v),2)*cos(6*theta))",
+        "baseRadius": 5.87,
+        "height": 19.9
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.44,
+        "bottomThickness": 0.53,
+        "cylDrain": 0.5,
+        "sphTopCut": 24,
+        "sphBotFlatten": 152,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.51,
+        "plateOpeningAngle": 20,
+        "plateRadiusExtra": 0.64,
+        "plateSphTopCut": 93,
+        "plateSphBotFlatten": 255
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#545454",
+        "patternColor1": "#545454",
+        "patternColor2": "#545454",
+        "overlapColor": "#545454",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 143,
+        "resT": 215,
+        "patternResV": 140,
+        "patternResT": 210
+    },
+    "modifier": {
+        "type": "fold",
+        "preset": "Ripple Shear",
+        "equation": "sin(8*theta) * sin(pi*v)",
+        "strength": 0.09,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Torsion",
+        "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+        "strength": 0.15,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

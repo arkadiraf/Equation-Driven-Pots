@@ -1,0 +1,68 @@
+{
+    "name": "Cosmic Facet Planter 147",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Shoulder Bulge",
+        "equation": "R * (1 + 0.20*exp(-pow(v - 0.72, 2)*18))",
+        "baseRadius": 8.69,
+        "height": 22.5
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.35,
+        "bottomThickness": 0.54,
+        "cylDrain": 0.5,
+        "sphTopCut": 32,
+        "sphBotFlatten": 149,
+        "sphBotCut": 173
+    },
+    "plate": {
+        "plateHeight": 1.32,
+        "plateOpeningAngle": 27,
+        "plateRadiusExtra": 0.62,
+        "plateSphTopCut": 98,
+        "plateSphBotFlatten": 253
+    },
+    "texture": {
+        "type": "nonlinear",
+        "preset": "Saturated Flutes",
+        "equation": "atan(7 * cos(12*theta))",
+        "intensity": 0.11
+    },
+    "patterns": {
+        "preset1": "Surface Texture Top %",
+        "equation1": "textureFill(texPosNorm, 65)",
+        "preset2": "4-Petal Mask",
+        "equation2": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
+        "baseColor": "#847D48",
+        "patternColor1": "#9D432C",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#000000",
+        "depthMm": 1.06
+    },
+    "mesh": {
+        "resV": 125,
+        "resT": 198,
+        "patternResV": 121,
+        "patternResT": 218
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.13,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "pressure",
+        "preset": "Side Pressure Dent",
+        "dx": "-0.6 * exp(-pow(theta - 0, 2)*8) * exp(-pow(v - 0.6, 2)*20)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.17,
+        "region": "body",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Terra Ridge Urn 118",
+    "base": {
+        "coordSystem": "cylindrical",
+        "baseType": "basicEffect",
+        "preset": "Mid Bulge",
+        "equation": "R * (1 + 0.28*sin(pi*v))",
+        "baseRadius": 9.34,
+        "height": 21.9
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.41,
+        "bottomThickness": 0.59,
+        "cylDrain": 0.5,
+        "sphTopCut": 23,
+        "sphBotFlatten": 152,
+        "sphBotCut": 172
+    },
+    "plate": {
+        "plateHeight": 1.57,
+        "plateOpeningAngle": 25,
+        "plateRadiusExtra": 0.57,
+        "plateSphTopCut": 95,
+        "plateSphBotFlatten": 252
+    },
+    "texture": {
+        "type": "basicEffect",
+        "preset": "Basic Checker Relief",
+        "equation": "cos(8*theta) * sin(10*pi*v)",
+        "intensity": 0.105
+    },
+    "patterns": {
+        "preset1": "Outer Radius Deviation",
+        "equation1": "outerDeviation(0.25)",
+        "preset2": "Basic Horizontal Split",
+        "equation2": "v - 0.5",
+        "baseColor": "#6F5034",
+        "patternColor1": "#F7E6DE",
+        "patternColor2": "#847D48",
+        "overlapColor": "#3F8E43",
+        "depthMm": 1.11
+    },
+    "mesh": {
+        "resV": 149,
+        "resT": 193,
+        "patternResV": 135,
+        "patternResT": 219
+    },
+    "modifier": {
+        "type": "twist",
+        "preset": "Twist Drift",
+        "equation": "sin(3*pi*v)",
+        "strength": 0.07,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "basicEffect",
+        "preset": "Basic Bend",
+        "dx": "0.22*pow(v, 1.6)",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.16,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

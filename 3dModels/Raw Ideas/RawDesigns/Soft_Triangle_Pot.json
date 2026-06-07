@@ -1,0 +1,68 @@
+{
+  "name": "Soft Triangle Pot",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Blunt Triangle",
+    "equation": "R * (1 + 0.22*cos(3*theta)) * (1 + 0.14*sin(pi*v)) * (1 - 0.08*pow(v, 1.5))",
+    "baseRadius": 5.5,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.38,
+    "bottomThickness": 0.6,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.6,
+    "plateOpeningAngle": 16,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "ribs",
+    "preset": "Broad Flutes",
+    "equation": "cos(9*theta) * sin(pi*v)",
+    "intensity": 0.12
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(3*theta) - 0.1",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(5*pi*v) - 0.2",
+    "baseColor": "#d4c0a0",
+    "patternColor1": "#604828",
+    "patternColor2": "#986848",
+    "overlapColor": "#805030",
+    "depthMm": 1.1
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

@@ -1,0 +1,68 @@
+{
+    "name": "Titan Bands Globe 61",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "basicEffect",
+        "preset": "Hourglass Pinch",
+        "equation": "R * (1 - 0.18*pow(sin(phi), 2))",
+        "baseRadius": 4.75,
+        "height": 15.6
+    },
+    "structure": {
+        "modelMode": "potplate",
+        "wall": 0.37,
+        "bottomThickness": 0.56,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 147,
+        "sphBotCut": 178
+    },
+    "plate": {
+        "plateHeight": 1.53,
+        "plateOpeningAngle": 21,
+        "plateRadiusExtra": 0.5,
+        "plateSphTopCut": 91,
+        "plateSphBotFlatten": 250
+    },
+    "texture": {
+        "type": "utility",
+        "preset": "None (Flat Surface)",
+        "equation": "0",
+        "intensity": 0.0
+    },
+    "patterns": {
+        "preset1": "Hex Window Grid",
+        "equation1": "max(cos(6*theta), cos(6*theta + 8*pi*v), cos(6*theta - 8*pi*v)) - 0.55",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#5E43B7",
+        "patternColor1": "#E4BD68",
+        "patternColor2": "#FFFFFF",
+        "overlapColor": "#F5547C",
+        "depthMm": 1.28
+    },
+    "mesh": {
+        "resV": 126,
+        "resT": 220,
+        "patternResV": 148,
+        "patternResT": 219
+    },
+    "modifier": {
+        "type": "basicEffect",
+        "preset": "Basic Twist",
+        "equation": "sin(pi*v)",
+        "strength": 0.19,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "torsion",
+        "preset": "Torsion Twist",
+        "dx": "x*cos(0.35*sin(pi*v)) - z*sin(0.35*sin(pi*v)) - x",
+        "dy": "0",
+        "dz": "x*sin(0.35*sin(pi*v)) + z*cos(0.35*sin(pi*v)) - z",
+        "strength": 0.13,
+        "region": "all",
+        "anchor": "baseAnchored",
+        "space": "xyz"
+    }
+}

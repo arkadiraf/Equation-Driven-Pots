@@ -1,0 +1,68 @@
+{
+  "name": "Twisted Bloom Orb",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "floral",
+    "preset": "Twisted Bloom",
+    "equation": "R * (1 + 0.22*cos(5*theta + 1.8*phi)*pow(sin(phi), 1.5)) * (1 + 0.06*cos(2*phi))",
+    "baseRadius": 5.5,
+    "height": 11.0
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.35,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 28,
+    "sphBotFlatten": 155,
+    "sphBotCut": 178
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 20,
+    "plateRadiusExtra": 0.7,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 248
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Wind Shear Ripples",
+    "equation": "0.7*sin(12*theta)*pow(sin(phi), 2) + 0.4*sin(22*theta - 11*phi)*sin(phi)",
+    "intensity": 0.07
+  },
+  "patterns": {
+    "preset1": "Outer Radius Deviation",
+    "equation1": "outerDeviation(0.20)",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#fce8f0",
+    "patternColor1": "#c04878",
+    "patternColor2": "#802848",
+    "overlapColor": "#e878a8",
+    "depthMm": 1.1
+  },
+  "mesh": {
+    "resV": 140,
+    "resT": 200,
+    "patternResV": 140,
+    "patternResT": 200
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0.0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "swirl",
+    "preset": "Crown Eddy",
+    "dx": "-0.12*z*exp(-pow(v - 0.84, 2)*28)",
+    "dy": "0.02*exp(-pow(v - 0.84, 2)*22)",
+    "dz": "0.12*x*exp(-pow(v - 0.84, 2)*28)",
+    "strength": 0.6,
+    "region": "shoulder",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

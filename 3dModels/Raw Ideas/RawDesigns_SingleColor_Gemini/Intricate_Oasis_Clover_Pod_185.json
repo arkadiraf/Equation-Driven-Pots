@@ -1,0 +1,68 @@
+{
+    "name": "Intricate Oasis Clover Pod 185",
+    "base": {
+        "coordSystem": "spherical",
+        "baseType": "floral",
+        "preset": "Twisted Bloom",
+        "equation": "R * (1 + 0.15 * cos(8*theta + 2.5*phi) * pow(sin(phi), 2.0))",
+        "baseRadius": 9.18,
+        "height": 18.3
+    },
+    "structure": {
+        "modelMode": "pot",
+        "wall": 0.43,
+        "bottomThickness": 0.53,
+        "cylDrain": 0.5,
+        "sphTopCut": 26,
+        "sphBotFlatten": 154,
+        "sphBotCut": 170
+    },
+    "plate": {
+        "plateHeight": 1.6,
+        "plateOpeningAngle": 28,
+        "plateRadiusExtra": 0.54,
+        "plateSphTopCut": 98,
+        "plateSphBotFlatten": 249
+    },
+    "texture": {
+        "type": "carved",
+        "preset": "Folded Chevron",
+        "equation": "abs(sin(8*theta + 10*pi*v)) - 0.5*abs(sin(8*theta - 10*pi*v))",
+        "intensity": 0.052
+    },
+    "patterns": {
+        "preset1": "None (Solid Base Color)",
+        "equation1": "-1",
+        "preset2": "None (Solid Base Color)",
+        "equation2": "-1",
+        "baseColor": "#BECF00",
+        "patternColor1": "#BECF00",
+        "patternColor2": "#BECF00",
+        "overlapColor": "#BECF00",
+        "depthMm": 1.2
+    },
+    "mesh": {
+        "resV": 148,
+        "resT": 191,
+        "patternResV": 133,
+        "patternResT": 187
+    },
+    "modifier": {
+        "type": "diagonal",
+        "preset": "Counter-Diagonal Drift",
+        "equation": "sin(5*theta - 2*pi*v)",
+        "strength": 0.09,
+        "target": "all"
+    },
+    "distortion": {
+        "type": "utility",
+        "preset": "None (No Distortion)",
+        "dx": "0",
+        "dy": "0",
+        "dz": "0",
+        "strength": 0.0,
+        "region": "all",
+        "anchor": "none",
+        "space": "xyz"
+    }
+}
