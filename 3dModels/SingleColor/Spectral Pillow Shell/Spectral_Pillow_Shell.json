@@ -1,0 +1,71 @@
+{
+  "name": "Spectral Pillow Shell",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "floral",
+    "preset": "5-Petal Flower",
+    "equation": "R * (1 + 0.12 * smoothstep(0.1, 0.9, cos(5 * theta + 2 * phi)))",
+    "baseRadius": 7.5,
+    "height": 12.4
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.35,
+    "uniformShell": false,
+    "bottomThickness": 0.35,
+    "cylDrain": 0.5,
+    "sphTopCut": 35,
+    "sphBotFlatten": 147,
+    "sphBotCut": 179
+  },
+  "plate": {
+    "enabled": true,
+    "plateHeight": 1.38,
+    "plateOpeningAngle": 26,
+    "plateDiameterExtra": 0,
+    "plateRadiusExtra": 0,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 254
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "smoothstep(-0.5, 0.5, sin(10*theta + 8*pi*v) + sin(11*theta - 8*pi*v))",
+    "intensity": 0.25
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#ff9016",
+    "patternColor1": "#ff9016",
+    "patternColor2": "#ff9016",
+    "overlapColor": "#ff9016",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 133,
+    "resT": 215,
+    "patternResV": 126,
+    "patternResT": 203
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Gentle Torsion",
+    "equation": "floor(6.0 * v) / 6.0",
+    "strength": 0.08,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "basicEffect",
+    "preset": "Basic Lean",
+    "dx": "0.12*pow(v, 1.3)",
+    "dy": "0",
+    "dz": "0.06*pow(v, 1.3)",
+    "strength": 0.15,
+    "region": "all",
+    "anchor": "bottomHalfStiff",
+    "space": "xyz"
+  }
+}

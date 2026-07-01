@@ -1,0 +1,71 @@
+{
+  "name": "Math Astral Facet Globe",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "floral",
+    "preset": "Arc-Lobed Shell",
+    "equation": "R * (1 + 0.12 * acos(0.9 * cos(4 * theta)) * sin(phi))",
+    "baseRadius": 15,
+    "height": 10.7
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.35,
+    "uniformShell": false,
+    "bottomThickness": 0.35,
+    "cylDrain": 0.5,
+    "sphTopCut": 45,
+    "sphBotFlatten": 153,
+    "sphBotCut": 176
+  },
+  "plate": {
+    "enabled": true,
+    "plateHeight": 1.49,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 0,
+    "plateRadiusExtra": 0,
+    "plateSphTopCut": 97,
+    "plateSphBotFlatten": 255
+  },
+  "texture": {
+    "type": "basicEffect",
+    "preset": "Basic Checker Relief",
+    "equation": "sign(sin(12*theta)) * sign(sin(12*pi*v))",
+    "intensity": 0.2
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#ff9016",
+    "patternColor1": "#ff9016",
+    "patternColor2": "#ff9016",
+    "overlapColor": "#ff9016",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 137,
+    "resT": 189,
+    "patternResV": 136,
+    "patternResT": 181
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Gentle Torsion",
+    "equation": "floor(6.0 * v) / 6.0",
+    "strength": 0.14,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "basicEffect",
+    "preset": "Basic Lean",
+    "dx": "0.12*pow(v, 1.3)",
+    "dy": "0",
+    "dz": "0.06*pow(v, 1.3)",
+    "strength": 0.14,
+    "region": "all",
+    "anchor": "bottomHalfStiff",
+    "space": "xyz"
+  }
+}
