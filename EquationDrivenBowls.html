@@ -235,6 +235,134 @@
         .status-warn {
             background: rgba(230, 126, 34, 0.92) !important;
         }
+
+        @media (max-width: 768px) {
+            body {
+                height: 100dvh;
+            }
+
+            #sidebar {
+                width: clamp(160px, 42vw, 230px);
+                padding: 8px 8px 10px;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            #viewer-container {
+                min-width: 0;
+            }
+
+            h2 {
+                font-size: 0.88rem !important;
+                margin: 0 0 5px 0 !important;
+            }
+
+            .section-title {
+                font-size: 0.62rem;
+                font-weight: 700;
+                margin-top: 6px;
+                margin-bottom: 3px;
+                padding: 2px 22px 2px 0;
+                letter-spacing: 0.28px;
+            }
+
+            .input-group {
+                margin-bottom: 2px;
+            }
+
+            .grid-inputs,
+            .grid-3 {
+                gap: 3px;
+                margin-bottom: 2px;
+            }
+
+            .color-row {
+                gap: 3px;
+            }
+
+            label {
+                font-size: 0.58rem;
+                margin-bottom: 1px;
+                line-height: 1.05;
+            }
+
+            input[type="number"],
+            input[type="text"],
+            select,
+            textarea {
+                padding: 4px;
+                font-size: 0.68rem;
+            }
+
+            textarea {
+                height: 36px;
+                font-size: 0.58rem;
+                line-height: 1.12;
+                margin-bottom: 2px;
+                background: #f2f4f7;
+            }
+
+            .desc-text {
+                font-size: 0.48rem;
+                margin-top: -1px;
+                margin-bottom: 3px;
+                line-height: 1.1;
+            }
+
+            .pattern-settings,
+            .sys-settings {
+                margin-bottom: 3px;
+            }
+
+            .color-chip {
+                height: 28px;
+                padding: 2px;
+            }
+
+            button {
+                padding: 8px 2px;
+                font-size: 0.62rem;
+                margin-top: 4px;
+            }
+
+            #status {
+                font-size: 9px;
+                padding: 4px 10px;
+                bottom: 10px;
+                left: 10px;
+                max-width: calc(100% - 20px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            #sidebar {
+                width: clamp(150px, 44vw, 210px);
+            }
+
+            .section-title {
+                font-size: 0.6rem;
+            }
+
+            label {
+                font-size: 0.55rem;
+            }
+
+            input[type="number"],
+            input[type="text"],
+            select,
+            textarea {
+                font-size: 0.68rem;
+            }
+
+            textarea {
+                height: 36px;
+                font-size: 0.58rem;
+            }
+
+            button {
+                font-size: 0.6rem;
+            }
+        }
     </style>
 </head>
 
