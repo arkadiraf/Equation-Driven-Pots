@@ -27,6 +27,24 @@ This all-in-one GUI brings the current browser workflow together in a single int
 
 The current unified GUI exposes those experimental tools directly in the sidebar as separate sections after the core pot workflow, so they can be layered on top of the main design rather than used as a completely separate app.
 
+## Equation Driven Bowls (extension project)
+
+Built on the same equation-driven engine as the Pot Designer, **Equation Driven Bowls** is a focused extension project for open bowls and lamp shades:
+
+[Equation Driven Bowls](https://arkadiraf.github.io/Equation-Driven-Pots/EquationDrivenBowls.html)
+
+![Equation Driven Bowls](https://github.com/arkadiraf/Equation-Driven-Pots/blob/main/Images/EquationDrivenBowls.jpg?raw=true)
+
+It reuses the cylindrical/spherical field-sampling core, openwork surface patterns, and dual-mask color logic from the Pot Designer, and adds bowl- and lamp-specific structure:
+
+- **Lamp Mode**, which bores a central hole through the base for a cord or bulb fitting
+- **Base Pattern**, which replaces the solid base with the chosen surface pattern, punched all the way through (cylindrical coordinates)
+- **base color masking**, so the dual-mask pattern colors can extend onto the base itself instead of always falling back to a flat color
+- **Ring Base**, an optional round stand for spherical profiles whose bottom isn't flat (for example a full 180° pointed base) - a torus with an adjustable flat cut so it sits stably on a table
+- STL and 3MF export that automatically splits into separate bowl and ring files whenever a ring stand is attached, mirroring the Pot Designer's pot/plate export convention
+
+It's linked from the main site as an extension of the Pot Designer, with its own model gallery tabs for bowl and lamp designs.
+
 ## Core idea
 
 For cylindrical designs, the main shape is sampled from a field such as:
@@ -208,6 +226,19 @@ The current all-in-one browser GUI.
 - experimental field modifier and field distortion layers
 - STL and multi-part 3MF export
 
+### [Equation Driven Bowls](./JavaScript/EquationDrivenBowls.html)
+
+An extension project built on the Pot Designer's equation-driven engine, focused on open bowls and lamp shades.
+
+**Purpose**
+- cylindrical and spherical revolve profiles dedicated to open forms
+- around twenty openwork surface patterns (Voronoi, gyroid and other TPMS, weave, fluting, Turing/Life, Islamic star lattice, and more)
+- dual-mask color logic shared with the wall, extendable onto the base
+- Lamp Mode to bore a central hole through the base for a cord or bulb fitting
+- Base Pattern to replace the solid base with the chosen surface pattern, punched all the way through (cylindrical coordinates)
+- Ring Base, an optional round stand with an adjustable flat cut for spherical profiles whose base isn't flat
+- STL and multi-part 3MF export, automatically split into separate bowl and ring files when a ring stand is present
+
 ### [Textured Pot Designer](./JavaScript/TexturedPotDesigner.html)
 
 The stable browser-based textured pot designer.
@@ -268,6 +299,7 @@ The browser side of the project has gradually expanded in layers:
 6. field modifiers
 7. field distortion
 8. structural plate and pot+plate generation in the unified GUI
+9. Equation Driven Bowls, an extension project applying that same engine to open bowls, lamp shades, and ring-stand structures
 
 That progression matters because the project is still fundamentally math-based. Even as the forms become more complex, the workflow remains centered on sampled mathematical fields rather than manual sculpting.
 
