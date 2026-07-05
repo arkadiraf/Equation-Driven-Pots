@@ -860,11 +860,11 @@
                 "Soft Egg": { eq: "R * (1 + 0.16*cos(phi) - 0.08*cos(2*phi))", desc: "Egg-like shell with a fuller lower body." },
                 "Lens Orb": { eq: "R * (0.88 + 0.22*pow(sin(phi), 2))", desc: "Lens-like orb, wider in the middle, thinner at the poles." },
                 // --- lobed / faceted ---
-                "Lobed Sphere (6)": { eq: "R * (1 + 0.12*cos(6*theta))", desc: "Spherical bowl with six soft radial lobes." },
-                "Faceted (8)": { eq: "R * (1 + 0.08*cos(8*theta))", desc: "Subtle eight-sided faceting on a spherical bowl." },
-                "Pumpkin Ribs": { eq: "R * (1 + 0.10*cos(10*theta))", desc: "Ten-rib pumpkin-like spherical body." },
+                "Lobed Sphere (6)": { eq: "R * (1 + 0.12*cos(6*theta)*pow(sin(phi), 1.5))", desc: "Spherical bowl with six soft radial lobes." },
+                "Faceted (8)": { eq: "R * (1 + 0.08*cos(8*theta)*pow(sin(phi), 1.5))", desc: "Subtle eight-sided faceting on a spherical bowl." },
+                "Pumpkin Ribs": { eq: "R * (1 + 0.10*cos(10*theta)*pow(sin(phi), 1.5))", desc: "Ten-rib pumpkin-like spherical body." },
                 "Pillow Orb": { eq: "R * (1 + 0.10*pow(sin(phi), 2)*cos(2*theta))", desc: "Pillow-like orb with broad side-to-side swelling." },
-                "Twisted Lobes": { eq: "R * (1 + 0.10*cos(5*theta + 2.5*v))", desc: "Five lobes whose phase drifts toward the rim." },
+                "Twisted Lobes": { eq: "R * (1 + 0.10*cos(5*theta + 2.5*v)*pow(sin(phi), 1.5))", desc: "Five lobes whose phase drifts toward the rim." },
                 "Simple Twist Shell": { eq: "R * (1 + 0.12*cos(5*theta + 1.6*phi)*pow(sin(phi), 1.5))", desc: "Twisting phase drift across the spherical surface." },
                 // --- floral ---
                 "Dipole (2 Petals)": { eq: "R * (1 + 0.24*cos(2*theta)*pow(sin(phi), 1.5))", desc: "Two-lobed bloom strongest around the equator." },
@@ -875,19 +875,19 @@
                 "Starfruit": { eq: "R * (1 + 0.25*cos(5*theta)*sin(phi))", desc: "Five-ridge starfruit-like sectional edges." },
                 "Equatorial Petal Belt": { eq: "R * (1 + 0.20*cos(6*theta)*exp(-pow(phi - pi/2, 2)*10))", desc: "Petal lobes concentrated in an equatorial belt." },
                 // --- folded / structural ---
-                "Dragon Egg": { eq: "R * (1 + 0.08*cos(10*theta + 8*phi) + 0.08*cos(10*theta - 8*phi))", desc: "Diamond-scale shell from crossing diagonal waves." },
+                "Dragon Egg": { eq: "R * (1 + 0.08*pow(sin(phi), 1.5)*(cos(10*theta + 8*phi) + cos(10*theta - 8*phi)))", desc: "Diamond-scale shell from crossing diagonal waves." },
                 "Hex Panel Orb": { eq: "R * (1 + 0.10*cos(6*abs(mod(theta + phi, pi/3) - pi/6))*pow(sin(phi), 1.4))", desc: "Wrapped hex-panel shell with geometric segmentation." },
-                "Woven Basket": { eq: "R * (1 + 0.05*sin(12*theta)*cos(8*phi))", desc: "Cross-pattern shell suggesting a woven basket." },
+                "Woven Basket": { eq: "R * (1 + 0.05*sin(12*theta)*cos(8*phi)*pow(sin(phi), 1.5))", desc: "Cross-pattern shell suggesting a woven basket." },
                 "Ribbed Art Deco": { eq: "R * (1 + 0.15*pow(cos(8*theta), 4)*sin(phi))", desc: "Stylized deco-like rib finning." },
                 // --- nonlinear / interference ---
                 "Sharp 6-Lobe Shell": { eq: "R * (1 + 0.16*pow(sin(phi), 2.0)*atan(5*cos(6*theta)))", desc: "Six-edged shell with sharp nonlinear sides." },
                 "Coral Brain": { eq: "R * (1 + 0.08*sin(10*theta + 5*phi)*sin(8*phi))", desc: "Dense coral-like folded interference surface." },
-                "Moire Orb": { eq: "R * (1 + 0.07*cos(12*theta + 9*phi) + 0.07*cos(13*theta - 9*phi))", desc: "Moire-like shell with shifting interference beats." },
-                "Quasi Lattice Orb": { eq: "R * (1 + 0.06*cos(10*theta + sqrt(2)*8*phi) + 0.06*cos(15*theta - sqrt(3)*6*phi) + 0.03*cos(20*theta + 4*phi))", desc: "Quasi-periodic lattice interference." },
+                "Moire Orb": { eq: "R * (1 + 0.07*pow(sin(phi), 1.5)*(cos(12*theta + 9*phi) + cos(13*theta - 9*phi)))", desc: "Moire-like shell with shifting interference beats." },
+                "Quasi Lattice Orb": { eq: "R * (1 + pow(sin(phi), 1.5)*(0.06*cos(10*theta + sqrt(2)*8*phi) + 0.06*cos(15*theta - sqrt(3)*6*phi) + 0.03*cos(20*theta + 4*phi)))", desc: "Quasi-periodic lattice interference." },
                 "Nonlinear Petal Bowl": { eq: "R * (1 + 0.16*pow(sin(phi), 1.8)*atan(5*cos(5*theta)))", desc: "Five petal lobes compressed into flatter faces and sharper edges." },
                 "Soft-to-Hard Orb": { eq: "R * (1 + 0.16*atan((2 + 5*sin(phi))*cos(6*theta)*pow(sin(phi), 1.5)))", desc: "Lobes shift from soft poles to sharper faceted sides across the body." },
                 "Equatorial Arc Bowl": { eq: "R * (1 + 0.14*exp(-pow(phi - pi/2, 2)*10)*asin(0.95*sin(8*theta)))", desc: "Arc-shaped nonlinear lobes concentrated in the rim/equator band." },
-                "ATan Geode Bowl": { eq: "R * (1 + 0.08*atan(8*(cos(10*theta + 7*phi) + cos(10*theta - 7*phi))))", desc: "Crossing geode ridges compressed with arctangent shaping." }
+                "ATan Geode Bowl": { eq: "R * (1 + 0.08*pow(sin(phi), 1.5)*atan(8*(cos(10*theta + 7*phi) + cos(10*theta - 7*phi))))", desc: "Crossing geode ridges compressed with arctangent shaping." }
             }
         };
 
@@ -1609,6 +1609,21 @@
                 }
                 for (let iv = 0; iv <= resV; iv++)
                     for (let it = 0; it < resT; it++) { O[iv][it].y -= minY; I[iv][it].y -= minY; I2[iv][it].y -= minY; }
+
+                // If the bottom row sits at the true pole, collapse it onto the polar axis.
+                // A theta-dependent radius (e.g. a hand-typed equation with no sin(phi) damping)
+                // would otherwise leave resT distinct points strung out along the y-axis instead
+                // of one point, and the bottom-cap fan (see ringCentroid usage below) would
+                // self-intersect trying to close that scattered "ring".
+                if (Math.abs(Math.sin(phiEnd)) < 1e-6) {
+                    const collapse = row => {
+                        let sumY = 0;
+                        for (const p of row) sumY += p.y;
+                        const y = sumY / row.length;
+                        for (const p of row) { p.x = 0; p.z = 0; p.y = y; }
+                    };
+                    collapse(O[0]); collapse(I[0]); collapse(I2[0]);
+                }
             }
             if (cfg.shellSmoothPasses > 0) { smoothGrid(O, cfg.shellSmoothPasses); smoothGrid(I, cfg.shellSmoothPasses); smoothGrid(I2, cfg.shellSmoothPasses); }
             return { O, I, I2, vrow, rowN: resV + 1, resT };
