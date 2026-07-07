@@ -1,0 +1,71 @@
+{
+  "name": "Geometric Botanical Orb",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "primitive",
+    "preset": "Perfect Sphere",
+    "equation": "3",
+    "baseRadius": 0,
+    "height": 10
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.15,
+    "uniformShell": false,
+    "bottomThickness": 0.25,
+    "cylDrain": 0.5,
+    "sphTopCut": 35,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": true,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 0.5,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "0",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "4-Petal Mask",
+    "equation1": "asin(0.98 * sin(4theta)) * sin(piv)",
+    "preset2": "Double Helix Mask",
+    "equation2": "cos(5 * theta - 3 * pi * v)",
+    "baseColor": "#fcfcfc",
+    "patternColor1": "#2fab26",
+    "patternColor2": "#2fab26",
+    "overlapColor": "#fcfcfc",
+    "depthMm": 0.5
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}
