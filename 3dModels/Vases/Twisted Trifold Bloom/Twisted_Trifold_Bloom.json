@@ -9,8 +9,9 @@
     "height": 13
   },
   "structure": {
-    "modelMode": "potplate",
+    "modelMode": "vase",
     "wall": 0.65,
+    "uniformShell": true,
     "bottomThickness": 13,
     "cylDrain": 0,
     "sphTopCut": 24,
@@ -18,7 +19,7 @@
     "sphBotCut": 175
   },
   "plate": {
-    "enabled": true,
+    "enabled": false,
     "plateHeight": 1.5,
     "plateOpeningAngle": 22,
     "plateDiameterExtra": 1.5,

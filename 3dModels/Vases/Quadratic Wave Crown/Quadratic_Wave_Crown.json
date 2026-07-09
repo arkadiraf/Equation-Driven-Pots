@@ -1,0 +1,71 @@
+{
+  "name": "Quadratic Wave Crown",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 + 0.15 * pow(abs(cos(4*pi*v)), 2) * (-cos(4*theta)*cos(4*pi*v) + 0.25*cos(2*theta + 1*pi*v)))",
+    "baseRadius": 15,
+    "height": 30
+  },
+  "structure": {
+    "modelMode": "vase",
+    "wall": 0.5,
+    "uniformShell": true,
+    "bottomThickness": 0.5,
+    "cylDrain": 1,
+    "sphTopCut": 35,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": false,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 0.5,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "0",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#0f4d80",
+    "patternColor1": "#ff7062",
+    "patternColor2": "#5f4a8b",
+    "overlapColor": "#8ab04d",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 120,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "strength": 0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}
