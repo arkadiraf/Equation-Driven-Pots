@@ -14,7 +14,7 @@
     "baseSolid": "0.5",
     "rimSolid": "1",
     "lampHoleRadius": "2",
-    "ringRadius": "7.5",
+    "ringRadius": "7",
     "ringWidth": "2",
     "ringCut": "0.25",
     "patternStyle": "scales",
