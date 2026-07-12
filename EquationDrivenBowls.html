@@ -437,11 +437,19 @@
         </div>
 
         <div id="ringBaseSettings" class="sys-settings">
-            <div class="input-group" style="display:flex; align-items:center; gap:8px; margin:2px 0 4px;">
-                <input type="checkbox" id="ringBaseEnabled" onchange="updatePreview()"
-                    style="width:auto; height:18px; cursor:pointer; margin:0;">
-                <label for="ringBaseEnabled" style="margin:0; cursor:pointer; overflow:visible;">Add Ring Base
-                    (stand)</label>
+            <div class="input-group" style="display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin:2px 0 4px;">
+                <span style="display:inline-flex; align-items:center; gap:8px;">
+                    <input type="checkbox" id="ringBaseEnabled" onchange="updatePreview()"
+                        style="width:auto; height:18px; cursor:pointer; margin:0;">
+                    <label for="ringBaseEnabled" style="margin:0; cursor:pointer; overflow:visible;">Add Ring Base
+                        (stand)</label>
+                </span>
+                <span style="display:inline-flex; align-items:center; gap:8px;">
+                    <input type="checkbox" id="ringColorEnabled" checked onchange="updatePreview()"
+                        style="width:auto; height:18px; cursor:pointer; margin:0;">
+                    <label for="ringColorEnabled" style="margin:0; cursor:pointer; overflow:visible;">Color ring with
+                        pattern</label>
+                </span>
             </div>
             <div class="grid-3">
                 <div class="input-group"><label>Ring Radius (cm)</label><input type="number" id="ringRadius"
@@ -1123,6 +1131,7 @@
                 basePattern: document.getElementById('basePattern').checked,
                 baseColorEnabled: document.getElementById('baseColorEnabled').checked,
                 ringBaseEnabled: document.getElementById('ringBaseEnabled').checked,
+                ringColorEnabled: document.getElementById('ringColorEnabled').checked,
                 ringRadius: Math.max(0.5, num('ringRadius', 4)),
                 ringWidth: Math.max(0.2, num('ringWidth', 1.2)),
                 ringCut: Math.max(0, num('ringCut', 0.25)),
@@ -2077,6 +2086,19 @@
            surface, so one quad grid over (theta, phi) fully describes it — no separate inner/outer
            walls needed. Disjoint from the bowl mesh (not welded), appended into the same vertex pool
            for a single combined export. */
+        function colorMaskState(cfg, theta, v) {
+            const eq1 = (cfg.patternEq1 || '').trim(), eq2 = (cfg.patternEq2 || '').trim();
+            const triv1 = (eq1 === '' || eq1 === '-1'), triv2 = (eq2 === '' || eq2 === '-1');
+            if (triv1 && triv2) return 0;
+            let z = 0, phi = 0;
+            if (cfg.sys === 'cylindrical') z = cfg.h * v;
+            else phi = cfg.sphBottom + (cfg.sphRim - cfg.sphBottom) * v;
+            const fR = evalForm(cfg.eq, theta, z, phi, v, cfg.R);
+            const a = !triv1 && evalMask(cfg.patternEq1, theta, z, phi, v, cfg.R, fR) > 0;
+            const b = !triv2 && evalMask(cfg.patternEq2, theta, z, phi, v, cfg.R, fR) > 0;
+            return (a ? 1 : 0) + (b ? 2 : 0);
+        }
+
         function buildRingBase(pool, cfg) {
             const thetaSegs = Math.min(cfg.resT, 160);
             const tubeSegs = 24;
@@ -2102,11 +2124,15 @@
             }
             for (let it = 0; it < thetaSegs; it++) {
                 const jt = (it + 1) % thetaSegs;
+                const thetaMid = (it + 0.5) * dT;
                 for (let ip = 0; ip < tubeSegs; ip++) {
-                    pool.quad(pts[it][ip], pts[jt][ip], pts[jt][ip + 1], pts[it][ip + 1], 0); // tube surface
+                    const vMid = (ip + 0.5) / tubeSegs;
+                    const ci = cfg.ringColorEnabled ? colorMaskState(cfg, thetaMid, vMid) : 0;
+                    pool.quad(pts[it][ip], pts[jt][ip], pts[jt][ip + 1], pts[it][ip + 1], ci); // tube surface
                 }
                 // flat base where the cut removed the bottom arc (outer edge = ip 0, inner edge = ip tubeSegs)
-                pool.quad(pts[it][tubeSegs], pts[jt][tubeSegs], pts[jt][0], pts[it][0], 0);
+                const ci = cfg.ringColorEnabled ? colorMaskState(cfg, thetaMid, 0.5) : 0;
+                pool.quad(pts[it][tubeSegs], pts[jt][tubeSegs], pts[jt][0], pts[it][0], ci);
             }
         }
 
@@ -2700,7 +2726,7 @@ ${trianglesXml.join('\n')}
             'baseColor', 'patternColor1', 'patternColor2', 'overlapColor',
             'resV', 'resT', 'shellSmoothPasses'
         ];
-        const DESIGN_CHECK_IDS = ['lampMode', 'basePattern', 'baseColorEnabled', 'ringBaseEnabled', 'solidLiner', 'transparentFrame', 'shellSmoothEnabled', 'showWire'];
+        const DESIGN_CHECK_IDS = ['lampMode', 'basePattern', 'baseColorEnabled', 'ringBaseEnabled', 'ringColorEnabled', 'solidLiner', 'transparentFrame', 'shellSmoothEnabled', 'showWire'];
 
         function getDesignerConfig() {
             const cfg = { app: 'EquationDrivenBowls', version: 1, name: document.getElementById('designName').value.trim(), values: {}, checks: {} };
@@ -2720,6 +2746,7 @@ ${trianglesXml.join('\n')}
         function applyDesignConfig(cfg) {
             if (!cfg || typeof cfg !== 'object' || Array.isArray(cfg)) throw new Error('JSON must describe a design object.');
             const values = cfg.values || {}, checks = cfg.checks || {};
+            if (checks.ringColorEnabled === undefined) checks.ringColorEnabled = true;
             suppressPreviewUpdates = true;
             try {
                 // coordinate system first so the preset list matches before we restore it
@@ -2955,6 +2982,7 @@ ${trianglesXml.join('\n')}
             document.getElementById('basePattern').checked = false;
             document.getElementById('baseColorEnabled').checked = false;
             document.getElementById('ringBaseEnabled').checked = false;
+            document.getElementById('ringColorEnabled').checked = true;
             document.getElementById('shellSmoothEnabled').checked = false;
             document.getElementById('shellSmoothPasses').value = 2;
             document.getElementById('designName').value = '';
@@ -3043,6 +3071,7 @@ ${trianglesXml.join('\n')}
                 "basePattern": false,
                 "baseColorEnabled": true,
                 "ringBaseEnabled": true,
+                "ringColorEnabled": true,
                 "solidLiner": false,
                 "transparentFrame": false,
                 "shellSmoothEnabled": false,
