@@ -11,7 +11,7 @@
     "sphRim": "30",
     "sphBottom": "150",
     "wall": "0.5",
-    "baseSolid": "0.5",
+    "baseSolid": "1",
     "rimSolid": "1",
     "lampHoleRadius": "4",
     "ringRadius": "7.5",
