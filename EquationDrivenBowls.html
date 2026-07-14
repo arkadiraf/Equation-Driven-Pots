@@ -496,7 +496,7 @@
         </div>
         <div id="patternDesc" class="desc-text"></div>
         <div class="input-group" style="display:flex; align-items:center; gap:8px; margin:2px 0 4px;">
-            <input type="checkbox" id="solidLiner" checked onchange="updatePreview()"
+            <input type="checkbox" id="solidLiner" checked onchange="onSolidLinerToggle()"
                 style="width:auto; height:18px; cursor:pointer; margin:0;">
             <label for="solidLiner" style="margin:0; cursor:pointer; overflow:visible;">Solid inner liner (watertight
                 wall under the pattern)</label>
@@ -506,6 +506,12 @@
                 style="width:auto; height:18px; cursor:pointer; margin:0;">
             <label for="transparentFrame" style="margin:0; cursor:pointer; overflow:visible;">Semi-transparent inner
                 frame (preview)</label>
+        </div>
+        <div id="linerThicknessGroup" class="input-group"
+            style="display:flex; align-items:center; gap:8px; margin:0 0 6px;">
+            <label for="linerThickness" style="margin:0; white-space:nowrap;">Liner Wall Thickness (mm)</label>
+            <input type="number" id="linerThickness" value="1" step="0.1" min="0.1" style="max-width:90px;"
+                oninput="updatePreview()">
         </div>
 
         <div id="voronoiSettings" class="pattern-settings active">
@@ -878,8 +884,9 @@
             <div class="input-group"><label>Shell Smooth Passes</label><input type="number" id="shellSmoothPasses"
                     value="2" step="1" min="0" max="12" oninput="updatePreview()"></div>
         </div>
-        <div class="desc-text">Laplacian-relaxes the shell node grid to soften faceting and harsh equation transitions
-            (base ring and rim stay anchored).</div>
+        <div class="desc-text">Laplacian-relaxes the outer shell to soften faceting and harsh equation transitions; the
+            inner wall and liner ride along with the same motion, so wall thickness (and the pattern cut into it)
+            stays exact instead of drifting (base ring and rim stay anchored).</div>
 
         <div class="section-title">5. Design File</div>
         <div class="input-group">
@@ -1137,6 +1144,7 @@
                 ringCut: Math.max(0, num('ringCut', 0.25)),
                 style: document.getElementById('patternStyle').value,
                 solidLiner: document.getElementById('solidLiner').checked,
+                linerWall: Math.max(0.1, num('linerThickness', 1)) / 10,
                 transparentFrame: document.getElementById('transparentFrame').checked,
                 vorDensity: Math.max(3, intv('vorDensity', 160)),
                 vorThickness: Math.max(0.4, num('vorThickness', 2.0)) / 10,
@@ -1705,7 +1713,7 @@
         /* ---------- shell node grids (coordinate-agnostic output) ---------- */
         function buildShell(cfg) {
             const resT = cfg.resT, resV = cfg.resV, dT = 2 * Math.PI / resT;
-            // I2 is a second, deeper inner grid (offset 2*wall) used by Solid Liner mode.
+            // I2 is a second, deeper inner grid (offset wall + linerWall) used by Solid Liner mode.
             const O = [], I = [], I2 = [], vrow = [];
             if (cfg.sys === 'cylindrical') {
                 for (let iv = 0; iv <= resV; iv++) {
@@ -1715,7 +1723,7 @@
                         const th = it * dT;
                         const ro = Math.max(0.12, evalForm(cfg.eq, th, z, 0, v, cfg.R));
                         const ri = Math.max(0.06, ro - cfg.wall);
-                        const ri2 = Math.max(0.04, ro - 2 * cfg.wall);
+                        const ri2 = Math.max(0.04, ro - cfg.wall - cfg.linerWall);
                         orow.push({ x: ro * Math.cos(th), y: z, z: -ro * Math.sin(th) });
                         irow.push({ x: ri * Math.cos(th), y: z, z: -ri * Math.sin(th) });
                         i2row.push({ x: ri2 * Math.cos(th), y: z, z: -ri2 * Math.sin(th) });
@@ -1734,7 +1742,7 @@
                         const th = it * dT;
                         const ro = Math.max(0.12, evalForm(cfg.eq, th, 0, phi, v, cfg.R));
                         const ri = Math.max(0.06, ro - cfg.wall);
-                        const ri2 = Math.max(0.04, ro - 2 * cfg.wall);
+                        const ri2 = Math.max(0.04, ro - cfg.wall - cfg.linerWall);
                         const op = { x: ro * sp * Math.cos(th), y: ro * cp, z: -ro * sp * Math.sin(th) };
                         const ip = { x: ri * sp * Math.cos(th), y: ri * cp, z: -ri * sp * Math.sin(th) };
                         const i2p = { x: ri2 * sp * Math.cos(th), y: ri2 * cp, z: -ri2 * sp * Math.sin(th) };
@@ -1762,7 +1770,25 @@
                     collapse(O[0]); collapse(I[0]); collapse(I2[0]);
                 }
             }
-            if (cfg.shellSmoothPasses > 0) { smoothGrid(O, cfg.shellSmoothPasses); smoothGrid(I, cfg.shellSmoothPasses); smoothGrid(I2, cfg.shellSmoothPasses); }
+            if (cfg.shellSmoothPasses > 0) {
+                // Smooth the outer surface only, then carry the inner wall / liner along by the
+                // exact same per-vertex displacement. Relaxing O, I, I2 independently would let
+                // wall thickness drift (each grid pulled toward its own neighbours); rigidly
+                // translating I/I2 by O's motion keeps the O->I->I2 offsets exact everywhere,
+                // including the pattern struts cut between them.
+                const rowN = O.length;
+                const Oraw = O.map(row => row.map(p => ({ x: p.x, y: p.y, z: p.z })));
+                smoothGrid(O, cfg.shellSmoothPasses);
+                for (let iv = 0; iv < rowN; iv++) {
+                    for (let it = 0; it < resT; it++) {
+                        const dx = O[iv][it].x - Oraw[iv][it].x;
+                        const dy = O[iv][it].y - Oraw[iv][it].y;
+                        const dz = O[iv][it].z - Oraw[iv][it].z;
+                        I[iv][it].x += dx; I[iv][it].y += dy; I[iv][it].z += dz;
+                        I2[iv][it].x += dx; I2[iv][it].y += dy; I2[iv][it].z += dz;
+                    }
+                }
+            }
             return { O, I, I2, vrow, rowN: resV + 1, resT };
         }
 
@@ -2710,7 +2736,7 @@ ${trianglesXml.join('\n')}
         // every GUI control, so a design round-trips exactly.
         const DESIGN_VALUE_IDS = [
             'coordSystem', 'presetSelect', 'equation', 'baseRadius', 'height', 'sphRim', 'sphBottom',
-            'wall', 'baseSolid', 'rimSolid', 'lampHoleRadius', 'ringRadius', 'ringWidth', 'ringCut', 'patternStyle',
+            'wall', 'baseSolid', 'rimSolid', 'linerThickness', 'lampHoleRadius', 'ringRadius', 'ringWidth', 'ringCut', 'patternStyle',
             'vorDensity', 'vorThickness', 'vorJitter', 'vorSeed', 'latDensity', 'latThickness',
             'weaveDensity', 'weaveThickness', 'waveDensity', 'waveThicknessV', 'waveThicknessH', 'waveAmp', 'waveCount',
             'gyroidDensity', 'gyroidThickness', 'origamiSides', 'origamiRows', 'origamiJitter',
@@ -2765,6 +2791,7 @@ ${trianglesXml.join('\n')}
                 const pr = presetLibs[sys] && presetLibs[sys][document.getElementById('presetSelect').value];
                 document.getElementById('baseDesc').textContent = pr ? pr.desc : '';
                 updateBasePatternAvailability();
+                updateLinerVisibility();
                 // show the correct pattern panel WITHOUT re-triggering the liner default
                 const s = document.getElementById('patternStyle').value;
                 ['voronoi', 'lattice', 'weave', 'wave', 'gyroid', 'origami', 'fibonacci', 'phyllotaxis', 'turing', 'fluting', 'life', 'chladni']
@@ -2828,6 +2855,14 @@ ${trianglesXml.join('\n')}
         function onBasePatternToggle() {
             if (document.getElementById('basePattern').checked) document.getElementById('lampMode').checked = false;
             refreshAutoName(); updatePreview();
+        }
+        function updateLinerVisibility() {
+            document.getElementById('linerThicknessGroup').style.display =
+                document.getElementById('solidLiner').checked ? '' : 'none';
+        }
+        function onSolidLinerToggle() {
+            updateLinerVisibility();
+            updatePreview();
         }
         // Base Pattern only applies to the cylindrical revolve (the flat base/cavity-floor disks
         // it punches through don't exist as flat planes in the spherical system).
@@ -2919,6 +2954,7 @@ ${trianglesXml.join('\n')}
                 'truchet', 'quasicrystal', 'maze', 'scales', 'star', 'greekkey'];
             panels.forEach(p => document.getElementById(p + 'Settings').classList.toggle('active', s === p));
             if (linerDefaultStyles.includes(s)) document.getElementById('solidLiner').checked = true;
+            updateLinerVisibility();
             document.getElementById('patternDesc').textContent = patternDescs[s] || '';
             refreshAutoName();
             updatePreview();
@@ -2947,7 +2983,7 @@ ${trianglesXml.join('\n')}
 
         function resetParameters() {
             const defs = {
-                baseRadius: 7, height: 6, sphRim: 90, sphBottom: 178, wall: 0.3, baseSolid: 0.7, rimSolid: 0.4,
+                baseRadius: 7, height: 6, sphRim: 90, sphBottom: 178, wall: 0.3, baseSolid: 0.7, rimSolid: 0.4, linerThickness: 1,
                 ringRadius: 4, ringWidth: 1.2, ringCut: 0.25,
                 vorDensity: 160, vorThickness: 2.0, vorJitter: 0.7, vorSeed: 7, latDensity: 22, latThickness: 2.0,
                 weaveDensity: 20, weaveThickness: 2.0, waveDensity: 16, waveThicknessV: 2.0, waveThicknessH: 2.0, waveAmp: 0.5, waveCount: 3,
@@ -3008,6 +3044,7 @@ ${trianglesXml.join('\n')}
                 "wall": "0.3",
                 "baseSolid": "0.7",
                 "rimSolid": "0.4",
+                "linerThickness": "1",
                 "lampHoleRadius": "2",
                 "ringRadius": "4.5",
                 "ringWidth": "1.2",
