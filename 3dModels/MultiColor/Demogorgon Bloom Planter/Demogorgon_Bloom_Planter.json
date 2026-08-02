@@ -22,8 +22,8 @@
     "enabled": true,
     "plateHeight": 1.5,
     "plateOpeningAngle": 25,
-    "plateDiameterExtra": 0.6,
-    "plateRadiusExtra": 0.6,
+    "plateDiameterExtra": 0,
+    "plateRadiusExtra": 0,
     "plateSphTopCut": 95,
     "plateSphBotFlatten": 250
   },

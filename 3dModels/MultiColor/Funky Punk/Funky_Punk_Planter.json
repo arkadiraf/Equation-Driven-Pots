@@ -11,6 +11,7 @@
   "structure": {
     "modelMode": "potplate",
     "wall": 0.35,
+    "uniformShell": true,
     "bottomThickness": 0.35,
     "cylDrain": 0.5,
     "sphTopCut": 25,

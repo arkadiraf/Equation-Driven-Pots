@@ -5,16 +5,16 @@
     "baseType": "primitive",
     "preset": "Perfect Sphere",
     "equation": "R",
-    "baseRadius": 3.88,
+    "baseRadius": 7.5,
     "height": 14.4
   },
   "structure": {
     "modelMode": "potplate",
-    "wall": 0.37,
+    "wall": 0.35,
     "uniformShell": false,
-    "bottomThickness": 0.64,
+    "bottomThickness": 0.5,
     "cylDrain": 0.5,
-    "sphTopCut": 25,
+    "sphTopCut": 35,
     "sphBotFlatten": 155,
     "sphBotCut": 173
   },
