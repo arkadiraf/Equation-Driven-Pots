@@ -152,6 +152,11 @@
             background: #f2f4f7;
         }
 
+        .expr-error {
+            border-color: var(--danger) !important;
+            box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.22);
+        }
+
         .desc-text {
             font-size: 0.7rem;
             color: #7b8794;
@@ -915,10 +920,11 @@
     <script>
         /* ---------- math helpers (exposed to user equations) ---------- */
         const pi = Math.PI, sin = Math.sin, cos = Math.cos, tan = Math.tan,
-            asin = Math.asin, acos = Math.acos, atan = Math.atan, pow = Math.pow,
+            asin = Math.asin, acos = Math.acos, atan = Math.atan, atan2 = Math.atan2,
+            sinh = Math.sinh, cosh = Math.cosh, tanh = Math.tanh, pow = Math.pow,
             min = Math.min, max = Math.max, abs = Math.abs, exp = Math.exp,
             sqrt = Math.sqrt, log = Math.log, floor = Math.floor, ceil = Math.ceil,
-            round = Math.round, sign = Math.sign;
+            round = Math.round, sign = Math.sign, hypot = Math.hypot;
         const clamp = (x, a, b) => min(max(x, a), b);
         const fract = x => x - floor(x);
         const smoothstep = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
@@ -942,6 +948,290 @@
         function hexToRgb01(hex) {
             const n = parseInt((hex || "#000000").replace('#', ''), 16);
             return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+        }
+
+        // ---- Expression compiler ----
+        // evalForm/evalMask used to run through raw eval() once per sample point - ~60k calls
+        // for a single 200x300 preview, each re-parsing the source string and able to execute
+        // arbitrary JS (a real concern given design .json files can be shared/loaded). Every
+        // equation field is now whitelist-validated once and compiled with `new Function`, then
+        // the compiled function is reused for every sample. Compiled functions only see the
+        // explicit parameter list below - no page globals, no DOM - so the whitelist IS the
+        // sandbox. Ported from EquationDrivenPotDesignerOptimized.html.
+        const EXPR_MATH_NAMES = ['pi', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'atan2',
+            'sinh', 'cosh', 'tanh', 'pow', 'min', 'max', 'abs', 'exp', 'sqrt', 'log',
+            'floor', 'ceil', 'round', 'sign', 'clamp', 'fract', 'smoothstep', 'mod', 'hypot',
+            'cnoise', 'fbm', 'ridged', 'worley', 'phyllo'];
+        const EXPR_MATH_VALUES = [pi, sin, cos, tan, asin, acos, atan, atan2,
+            sinh, cosh, tanh, pow, min, max, abs, exp, sqrt, log,
+            floor, ceil, round, sign, clamp, fract, smoothstep, mod, hypot,
+            cnoise, fbm, ridged, worley, phyllo];
+
+        // theta/z/phi/v/R: the form equation's scope.
+        const EXPR_FIELD_NAMES = ['theta', 'z', 'phi', 'v', 'R'];
+        const EXPR_FIELD_KEY = EXPR_FIELD_NAMES.join(',');
+        // Mask equations (Pattern A/B) get the form scope plus the derived radius/texture
+        // scalars and two helper functions evalMask has always exposed to eval().
+        const EXPR_MASK_NAMES = ['theta', 'z', 'phi', 'v', 'R',
+            'radiusDev', 'texPosNorm', 'texNorm', 'radiusNorm', 'outerDeviation', 'textureFill'];
+        const EXPR_MASK_KEY = EXPR_MASK_NAMES.join(',');
+
+        const EXPR_ALLOWED_NAMES = new Set([...EXPR_MATH_NAMES, ...EXPR_FIELD_NAMES, ...EXPR_MASK_NAMES]);
+        const EXPR_IDENTIFIER_RE = /[A-Za-z_$][A-Za-z0-9_$]*/g;
+        const EXPR_FORBIDDEN_RE = /[`\[\]{};]|=>|\bfunction\b|\bnew\b|\bthis\b|\bwindow\b|\bdocument\b|\bglobalThis\b|\bconstructor\b|\b__proto__\b/;
+
+        function validateExprSource(src) {
+            if (EXPR_FORBIDDEN_RE.test(src)) {
+                throw new Error('contains disallowed syntax');
+            }
+            const tokens = src.match(EXPR_IDENTIFIER_RE) || [];
+            for (const token of tokens) {
+                if (!EXPR_ALLOWED_NAMES.has(token)) {
+                    throw new Error(`unknown name "${token}"`);
+                }
+            }
+        }
+
+        const exprCache = new Map();
+
+        function getCompiledExpr(source, varNames, varKey) {
+            const safeSource = (typeof source === 'string' && source.trim().length) ? source : '0';
+            const cacheKey = varKey + String.fromCharCode(1) + safeSource;
+            const cached = exprCache.get(cacheKey);
+            if (cached !== undefined) return cached;
+
+            let compiled;
+            try {
+                validateExprSource(safeSource);
+                // Math constants go first so .bind() (a native V8 primitive) can pre-fix them
+                // once at compile time - the per-sample call then only passes the handful of
+                // real variable args, not ~30 constants re-spread every time.
+                const raw = new Function(...EXPR_MATH_NAMES, ...varNames,
+                    '"use strict"; return (' + safeSource + ');');
+                compiled = raw.bind(null, ...EXPR_MATH_VALUES);
+            } catch (err) {
+                compiled = err instanceof Error ? err : new Error(String(err));
+            }
+
+            // Unbounded growth guard: equations recompile on every keystroke while typing.
+            if (exprCache.size > 800) exprCache.clear();
+            exprCache.set(cacheKey, compiled);
+            return compiled;
+        }
+
+        // Public entry point for UI-facing compile checks (see refreshExpressionCompileStatus).
+        function compileExpr(source, varNames) {
+            return getCompiledExpr(source, varNames, varNames.join(','));
+        }
+
+        // Every equation-bearing textarea, paired with the variable scope it compiles against.
+        // Checked once per render pass so a bad equation gets a visible red outline + status
+        // message instead of silently falling back to a plain bowl with no explanation.
+        const EXPR_FIELD_SPECS = [
+            { id: 'equation', label: 'Form Equation', varNames: EXPR_FIELD_NAMES },
+            { id: 'patternEquation1', label: 'Pattern A Mask', varNames: EXPR_MASK_NAMES },
+            { id: 'patternEquation2', label: 'Pattern B Mask', varNames: EXPR_MASK_NAMES }
+        ];
+
+        function refreshExpressionCompileStatus() {
+            const errors = [];
+            EXPR_FIELD_SPECS.forEach(spec => {
+                const el = document.getElementById(spec.id);
+                if (!el) return;
+                const compiled = compileExpr(el.value, spec.varNames);
+                const hasError = compiled instanceof Error;
+                el.classList.toggle('expr-error', hasError);
+                if (hasError) errors.push(`${spec.label}: ${compiled.message}`);
+            });
+            return errors;
+        }
+
+        // ---- Procedural noise (equation scope helpers, ported from the pot designer) ----
+        // All four helpers are seam-free in theta by construction: they sample a 3D noise/hash
+        // field at a point embedded on a cylinder (radius st, height scale sv), so theta=0 and
+        // theta=2*pi land on the exact same (x,y) - no explicit wraparound handling needed.
+        const SIMPLEX_F3 = 1 / 3, SIMPLEX_G3 = 1 / 6;
+        const SIMPLEX_GRAD3 = [
+            [1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
+            [1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
+            [0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]
+        ];
+        const simplexPermCache = new Map();
+
+        function getSimplexPerm(seed) {
+            const key = Math.floor(seed) || 0;
+            const cached = simplexPermCache.get(key);
+            if (cached) return cached;
+
+            const rand = mulberry32((key * 2654435761) ^ 0x9E3779B9);
+            const p = new Uint8Array(256);
+            for (let i = 0; i < 256; i++) p[i] = i;
+            for (let i = 255; i > 0; i--) {
+                const j = Math.floor(rand() * (i + 1));
+                const tmp = p[i]; p[i] = p[j]; p[j] = tmp;
+            }
+            const perm = new Uint8Array(512);
+            const permMod12 = new Uint8Array(512);
+            for (let i = 0; i < 512; i++) {
+                perm[i] = p[i & 255];
+                permMod12[i] = perm[i] % 12;
+            }
+            const table = { perm, permMod12 };
+            if (simplexPermCache.size > 64) simplexPermCache.clear();
+            simplexPermCache.set(key, table);
+            return table;
+        }
+
+        function rawSimplex3(x, y, z, seed) {
+            const { perm, permMod12 } = getSimplexPerm(seed);
+
+            const s = (x + y + z) * SIMPLEX_F3;
+            const i = Math.floor(x + s), j = Math.floor(y + s), k = Math.floor(z + s);
+            const t = (i + j + k) * SIMPLEX_G3;
+            const x0 = x - (i - t), y0 = y - (j - t), z0 = z - (k - t);
+
+            let i1, j1, k1, i2, j2, k2;
+            if (x0 >= y0) {
+                if (y0 >= z0) { i1 = 1; j1 = 0; k1 = 0; i2 = 1; j2 = 1; k2 = 0; }
+                else if (x0 >= z0) { i1 = 1; j1 = 0; k1 = 0; i2 = 1; j2 = 0; k2 = 1; }
+                else { i1 = 0; j1 = 0; k1 = 1; i2 = 1; j2 = 0; k2 = 1; }
+            } else {
+                if (y0 < z0) { i1 = 0; j1 = 0; k1 = 1; i2 = 0; j2 = 1; k2 = 1; }
+                else if (x0 < z0) { i1 = 0; j1 = 1; k1 = 0; i2 = 0; j2 = 1; k2 = 1; }
+                else { i1 = 0; j1 = 1; k1 = 0; i2 = 1; j2 = 1; k2 = 0; }
+            }
+
+            const x1 = x0 - i1 + SIMPLEX_G3, y1 = y0 - j1 + SIMPLEX_G3, z1 = z0 - k1 + SIMPLEX_G3;
+            const x2 = x0 - i2 + 2 * SIMPLEX_G3, y2 = y0 - j2 + 2 * SIMPLEX_G3, z2 = z0 - k2 + 2 * SIMPLEX_G3;
+            const x3 = x0 - 1 + 3 * SIMPLEX_G3, y3 = y0 - 1 + 3 * SIMPLEX_G3, z3 = z0 - 1 + 3 * SIMPLEX_G3;
+
+            const ii = i & 255, jj = j & 255, kk = k & 255;
+            let n0 = 0, n1 = 0, n2 = 0, n3 = 0;
+
+            let t0 = 0.6 - x0 * x0 - y0 * y0 - z0 * z0;
+            if (t0 >= 0) {
+                const g = SIMPLEX_GRAD3[permMod12[ii + perm[jj + perm[kk]]]];
+                t0 *= t0;
+                n0 = t0 * t0 * (g[0] * x0 + g[1] * y0 + g[2] * z0);
+            }
+            let t1 = 0.6 - x1 * x1 - y1 * y1 - z1 * z1;
+            if (t1 >= 0) {
+                const g = SIMPLEX_GRAD3[permMod12[ii + i1 + perm[jj + j1 + perm[kk + k1]]]];
+                t1 *= t1;
+                n1 = t1 * t1 * (g[0] * x1 + g[1] * y1 + g[2] * z1);
+            }
+            let t2 = 0.6 - x2 * x2 - y2 * y2 - z2 * z2;
+            if (t2 >= 0) {
+                const g = SIMPLEX_GRAD3[permMod12[ii + i2 + perm[jj + j2 + perm[kk + k2]]]];
+                t2 *= t2;
+                n2 = t2 * t2 * (g[0] * x2 + g[1] * y2 + g[2] * z2);
+            }
+            let t3 = 0.6 - x3 * x3 - y3 * y3 - z3 * z3;
+            if (t3 >= 0) {
+                const g = SIMPLEX_GRAD3[permMod12[ii + 1 + perm[jj + 1 + perm[kk + 1]]]];
+                t3 *= t3;
+                n3 = t3 * t3 * (g[0] * x3 + g[1] * y3 + g[2] * z3);
+            }
+            return 32 * (n0 + n1 + n2 + n3);
+        }
+
+        // cnoise(theta, v, st, sv, seed): seeded 3D simplex noise on a cylinder of radius st
+        // and height scale sv. Range roughly [-1, 1].
+        function cnoise(theta, v, st, sv, seed) {
+            const radius = st || 1;
+            return rawSimplex3(radius * cos(theta), radius * sin(theta), (sv || 1) * v, Math.floor(seed) || 0);
+        }
+
+        // fbm(theta, v, st, sv, octaves, seed): fractal Brownian motion - amplitude halves and
+        // frequency doubles each octave (capped at 8).
+        function fbm(theta, v, st, sv, octaves, seed) {
+            const n = Math.max(1, Math.min(8, Math.floor(octaves) || 1));
+            const baseSeed = Math.floor(seed) || 0;
+            let amplitude = 0.5, frequency = 1, sum = 0, norm = 0;
+            for (let o = 0; o < n; o++) {
+                sum += amplitude * cnoise(theta, v, st * frequency, sv * frequency, baseSeed + o * 101);
+                norm += amplitude;
+                amplitude *= 0.5;
+                frequency *= 2;
+            }
+            return norm > 0 ? sum / norm : 0;
+        }
+
+        // ridged(theta, v, st, sv, octaves, seed): ridged multifractal (1 - |fbm octave|,
+        // summed) - sharp ridges along each octave's zero crossings. Range [0, 1].
+        function ridged(theta, v, st, sv, octaves, seed) {
+            const n = Math.max(1, Math.min(8, Math.floor(octaves) || 1));
+            const baseSeed = Math.floor(seed) || 0;
+            let amplitude = 0.5, frequency = 1, sum = 0, norm = 0;
+            for (let o = 0; o < n; o++) {
+                const sample = cnoise(theta, v, st * frequency, sv * frequency, baseSeed + o * 101);
+                sum += amplitude * (1 - abs(sample));
+                norm += amplitude;
+                amplitude *= 0.5;
+                frequency *= 2;
+            }
+            return norm > 0 ? sum / norm : 0;
+        }
+
+        // Deterministic hash -> [0,1), used to jitter Worley cell feature points.
+        function worleyHashComponent(ix, iy, iz, seed, salt) {
+            let h = (ix * 374761393 + iy * 668265263 + iz * 2147483647 + seed * 3266489917 + salt * 2246822519) | 0;
+            h = Math.imul(h ^ (h >>> 13), 1274126177);
+            h = (h ^ (h >>> 16)) >>> 0;
+            return h / 4294967296;
+        }
+
+        function worley3(x, y, z, seed) {
+            const ix = Math.floor(x), iy = Math.floor(y), iz = Math.floor(z);
+            let minDist2 = Infinity;
+            for (let dx = -1; dx <= 1; dx++) {
+                for (let dy = -1; dy <= 1; dy++) {
+                    for (let dz = -1; dz <= 1; dz++) {
+                        const cx = ix + dx, cy = iy + dy, cz = iz + dz;
+                        const fx = cx + worleyHashComponent(cx, cy, cz, seed, 1);
+                        const fy = cy + worleyHashComponent(cx, cy, cz, seed, 2);
+                        const fz = cz + worleyHashComponent(cx, cy, cz, seed, 3);
+                        const ddx = fx - x, ddy = fy - y, ddz = fz - z;
+                        const dist2 = ddx * ddx + ddy * ddy + ddz * ddz;
+                        if (dist2 < minDist2) minDist2 = dist2;
+                    }
+                }
+            }
+            return sqrt(minDist2);
+        }
+
+        // worley(theta, v, st, sv, seed): cellular F1 distance noise on the same cylinder
+        // embedding as cnoise. Normalized to roughly [0, 1].
+        function worley(theta, v, st, sv, seed) {
+            const radius = st || 1;
+            const d = worley3(radius * cos(theta), radius * sin(theta), (sv || 1) * v, Math.floor(seed) || 0);
+            return min(1, d / 1.2);
+        }
+
+        // phyllo(theta, v, n, size): golden-angle phyllotaxis bump field, checked in a small
+        // window around the query's v-band rather than against all n seeds.
+        const PHYLLO_GOLDEN_ANGLE = pi * (3 - sqrt(5));
+        function phyllo(theta, v, n, size) {
+            const count = Math.max(1, Math.min(2000, Math.floor(n) || 1));
+            const bumpSize = Math.max(1e-4, size || 0.05);
+            const invSize2 = 1 / (bumpSize * bumpSize);
+            const vClamped = clamp(v, 0, 1);
+            const centerK = Math.round(vClamped * (count - 1));
+            const halfWindow = 10;
+            let best = 0;
+            const loK = Math.max(0, centerK - halfWindow);
+            const hiK = Math.min(count - 1, centerK + halfWindow);
+            for (let k = loK; k <= hiK; k++) {
+                const vk = count > 1 ? k / (count - 1) : 0;
+                const thetaK = mod(k * PHYLLO_GOLDEN_ANGLE, 2 * pi);
+                const dThetaRaw = mod(theta - thetaK + pi, 2 * pi) - pi;
+                const dThetaFrac = dThetaRaw / (2 * pi);
+                const dv = vClamped - vk;
+                const dist2 = dThetaFrac * dThetaFrac + dv * dv;
+                const bump = exp(-dist2 * invSize2);
+                if (bump > best) best = bump;
+            }
+            return best;
         }
 
         /* ---------- bowl profile libraries (per coordinate system) ----------
@@ -1072,6 +1362,8 @@
 
         let scene, camera, renderer, controls, currentObject = null;
         let renderTimeout = null;
+        let fullResTimeout = null;
+        let lastUpdatePreviewCall = 0;
         let suppressPreviewUpdates = false;
 
         /* ---------- three.js ---------- */
@@ -1224,16 +1516,20 @@
             };
         }
 
-        /* ---------- equation evaluation ---------- */
+        /* ---------- equation evaluation (compiled - see "Expression compiler" above) ---------- */
         function evalForm(eq, theta, z, phi, v, R) {
+            const compiled = getCompiledExpr(eq, EXPR_FIELD_NAMES, EXPR_FIELD_KEY);
+            if (compiled instanceof Error) return R;
             try {
-                const result = eval(eq);
+                const result = compiled(theta, z, phi, v, R);
                 return (typeof result === 'number' && isFinite(result)) ? result : R;
             } catch (e) { return R; }
         }
         // colour mask: returns a signed value (>0 = mask active). texture-derived
         // helpers are stubbed so geometric presets run, exotic ones fall back to base.
         function evalMask(eq, theta, z, phi, v, R, formR) {
+            const compiled = getCompiledExpr(eq, EXPR_MASK_NAMES, EXPR_MASK_KEY);
+            if (compiled instanceof Error) return -1;
             try {
                 // radius/texture proxies derived from how far the form bulges past R,
                 // so the pot designer's texture- and radius-derived masks work here.
@@ -1245,7 +1541,7 @@
                 const radiusNorm = clamp(fr / Math.max(1e-6, 1.3 * (R || 1)), 0, 1);
                 function textureFill(value, pct) { const p = clamp(pct, 0, 100); if (p <= 0) return -1; if (p >= 100) return value > 0 ? 1 : -1; return value - (1 - p / 100); }
                 function outerDeviation(dev) { return fr - (R + (dev || 0)); }
-                const result = eval(eq);
+                const result = compiled(theta, z, phi, v, R, radiusDev, texPosNorm, texNorm, radiusNorm, outerDeviation, textureFill);
                 return (typeof result === 'number' && isFinite(result)) ? result : -1;
             } catch (e) { return -1; }
         }
@@ -1412,9 +1708,17 @@
                     const sv = bandS0 + bandH * ((i + 0.5) / N);
                     seeds.push({ u: su, v: sv });
                 }
+                // Seeds are ordered by s (sv rises monotonically with i), so for any query only
+                // a small index window around its band position can be within holeR - looping
+                // every seed on every query is unnecessary.
+                const perIndexH = bandH / N;
+                const halfWindow = Math.ceil(holeR / Math.max(1e-9, perIndexH)) + 1;
                 return (theta, s) => {
                     const pu = (theta / (2 * Math.PI)) * circ, pv = s;
-                    for (let i = 0; i < seeds.length; i++) {
+                    const centerI = ((pv - bandS0) / bandH) * N - 0.5;
+                    const loI = Math.max(0, Math.floor(centerI - halfWindow));
+                    const hiI = Math.min(N - 1, Math.ceil(centerI + halfWindow));
+                    for (let i = loI; i <= hiI; i++) {
                         let dx = seeds[i].u - pu; dx -= circ * Math.round(dx / circ);
                         const dy = seeds[i].v - pv;
                         if (dx * dx + dy * dy < holeR * holeR) return false; // inside a hole
@@ -1662,19 +1966,35 @@
                 }
             }
             const half = cfg.vorThickness / 2;
+            // Seeds sit on a jittered grid (jitter <= 0.5 cell, since vorJitter in [0,1] is
+            // halved by the (rng()-0.5) spread), so the seeds that can matter for any query are
+            // always within +/-2 grid cells of it - an exact neighborhood lookup instead of the
+            // O(seeds) scan above, run twice. seeds[] is already in (cy*cols+cx) row-major order
+            // from the generation loop, so no separate lookup structure is needed.
+            function seedAt(cx, cy) {
+                const wcx = ((cx % cols) + cols) % cols;
+                return seeds[cy * cols + wcx];
+            }
             return (theta, s) => {
                 const pu = (theta / (2 * Math.PI)) * circ, pv = s;
+                const qx = Math.floor(pu / cw), qy = Math.floor((pv - bandS0) / ch);
+                const candidates = [];
+                for (let dy = -2; dy <= 2; dy++) {
+                    const cy = qy + dy;
+                    if (cy < 0 || cy >= rows) continue;   // band doesn't wrap vertically
+                    for (let dx = -2; dx <= 2; dx++) candidates.push(seedAt(qx + dx, cy));
+                }
                 let best = Infinity, brx = 0, bry = 0;
-                for (let i = 0; i < seeds.length; i++) {
-                    let dx = seeds[i].u - pu; dx -= circ * Math.round(dx / circ);
-                    const dy = seeds[i].v - pv;
+                for (let i = 0; i < candidates.length; i++) {
+                    let dx = candidates[i].u - pu; dx -= circ * Math.round(dx / circ);
+                    const dy = candidates[i].v - pv;
                     const d2 = dx * dx + dy * dy;
                     if (d2 < best) { best = d2; brx = dx; bry = dy; }
                 }
                 let edge = Infinity;
-                for (let i = 0; i < seeds.length; i++) {
-                    let dx = seeds[i].u - pu; dx -= circ * Math.round(dx / circ);
-                    const dy = seeds[i].v - pv;
+                for (let i = 0; i < candidates.length; i++) {
+                    let dx = candidates[i].u - pu; dx -= circ * Math.round(dx / circ);
+                    const dy = candidates[i].v - pv;
                     const rdx = dx - brx, rdy = dy - bry;
                     const len2 = rdx * rdx + rdy * rdy;
                     if (len2 < 1e-7) continue;
@@ -1801,13 +2121,28 @@
         /* ---------- vertex pool with per-triangle colour + layer ----------
            layer 0 = inner liner / frame surfaces, 1 = outer shape (default) ---------- */
         function makePool() {
-            const positions = [], indices = [], triColor = [], triLayer = [], map = new Map(), Q = 1e4;
+            // Spatial hash instead of a template-literal string key: quantize to the Q=1e4 grid,
+            // hash the quantized triple to a bucket, then verify exact quantized equality within
+            // the (rarely >1-entry) bucket - avoids allocating + hashing a new string per vertex.
+            const positions = [], indices = [], triColor = [], triLayer = [], buckets = new Map(), Q = 1e4;
             let curLayer = 1;
             function vid(p) {
-                const key = Math.round(p.x * Q) + ',' + Math.round(p.y * Q) + ',' + Math.round(p.z * Q);
-                let i = map.get(key);
-                if (i === undefined) { i = positions.length / 3; positions.push(p.x, p.y, p.z); map.set(key, i); }
-                return i;
+                const qx = Math.round(p.x * Q), qy = Math.round(p.y * Q), qz = Math.round(p.z * Q);
+                const hash = (qx * 73856093) ^ (qy * 19349663) ^ (qz * 83492791);
+                let bucket = buckets.get(hash);
+                if (bucket) {
+                    for (let i = 0; i < bucket.length; i++) {
+                        const cand = bucket[i];
+                        if (cand.qx === qx && cand.qy === qy && cand.qz === qz) return cand.index;
+                    }
+                } else {
+                    bucket = [];
+                    buckets.set(hash, bucket);
+                }
+                const idx = positions.length / 3;
+                positions.push(p.x, p.y, p.z);
+                bucket.push({ qx, qy, qz, index: idx });
+                return idx;
             }
             function tri(a, b, c, ci) {
                 const ia = vid(a), ib = vid(b), ic = vid(c);
@@ -1821,39 +2156,69 @@
         function cleanupMesh(mesh) {
             const inPos = mesh.positions || [];
             const inIdx = mesh.indices || [];
+            const vertexCount = inPos.length / 3;
             const weldedPositions = [];
-            const remap = new Map();
-            const vertMap = new Map();
+            // Original indices are already a dense 0..vertexCount-1 range, so a typed array
+            // beats a Map for the remap table.
+            const remap = new Int32Array(vertexCount);
+            // Spatial hash for welding (see makePool.vid above): quantize to the same 1e-6
+            // grid as before, but key by a numeric hash instead of a template-literal string,
+            // verifying exact quantized-triple equality within the bucket.
+            const buckets = new Map();
             const eps = 1e-6;
+            const invEps = 1 / eps;
 
-            function keyFor(x, y, z) {
-                return `${Math.round(x / eps)}_${Math.round(y / eps)}_${Math.round(z / eps)}`;
+            function findOrAddVertex(x, y, z) {
+                const qx = Math.round(x * invEps);
+                const qy = Math.round(y * invEps);
+                const qz = Math.round(z * invEps);
+                const hash = (qx * 73856093) ^ (qy * 19349663) ^ (qz * 83492791);
+                let bucket = buckets.get(hash);
+                if (bucket) {
+                    for (let i = 0; i < bucket.length; i++) {
+                        const cand = bucket[i];
+                        if (cand.qx === qx && cand.qy === qy && cand.qz === qz) return cand.index;
+                    }
+                } else {
+                    bucket = [];
+                    buckets.set(hash, bucket);
+                }
+                const idx = weldedPositions.length / 3;
+                weldedPositions.push(x, y, z);
+                bucket.push({ qx, qy, qz, index: idx });
+                return idx;
             }
 
             for (let i = 0; i < inPos.length; i += 3) {
-                const x = inPos[i], y = inPos[i + 1], z = inPos[i + 2];
-                const key = keyFor(x, y, z);
-                let idx = vertMap.get(key);
-                if (idx === undefined) {
-                    idx = weldedPositions.length / 3;
-                    weldedPositions.push(x, y, z);
-                    vertMap.set(key, idx);
-                }
-                remap.set(i / 3, idx);
+                remap[i / 3] = findOrAddVertex(inPos[i], inPos[i + 1], inPos[i + 2]);
             }
 
             const cleaned = [];
             const triangleColorIndices = [];
             const triLayer = [];
-            const triSeen = new Set();
             const hasColors = mesh.triangleColorIndices && mesh.triangleColorIndices.length;
             const hasLayers = mesh.triLayer && mesh.triLayer.length;
 
+            // Numeric trie (lo -> mid -> Set(hi)) instead of a sorted-and-joined string key.
+            // Exact at any resolution, unlike an arithmetic lo*N*N+mid*N+hi pack which would
+            // silently collide once N^3 passes Number.MAX_SAFE_INTEGER (resV/resT are free
+            // -typed number inputs, so that ceiling isn't hypothetical).
+            const triSeen = new Map();
+            function isDuplicateTri(lo, mid, hi) {
+                let midMap = triSeen.get(lo);
+                if (!midMap) { midMap = new Map(); triSeen.set(lo, midMap); }
+                let hiSet = midMap.get(mid);
+                if (!hiSet) { hiSet = new Set(); midMap.set(mid, hiSet); }
+                if (hiSet.has(hi)) return true;
+                hiSet.add(hi);
+                return false;
+            }
+
             for (let i = 0; i < inIdx.length; i += 3) {
                 const triIdx = i / 3;
-                const a = remap.get(inIdx[i]);
-                const b = remap.get(inIdx[i + 1]);
-                const c = remap.get(inIdx[i + 2]);
+                const a = remap[inIdx[i]];
+                const b = remap[inIdx[i + 1]];
+                const c = remap[inIdx[i + 2]];
                 if (a === b || b === c || a === c) continue;
 
                 const ax = weldedPositions[a * 3], ay = weldedPositions[a * 3 + 1], az = weldedPositions[a * 3 + 2];
@@ -1866,9 +2231,8 @@
                 const nz = abx * acy - aby * acx;
                 if (Math.hypot(nx, ny, nz) < 1e-8) continue;
 
-                const key = [a, b, c].slice().sort((m, n) => m - n).join('_');
-                if (triSeen.has(key)) continue;
-                triSeen.add(key);
+                const lo = Math.min(a, b, c), hi = Math.max(a, b, c), mid = a + b + c - lo - hi;
+                if (isDuplicateTri(lo, mid, hi)) continue;
 
                 cleaned.push(a, b, c);
                 triangleColorIndices.push(hasColors ? (mesh.triangleColorIndices[triIdx] || 0) : 0);
@@ -1890,9 +2254,15 @@
             }
             if (!faces.length) return mesh;
 
+            // min*vertexCount+max packs an (a,b) edge into one exact integer key - safe since
+            // vertexCount^2 is nowhere near Number.MAX_SAFE_INTEGER for any mesh this app
+            // produces, unlike cleanupMesh's triangle key (see the trie comment above).
+            const vertexCount = mesh.positions.length / 3;
+            function edgeKey(a, b) { return a < b ? a * vertexCount + b : b * vertexCount + a; }
+
             const edgeMap = new Map();
             function addFaceEdge(faceIndex, a, b) {
-                const key = a < b ? `${a}_${b}` : `${b}_${a}`;
+                const key = edgeKey(a, b);
                 let list = edgeMap.get(key);
                 if (!list) {
                     list = [];
@@ -1938,7 +2308,7 @@
                     ];
 
                     for (const [a, b] of triEdges) {
-                        const key = a < b ? `${a}_${b}` : `${b}_${a}`;
+                        const key = edgeKey(a, b);
                         const shared = edgeMap.get(key) || [];
                         for (const entry of shared) {
                             const fj = entry.faceIndex;
@@ -1980,13 +2350,14 @@
 
         function validateMesh(mesh) {
             const edges = new Map();
+            const vertexCount = mesh.positions.length / 3;
             let signedVolume = 0;
             for (let i = 0; i < mesh.indices.length; i += 3) {
                 const a = mesh.indices[i], b = mesh.indices[i + 1], c = mesh.indices[i + 2];
                 const tri = [a, b, c];
                 for (let e = 0; e < 3; e++) {
                     const u = tri[e], v = tri[(e + 1) % 3];
-                    const key = u < v ? `${u}_${v}` : `${v}_${u}`;
+                    const key = u < v ? u * vertexCount + v : v * vertexCount + u;
                     edges.set(key, (edges.get(key) || 0) + 1);
                 }
 
@@ -2475,80 +2846,177 @@
             scene.remove(obj);
         }
 
+        // ---- Draft preview + build memoization ----
+        // Bowls default to 200x300 (60k form samples, plus up to 2 mask evals/wall cell), so a
+        // full rebuild on every keystroke is the heaviest interaction in the app. While input is
+        // arriving in rapid succession, render at a capped resolution immediately, then settle to
+        // the real resolution once input pauses.
+        const INTERACTIVE_RES_CAP_V = 80;
+        const INTERACTIVE_RES_CAP_T = 120;
+        const FULL_RES_SETTLE_MS = 300;
+        const RAPID_INPUT_WINDOW_MS = 400;
+
+        function getInteractivePreviewConfig(cfg) {
+            if (cfg.resV <= INTERACTIVE_RES_CAP_V && cfg.resT <= INTERACTIVE_RES_CAP_T) return cfg;
+            return Object.assign({}, cfg, {
+                resV: Math.min(cfg.resV, INTERACTIVE_RES_CAP_V),
+                resT: Math.min(cfg.resT, INTERACTIVE_RES_CAP_T)
+            });
+        }
+
+        // Single-entry memoization for the two mesh builders: every field gets sampled, welded,
+        // and validated again on every preview render. If the very next action is an export with
+        // nothing changed since, this lets it reuse the previous result instead of repeating all
+        // of it. Keyed by builder fn + exact serialized cfg, so any change (incl. resolution) is
+        // a clean cache miss.
+        const singleEntryMeshCache = new Map();
+        function memoizedMeshBuild(builderFn, cfg) {
+            const key = JSON.stringify(cfg);
+            const entry = singleEntryMeshCache.get(builderFn);
+            if (entry && entry.key === key) return entry.result;
+            const result = builderFn(cfg);
+            singleEntryMeshCache.set(builderFn, { key, result });
+            return result;
+        }
+
+        // ---- A5 readouts ----
+        const PLA_DENSITY_G_PER_CM3 = 1.24;
+        function formatMaterialEstimate(volumeCm3) {
+            const grams = volumeCm3 * PLA_DENSITY_G_PER_CM3;
+            return `~${volumeCm3.toFixed(1)} cm3 / ~${grams.toFixed(0)} g PLA`;
+        }
+        // Most 0.4mm-nozzle FDM printers need ~2 perimeter widths (~0.8mm) of strut to print
+        // solid rather than as a single unsupported line. Pure UI check on cfg - no geometry
+        // sampling needed, since every style's strut width is already one of its own inputs.
+        const MIN_SAFE_WALL_CM = 0.08;
+        const STYLE_THICKNESS_FIELDS = {
+            voronoi: ['vorThickness'], lattice: ['latThickness'], weave: ['weaveThickness'],
+            wave: ['waveThicknessV', 'waveThicknessH'], gyroid: ['gyroidThickness'],
+            fibonacci: ['fibThickness'], fluting: ['flThickness'], chladni: ['chlThickness'],
+            schwarzp: ['schwarzThickness'], schwarzd: ['schwarzdThickness'], honeycomb: ['hexThickness'],
+            truchet: ['truchetThickness'], maze: ['mazeThickness'], scales: ['scaleThickness'],
+            star: ['starThickness'], greekkey: ['greekThickness']
+        };
+        function formatThinStrutWarning(cfg) {
+            const fields = STYLE_THICKNESS_FIELDS[cfg.style];
+            if (!fields) return '';
+            for (const f of fields) {
+                const val = cfg[f];
+                if (typeof val === 'number' && val > 0 && val < MIN_SAFE_WALL_CM) {
+                    return `Thin strut ${(val * 10).toFixed(2)}mm (below ${(MIN_SAFE_WALL_CM * 10).toFixed(1)}mm nozzle-safe minimum)`;
+                }
+            }
+            return '';
+        }
+
         function updatePreview() {
             if (suppressPreviewUpdates) return;
             if (renderTimeout) clearTimeout(renderTimeout);
+            if (fullResTimeout) { clearTimeout(fullResTimeout); fullResTimeout = null; }
             setStatus("Generating preview...");
+
+            const now = performance.now();
+            const isRapidSuccession = (now - lastUpdatePreviewCall) < RAPID_INPUT_WINDOW_MS;
+            lastUpdatePreviewCall = now;
+
             renderTimeout = setTimeout(() => {
-                try {
-                    if (currentObject) { disposeObject(currentObject); currentObject = null; }
-                    const cfg = getConfig();
-                    const mesh = buildMeshData(cfg);
-                    const palette = paletteOf(cfg);
-                    const flat = cfg.style === 'origami';
-                    const linerActive = cfg.solidLiner && cfg.style !== 'solid' && cfg.style !== 'origami';
-                    const hasRing = ringActive(cfg);
-                    const ringMesh = hasRing ? buildRingMeshData(cfg) : null;
+                const cfg = getConfig();
+                const interactiveCfg = isRapidSuccession ? getInteractivePreviewConfig(cfg) : cfg;
+                const isDraft = interactiveCfg !== cfg;
+                renderConfigToScene(interactiveCfg, isDraft);
 
-                    let bowlObject;
-                    if (linerActive && cfg.transparentFrame) {
-                        // outer shape opaque & coloured, inner liner frame semi-transparent
-                        const group = new THREE.Group();
-                        group.add(new THREE.Mesh(
-                            buildPreviewGeometry(mesh, palette, flat, 1),
-                            new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: 0.06, side: THREE.DoubleSide, wireframe: cfg.wire })
-                        ));
-                        group.add(new THREE.Mesh(
-                            buildPreviewGeometry(mesh, palette, false, 0),
-                            new THREE.MeshStandardMaterial({ color: cfg.baseColor, transparent: true, opacity: 0.3, roughness: 0.5, metalness: 0.05, side: THREE.DoubleSide, depthWrite: false, wireframe: cfg.wire })
-                        ));
-                        bowlObject = group;
-                    } else {
-                        const mat = new THREE.MeshStandardMaterial({
-                            vertexColors: true, roughness: 0.62, metalness: 0.06,
-                            side: THREE.DoubleSide, wireframe: cfg.wire
-                        });
-                        bowlObject = new THREE.Mesh(buildPreviewGeometry(mesh, palette, flat, null), mat);
-                    }
-
-                    if (hasRing) {
-                        // ring stand is a disjoint body from the bowl — a separate mesh in the same scene
-                        const group = new THREE.Group();
-                        group.add(bowlObject);
-                        group.add(new THREE.Mesh(
-                            buildPreviewGeometry(ringMesh, palette, false, null),
-                            new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: 0.06, side: THREE.DoubleSide, wireframe: cfg.wire })
-                        ));
-                        currentObject = group;
-                    } else {
-                        currentObject = bowlObject;
-                    }
-
-                    scene.add(currentObject);
-                    const box = new THREE.Box3().setFromObject(currentObject);
-                    const center = box.getCenter(new THREE.Vector3());
-                    controls.target.set(0, center.y, 0);
-                    controls.update();
-                    const tris = mesh.indices.length / 3;
-                    const styleLbl = cfg.style.charAt(0).toUpperCase() + cfg.style.slice(1);
-                    const islandNote = mesh.removedCells ? ` | removed ${mesh.removedCells} disconnected cell${mesh.removedCells === 1 ? '' : 's'}` : '';
-                    const ringNote = hasRing ? ` | + ring ${(ringMesh.indices.length / 3).toLocaleString()} tris` : '';
-                    const validation = mesh.validation || validateMesh(mesh);
-                    const ringValidation = hasRing ? (ringMesh.validation || validateMesh(ringMesh)) : null;
-                    const manifoldIssues = [];
-                    if (validation.boundaryEdges || validation.nonManifoldEdges) {
-                        manifoldIssues.push(`B:${validation.boundaryEdges} N:${validation.nonManifoldEdges}`);
-                    }
-                    if (ringValidation && (ringValidation.boundaryEdges || ringValidation.nonManifoldEdges)) {
-                        manifoldIssues.push(`ring B:${ringValidation.boundaryEdges} N:${ringValidation.nonManifoldEdges}`);
-                    }
-                    const manifoldNote = manifoldIssues.length ? ` | manifold ${manifoldIssues.join(' | ')}` : '';
-                    setStatus(`${cfg.sys} | ${styleLbl} | R ${cfg.R}cm | ${tris.toLocaleString()} triangles${ringNote}${islandNote}${manifoldNote}`, (mesh.removedCells || manifoldIssues.length) ? 'warn' : '');
-                } catch (err) {
-                    console.error(err);
-                    setStatus("Error: invalid equation or geometry failure.", 'error');
+                if (isDraft) {
+                    fullResTimeout = setTimeout(() => {
+                        fullResTimeout = null;
+                        renderConfigToScene(cfg, false);
+                    }, FULL_RES_SETTLE_MS);
                 }
             }, 30);
+        }
+
+        function renderConfigToScene(cfg, isDraft) {
+            try {
+                if (currentObject) { disposeObject(currentObject); currentObject = null; }
+                const compileErrors = refreshExpressionCompileStatus();
+                const mesh = memoizedMeshBuild(buildMeshData, cfg);
+                const palette = paletteOf(cfg);
+                const flat = cfg.style === 'origami';
+                const linerActive = cfg.solidLiner && cfg.style !== 'solid' && cfg.style !== 'origami';
+                const hasRing = ringActive(cfg);
+                const ringMesh = hasRing ? memoizedMeshBuild(buildRingMeshData, cfg) : null;
+
+                let bowlObject;
+                if (linerActive && cfg.transparentFrame) {
+                    // outer shape opaque & coloured, inner liner frame semi-transparent
+                    const group = new THREE.Group();
+                    group.add(new THREE.Mesh(
+                        buildPreviewGeometry(mesh, palette, flat, 1),
+                        new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: 0.06, side: THREE.DoubleSide, wireframe: cfg.wire })
+                    ));
+                    group.add(new THREE.Mesh(
+                        buildPreviewGeometry(mesh, palette, false, 0),
+                        new THREE.MeshStandardMaterial({ color: cfg.baseColor, transparent: true, opacity: 0.3, roughness: 0.5, metalness: 0.05, side: THREE.DoubleSide, depthWrite: false, wireframe: cfg.wire })
+                    ));
+                    bowlObject = group;
+                } else {
+                    const mat = new THREE.MeshStandardMaterial({
+                        vertexColors: true, roughness: 0.62, metalness: 0.06,
+                        side: THREE.DoubleSide, wireframe: cfg.wire
+                    });
+                    bowlObject = new THREE.Mesh(buildPreviewGeometry(mesh, palette, flat, null), mat);
+                }
+
+                if (hasRing) {
+                    // ring stand is a disjoint body from the bowl — a separate mesh in the same scene
+                    const group = new THREE.Group();
+                    group.add(bowlObject);
+                    group.add(new THREE.Mesh(
+                        buildPreviewGeometry(ringMesh, palette, false, null),
+                        new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: 0.06, side: THREE.DoubleSide, wireframe: cfg.wire })
+                    ));
+                    currentObject = group;
+                } else {
+                    currentObject = bowlObject;
+                }
+
+                scene.add(currentObject);
+                const box = new THREE.Box3().setFromObject(currentObject);
+                const center = box.getCenter(new THREE.Vector3());
+                controls.target.set(0, center.y, 0);
+                controls.update();
+                const tris = mesh.indices.length / 3;
+                const styleLbl = cfg.style.charAt(0).toUpperCase() + cfg.style.slice(1);
+                const islandNote = mesh.removedCells ? ` | removed ${mesh.removedCells} disconnected cell${mesh.removedCells === 1 ? '' : 's'}` : '';
+                const ringNote = hasRing ? ` | + ring ${(ringMesh.indices.length / 3).toLocaleString()} tris` : '';
+                const validation = mesh.validation || validateMesh(mesh);
+                const ringValidation = hasRing ? (ringMesh.validation || validateMesh(ringMesh)) : null;
+                const manifoldIssues = [];
+                if (validation.boundaryEdges || validation.nonManifoldEdges) {
+                    manifoldIssues.push(`B:${validation.boundaryEdges} N:${validation.nonManifoldEdges}`);
+                }
+                if (ringValidation && (ringValidation.boundaryEdges || ringValidation.nonManifoldEdges)) {
+                    manifoldIssues.push(`ring B:${ringValidation.boundaryEdges} N:${ringValidation.nonManifoldEdges}`);
+                }
+                const manifoldNote = manifoldIssues.length ? ` | manifold ${manifoldIssues.join(' | ')}` : '';
+                const volumeCm3 = Math.abs(validation.signedVolume || 0) + (ringValidation ? Math.abs(ringValidation.signedVolume || 0) : 0);
+                const materialNote = ` | ${formatMaterialEstimate(volumeCm3)}`;
+                const wallWarning = formatThinStrutWarning(cfg);
+                const wallNote = wallWarning ? ` | ${wallWarning}` : '';
+                const draftSuffix = isDraft ? ' | draft preview' : '';
+                const warnActive = !!(mesh.removedCells || manifoldIssues.length || wallWarning);
+
+                if (compileErrors.length) {
+                    const summary = compileErrors.length === 1
+                        ? compileErrors[0]
+                        : `${compileErrors[0]} (+${compileErrors.length - 1} more)`;
+                    setStatus(`Equation error: ${summary}`, 'error');
+                } else {
+                    setStatus(`${cfg.sys} | ${styleLbl} | R ${cfg.R}cm | ${tris.toLocaleString()} triangles${ringNote}${islandNote}${manifoldNote}${materialNote}${wallNote}${draftSuffix}`, warnActive ? 'warn' : '');
+                }
+            } catch (err) {
+                console.error(err);
+                setStatus("Error: invalid equation or geometry failure.", 'error');
+            }
         }
 
         /* ---------- exports ---------- */
@@ -2605,13 +3073,13 @@
         function exportSTL() {
             const cfg = getConfig();
             const stem = exportStem(cfg);
-            const mesh = rotateMeshForPrinterCoordinates(buildMeshData(cfg));
+            const mesh = rotateMeshForPrinterCoordinates(memoizedMeshBuild(buildMeshData, cfg));
             const hasRing = ringActive(cfg);
             const bowlName = hasRing ? `${stem}_Bowl.stl` : `${stem}.stl`;
             downloadBlob(meshDataToStlBlob(mesh), bowlName);
             const bowlTris = mesh.indices.length / 3;
             if (hasRing) {
-                const ringMesh = rotateMeshForPrinterCoordinates(buildRingMeshData(cfg));
+                const ringMesh = rotateMeshForPrinterCoordinates(memoizedMeshBuild(buildRingMeshData, cfg));
                 const ringName = `${stem}_Ring.stl`;
                 downloadBlob(meshDataToStlBlob(ringMesh), ringName);
                 setStatus(`Separate STL exports | ${bowlName} (${bowlTris.toLocaleString()} tris) + ${ringName} (${(ringMesh.indices.length / 3).toLocaleString()} tris)`, 'warn');
@@ -2713,7 +3181,7 @@ ${trianglesXml.join('\n')}
         async function export3MF() {
             const cfg = getConfig();
             const stem = exportStem(cfg);
-            const mesh = buildMeshData(cfg);
+            const mesh = memoizedMeshBuild(buildMeshData, cfg);
             const hasRing = ringActive(cfg);
 
             const bowlName = hasRing ? `${stem}_Bowl.3mf` : `${stem}.3mf`;
@@ -2722,7 +3190,7 @@ ${trianglesXml.join('\n')}
             const bowlTris = mesh.indices.length / 3;
 
             if (hasRing) {
-                const ringMesh = buildRingMeshData(cfg);
+                const ringMesh = memoizedMeshBuild(buildRingMeshData, cfg);
                 const ringName = `${stem}_Ring.3mf`;
                 const ringResult = await buildAssembly3MFBlob(cfg, ringMesh, 'Ring Assembly');
                 downloadBlob(ringResult.blob, ringName);
@@ -2794,8 +3262,7 @@ ${trianglesXml.join('\n')}
                 updateLinerVisibility();
                 // show the correct pattern panel WITHOUT re-triggering the liner default
                 const s = document.getElementById('patternStyle').value;
-                ['voronoi', 'lattice', 'weave', 'wave', 'gyroid', 'origami', 'fibonacci', 'phyllotaxis', 'turing', 'fluting', 'life', 'chladni']
-                    .forEach(p => document.getElementById(p + 'Settings').classList.toggle('active', s === p));
+                PATTERN_PANEL_IDS.forEach(p => document.getElementById(p + 'Settings').classList.toggle('active', s === p));
                 document.getElementById('patternDesc').textContent = patternDescs[s] || '';
             } finally {
                 suppressPreviewUpdates = false;
@@ -2947,12 +3414,17 @@ ${trianglesXml.join('\n')}
         };
         // styles that are open/fragile enough to want the solid liner on by default
         const linerDefaultStyles = ['turing', 'fluting', 'life', 'wave'];
+        // Every pattern-style settings-panel id (minus the 'Settings' suffix) - the single
+        // source of truth for which panel to show, shared by onPatternStyleChange (live UI) and
+        // applyDesignConfig (design .json load). Previously applyDesignConfig had its own
+        // shorter, stale copy of this list that silently hid the settings panel for any style
+        // added after it was last updated.
+        const PATTERN_PANEL_IDS = ['voronoi', 'lattice', 'weave', 'wave', 'gyroid', 'origami', 'fibonacci', 'phyllotaxis',
+            'turing', 'fluting', 'life', 'chladni', 'schwarzp', 'schwarzd', 'honeycomb', 'trabecular',
+            'truchet', 'quasicrystal', 'maze', 'scales', 'star', 'greekkey'];
         function onPatternStyleChange() {
             const s = document.getElementById('patternStyle').value;
-            const panels = ['voronoi', 'lattice', 'weave', 'wave', 'gyroid', 'origami', 'fibonacci', 'phyllotaxis',
-                'turing', 'fluting', 'life', 'chladni', 'schwarzp', 'schwarzd', 'honeycomb', 'trabecular',
-                'truchet', 'quasicrystal', 'maze', 'scales', 'star', 'greekkey'];
-            panels.forEach(p => document.getElementById(p + 'Settings').classList.toggle('active', s === p));
+            PATTERN_PANEL_IDS.forEach(p => document.getElementById(p + 'Settings').classList.toggle('active', s === p));
             if (linerDefaultStyles.includes(s)) document.getElementById('solidLiner').checked = true;
             updateLinerVisibility();
             document.getElementById('patternDesc').textContent = patternDescs[s] || '';
