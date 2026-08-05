@@ -708,15 +708,37 @@ Use:
 - patternColor2
 - overlapColor
 
-Choose a palette that matches the described object.
+PREFERRED PALETTE: Bambu Lab PLA Basic filament colors
+Prefer choosing all four colors from the Bambu Lab PLA Basic line below (see PLA_Colors.txt),
+using their exact hex codes. This keeps every generated design matched to filament that is
+actually available to print with, not just a visually-similar invented color.
+
+  Jade White         #FFFFFF      Beige              #F7E6DE
+  Gold               #E4BD68      Silver             #A6A9AA
+  Gray               #8E9089      Bronze             #847D48
+  Brown              #9D432C      Cocoa Brown        #6F5034
+  Maroon Red         #9D2235      Red                #C12E1F
+  Magenta            #EC008C      Pink               #F55A74
+  Hot Pink           #F5547C      Orange             #FF6A13
+  Pumpkin Orange     #FF9016      Sunflower Yellow   #FEC600
+  Yellow             #F4EE2A      Bright Green       #BECF00
+  Bambu Green        #00AE42      Mistletoe Green    #3F8E43
+  Turquoise          #00B1B7      Cyan               #0086D6
+  Blue               #0A2989      Cobalt Blue        #0056B8
+  Purple             #5E43B7      Indigo Purple      #482960
+  Blue Gray          #5B6579      Light Gray         #D1D3D5
+  Dark Gray          #545454      Black              #000000
+
+Choose a combination of these named colors that matches the described object's material and mood.
 Examples:
 - ceramic, terracotta, clay, stone, sand, moss, floral, industrial, traffic, shell, ocean, leaf, metallic, pastel, bold graphic
 
 The colors are part of the design.
 The JSON must contain the colors you chose.
 
-If the user explicitly asks for colors, follow that request.
-If not, choose a tasteful set that fits the object.
+If the user explicitly asks for specific colors (a named color, a hex code, or anything outside
+the palette above), follow that request exactly instead of the Bambu palette.
+If not, choose a tasteful combination from the Bambu Lab palette above that fits the object.
 
 PLATE COLORING:
 
