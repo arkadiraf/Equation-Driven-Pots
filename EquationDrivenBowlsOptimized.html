@@ -497,6 +497,11 @@
                 <option value="scales">Fish-Scale (Seigaiha)</option>
                 <option value="star">Islamic Star Lattice</option>
                 <option value="greekkey">Greek Key (Meander)</option>
+                <option value="worleycrackle">Worley Crackle (lamp)</option>
+                <option value="caustic">Caustic Web (lamp)</option>
+                <option value="slits">Ray Slits / Louvers (lamp)</option>
+                <option value="halftone">Halftone Glow (lamp)</option>
+                <option value="constellation">Constellation (lamp)</option>
             </select>
         </div>
         <div id="patternDesc" class="desc-text"></div>
@@ -813,6 +818,89 @@
                         value="2.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
             </div>
             <div class="desc-text">Repeating Greek key / meander fret tiled around (and up) the wall.</div>
+        </div>
+
+        <div id="worleycrackleSettings" class="pattern-settings">
+            <div class="grid-inputs">
+                <div class="input-group"><label>Density (cells around)</label><input type="number" id="crackleDensity"
+                        value="14" step="1" min="2" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Strut Thickness (mm)</label><input type="number" id="crackleThickness"
+                        value="2.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
+            </div>
+            <div class="input-group"><label>Random Seed</label><input type="number" id="crackleSeed" value="3" step="1"
+                    min="0" oninput="updatePreview()"></div>
+            <div class="desc-text">Infinite, non-repeating stone-crack web from hashed cell feature points - the
+                organic upgrade of Voronoi Cells, with no visible seam or repeat.</div>
+        </div>
+
+        <div id="causticSettings" class="pattern-settings">
+            <div class="grid-inputs">
+                <div class="input-group"><label>Scale (frequency)</label><input type="number" id="causticScale"
+                        value="5" step="0.5" min="0.5" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Web Level</label><input type="number" id="causticLevel" value="0.1"
+                        step="0.01" min="0.02" max="0.4" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Octaves</label><input type="number" id="causticOctaves" value="3"
+                        step="1" min="1" max="6" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Random Seed</label><input type="number" id="causticSeed" value="4"
+                        step="1" min="0" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">A flowing fractal-noise web whose shadows ripple like light through water -
+                built for a lamp, not just a bowl. Lower Web Level = thinner, sparser web.</div>
+        </div>
+
+        <div id="slitsSettings" class="pattern-settings">
+            <div class="grid-3">
+                <div class="input-group"><label>Columns</label><input type="number" id="slitCount" value="16"
+                        step="1" min="2" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Rows</label><input type="number" id="slitRows" value="6" step="1"
+                        min="1" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Slot Width (mm)</label><input type="number" id="slitWidth" value="3.0"
+                        step="0.2" min="0.8" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Slot Length (0-1)</label><input type="number" id="slitLength"
+                        value="0.6" step="0.05" min="0.1" max="1" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Tilt (&deg;)</label><input type="number" id="slitTilt" value="12"
+                        step="1" min="-60" max="60" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">Classic lampshade louvers: staggered rows of tilted slot holes that project crisp
+                light rays. Recommend liner OFF for the sharpest cast-shadow rays.</div>
+        </div>
+
+        <div id="halftoneSettings" class="pattern-settings">
+            <div class="grid-inputs">
+                <div class="input-group"><label>Density (hexes around)</label><input type="number" id="htDensity"
+                        value="16" step="1" min="3" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Min Hole (mm)</label><input type="number" id="htMinHole" value="1.0"
+                        step="0.1" min="0.2" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Max Hole (mm)</label><input type="number" id="htMaxHole" value="4.5"
+                        step="0.1" min="0.4" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">The signature lamp feature: a staggered grid of round holes whose size is driven by
+                the Pattern A mask equation below, so the mask becomes a light-intensity image when lit from inside.
+                With Pattern A left at "None", every hole is a fixed mid-size. Try the noise/exotic mask presets or
+                "sin(pi*v)" for a bright equator band.</div>
+        </div>
+
+        <div id="constellationSettings" class="pattern-settings">
+            <div class="grid-inputs">
+                <div class="input-group"><label>Star Count</label><input type="number" id="constCount" value="60"
+                        step="5" min="4" max="120" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Max Star (mm)</label><input type="number" id="constMaxStar" value="3.5"
+                        step="0.2" min="0.6" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Line Width (mm)</label><input type="number" id="constLineW" value="1.2"
+                        step="0.1" min="0.4" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Random Seed</label><input type="number" id="constSeed" value="9"
+                        step="1" min="0" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">A night-sky pendant: scattered star holes in three sizes, each linked to its
+                nearest neighbor(s) by a thin chord slot.</div>
         </div>
 
         <div class="section-title">3. Dual Pattern Color Layer</div>
@@ -1357,7 +1445,19 @@
             "6-Petal Mask": { eq: "asin(0.98 * sin(6*theta)) * sin(pi*v)", desc: "Six-petal mask regions strongest through the middle body." },
             "Equatorial Arc Belt": { eq: "asin(0.98 * sin(8*theta)) * exp(-pow(v - 0.5, 2) * 30)", desc: "Arc-belt mask concentrated around the mid-body or equatorial zone." },
             "Rim Band": { eq: "v - 0.8", desc: "Colors only the upper rim band." },
-            "Foot Band": { eq: "0.2 - v", desc: "Colors only the lower foot band." }
+            "Foot Band": { eq: "0.2 - v", desc: "Colors only the lower foot band." },
+            // noise / procedural (ported from EquationDrivenPotDesignerOptimized.html - B14)
+            "Noise Islands": { eq: "cnoise(theta, v, 3, 4, 11) - 0.15", desc: "Seeded simplex noise thresholded into irregular organic color islands." },
+            "Marble Veins": { eq: "0.12 - abs(sin(3*theta + 1.5*pi*v + 3.5*fbm(theta, v, 3, 4, 4, 9)))", desc: "Thin winding veins where a noise-warped wave crosses zero - classic marble figuring. Raise 0.12 for thicker veins." },
+            "Voronoi Pebbles": { eq: "0.34 - worley(theta, v, 7, 8, 3)", desc: "Rounded organic spots centered on each Worley cell - a pebble or animal-spot scatter that never repeats around the body." },
+            "Leopard Rosettes": { eq: "(worley(theta, v, 8, 9, 12) - 0.22) * (0.38 - worley(theta, v, 8, 9, 12))", desc: "Ring-shaped rosettes: the product selects only a distance band around each cell center, turning every Worley cell into a hollow ring." },
+            "Crackle Mortar": { eq: "worley(theta, v, 6, 7, 4) - 0.42", desc: "The complement of the pebble mask - selects the web of boundaries between cells for a cracked-glaze or giraffe-hide look." },
+            "Lightning Filaments": { eq: "ridged(theta, v, 4, 6, 4, 6) - 0.85", desc: "Selects only the sharpest crests of ridged multifractal noise, leaving branching filament networks. Lower 0.85 toward 0.75 for denser branching." },
+            "Phyllotaxis Dot Grid": { eq: "phyllo(theta, v, 320, 0.03) - 0.45", desc: "A sunflower-seed lattice of dots placed by the golden angle - evenly spaced yet never aligning into straight rows. Pairs well with Halftone Glow / Gradient Cells." },
+            "Shoreline Split": { eq: "tanh(3.5*(v - 0.52 + 0.16*cnoise(theta, v, 3, 3, 8)))", desc: "A two-tone horizontal split whose boundary wanders like a coastline instead of a straight line." },
+            // exotic math (ported from EquationDrivenPotDesignerOptimized.html - B14)
+            "Sunburst Medallion": { eq: "exp(-(pow(theta - pi, 2) + 8*pow(v - 0.55, 2)) * 1.6) * (0.35 + sin(7*atan2(v - 0.55, 0.4*(theta - pi)))) - 0.12", desc: "A pinwheel of rays radiating from a single point on the front face, built with atan2 and confined by a Gaussian window so the back stays clean." },
+            "Halo Ring": { eq: "0.12 - abs(hypot(theta - pi, 3*(v - 0.6)) - 0.9)", desc: "A single elliptical ring emblem on the front face - hypot measures distance from a center point, and the mask keeps only a thin annulus of it." }
         };
 
         let scene, camera, renderer, controls, currentObject = null;
@@ -1502,6 +1602,25 @@
                 starThickness: Math.max(0.4, num('starThickness', 2.0)) / 10,
                 greekCount: Math.max(2, intv('greekCount', 8)),
                 greekThickness: Math.max(0.4, num('greekThickness', 2.0)) / 10,
+                crackleDensity: Math.max(2, intv('crackleDensity', 14)),
+                crackleThickness: Math.max(0.4, num('crackleThickness', 2.0)) / 10,
+                crackleSeed: Math.max(0, intv('crackleSeed', 3)),
+                causticScale: Math.max(0.5, num('causticScale', 5)),
+                causticLevel: clamp(num('causticLevel', 0.1), 0.02, 0.4),
+                causticOctaves: clamp(intv('causticOctaves', 3), 1, 6),
+                causticSeed: Math.max(0, intv('causticSeed', 4)),
+                slitCount: Math.max(2, intv('slitCount', 16)),
+                slitRows: Math.max(1, intv('slitRows', 6)),
+                slitWidth: Math.max(0.4, num('slitWidth', 3.0)) / 10,
+                slitLength: clamp(num('slitLength', 0.6), 0.1, 1),
+                slitTilt: num('slitTilt', 12),
+                htDensity: Math.max(3, intv('htDensity', 16)),
+                htMinHole: Math.max(0.2, num('htMinHole', 1.0)) / 10,
+                htMaxHole: Math.max(0.4, num('htMaxHole', 4.5)) / 10,
+                constCount: clamp(intv('constCount', 60), 4, 120),
+                constMaxStar: Math.max(0.6, num('constMaxStar', 3.5)) / 10,
+                constLineW: Math.max(0.4, num('constLineW', 1.2)) / 10,
+                constSeed: Math.max(0, intv('constSeed', 9)),
                 patternEq1: document.getElementById('patternEquation1').value || "-1",
                 patternEq2: document.getElementById('patternEquation2').value || "-1",
                 baseColor: document.getElementById('baseColor').value || '#2a7ab0',
@@ -1549,12 +1668,25 @@
         /* ---------- pattern occupancy (openwork) ----------
            Works in an unrolled (u, s) cm-space: u = theta * circumference,
            s = arc length up the meridian. Band = [bandS0, bandS1].          */
-        function buildPattern(cfg, bandS0, bandS1) {
+        function buildPattern(cfg, bandS0, bandS1, sToV) {
             const Rref = Math.max(0.5, cfg.R);
             const circ = 2 * Math.PI * Rref;
             const bandH = Math.max(0.01, bandS1 - bandS0);
 
             if (cfg.style === 'solid') return () => true;
+
+            // Mask-driven styles (halftone, gradientcells) need the Pattern A mask value at an
+            // arbitrary unrolled (u, s) point. sToV inverts the meridian's arc-length table built
+            // by buildMeshData back to v (exact, unlike assuming s is proportional to v); z/phi
+            // follow the same coordinate-system branch buildMeshData itself uses.
+            function sampleMaskValue(u, sVal) {
+                const theta = (u / circ) * 2 * Math.PI;
+                const v = sToV(sVal);
+                const z = cfg.sys === 'cylindrical' ? cfg.h * v : 0;
+                const phi = cfg.sys === 'cylindrical' ? 0 : cfg.sphBottom + (cfg.sphRim - cfg.sphBottom) * v;
+                const fR = evalForm(cfg.eq, theta, z, phi, v, cfg.R);
+                return evalMask(cfg.patternEq1, theta, z, phi, v, cfg.R, fR);
+            }
 
             if (cfg.style === 'lattice') {
                 const half = cfg.latThickness / 2;
@@ -1945,6 +2077,199 @@
                     let d = Infinity;
                     for (const g of segs) d = Math.min(d, segDist(px, py, g[0] * cw, g[1] * cv, g[2] * cw, g[3] * cv));
                     return d < half;
+                };
+            }
+
+            if (cfg.style === 'worleycrackle') {
+                // infinite, non-repeating crack web from hashed per-cell feature points (no
+                // seed array - every cell coordinate is hashed on demand, so it extends cleanly
+                // to any s, including buildBasePattern's continuation below the band). Strut
+                // where the gap between the two nearest feature distances is small, i.e. near a
+                // cell boundary. Seamless in theta because the cell index is wrapped mod cols
+                // before hashing, so cell `cols` and cell `0` hash identically.
+                const half = cfg.crackleThickness / 2;
+                const cols = Math.max(1, Math.round(cfg.crackleDensity));
+                const cell = circ / cols;
+                const seed = cfg.crackleSeed;
+                function featurePoint(icx, icy) {
+                    const wcx = ((icx % cols) + cols) % cols;
+                    return {
+                        x: (icx + worleyHashComponent(wcx, icy, 0, seed, 1)) * cell,
+                        y: (icy + worleyHashComponent(wcx, icy, 0, seed, 2)) * cell
+                    };
+                }
+                return (theta, s) => {
+                    const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
+                    const icx0 = Math.floor(u / cell), icy0 = Math.floor(ss / cell);
+                    let f1 = Infinity, f2 = Infinity;
+                    for (let dy = -1; dy <= 1; dy++) {
+                        for (let dx = -1; dx <= 1; dx++) {
+                            const p = featurePoint(icx0 + dx, icy0 + dy);
+                            let ddx = p.x - u; ddx -= circ * Math.round(ddx / circ);
+                            const ddy = p.y - ss;
+                            const d = Math.hypot(ddx, ddy);
+                            if (d < f1) { f2 = f1; f1 = d; } else if (d < f2) { f2 = d; }
+                        }
+                    }
+                    return (f2 - f1) < half;
+                };
+            }
+
+            if (cfg.style === 'caustic') {
+                // flowing organic web from fbm's zero-crossings, sampled on the cylinder
+                // embedding (seam-free in theta by construction).
+                const level = cfg.causticLevel, octaves = cfg.causticOctaves;
+                const seed = cfg.causticSeed, scale = cfg.causticScale;
+                return (theta, s) => {
+                    const v = (s - bandS0) / bandH;
+                    return Math.abs(fbm(theta, v, scale, scale, octaves, seed)) < level;
+                };
+            }
+
+            if (cfg.style === 'slits') {
+                // capsule-shaped slots that project crisp light rays: slitCount columns x
+                // slitRows staggered rows, each a tilted segment centered in its cell.
+                // Hole-based: returns !insideHole.
+                const cols = Math.max(1, Math.round(cfg.slitCount));
+                const rowsN = Math.max(1, Math.round(cfg.slitRows));
+                const cw = circ / cols, rh = bandH / rowsN;
+                const halfW = cfg.slitWidth / 2;
+                const segLen = clamp(cfg.slitLength, 0, 1) * rh;
+                const tilt = cfg.slitTilt * Math.PI / 180;
+                const hx = Math.sin(tilt) * segLen * 0.5, hy = Math.cos(tilt) * segLen * 0.5;
+                return (theta, s) => {
+                    const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
+                    const cx = Math.floor(u / cw), cy = Math.floor(ss / rh);
+                    for (let dcy = -1; dcy <= 1; dcy++) {
+                        const gcy = cy + dcy;
+                        const stagger = (((gcy % 2) + 2) % 2) ? cw * 0.5 : 0;
+                        const centerS = (gcy + 0.5) * rh;
+                        for (let dcx = -1; dcx <= 1; dcx++) {
+                            const centerU = (cx + dcx + 0.5) * cw + stagger;
+                            let du = u - centerU; du -= circ * Math.round(du / circ);
+                            const d = segDist(du, ss, -hx, centerS - hy, hx, centerS + hy);
+                            if (d < halfW) return false; // inside a slot -> hole
+                        }
+                    }
+                    return true;
+                };
+            }
+
+            if (cfg.style === 'halftone') {
+                // staggered hex grid of round holes (same center layout as honeycomb) whose
+                // radius is driven by the Pattern A mask sampled at each hole's own center -
+                // bright where the mask is high, dark where low. Hole-based: !insideHole.
+                const cols = Math.max(1, Math.round(cfg.htDensity));
+                const cellW = circ / cols;
+                const rowH = cellW * Math.sqrt(3) / 2;
+                const rowsN = Math.max(1, Math.round(bandH / rowH));
+                const rMin = cfg.htMinHole, rMax = cfg.htMaxHole;
+                const maxAllowed = 0.45 * Math.min(cellW, rowH);
+                const eq1 = (cfg.patternEq1 || '').trim();
+                const maskActive = eq1 !== '' && eq1 !== '-1';
+
+                let raw = null, minVal = Infinity, maxVal = -Infinity;
+                if (maskActive) {
+                    raw = [];
+                    for (let r = 0; r <= rowsN; r++) {
+                        const offU = (r & 1) ? cellW * 0.5 : 0;
+                        const rowVals = new Array(cols);
+                        const sv = bandS0 + r * rowH;
+                        for (let c = 0; c < cols; c++) {
+                            const u = (c + 0.5) * cellW + offU;
+                            const val = sampleMaskValue(u, sv);
+                            rowVals[c] = val;
+                            if (val < minVal) minVal = val;
+                            if (val > maxVal) maxVal = val;
+                        }
+                        raw.push(rowVals);
+                    }
+                }
+                const range = (maxVal - minVal) || 1;
+                function holeRadiusAt(r, c) {
+                    if (!maskActive) return 0.5 * (rMin + rMax);
+                    const norm = clamp((raw[r][c] - minVal) / range, 0, 1);
+                    return Math.min(maxAllowed, rMin + (rMax - rMin) * norm);
+                }
+
+                return (theta, s) => {
+                    const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
+                    const r0 = Math.round(ss / rowH);
+                    for (let dr = -1; dr <= 1; dr++) {
+                        // clamp (not skip) so buildBasePattern's continuation below bandS0
+                        // reuses the edge row's radii, matching turing/life's convention.
+                        const r = r0 + dr < 0 ? 0 : (r0 + dr > rowsN ? rowsN : r0 + dr);
+                        const offU = (r & 1) ? cellW * 0.5 : 0;
+                        const c0 = Math.round((u - offU) / cellW);
+                        for (let dc = -1; dc <= 1; dc++) {
+                            const c = ((c0 + dc) % cols + cols) % cols;
+                            const cx = (c0 + dc) * cellW + offU;
+                            let dx = u - cx; dx -= circ * Math.round(dx / circ);
+                            const dy = ss - r * rowH;
+                            const rad = holeRadiusAt(r, c);
+                            if (dx * dx + dy * dy < rad * rad) return false;
+                        }
+                    }
+                    return true;
+                };
+            }
+
+            if (cfg.style === 'constellation') {
+                // seeded star map: scattered round holes in 3 sizes plus thin chord-slots
+                // joining each star to its nearest neighbor(s). Hole-based: !insideHole.
+                // starCount is UI-capped at 120 so the plain O(points+segments) query (no
+                // bucketing needed) stays cheap.
+                const N = Math.min(120, Math.max(4, Math.round(cfg.constCount)));
+                const rMax = cfg.constMaxStar, half = cfg.constLineW / 2;
+                const rng = mulberry32(cfg.constSeed * 2654435761 + 555);
+                const rowsN = Math.max(1, Math.round(Math.sqrt(N * bandH / circ)));
+                const colsN = Math.max(1, Math.round(N / rowsN));
+                const cw = circ / colsN, ch = bandH / rowsN;
+                const stars = [];
+                for (let cy = 0; cy < rowsN; cy++) {
+                    for (let cx = 0; cx < colsN; cx++) {
+                        const ju = (rng() - 0.5) * 0.9, jv = (rng() - 0.5) * 0.9;
+                        let su = (cx + 0.5 + ju) * cw; su = ((su % circ) + circ) % circ;
+                        const sv = bandS0 + clamp(cy + 0.5 + jv, 0.05, rowsN - 0.05) * ch;
+                        const rank = rng();
+                        const r = rank < 0.15 ? rMax : (rank < 0.5 ? rMax * 0.6 : rMax * 0.32);
+                        stars.push({ u: su, v: sv, r });
+                    }
+                }
+                // connect each star to its nearest neighbor (+ 2nd with 40% chance), deduped
+                const segSet = new Set(), segs = [];
+                function addSeg(i, j) {
+                    const key = i < j ? i * stars.length + j : j * stars.length + i;
+                    if (segSet.has(key)) return;
+                    segSet.add(key); segs.push([i, j]);
+                }
+                for (let i = 0; i < stars.length; i++) {
+                    let best = -1, bestD = Infinity, second = -1, secondD = Infinity;
+                    for (let j = 0; j < stars.length; j++) {
+                        if (j === i) continue;
+                        let dx = stars[j].u - stars[i].u; dx -= circ * Math.round(dx / circ);
+                        const dy = stars[j].v - stars[i].v;
+                        const d2 = dx * dx + dy * dy;
+                        if (d2 < bestD) { second = best; secondD = bestD; best = j; bestD = d2; }
+                        else if (d2 < secondD) { second = j; secondD = d2; }
+                    }
+                    if (best >= 0) addSeg(i, best);
+                    if (second >= 0 && rng() < 0.4) addSeg(i, second);
+                }
+                return (theta, s) => {
+                    const u = (theta / (2 * Math.PI)) * circ;
+                    for (let i = 0; i < stars.length; i++) {
+                        let dx = stars[i].u - u; dx -= circ * Math.round(dx / circ);
+                        const dy = stars[i].v - s;
+                        if (dx * dx + dy * dy < stars[i].r * stars[i].r) return false;
+                    }
+                    for (let k = 0; k < segs.length; k++) {
+                        const a = stars[segs[k][0]], b = stars[segs[k][1]];
+                        let dx = b.u - a.u; dx -= circ * Math.round(dx / circ);
+                        let qu = u - a.u; qu -= circ * Math.round(qu / circ);
+                        if (segDist(qu, s, 0, a.v, dx, b.v) < half) return false;
+                    }
+                    return true;
                 };
             }
 
@@ -2586,7 +2911,21 @@
             while (rimBotRow > baseTopRow + 1 && (totalArc - sArc[rimBotRow]) < cfg.rimSolid) rimBotRow--;
 
             const bandS0 = sArc[baseTopRow], bandS1 = sArc[rimBotRow];
-            const isStrut = buildPattern(cfg, bandS0, bandS1);
+            // Inverts the meridian arc-length table back to v (binary search + lerp) for the
+            // mask-driven pattern styles (halftone, gradientcells) - see buildPattern's
+            // sampleMaskValue.
+            function sToV(sVal) {
+                if (sVal <= sArc[0]) return vrow[0];
+                if (sVal >= sArc[rowN - 1]) return vrow[rowN - 1];
+                let lo = 0, hi = rowN - 1;
+                while (hi - lo > 1) {
+                    const mid = (lo + hi) >> 1;
+                    if (sArc[mid] <= sVal) lo = mid; else hi = mid;
+                }
+                const t = (sVal - sArc[lo]) / Math.max(1e-9, sArc[hi] - sArc[lo]);
+                return vrow[lo] + t * (vrow[hi] - vrow[lo]);
+            }
+            const isStrut = buildPattern(cfg, bandS0, bandS1, sToV);
             const dT = 2 * Math.PI / resT;
 
             // occupancy + colour state for wall/rim rows
@@ -2895,7 +3234,8 @@
             fibonacci: ['fibThickness'], fluting: ['flThickness'], chladni: ['chlThickness'],
             schwarzp: ['schwarzThickness'], schwarzd: ['schwarzdThickness'], honeycomb: ['hexThickness'],
             truchet: ['truchetThickness'], maze: ['mazeThickness'], scales: ['scaleThickness'],
-            star: ['starThickness'], greekkey: ['greekThickness']
+            star: ['starThickness'], greekkey: ['greekThickness'],
+            worleycrackle: ['crackleThickness'], constellation: ['constLineW']
         };
         function formatThinStrutWarning(cfg) {
             const fields = STYLE_THICKNESS_FIELDS[cfg.style];
@@ -3216,6 +3556,11 @@ ${trianglesXml.join('\n')}
             'truchetDensity', 'truchetThickness', 'truchetSeed', 'quasiDensity', 'quasiWaves', 'quasiWidth',
             'mazeDensity', 'mazeThickness', 'mazeSeed', 'scaleDensity', 'scaleThickness',
             'starDensity', 'starThickness', 'greekCount', 'greekThickness',
+            'crackleDensity', 'crackleThickness', 'crackleSeed',
+            'causticScale', 'causticLevel', 'causticOctaves', 'causticSeed',
+            'slitCount', 'slitRows', 'slitWidth', 'slitLength', 'slitTilt',
+            'htDensity', 'htMinHole', 'htMaxHole',
+            'constCount', 'constMaxStar', 'constLineW', 'constSeed',
             'patternPresetSelect1', 'patternPresetSelect2', 'patternEquation1', 'patternEquation2',
             'baseColor', 'patternColor1', 'patternColor2', 'overlapColor',
             'resV', 'resT', 'shellSmoothPasses'
@@ -3300,7 +3645,9 @@ ${trianglesXml.join('\n')}
             fibonacci: 'Fibonacci', phyllotaxis: 'Phyllotaxis', turing: 'Turing', fluting: 'Fluted',
             life: 'Cellular', chladni: 'Chladni', honeycomb: 'Honeycomb', trabecular: 'Trabecular',
             truchet: 'Truchet', quasicrystal: 'Quasicrystal', maze: 'Maze', scales: 'Fish-Scale',
-            star: 'Star Lattice', greekkey: 'Greek Key'
+            star: 'Star Lattice', greekkey: 'Greek Key',
+            worleycrackle: 'Worley Crackle', caustic: 'Caustic Web', slits: 'Ray Slits',
+            halftone: 'Halftone Glow', constellation: 'Constellation'
         };
         function computeAutoName() {
             const sn = styleNameMap[document.getElementById('patternStyle').value] || '';
@@ -3410,10 +3757,15 @@ ${trianglesXml.join('\n')}
             maze: "A solvable maze; its corridors form the material.",
             scales: "Overlapping fish-scale / Seigaiha wave rings.",
             star: "Islamic star-and-cross geometric lattice.",
-            greekkey: "Repeating Greek key / meander fret."
+            greekkey: "Repeating Greek key / meander fret.",
+            worleycrackle: "Infinite, non-repeating stone-crack web (hashed, seamless).",
+            caustic: "Flowing fractal-noise web like light through water.",
+            slits: "Staggered tilted slot louvers that project crisp light rays.",
+            halftone: "Hex hole grid sized by the Pattern A mask - a light-intensity image.",
+            constellation: "Scattered star holes linked by thin chord slots."
         };
         // styles that are open/fragile enough to want the solid liner on by default
-        const linerDefaultStyles = ['turing', 'fluting', 'life', 'wave'];
+        const linerDefaultStyles = ['turing', 'fluting', 'life', 'wave', 'caustic', 'halftone', 'constellation'];
         // Every pattern-style settings-panel id (minus the 'Settings' suffix) - the single
         // source of truth for which panel to show, shared by onPatternStyleChange (live UI) and
         // applyDesignConfig (design .json load). Previously applyDesignConfig had its own
@@ -3421,7 +3773,8 @@ ${trianglesXml.join('\n')}
         // added after it was last updated.
         const PATTERN_PANEL_IDS = ['voronoi', 'lattice', 'weave', 'wave', 'gyroid', 'origami', 'fibonacci', 'phyllotaxis',
             'turing', 'fluting', 'life', 'chladni', 'schwarzp', 'schwarzd', 'honeycomb', 'trabecular',
-            'truchet', 'quasicrystal', 'maze', 'scales', 'star', 'greekkey'];
+            'truchet', 'quasicrystal', 'maze', 'scales', 'star', 'greekkey',
+            'worleycrackle', 'caustic', 'slits', 'halftone', 'constellation'];
         function onPatternStyleChange() {
             const s = document.getElementById('patternStyle').value;
             PATTERN_PANEL_IDS.forEach(p => document.getElementById(p + 'Settings').classList.toggle('active', s === p));
@@ -3468,6 +3821,11 @@ ${trianglesXml.join('\n')}
                 truchetDensity: 12, truchetThickness: 2.0, truchetSeed: 1, quasiDensity: 6, quasiWaves: 5, quasiWidth: 0.18,
                 mazeDensity: 16, mazeThickness: 2.5, mazeSeed: 1, scaleDensity: 10, scaleThickness: 2.0,
                 starDensity: 8, starThickness: 2.0, greekCount: 8, greekThickness: 2.0,
+                crackleDensity: 14, crackleThickness: 2.0, crackleSeed: 3,
+                causticScale: 5, causticLevel: 0.1, causticOctaves: 3, causticSeed: 4,
+                slitCount: 16, slitRows: 6, slitWidth: 3.0, slitLength: 0.6, slitTilt: 12,
+                htDensity: 16, htMinHole: 1.0, htMaxHole: 4.5,
+                constCount: 60, constMaxStar: 3.5, constLineW: 1.2, constSeed: 9,
                 resV: 200, resT: 300
             };
             for (const id in defs) document.getElementById(id).value = defs[id];
