@@ -154,6 +154,11 @@
             background: #f2f4f7;
         }
 
+        .expr-error {
+            border-color: var(--danger) !important;
+            box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.22);
+        }
+
         .desc-text {
             font-size: 0.7rem;
             color: #7b8794;
@@ -722,6 +727,15 @@
         </div>
 
         <div class="section-title">4. Dual Pattern Color Layer</div>
+        <div class="input-group">
+            <label>Pattern Mode</label>
+            <select id="patternMode" onchange="updatePreview()">
+                <option value="color">Color (four-state surface coloring)</option>
+                <option value="cutout">Cutout (perforated lattice / lantern holes)</option>
+            </select>
+        </div>
+        <div id="patternModeDesc" class="desc-text">Color mode paints the masked regions; colors and Color Layer Depth
+            below are ignored in Cutout mode, which removes material through the wall instead.</div>
         <div class="grid-inputs">
             <div class="input-group">
                 <label>Pattern A Preset</label>
@@ -773,6 +787,20 @@
                     min="20" oninput="updatePreview()"></div>
         </div>
         <div class="grid-inputs">
+            <div class="input-group"
+                style="display: flex; flex-direction: row; align-items: center; gap: 14px; justify-content: flex-start; padding-top: 2px; flex-wrap: wrap;">
+                <span style="display: inline-flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="autoResolution" onchange="onAutoResolutionChange()"
+                        style="width: auto; height: 18px; cursor: pointer; margin: 0;">
+                    <label for="autoResolution"
+                        style="display: inline-block; margin: 0; cursor: pointer; overflow: visible;">Auto Resolution
+                        (from equation detail)</label>
+                </span>
+            </div>
+        </div>
+        <div class="desc-text">When enabled, Vertical and Radial Nodes above are computed automatically from how much
+            angular/vertical detail the current base equation actually needs, instead of a fixed number.</div>
+        <div class="grid-inputs">
             <div class="input-group"><label>Pattern Vertical Nodes</label><input type="number" id="patternResV"
                     value="120" step="10" min="20" oninput="updatePreview()"></div>
             <div class="input-group"><label>Pattern Radial Nodes (θ)</label><input type="number" id="patternResT"
@@ -799,6 +827,11 @@
                 strength · M(θ, <span class="varLabel">z</span>, v)</label>
             <textarea id="modifierEquation" class="tex-area" oninput="updatePreview()"></textarea>
         </div>
+        <div class="input-group">
+            <label style="color: var(--highlight)">Vertical Warp (optional): Mv(θ, <span class="varLabel">z</span>, v)
+                → v' = v + strength · Mv(θ, <span class="varLabel">z</span>, v)</label>
+            <textarea id="modifierEquationV" class="tex-area" oninput="updatePreview()"></textarea>
+        </div>
         <div class="grid-inputs">
             <div class="input-group"><label>Modifier Strength</label><input type="number" id="modifierStrength"
                     value="0.5" step="0.05" oninput="updatePreview()"></div>
@@ -812,8 +845,10 @@
                 </select>
             </div>
         </div>
-        <div class="desc-text">Field modifiers remap the sampled coordinates before evaluating the selected target. This
-            first version warps angular sampling only, which keeps the form pot-oriented and printable by default.</div>
+        <div class="desc-text">Field modifiers remap the sampled coordinates before evaluating the selected target,
+            sharing the same strength and target above. The angular modifier warps theta; the optional vertical warp
+            additionally remaps v (recomputing z or phi to match), enabling conformal warps and vertical feature
+            migration. Leave the vertical warp blank for the original angular-only behavior.</div>
 
         <div class="section-title" style="color: var(--highlight)">7. Experimental Tool - Field Distortion</div>
         <div class="grid-inputs">
@@ -957,10 +992,11 @@
 
     <script>
         const pi = Math.PI, sin = Math.sin, cos = Math.cos, tan = Math.tan,
-            asin = Math.asin, acos = Math.acos, atan = Math.atan, pow = Math.pow,
+            asin = Math.asin, acos = Math.acos, atan = Math.atan, atan2 = Math.atan2,
+            sinh = Math.sinh, cosh = Math.cosh, tanh = Math.tanh, pow = Math.pow,
             min = Math.min, max = Math.max, abs = Math.abs, exp = Math.exp,
             sqrt = Math.sqrt, log = Math.log, floor = Math.floor, ceil = Math.ceil,
-            round = Math.round, sign = Math.sign;
+            round = Math.round, sign = Math.sign, hypot = Math.hypot;
         const clamp = (x, a, b) => min(max(x, a), b);
         const fract = x => x - floor(x);
         const smoothstep = (a, b, x) => {
@@ -968,8 +1004,332 @@
             return t * t * (3 - 2 * t);
         };
 
+        // ---- Expression compiler ----
+        // Equation fields used to run through raw eval() once per sample point - hundreds of
+        // thousands of calls for a single preview, each one re-parsing the source string, and
+        // each one able to execute arbitrary JS (a real concern given the AI-assistance flow
+        // encourages pasting third-party JSON equation strings). Every field is now whitelist
+        // validated once and compiled with `new Function`, then the compiled function is reused
+        // for every sample. Compiled functions only see the explicit parameter list below - no
+        // page globals, no DOM, no window/document - so the whitelist IS the sandbox.
+        const EXPR_MATH_NAMES = ['pi', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'atan2',
+            'sinh', 'cosh', 'tanh', 'pow', 'min', 'max', 'abs', 'exp', 'sqrt', 'log',
+            'floor', 'ceil', 'round', 'sign', 'clamp', 'fract', 'smoothstep', 'mod', 'hypot',
+            'cnoise', 'fbm', 'ridged', 'worley', 'phyllo'];
+        const EXPR_MATH_VALUES = [pi, sin, cos, tan, asin, acos, atan, atan2,
+            sinh, cosh, tanh, pow, min, max, abs, exp, sqrt, log,
+            floor, ceil, round, sign, clamp, fract, smoothstep, mod, hypot,
+            cnoise, fbm, ridged, worley, phyllo];
+
+        // theta/z/phi/v/R: shared by base, texture, and modifier equations.
+        const EXPR_FIELD_NAMES = ['theta', 'z', 'phi', 'v', 'R'];
+        const EXPR_FIELD_KEY = EXPR_FIELD_NAMES.join(',');
+        // Distortion equations act in world XYZ after the field is sampled. `zs` is the
+        // height/z-sample value (kept for legacy parity); `z` is the world-space Z coordinate.
+        const EXPR_DISTORTION_NAMES = ['theta', 'zs', 'phi', 'v', 'R', 'x', 'y', 'z'];
+        const EXPR_DISTORTION_KEY = EXPR_DISTORTION_NAMES.join(',');
+        // Pattern masks get extra derived scalars (texture/radius stats) plus two helper
+        // functions, matching what evaluatePatternValue has always exposed to eval().
+        const EXPR_PATTERN_NAMES = ['theta', 'z', 'phi', 'v', 'R', 'texRaw', 'outerRadius',
+            'baseFormRadius', 'texMin', 'texMax', 'texRange', 'texNorm', 'texPosMax', 'texPosNorm',
+            'radiusMin', 'radiusMax', 'radiusRange', 'radiusNorm', 'localBaseRadius', 'localRadiusDev',
+            'radiusDev', 'absRadiusDev', 'outerDeviation', 'textureFill'];
+        const EXPR_PATTERN_KEY = EXPR_PATTERN_NAMES.join(',');
+
+        const EXPR_ALLOWED_NAMES = new Set([...EXPR_MATH_NAMES, ...EXPR_FIELD_NAMES,
+            ...EXPR_DISTORTION_NAMES, ...EXPR_PATTERN_NAMES]);
+        const EXPR_IDENTIFIER_RE = /[A-Za-z_$][A-Za-z0-9_$]*/g;
+        const EXPR_FORBIDDEN_RE = /[`\[\]{};]|=>|\bfunction\b|\bnew\b|\bthis\b|\bwindow\b|\bdocument\b|\bglobalThis\b|\bconstructor\b|\b__proto__\b/;
+
+        function validateExprSource(src) {
+            if (EXPR_FORBIDDEN_RE.test(src)) {
+                throw new Error('contains disallowed syntax');
+            }
+            const tokens = src.match(EXPR_IDENTIFIER_RE) || [];
+            for (const token of tokens) {
+                if (!EXPR_ALLOWED_NAMES.has(token)) {
+                    throw new Error(`unknown name "${token}"`);
+                }
+            }
+        }
+
+        const exprCache = new Map();
+
+        function getCompiledExpr(source, varNames, varKey) {
+            const safeSource = (typeof source === 'string' && source.trim().length) ? source : '0';
+            const cacheKey = varKey + '\u0001' + safeSource;
+            const cached = exprCache.get(cacheKey);
+            if (cached !== undefined) return cached;
+
+            let compiled;
+            try {
+                validateExprSource(safeSource);
+                // Math constants go first in the parameter list so .bind() (a native, highly
+                // optimized V8 primitive) can pre-fix them once at compile time. Every one of
+                // the hundreds of thousands of per-sample calls this makes over a render then
+                // only has to pass the handful of real variable args - no per-call spreading
+                // of ~27 constant values back into the argument list.
+                const raw = new Function(...EXPR_MATH_NAMES, ...varNames,
+                    '"use strict"; return (' + safeSource + ');');
+                compiled = raw.bind(null, ...EXPR_MATH_VALUES);
+            } catch (err) {
+                compiled = err instanceof Error ? err : new Error(String(err));
+            }
+
+            // Unbounded growth guard: equations recompile on every keystroke while typing,
+            // so a very long editing session could otherwise accumulate stale cache entries.
+            if (exprCache.size > 800) exprCache.clear();
+            exprCache.set(cacheKey, compiled);
+            return compiled;
+        }
+
+        // Public entry point for UI-facing compile checks (see refreshExpressionCompileStatus).
+        function compileExpr(source, varNames) {
+            return getCompiledExpr(source, varNames, varNames.join(','));
+        }
+
+        // Every equation-bearing textarea, paired with the variable scope it compiles against.
+        // Checked once per render pass so a bad equation gets a visible red outline + status
+        // message instead of silently falling back to a plain cylinder with no explanation.
+        const EXPR_FIELD_SPECS = [
+            { id: 'equation', label: 'Form Equation', varNames: EXPR_FIELD_NAMES },
+            { id: 'texEquation', label: 'Texture Displacement', varNames: EXPR_FIELD_NAMES },
+            { id: 'modifierEquation', label: 'Modifier', varNames: EXPR_FIELD_NAMES },
+            { id: 'modifierEquationV', label: 'Vertical Warp', varNames: EXPR_FIELD_NAMES },
+            { id: 'patternEquation1', label: 'Pattern A Mask', varNames: EXPR_PATTERN_NAMES },
+            { id: 'patternEquation2', label: 'Pattern B Mask', varNames: EXPR_PATTERN_NAMES },
+            { id: 'distortionDx', label: 'Distortion Dx', varNames: EXPR_DISTORTION_NAMES },
+            { id: 'distortionDy', label: 'Distortion Dy', varNames: EXPR_DISTORTION_NAMES },
+            { id: 'distortionDz', label: 'Distortion Dz', varNames: EXPR_DISTORTION_NAMES }
+        ];
+
+        function refreshExpressionCompileStatus() {
+            const errors = [];
+            EXPR_FIELD_SPECS.forEach(spec => {
+                const el = document.getElementById(spec.id);
+                if (!el) return;
+                const compiled = compileExpr(el.value, spec.varNames);
+                const hasError = compiled instanceof Error;
+                el.classList.toggle('expr-error', hasError);
+                if (hasError) errors.push(`${spec.label}: ${compiled.message}`);
+            });
+            return errors;
+        }
+
+        // ---- Procedural noise (equation scope helpers) ----
+        // All four helpers below are seam-free in theta by construction: they sample a 3D
+        // noise/hash field at a point embedded on a cylinder (radius st, height scale sv), so
+        // theta=0 and theta=2*pi land on the exact same (x,y) and the field is continuous by
+        // definition - no explicit wraparound handling needed. All are deterministic for a
+        // given seed, so the same design always produces byte-identical exported geometry.
+
+        function mulberry32(seed) {
+            let a = seed >>> 0;
+            return function () {
+                a = (a + 0x6D2B79F5) | 0;
+                let t = Math.imul(a ^ (a >>> 15), 1 | a);
+                t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+                return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+            };
+        }
+
+        // Classic 3D simplex noise (Gustavson-style). Permutation tables are built once per
+        // seed from a seeded PRNG and cached, since rebuilding a 256-entry shuffled table on
+        // every one of the tens of thousands of per-render samples would defeat the point.
+        const SIMPLEX_F3 = 1 / 3, SIMPLEX_G3 = 1 / 6;
+        const SIMPLEX_GRAD3 = [
+            [1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
+            [1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
+            [0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]
+        ];
+        const simplexPermCache = new Map();
+
+        function getSimplexPerm(seed) {
+            const key = Math.floor(seed) || 0;
+            const cached = simplexPermCache.get(key);
+            if (cached) return cached;
+
+            const rand = mulberry32((key * 2654435761) ^ 0x9E3779B9);
+            const p = new Uint8Array(256);
+            for (let i = 0; i < 256; i++) p[i] = i;
+            for (let i = 255; i > 0; i--) {
+                const j = Math.floor(rand() * (i + 1));
+                const tmp = p[i]; p[i] = p[j]; p[j] = tmp;
+            }
+            const perm = new Uint8Array(512);
+            const permMod12 = new Uint8Array(512);
+            for (let i = 0; i < 512; i++) {
+                perm[i] = p[i & 255];
+                permMod12[i] = perm[i] % 12;
+            }
+            const table = { perm, permMod12 };
+            if (simplexPermCache.size > 64) simplexPermCache.clear();
+            simplexPermCache.set(key, table);
+            return table;
+        }
+
+        function rawSimplex3(x, y, z, seed) {
+            const { perm, permMod12 } = getSimplexPerm(seed);
+
+            const s = (x + y + z) * SIMPLEX_F3;
+            const i = Math.floor(x + s), j = Math.floor(y + s), k = Math.floor(z + s);
+            const t = (i + j + k) * SIMPLEX_G3;
+            const x0 = x - (i - t), y0 = y - (j - t), z0 = z - (k - t);
+
+            let i1, j1, k1, i2, j2, k2;
+            if (x0 >= y0) {
+                if (y0 >= z0) { i1 = 1; j1 = 0; k1 = 0; i2 = 1; j2 = 1; k2 = 0; }
+                else if (x0 >= z0) { i1 = 1; j1 = 0; k1 = 0; i2 = 1; j2 = 0; k2 = 1; }
+                else { i1 = 0; j1 = 0; k1 = 1; i2 = 1; j2 = 0; k2 = 1; }
+            } else {
+                if (y0 < z0) { i1 = 0; j1 = 0; k1 = 1; i2 = 0; j2 = 1; k2 = 1; }
+                else if (x0 < z0) { i1 = 0; j1 = 1; k1 = 0; i2 = 0; j2 = 1; k2 = 1; }
+                else { i1 = 0; j1 = 1; k1 = 0; i2 = 1; j2 = 1; k2 = 0; }
+            }
+
+            const x1 = x0 - i1 + SIMPLEX_G3, y1 = y0 - j1 + SIMPLEX_G3, z1 = z0 - k1 + SIMPLEX_G3;
+            const x2 = x0 - i2 + 2 * SIMPLEX_G3, y2 = y0 - j2 + 2 * SIMPLEX_G3, z2 = z0 - k2 + 2 * SIMPLEX_G3;
+            const x3 = x0 - 1 + 3 * SIMPLEX_G3, y3 = y0 - 1 + 3 * SIMPLEX_G3, z3 = z0 - 1 + 3 * SIMPLEX_G3;
+
+            const ii = i & 255, jj = j & 255, kk = k & 255;
+            let n0 = 0, n1 = 0, n2 = 0, n3 = 0;
+
+            let t0 = 0.6 - x0 * x0 - y0 * y0 - z0 * z0;
+            if (t0 >= 0) {
+                const g = SIMPLEX_GRAD3[permMod12[ii + perm[jj + perm[kk]]]];
+                t0 *= t0;
+                n0 = t0 * t0 * (g[0] * x0 + g[1] * y0 + g[2] * z0);
+            }
+            let t1 = 0.6 - x1 * x1 - y1 * y1 - z1 * z1;
+            if (t1 >= 0) {
+                const g = SIMPLEX_GRAD3[permMod12[ii + i1 + perm[jj + j1 + perm[kk + k1]]]];
+                t1 *= t1;
+                n1 = t1 * t1 * (g[0] * x1 + g[1] * y1 + g[2] * z1);
+            }
+            let t2 = 0.6 - x2 * x2 - y2 * y2 - z2 * z2;
+            if (t2 >= 0) {
+                const g = SIMPLEX_GRAD3[permMod12[ii + i2 + perm[jj + j2 + perm[kk + k2]]]];
+                t2 *= t2;
+                n2 = t2 * t2 * (g[0] * x2 + g[1] * y2 + g[2] * z2);
+            }
+            let t3 = 0.6 - x3 * x3 - y3 * y3 - z3 * z3;
+            if (t3 >= 0) {
+                const g = SIMPLEX_GRAD3[permMod12[ii + 1 + perm[jj + 1 + perm[kk + 1]]]];
+                t3 *= t3;
+                n3 = t3 * t3 * (g[0] * x3 + g[1] * y3 + g[2] * z3);
+            }
+            return 32 * (n0 + n1 + n2 + n3);
+        }
+
+        // cnoise(theta, v, st, sv, seed): seeded 3D simplex noise sampled on a cylinder of
+        // radius st and height scale sv. Range roughly [-1, 1].
+        function cnoise(theta, v, st, sv, seed) {
+            const radius = st || 1;
+            return rawSimplex3(radius * cos(theta), radius * sin(theta), (sv || 1) * v, Math.floor(seed) || 0);
+        }
+
+        // fbm(theta, v, st, sv, octaves, seed): standard fractal Brownian motion - amplitude
+        // halves and frequency doubles each octave (capped at 8 to bound per-call cost).
+        function fbm(theta, v, st, sv, octaves, seed) {
+            const n = Math.max(1, Math.min(8, Math.floor(octaves) || 1));
+            const baseSeed = Math.floor(seed) || 0;
+            let amplitude = 0.5, frequency = 1, sum = 0, norm = 0;
+            for (let o = 0; o < n; o++) {
+                sum += amplitude * cnoise(theta, v, st * frequency, sv * frequency, baseSeed + o * 101);
+                norm += amplitude;
+                amplitude *= 0.5;
+                frequency *= 2;
+            }
+            return norm > 0 ? sum / norm : 0;
+        }
+
+        // ridged(theta, v, st, sv, octaves, seed): ridged multifractal (1 - |fbm octave|,
+        // summed) - produces sharp ridges along each octave's zero crossings. Range [0, 1].
+        function ridged(theta, v, st, sv, octaves, seed) {
+            const n = Math.max(1, Math.min(8, Math.floor(octaves) || 1));
+            const baseSeed = Math.floor(seed) || 0;
+            let amplitude = 0.5, frequency = 1, sum = 0, norm = 0;
+            for (let o = 0; o < n; o++) {
+                const sample = cnoise(theta, v, st * frequency, sv * frequency, baseSeed + o * 101);
+                sum += amplitude * (1 - abs(sample));
+                norm += amplitude;
+                amplitude *= 0.5;
+                frequency *= 2;
+            }
+            return norm > 0 ? sum / norm : 0;
+        }
+
+        // Deterministic hash -> [0,1), used to jitter Worley cell feature points. Three calls
+        // with different salts give the x/y/z jitter for one cell without allocating an array.
+        function worleyHashComponent(ix, iy, iz, seed, salt) {
+            let h = (ix * 374761393 + iy * 668265263 + iz * 2147483647 + seed * 3266489917 + salt * 2246822519) | 0;
+            h = Math.imul(h ^ (h >>> 13), 1274126177);
+            h = (h ^ (h >>> 16)) >>> 0;
+            return h / 4294967296;
+        }
+
+        function worley3(x, y, z, seed) {
+            const ix = Math.floor(x), iy = Math.floor(y), iz = Math.floor(z);
+            let minDist2 = Infinity;
+            for (let dx = -1; dx <= 1; dx++) {
+                for (let dy = -1; dy <= 1; dy++) {
+                    for (let dz = -1; dz <= 1; dz++) {
+                        const cx = ix + dx, cy = iy + dy, cz = iz + dz;
+                        const fx = cx + worleyHashComponent(cx, cy, cz, seed, 1);
+                        const fy = cy + worleyHashComponent(cx, cy, cz, seed, 2);
+                        const fz = cz + worleyHashComponent(cx, cy, cz, seed, 3);
+                        const ddx = fx - x, ddy = fy - y, ddz = fz - z;
+                        const dist2 = ddx * ddx + ddy * ddy + ddz * ddz;
+                        if (dist2 < minDist2) minDist2 = dist2;
+                    }
+                }
+            }
+            return sqrt(minDist2);
+        }
+
+        // worley(theta, v, st, sv, seed): cellular F1 distance noise on the same cylinder
+        // embedding as cnoise. Normalized to roughly [0, 1]. Good for crackle/leather/hammered
+        // surfaces.
+        function worley(theta, v, st, sv, seed) {
+            const radius = st || 1;
+            const d = worley3(radius * cos(theta), radius * sin(theta), (sv || 1) * v, Math.floor(seed) || 0);
+            return min(1, d / 1.2);
+        }
+
+        // phyllo(theta, v, n, size): golden-angle phyllotaxis bump field. n seeds are laid out
+        // at theta_k = k*goldenAngle, v_k = k/(n-1); returns the strongest Gaussian bump among
+        // the seeds near the query's v-band (checked in a small window, not all n) rather than
+        // one exact nearest neighbor - a standard, cheap approximation for a procedural stud
+        // field. theta distance is expressed as a fraction of the full circle so the theta and
+        // v axes share one comparable "size" scale.
+        const PHYLLO_GOLDEN_ANGLE = pi * (3 - sqrt(5));
+        function phyllo(theta, v, n, size) {
+            const count = Math.max(1, Math.min(2000, Math.floor(n) || 1));
+            const bumpSize = Math.max(1e-4, size || 0.05);
+            const invSize2 = 1 / (bumpSize * bumpSize);
+            const vClamped = clamp(v, 0, 1);
+            const centerK = Math.round(vClamped * (count - 1));
+            const halfWindow = 10;
+            let best = 0;
+            const loK = Math.max(0, centerK - halfWindow);
+            const hiK = Math.min(count - 1, centerK + halfWindow);
+            for (let k = loK; k <= hiK; k++) {
+                const vk = count > 1 ? k / (count - 1) : 0;
+                const thetaK = mod(k * PHYLLO_GOLDEN_ANGLE, 2 * pi);
+                const dThetaRaw = mod(theta - thetaK + pi, 2 * pi) - pi;
+                const dThetaFrac = dThetaRaw / (2 * pi);
+                const dv = vClamped - vk;
+                const dist2 = dThetaFrac * dThetaFrac + dv * dv;
+                const bump = exp(-dist2 * invSize2);
+                if (bump > best) best = bump;
+            }
+            return best;
+        }
+
         let scene, camera, renderer, controls, currentObject = null;
         let renderTimeout = null;
+        let fullResTimeout = null;
+        let lastUpdatePreviewCall = 0;
         let suppressPreviewUpdates = false;
         let aiConfiguredPotName = '';
 
@@ -1008,6 +1368,7 @@
                 "Barrel Oval": { type: "primitive", eq: "R / sqrt(1.45*pow(cos(theta), 2) + 0.82*pow(sin(theta), 2))", desc: "A fuller oval profile with a barrel-like body and gentle side expansion." },
                 "Shield Profile": { type: "primitive", eq: "R * (1 + 0.14*cos(theta) - 0.08*cos(2*theta))", desc: "A smooth shield-like section with a fuller upper body and tapered lower sweep." },
                 "Soft Clover": { type: "primitive", eq: "R * (1 + 0.09 * cos(4 * theta))", desc: "A mild four-lobed primitive between a circle and a floral clover form." },
+                "Catenary Waist": { type: "primitive", eq: "R * (0.62 + 0.38 * cosh(2.4*(v-0.5)) / cosh(1.2))", desc: "A minimal-surface catenoid-like profile: full at base and rim, cinched through the exact middle." },
 
                 // polygon
                 "Triangle": { type: "polygon", eq: "R * cos(pi/3) / cos(mod(theta, 2*pi/3) - pi/3)", desc: "Regular triangular cross-section with sharp planar faces and three corners." },
@@ -1043,6 +1404,7 @@
                 "Nested Warp Blossom": { type: "floral", eq: "R * (1 + 0.22 * cos(5 * (theta + 0.18*sin(3*pi*v) + 0.07*sin(11*theta))))", desc: "Domain-warped blossom with nested phase motion inside the petal field." },
                 "Twisted Rosette": { type: "floral", eq: "R * (1 + 0.16 * cos(8 * theta + 0.8*pi*v) + 0.05 * cos(4 * theta))", desc: "A rosette-style floral section whose petal phase rotates gradually up the body." },
                 "Bloom Lantern": { type: "floral", eq: "R * (1 + 0.18 * sin(pi * z / 10)) * (1 + 0.16 * cos(6 * theta))", desc: "A lantern-like floral vessel with a fuller body and evenly repeated petals." },
+                "Rose Curve (Cusped)": { type: "floral", eq: "R * (0.78 + 0.22 * abs(cos(2.5 * theta)))", desc: "A true half-integer-order polar rose curve. The abs() creates sharp cusps at each zero crossing instead of the smoothly rounded lobes of the harmonic-based petal presets." },
 
                 // folded
                 "Folded Mod Panels": { type: "folded", eq: "R * (1 + 0.18 * cos(8 * abs(mod(theta + pi*v, pi/4) - pi/8)))", desc: "Wrapped angular domains produce repeated folded panel segments around the body." },
@@ -1076,6 +1438,9 @@
                 "Compressed Wave Stack": { type: "nonlinear", eq: "R * (1 + 0.12 * atan(5 * (sin(4*theta + 3*pi*v) + 0.6*sin(9*theta - 2*pi*v))))", desc: "Layered harmonic waves compressed into stronger sculptural terraces." },
                 "Crown Splash Compression": { type: "nonlinear", eq: "R * (1 + (0.05 + 0.14*exp(-pow(v - 0.88, 2) * 50)) * atan(7 * cos(8*theta + pi*v)))", desc: "Compressed crown activity with sharper nonlinear ridges near the rim." },
                 "Nonlinear Turbine": { type: "nonlinear", eq: "R * (1 + 0.16 * atan(5 * cos(5*theta + 0.4*sin(theta))))", desc: "A turbine-like directional profile strengthened by nonlinear compression." },
+                "Superformula Hex Star": { type: "nonlinear", eq: "R * 0.9 * pow(pow(abs(cos(1.5*theta)), 14) + pow(abs(sin(1.5*theta)), 14), -0.125)", desc: "Gielis superformula star (m=6, n1=8, n2=n3=14): smooth flats between six sharply compressed points." },
+                "Superformula Starfish": { type: "nonlinear", eq: "R * 0.65 * pow(pow(abs(cos(1.25*theta)), 7) + pow(abs(sin(1.25*theta)), 7), -0.5)", desc: "Gielis superformula starfish (m=5): closes seamlessly because swapping cos and sin at theta+2pi leaves the sum unchanged." },
+                "Superformula Morph": { type: "nonlinear", eq: "R * ((1-v) * 0.9*pow(pow(abs(cos(1.5*theta)),14) + pow(abs(sin(1.5*theta)),14), -0.125) + v * 0.65*pow(pow(abs(cos(1.25*theta)),7) + pow(abs(sin(1.25*theta)),7), -0.5))", desc: "Cross-fades from the six-point superformula star at the base to the five-point starfish at the rim." },
 
                 // interference
                 "Fourier Bloom": { type: "interference", eq: "R * (1 + 0.18 * (cos(3*theta) + 0.45*cos(7*theta + pi*v) + 0.20*cos(13*theta - 2*pi*v)))", desc: "Layered harmonic bloom built from a small Fourier-style sum of angular modes." },
@@ -1201,7 +1566,9 @@
                 "Equatorial Interference Belt": { type: "interference", eq: "R * (1 + 0.12*exp(-pow(phi - pi/2, 2)*10) * (cos(8*theta + 6*phi) + 0.5*cos(13*theta - 5*phi)))", desc: "Interference structure concentrated through the equatorial belt while the poles remain calmer." },
                 "Polar Wave Crown": { type: "interference", eq: "R * (1 + 0.12*exp(-pow(phi - 0.35, 2)*18) * (cos(10*theta) + 0.4*cos(20*theta + 4*phi)))", desc: "A crown-like interference field concentrated toward the upper polar region." },
                 "Irrational Weave Orb": { type: "interference", eq: "R * (1 + 0.06*cos(9*theta + sqrt(2)*7*phi) + 0.06*cos(14*theta - sqrt(3)*5*phi))", desc: "Woven spherical field using irrational phase mixing to reduce obvious repeat patterns." },
-                "Quasi Lattice Orb": { type: "interference", eq: "R * (1 + 0.06*cos(10*theta + sqrt(2)*8*phi) + 0.06*cos(15*theta - sqrt(3)*6*phi) + 0.03*cos(20*theta + 4*phi))", desc: "Quasi-periodic lattice interference using irrational phase mixing and layered angular structure." }
+                "Quasi Lattice Orb": { type: "interference", eq: "R * (1 + 0.06*cos(10*theta + sqrt(2)*8*phi) + 0.06*cos(15*theta - sqrt(3)*6*phi) + 0.03*cos(20*theta + 4*phi))", desc: "Quasi-periodic lattice interference using irrational phase mixing and layered angular structure." },
+                "Spherical Harmonic Y32": { type: "interference", eq: "R * (1 + 0.25 * pow(sin(phi), 2) * cos(phi) * cos(2*theta))", desc: "The real spherical harmonic Y(3,2) as a bump field: two symmetric bands above and below the equator, split into two lobes by theta." },
+                "Spherical Harmonic Y44": { type: "interference", eq: "R * (1 + 0.2 * pow(sin(phi), 4) * cos(4*theta))", desc: "The real spherical harmonic Y(4,4) as a bump field: a four-fold lobed swelling concentrated at the equator, tapering smoothly to calm poles." }
             }
         };
 
@@ -1255,6 +1622,7 @@
             "Saturated Flutes": { type: "nonlinear", eq: "atan(7 * cos(12*theta))", desc: "Vertical flute texture compressed into flatter faces and sharper troughs." },
             "Nonlinear Chevron": { type: "nonlinear", eq: "atan(6 * (abs(sin(6*theta + 8*pi*v)) - 0.5*abs(sin(6*theta - 8*pi*v))))", desc: "Chevron texture sharpened through nonlinear compression." },
             "Arc Compression Relief": { type: "nonlinear", eq: "asin(0.96*sin(10*theta + 8*pi*v))", desc: "Arc-shaped texture grooves with clearer walls and stronger directional carving." },
+            "Chladni Plate": { type: "nonlinear", eq: "atan(4*(sin(4*theta)*sin(6*pi*v) + sin(6*theta)*sin(4*pi*v)))", desc: "Standing-wave nodal pattern in the style of a Chladni plate, atan-sharpened into clean ridges." },
 
             // carved
             "Modulo Tile Relief": { type: "carved", eq: "cos(10 * abs(mod(theta + pi*v, pi/4) - pi/8))", desc: "Wrapped angular domains create tiled or paneled carved relief." },
@@ -1263,6 +1631,8 @@
             "Meridian Carving": { type: "carved", eq: "cos(10 * abs(mod(theta, pi/5) - pi/10))", desc: "Wrapped meridian wedges form repeated carved grooves around the body." },
             "Panel Relief": { type: "carved", eq: "cos(8 * abs(mod(theta + pi*v, pi/4) - pi/8)) + 0.3*cos(16*pi*v)", desc: "Paneled carved texture with both wrapped angular structure and vertical segmentation." },
             "Diamond Carve": { type: "carved", eq: "abs(cos(8*theta + 6*pi*v)) + abs(cos(8*theta - 6*pi*v))", desc: "Crossed carved ridges create a diamond-facet relief." },
+            "Knot-Line Ribbons": { type: "carved", eq: "exp(-pow(abs(mod(3*theta - 4*pi*v + pi, 2*pi) - pi), 2) * 6)", desc: "A single raised ridge that spirals along a (2,3) torus-knot line as it winds up the body." },
+            "Loxodrome Ribbon (Spherical)": { type: "carved", eq: "exp(-pow(abs(mod(theta - 3*log(tan(min(pi - 0.05, max(0.05, phi))/2)) + pi, 2*pi) - pi), 2) * 8)", desc: "A constant-bearing rhumb-line ridge spiraling pole to pole. Written for spherical mode's phi; in cylindrical mode phi is always 0, so it degenerates to a single straight ridge." },
 
             // interference
             "Quasi Interference": { type: "interference", eq: "sin(7*theta + 9*pi*v) + 0.55*sin(11*theta - sqrt(2)*8*pi*v) + 0.35*cos(13*theta + sqrt(3)*5*pi*v)", desc: "Quasi-periodic interference using mixed frequencies to reduce obvious repetition." },
@@ -1270,7 +1640,13 @@
             "Braided Interference": { type: "interference", eq: "cos(8*theta + 7*pi*v) + cos(8*theta - 7*pi*v) + 0.3*cos(16*theta)", desc: "Counter-rotating interference waves produce a braided sculptural surface." },
             "Standing Wave Texture": { type: "interference", eq: "sin(10*theta) * sin(12*pi*v) + 0.4*sin(20*theta - 8*pi*v)", desc: "Standing-wave style interference with layered high-frequency texture." },
             "Equatorial Interference": { type: "interference", eq: "exp(-pow(v - 0.5, 2)*14) * (sin(8*theta + 8*pi*v) + 0.5*sin(13*theta - 6*pi*v))", desc: "An interference band concentrated through the middle of the body." },
-            "Crown Interference": { type: "interference", eq: "exp(-pow(v - 0.86, 2)*30) * (cos(10*theta) + 0.4*cos(18*theta + 8*pi*v))", desc: "Interference texture concentrated near the crown for richer upper detail." }
+            "Crown Interference": { type: "interference", eq: "exp(-pow(v - 0.86, 2)*30) * (cos(10*theta) + 0.4*cos(18*theta + 8*pi*v))", desc: "Interference texture concentrated near the crown for richer upper detail." },
+            "Gyroid Slice": { type: "interference", eq: "sin(6*theta)*cos(10*pi*v) + sin(10*pi*v)*cos(3*theta + 4*pi*v) + sin(3*theta + 4*pi*v)*cos(6*theta)", desc: "A single (theta, v) slice through the gyroid triply-periodic minimal surface - an organic interlocking relief." },
+            "Weierstrass Relief": { type: "interference", eq: "0.6*cos(3*theta + 2*pi*v) + 0.3*cos(9*theta - 4*pi*v) + 0.15*cos(27*theta + 8*pi*v) + 0.075*cos(81*theta - 16*pi*v)", desc: "A 4-octave Weierstrass-style cascade (amplitude halves, frequency triples each octave): fine fractal-like detail nested inside coarser waves." },
+            "Hammered Copper": { type: "interference", eq: "0.8 - 1.6*worley(theta, v, 9, 9, 7)", desc: "Cellular Worley noise inverted into a hammered-metal relief: broad raised facets with narrow grooves at the cell boundaries." },
+            "Bark Ridges": { type: "interference", eq: "ridged(theta, v, 3, 14, 4, 2)", desc: "Ridged multifractal noise (4 octaves) for a rough, organic bark-like surface." },
+            "Coral fBm Warp": { type: "interference", eq: "fbm(theta + 0.6*fbm(theta, v, 4, 6, 3, 5), v, 6, 9, 4, 1)", desc: "Domain-warped fractal noise: one noise field bends the sampling angle of a second, producing coral-like flowing detail instead of a flat noise grain." },
+            "Sunflower Belt": { type: "interference", eq: "phyllo(theta, v, 240, 0.05) * exp(-pow(v-0.5, 2)*8)", desc: "A golden-angle phyllotaxis stud field (240 seeds) gated to a band through the middle of the body, like a ring of sunflower-seed studs." }
         };
 
         const patternPresets = {
@@ -1310,6 +1686,25 @@
 
             // regional
             "Equatorial Arc Belt": { type: "regional", eq: "asin(0.98 * sin(8*theta)) * exp(-pow(v - 0.5, 2) * 30)", desc: "Arc-belt mask concentrated around the mid-body or equatorial zone." },
+
+            // interference
+            "Chladni Windows": { type: "interference", eq: "sin(3*theta)*sin(5*pi*v) + sin(5*theta)*sin(3*pi*v)", desc: "Classic Chladni nodal-line split used as a two-color mask instead of a texture." },
+            "Gyroid Mask": { type: "interference", eq: "sin(4*theta)*cos(8*pi*v) + sin(8*pi*v)*cos(2*theta + 2*pi*v) + sin(2*theta + 2*pi*v)*cos(4*theta) - 0.2", desc: "Gyroid-derived mask producing organic, interlocking color regions." },
+            "Noise Islands": { type: "interference", eq: "cnoise(theta, v, 3, 4, 11) - 0.15", desc: "Seeded simplex noise thresholded into irregular organic color islands." },
+
+            // noise / procedural (seeded - the same seed always gives the same pattern)
+            "Marble Veins": { type: "noise", eq: "0.12 - abs(sin(3*theta + 1.5*pi*v + 3.5*fbm(theta, v, 3, 4, 4, 9)))", desc: "Thin winding veins where a noise-warped wave crosses zero - classic marble figuring. Raise 0.12 for thicker veins." },
+            "Voronoi Pebbles": { type: "noise", eq: "0.34 - worley(theta, v, 7, 8, 3)", desc: "Rounded organic spots centered on each Worley cell - a pebble or animal-spot scatter that never repeats around the body." },
+            "Leopard Rosettes": { type: "noise", eq: "(worley(theta, v, 8, 9, 12) - 0.22) * (0.38 - worley(theta, v, 8, 9, 12))", desc: "Ring-shaped rosettes: the product selects only a distance band around each cell center, turning every Worley cell into a hollow ring." },
+            "Crackle Mortar": { type: "noise", eq: "worley(theta, v, 6, 7, 4) - 0.42", desc: "The complement of the pebble mask - selects the web of boundaries between cells for a cracked-glaze or giraffe-hide look." },
+            "Lightning Filaments": { type: "noise", eq: "ridged(theta, v, 4, 6, 4, 6) - 0.85", desc: "Selects only the sharpest crests of ridged multifractal noise, leaving branching filament networks. Lower 0.85 toward 0.75 for denser branching." },
+            "Phyllotaxis Dot Grid": { type: "noise", eq: "phyllo(theta, v, 320, 0.03) - 0.45", desc: "A sunflower-seed lattice of dots placed by the golden angle - evenly spaced yet never aligning into straight rows." },
+            "Shoreline Split": { type: "noise", eq: "tanh(3.5*(v - 0.52 + 0.16*cnoise(theta, v, 3, 3, 8)))", desc: "A two-tone horizontal split whose boundary wanders like a coastline instead of a straight line." },
+
+            // exotic math
+            "Gothic Arcade": { type: "exotic", eq: "0.82 - 0.3*(cosh(4.2*(mod(theta, pi/4) - pi/8)) - 1) - v", desc: "A band whose top edge is a chain of eight true catenary arches (cosh is the exact hanging-chain curve), like a colonnade wrapped around the body." },
+            "Sunburst Medallion": { type: "exotic", eq: "exp(-(pow(theta - pi, 2) + 8*pow(v - 0.55, 2)) * 1.6) * (0.35 + sin(7*atan2(v - 0.55, 0.4*(theta - pi)))) - 0.12", desc: "A pinwheel of rays radiating from a single point on the front face, built with atan2 and confined by a Gaussian window so the back stays clean." },
+            "Halo Ring": { type: "exotic", eq: "0.12 - abs(hypot(theta - pi, 3*(v - 0.6)) - 0.9)", desc: "A single elliptical ring emblem on the front face - hypot measures distance from a center point, and the mask keeps only a thin annulus of it." },
         };
 
         const modifierPresets = {
@@ -1325,9 +1720,11 @@
             "Basic Petal Drift": { type: "basicEffect", eq: "sin(5*theta) * sin(pi*v)", desc: "Demonstrates how angular remapping can create petal-like drift in the sampled field." },
             "Basic Window": { type: "basicEffect", eq: "exp(-pow(v - 0.75, 2)*20)", desc: "Demonstrates a simple regional modifier window without adding extra directional structure." },
             "Basic Interference Drift": { type: "basicEffect", eq: "sin(4*theta + 2*pi*v) + 0.5*sin(7*theta - 3*pi*v)", desc: "Demonstrates a more complex interference remap built from two directional motions." },
+            "Log-Spiral Pace": { type: "basicEffect", eq: "0.6*log(0.25 + v)", desc: "Demonstrates a twist whose rate follows logarithmic-spiral pacing: fast drift near the base, easing off toward the rim." },
 
             // twist
             "Twist Drift": { type: "twist", eq: "sin(3*pi*v)", desc: "Smooth rotational drift through the height. Good for gentle global twisting." },
+            "Mobius Squeeze": { type: "twist", eq: "2*atan(0.35*sin(theta) / (1 - 0.35*cos(theta)))", desc: "A conformal Mobius reparametrization of the circle: bunches features toward one side of the pot while leaving the opposite side calmer, with no discontinuity anywhere." },
             "Gentle Torsion": { type: "twist", eq: "0.6*sin(pi*v)", desc: "A softer rotational remap that keeps the form stable and printable." },
             "Crown Rotation": { type: "twist", eq: "exp(-pow(v - 0.85, 2)*40) * sin(2*pi*v)", desc: "Rotation concentrated near the upper body and rim while leaving the lower body calmer." },
             "Body Swirl": { type: "twist", eq: "exp(-pow(v - 0.55, 2)*14) * sin(4*theta + 2*pi*v)", desc: "Mid-body swirl that localizes rotational motion away from the base." },
@@ -1707,6 +2104,7 @@
             document.getElementById('modifierPresetSelect').value = 'None (No Modifier)';
             document.getElementById('modifierStrength').value = '0';
             document.getElementById('modifierTarget').value = 'base';
+            if (document.getElementById('modifierEquationV')) document.getElementById('modifierEquationV').value = '';
             applyModifierPreset();
 
             document.getElementById('distortionType').value = 'utility';
@@ -1726,6 +2124,7 @@
 
             document.getElementById('patternPresetSelect1').value = 'None (Solid Base Color)';
             document.getElementById('patternPresetSelect2').value = 'None (Solid Base Color)';
+            if (document.getElementById('patternMode')) document.getElementById('patternMode').value = 'color';
             applyPatternPreset(1);
             applyPatternPreset(2);
 
@@ -1997,7 +2396,8 @@
                     patternColor1: getFieldStringValue('patternColor1', '#ff7062'),
                     patternColor2: getFieldStringValue('patternColor2', '#5f4a8b'),
                     overlapColor: getFieldStringValue('overlapColor', '#8ab04d'),
-                    depthMm: getFieldNumberValue('patternDepthMm', 1.2)
+                    depthMm: getFieldNumberValue('patternDepthMm', 1.2),
+                    mode: getFieldStringValue('patternMode', 'color')
                 },
                 mesh: {
                     resV: getFieldNumberValue('resV', 120),
@@ -2009,6 +2409,7 @@
                     type: getFieldStringValue('modifierTypeSelect', 'utility'),
                     preset: selectedOptionText('modifierPresetSelect', 'None (No Modifier)'),
                     equation: getFieldStringValue('modifierEquation', '0'),
+                    equationV: getFieldStringValue('modifierEquationV', ''),
                     strength: getFieldNumberValue('modifierStrength', 0),
                     target: getFieldStringValue('modifierTarget', 'base')
                 },
@@ -2413,6 +2814,7 @@
                 setColorFieldValue('baseColor', getAIValue(patterns, ['baseColor', 'neitherColor']));
                 setColorFieldValue('overlapColor', getAIValue(patterns, ['overlapColor']));
                 setFieldValue('patternDepthMm', getAIValue(patterns, ['depthMm', 'patternDepthMm', 'depth']));
+                setSelectValue('patternMode', getAIValue(patterns, ['mode', 'patternMode']));
 
                 setFieldValue('resV', getAIValue(mesh, ['resV', 'verticalNodes']));
                 setFieldValue('resT', getAIValue(mesh, ['resT', 'radialNodes']));
@@ -2426,6 +2828,7 @@
                 if (modifierPreset) selectModifierPreset(modifierPreset);
                 applyModifierPreset();
                 setFieldValue('modifierEquation', getAIValue(modifier, ['equation', 'eq', 'modifierEquation']));
+                setFieldValue('modifierEquationV', getAIValue(modifier, ['equationV', 'modifierEquationV', 'verticalWarp']));
                 setFieldValue('modifierStrength', getAIValue(modifier, ['strength', 'modifierStrength']));
                 setSelectValue('modifierTarget', getAIValue(modifier, ['target', 'modifierTarget']));
 
@@ -2603,6 +3006,7 @@
                     "intensity": 0.15
                 },
                 "patterns": {
+                    "mode": "color",
                     "preset1": "Double Helix Mask",
                     "equation1": "cos(5 * theta + 3 * pi * v)",
                     "preset2": "Double Helix Mask",
@@ -2623,6 +3027,7 @@
                     "type": "utility",
                     "preset": "None (No Modifier)",
                     "equation": "0",
+                    "equationV": "",
                     "strength": 0,
                     "target": "base"
                 },
@@ -2705,6 +3110,101 @@
             el.classList.add('is-visible');
         }
 
+        function onAutoResolutionChange() {
+            const enabled = !!document.getElementById('autoResolution')?.checked;
+            const resVInput = document.getElementById('resV');
+            const resTInput = document.getElementById('resT');
+            if (resVInput) resVInput.disabled = enabled;
+            if (resTInput) resTInput.disabled = enabled;
+            updatePreview();
+        }
+
+        // ---- Auto Resolution ----
+        // Probes the compiled base equation directly (cheap - it's already a compiled
+        // function, not a re-parsed string) at a few representative rings/meridians and picks
+        // the smallest resT/resV, on the same step-10 grid the manual inputs use and clamped
+        // to [60, 720], whose polygon still tracks the true profile within a ~0.05mm tolerance.
+        // Re-derived on every render while enabled, which is cheap enough (well under the
+        // existing debounce) that no separate "did the equation change" tracking is needed.
+        const AUTO_RES_MIN = 60, AUTO_RES_MAX = 720, AUTO_RES_STEP = 10;
+        const AUTO_RES_PROBE_COUNT = 2048;
+        const AUTO_RES_TOLERANCE_CM = 0.005; // 0.05 mm chord tolerance, in cm (model units)
+
+        function sampleAutoResRing(cfg, v) {
+            const values = new Float64Array(AUTO_RES_PROBE_COUNT);
+            const z = cfg.sys === 'cylindrical' ? v * cfg.h : 0;
+            // Spherical mode's true phi range depends on top/bottom cut settings this probe
+            // doesn't have; a full [0,pi] sweep still captures the equation's theta-detail
+            // across the vertical extent, which is all an auto-resolution pick needs.
+            const phi = cfg.sys === 'spherical' ? 0.05 + v * (Math.PI - 0.1) : 0;
+            for (let i = 0; i < AUTO_RES_PROBE_COUNT; i++) {
+                const theta = (2 * Math.PI * i) / AUTO_RES_PROBE_COUNT;
+                const raw = evalFieldWithModifier(cfg.eq, cfg, theta, z, phi, v, cfg.R, false, 'base');
+                values[i] = (isFinite(raw) && raw > 0) ? raw : cfg.R;
+            }
+            return values;
+        }
+
+        function sampleAutoResMeridian(cfg, theta) {
+            const values = new Float64Array(AUTO_RES_PROBE_COUNT);
+            for (let i = 0; i < AUTO_RES_PROBE_COUNT; i++) {
+                const v = i / (AUTO_RES_PROBE_COUNT - 1);
+                const z = cfg.sys === 'cylindrical' ? v * cfg.h : 0;
+                const phi = cfg.sys === 'spherical' ? 0.05 + v * (Math.PI - 0.1) : 0;
+                const raw = evalFieldWithModifier(cfg.eq, cfg, theta, z, phi, v, cfg.R, false, 'base');
+                values[i] = (isFinite(raw) && raw > 0) ? raw : cfg.R;
+            }
+            return values;
+        }
+
+        // Worst-case deviation a straight chord between two coarse samples `segments` apart
+        // would have from the true dense profile in between, approximated in the sampled
+        // value's own domain (radius) rather than full XY chord distance - simpler, and still
+        // representative for the star-convex radius-vs-angle profiles this app generates.
+        // wrap=true for theta rings (circular); wrap=false for v meridians (linear, 0..1).
+        function maxValueErrorForSegments(denseValues, segments, wrap) {
+            const probeCount = denseValues.length;
+            const lastIndex = probeCount - 1;
+            const perSeg = wrap ? probeCount / segments : lastIndex / segments;
+            let maxErr = 0;
+            for (let seg = 0; seg < segments; seg++) {
+                const startIdx = Math.round(seg * perSeg);
+                const endIdx = Math.round((seg + 1) * perSeg);
+                const v0 = denseValues[wrap ? (startIdx % probeCount) : Math.min(startIdx, lastIndex)];
+                const v1 = denseValues[wrap ? (endIdx % probeCount) : Math.min(endIdx, lastIndex)];
+                const span = endIdx - startIdx;
+                for (let s = 0; s <= span; s++) {
+                    const idx = wrap ? ((startIdx + s) % probeCount) : Math.min(startIdx + s, lastIndex);
+                    const t = span > 0 ? s / span : 0;
+                    const interp = v0 + (v1 - v0) * t;
+                    const err = Math.abs(denseValues[idx] - interp);
+                    if (err > maxErr) maxErr = err;
+                }
+            }
+            return maxErr;
+        }
+
+        function smallestSufficientResolution(profiles, wrap) {
+            for (let n = AUTO_RES_MIN; n <= AUTO_RES_MAX; n += AUTO_RES_STEP) {
+                let ok = true;
+                for (let i = 0; i < profiles.length; i++) {
+                    if (maxValueErrorForSegments(profiles[i], n, wrap) > AUTO_RES_TOLERANCE_CM) { ok = false; break; }
+                }
+                if (ok) return n;
+            }
+            return AUTO_RES_MAX;
+        }
+
+        function computeAutoResT(cfg) {
+            const rings = [0.25, 0.5, 0.75].map(v => sampleAutoResRing(cfg, v));
+            return smallestSufficientResolution(rings, true);
+        }
+
+        function computeAutoResV(cfg) {
+            const meridians = [0, (2 * Math.PI) / 3, (4 * Math.PI) / 3].map(theta => sampleAutoResMeridian(cfg, theta));
+            return smallestSufficientResolution(meridians, false);
+        }
+
         function getConfig() {
             const wall = parseFloat(document.getElementById('wall').value) || 0.35;
             const bottomThickness = Math.max(0.1, parseFloat(document.getElementById('bottomThickness')?.value) || 0.35);
@@ -2719,11 +3219,39 @@
             const applyPlateColoring = document.getElementById('applyPlateColoring') ? document.getElementById('applyPlateColoring').checked : true;
             const uniformShell = coordSystem === 'cylindrical' && (document.getElementById('uniformShell') ? document.getElementById('uniformShell').checked : true);
 
+            let resV = parseInt(document.getElementById('resV').value) || 120;
+            let resT = parseInt(document.getElementById('resT').value) || 180;
+            if (document.getElementById('autoResolution')?.checked) {
+                const probeCfg = {
+                    eq: document.getElementById('equation').value,
+                    sys: coordSystem,
+                    R: parseFloat(document.getElementById('baseRadius').value) || 5.0,
+                    h: parseFloat(document.getElementById('height').value) || 10.0,
+                    modifierEq: document.getElementById('modifierEquation').value,
+                    modifierEqV: document.getElementById('modifierEquationV')?.value || '',
+                    modifierStrength: parseFloat(document.getElementById('modifierStrength').value) || 0,
+                    modifierTarget: document.getElementById('modifierTarget').value || 'texture'
+                };
+                resT = computeAutoResT(probeCfg);
+                resV = computeAutoResV(probeCfg);
+                const resVInput = document.getElementById('resV');
+                const resTInput = document.getElementById('resT');
+                if (resVInput && Number(resVInput.value) !== resV) resVInput.value = resV;
+                if (resTInput && Number(resTInput.value) !== resT) resTInput.value = resT;
+            }
+
             return {
                 modelMode,
                 sys: coordSystem,
+                // generateCylindrical/generateSpherical can compute a real per-vertex color
+                // (chooseColor -> two pattern evals per outer node), but every current caller
+                // of those two functions (STL export, plate host probing, spherical-plate
+                // generation) only reads back vertex positions and throws colors away. Default
+                // to skipping that wasted work; set true where a caller actually reads .colors.
+                wantColors: false,
                 eq: document.getElementById('equation').value,
                 modifierEq: document.getElementById('modifierEquation').value,
+                modifierEqV: document.getElementById('modifierEquationV')?.value || '',
                 modifierStrength: parseFloat(document.getElementById('modifierStrength').value) || 0,
                 modifierTarget: document.getElementById('modifierTarget').value || 'texture',
                 distortionType: document.getElementById('distortionType').value || 'all',
@@ -2738,6 +3266,7 @@
                 texInt: parseFloat(document.getElementById('texIntensity').value) || 0,
                 patternEq1: document.getElementById('patternEquation1').value,
                 patternEq2: document.getElementById('patternEquation2').value,
+                patternMode: document.getElementById('patternMode')?.value === 'cutout' ? 'cutout' : 'color',
                 baseColor: document.getElementById('baseColor').value || '#0f4d80',
                 patternColor1: document.getElementById('patternColor1').value || '#ff7062',
                 patternColor2: document.getElementById('patternColor2').value || '#5f4a8b',
@@ -2750,8 +3279,8 @@
                 uniformShell,
                 bottomThickness: bottomThickness,
                 h: parseFloat(document.getElementById('height').value) || 10.0,
-                resV: parseInt(document.getElementById('resV').value) || 120,
-                resT: parseInt(document.getElementById('resT').value) || 180,
+                resV,
+                resT,
                 patternResV: parseInt(document.getElementById('patternResV').value) || 120,
                 patternResT: parseInt(document.getElementById('patternResT').value) || 180,
                 isPot: modelMode === 'pot' || modelMode === 'potplate',
@@ -2794,15 +3323,43 @@
             return strength * raw;
         }
 
+        // Inverse of the v<->phi relationship buildSphericalShell uses (v = (phi-phiEnd)/
+        // (phiStart-phiEnd)), so a vertical-warp modifier can move the sample to a new v and
+        // still land at the phi (or, for cylindrical, z = v*h) the rest of the pipeline expects.
+        function recomputeVerticalCoord(cfg, newV) {
+            const v = clamp(newV, 0, 1);
+            if (cfg.sys === 'spherical') {
+                const isSolidBottom = cfg.isPot && cfg.sphBotCut >= Math.PI - 0.005;
+                const phiEnd = isSolidBottom ? Math.PI : (cfg.isPot ? Math.min(cfg.sphBotCut, Math.PI - 0.001) : Math.PI - 0.001);
+                const phiStart = cfg.isPot ? Math.min(Math.max(cfg.sphTopCut, 0.001), phiEnd - 0.001) : 0.001;
+                return { z: 0, phi: phiEnd + (phiStart - phiEnd) * v, v };
+            }
+            return { z: v * (cfg.h || 0), phi: 0, v };
+        }
+
+        // Vertical-warp modifier (Mv): shares modifierStrength/modifierTarget with the angular
+        // modifier above. Both are computed from the same original (theta,z,phi,v) point and
+        // combined, rather than chained, so neither warp's effect depends on evaluation order.
+        function getModifierVAmount(cfg, theta, z, phi, v, target = 'all') {
+            const strength = parseFloat(cfg.modifierStrength) || 0;
+            if (!cfg.modifierEqV || Math.abs(strength) < 1e-9) return 0;
+            const targetMode = cfg.modifierTarget || 'texture';
+            if (targetMode !== 'all' && targetMode !== target) return 0;
+            const raw = secureEval(cfg.modifierEqV, theta, z, phi, v, 0, true);
+            return strength * raw;
+        }
+
         function getModifiedCoords(cfg, theta, z, phi, v, target = 'all') {
             const delta = getModifierAmount(cfg, theta, z, phi, v, target);
-            return {
-                theta: mod(theta + delta, 2 * Math.PI),
-                z,
-                phi,
-                v,
-                delta
-            };
+            const newTheta = mod(theta + delta, 2 * Math.PI);
+
+            const vDelta = getModifierVAmount(cfg, theta, z, phi, v, target);
+            if (vDelta === 0) {
+                return { theta: newTheta, z, phi, v, delta };
+            }
+
+            const vertical = recomputeVerticalCoord(cfg, v + vDelta);
+            return { theta: newTheta, z: vertical.z, phi: vertical.phi, v: vertical.v, delta };
         }
 
         function evalFieldWithModifier(eq, cfg, theta, z, phi, v, R, isTexture, target) {
@@ -2831,8 +3388,10 @@
         }
 
         function evalDistortionExpr(eq, theta, zs, phi, v, R, x, y, z) {
+            const compiled = getCompiledExpr(eq, EXPR_DISTORTION_NAMES, EXPR_DISTORTION_KEY);
+            if (compiled instanceof Error) return 0;
             try {
-                const result = eval(eq);
+                const result = compiled(theta, zs, phi, v, R, x, y, z);
                 return (typeof result === 'number' && isFinite(result)) ? result : 0;
             } catch (e) {
                 return 0;
@@ -3496,6 +4055,7 @@
                 Array.from({ length: numRings }, () => Array(resT))
             ];
 
+            let minWallCm = Infinity;
             for (let iv = 0; iv < numRings; iv++) {
                 for (let it = 0; it < resT; it++) {
                     const oIdx = outerGrid[iv][it];
@@ -3503,6 +4063,7 @@
                     const pOut = { x: positions[oIdx*3], y: positions[oIdx*3+1], z: positions[oIdx*3+2] };
                     const pIn  = { x: positions[iIdx*3], y: positions[iIdx*3+1], z: positions[iIdx*3+2] };
                     const thickness = distPt(pOut, pIn);
+                    if (thickness < minWallCm) minWallCm = thickness;
                     const safeDepth = Math.min(cfg.patternDepthCm || 0, Math.max(0, thickness - 0.001));
                     const frac = thickness > 1e-8 ? safeDepth / thickness : 0;
                     layers[0][iv][it] = pOut;
@@ -3565,7 +4126,7 @@
                 surfaceEligible.push(rowEligible);
             }
 
-            return { grid, sample: { layers, cellMaskA, cellMaskB, surfaceEligible, resV, resT, yShift: 0 } };
+            return { grid, sample: { layers, cellMaskA, cellMaskB, surfaceEligible, resV, resT, yShift: 0, minWallCm: isFinite(minWallCm) ? minWallCm : 0 } };
         }
 
         function generatePlate(cfg) {
@@ -3627,8 +4188,8 @@
             return cleanupMesh({ positions, indices: mesh.indices.slice(), triangleColorIndices: mesh.triangleColorIndices });
         }
 
-        function meshDataToMesh(meshData) {
-            return cleanupMesh({ positions: meshData.vertices.slice(), indices: meshData.indices.slice(), colors: meshData.colors });
+        function meshDataToMesh(meshData, palette = null) {
+            return cleanupMesh({ positions: meshData.vertices.slice(), indices: meshData.indices.slice(), colors: meshData.colors }, palette);
         }
 
         function buildPrimaryMeshData(cfg) {
@@ -3697,7 +4258,13 @@ ${trianglesXml.join('\n')}
         }
 
         async function exportSinglePart3MF(cfg, meshData, options = {}) {
-            const mesh = rotateMeshForPrinterCoordinates(meshDataToMesh(meshData));
+            const palette = [
+                hexToRgb01(cfg.baseColor),
+                hexToRgb01(cfg.patternColor1),
+                hexToRgb01(cfg.patternColor2),
+                hexToRgb01(cfg.overlapColor)
+            ];
+            const mesh = rotateMeshForPrinterCoordinates(meshDataToMesh(meshData, palette));
             const colorGroupId = 1;
             const resources = [];
             const objectName = options.objectName || (cfg.isPlate ? 'Plate' : 'Model');
@@ -3853,7 +4420,8 @@ ${trianglesXml.join('\n')}
             }
 
             return { coreMesh, coreValidation: validateMesh(coreMesh), surfaceGroups,
-                     plateOuterDiameter: grid.plateOuterDiameter, plateHostDiameter: grid.plateHostDiameter, plateHeight: grid.plateHeight };
+                     plateOuterDiameter: grid.plateOuterDiameter, plateHostDiameter: grid.plateHostDiameter, plateHeight: grid.plateHeight,
+                     minWallCm: sample.minWallCm };
         }
 
         function buildSphericalPlateMultipartMeshes(cfg) {
@@ -3868,7 +4436,7 @@ ${trianglesXml.join('\n')}
             });
             const expBounds = computeMeshDataBounds(coreMesh.positions);
             const rawBounds = computeMeshDataBounds(parts.coreMesh.positions);
-            return { coreMesh, coreValidation: validateMesh(coreMesh), surfaceGroups, plateOuterDiameter: Math.max(1.0, expBounds.nominalDiameter), plateHostDiameter: Math.max(1.0, rawBounds.nominalDiameter), plateHeight: Math.max(0.1, expBounds.height) };
+            return { coreMesh, coreValidation: validateMesh(coreMesh), surfaceGroups, plateOuterDiameter: Math.max(1.0, expBounds.nominalDiameter), plateHostDiameter: Math.max(1.0, rawBounds.nominalDiameter), plateHeight: Math.max(0.1, expBounds.height), minWallCm: parts.minWallCm };
         }
 
         function buildPlateMultipartMeshes(cfg) {
@@ -3878,7 +4446,7 @@ ${trianglesXml.join('\n')}
 
         async function exportPlateAssembly3MF(cfg, options = {}) {
             try {
-                const parts = buildPlateMultipartMeshes(cfg);
+                const parts = memoizedMeshBuild(buildPlateMultipartMeshes, cfg);
                 const filenameStem = options.filenameStem || buildExportStemForKind(cfg, 'Plate', false);
                 const colorGroupId = 1;
                 const resources = [];
@@ -4048,12 +4616,14 @@ ${trianglesXml.join('\n')}
         }
 
         function secureEval(eq, theta, z, phi, v, R, isTexture = false) {
+            const fallback = isTexture ? 0 : R;
+            const compiled = getCompiledExpr(eq, EXPR_FIELD_NAMES, EXPR_FIELD_KEY);
+            if (compiled instanceof Error) return fallback;
             try {
-                let result = eval(eq);
-                let fallback = isTexture ? 0 : R;
-                return (typeof result !== 'number' || isNaN(result) || !isFinite(result)) ? fallback : result;
+                const result = compiled(theta, z, phi, v, R);
+                return (typeof result === 'number' && isFinite(result)) ? result : fallback;
             } catch (e) {
-                return isTexture ? 0 : R;
+                return fallback;
             }
         }
 
@@ -4112,6 +4682,8 @@ ${trianglesXml.join('\n')}
         }
 
         function evaluatePatternValue(patternEq, cfg, theta, z, phi, v, outerRadius, baseFormRadius, texRaw, stats) {
+            const compiled = getCompiledExpr(patternEq, EXPR_PATTERN_NAMES, EXPR_PATTERN_KEY);
+            if (compiled instanceof Error) return -1;
             try {
                 const R = cfg.R || 0;
                 const texMin = stats ? stats.texMin : 0;
@@ -4129,22 +4701,21 @@ ${trianglesXml.join('\n')}
                 const radiusDev = Math.max(0, outerRadius - R);
                 const absRadiusDev = radiusDev;
 
-                function outerDeviation(dev) { return outerRadius - (R + dev); }
-                function textureFill(value, pct) {
+                const outerDeviation = (dev) => outerRadius - (R + dev);
+                const textureFill = (value, pct) => {
                     const p = Math.max(0, Math.min(100, pct));
                     if (p <= 0) return -1;
                     if (p >= 100) return value > 0 ? 1 : -1;
                     const threshold = 1 - (p / 100);
                     return value - threshold;
-                }
+                };
 
                 const coords = getModifiedCoords(cfg, theta, z, phi, v, 'pattern');
-                theta = coords.theta;
-                z = coords.z;
-                phi = coords.phi;
-                v = coords.v;
 
-                const result = eval(patternEq);
+                const result = compiled(coords.theta, coords.z, coords.phi, coords.v, R, texRaw, outerRadius,
+                    baseFormRadius, texMin, texMax, texRange, texNorm, texPosMax, texPosNorm,
+                    radiusMin, radiusMax, radiusRange, radiusNorm, localBaseRadius, localRadiusDev,
+                    radiusDev, absRadiusDev, outerDeviation, textureFill);
                 return (typeof result === 'number' && isFinite(result)) ? result : -1;
             } catch (e) {
                 return -1;
@@ -4420,11 +4991,13 @@ ${trianglesXml.join('\n')}
                 Array.from({ length: shell.resV + 1 }, () => Array(shell.resT))
             ];
 
+            let minWallCm = Infinity;
             for (let iv = 0; iv <= shell.resV; iv++) {
                 for (let it = 0; it < shell.resT; it++) {
                     const pOut = shell.outer[iv][it];
                     const pIn = shell.inner[iv][it];
                     const thickness = distPt(pOut, pIn);
+                    if (thickness < minWallCm) minWallCm = thickness;
                     let requestedDepth = cfg.patternDepthCm;
                     const safeDepth = Math.min(requestedDepth, Math.max(0, thickness - 0.001));
                     const t = thickness > 1e-8 ? safeDepth / thickness : 0;
@@ -4441,7 +5014,8 @@ ${trianglesXml.join('\n')}
                 surfaceEligible: shell.surfaceEligible,
                 resV: shell.resV,
                 resT: shell.resT,
-                yShift: shell.yShift
+                yShift: shell.yShift,
+                minWallCm: isFinite(minWallCm) ? minWallCm : 0
             };
         }
 
@@ -4449,6 +5023,8 @@ ${trianglesXml.join('\n')}
             const coreOcc = Array.from({ length: 2 }, () => Array.from({ length: sample.resV }, () => Array(sample.resT).fill(false)));
             const surfaceOccs = Array.from({ length: 4 }, () => Array.from({ length: 2 }, () => Array.from({ length: sample.resV }, () => Array(sample.resT).fill(false))));
             const stateCounts = [0, 0, 0, 0];
+            const cutoutMode = cfg.patternMode === 'cutout';
+            let cutoutCellCount = 0;
 
             const depthActive = cfg.patternDepthCm > 0.0001;
             // The cylindrical bottom closure (appendCylindricalDrainClosure) is only
@@ -4458,10 +5034,25 @@ ${trianglesXml.join('\n')}
             const forceCoreBottomRow = cfg.sys === 'cylindrical' && cfg.isPot;
             for (let iv = 0; iv < sample.resV; iv++) {
                 for (let it = 0; it < sample.resT; it++) {
-                    const surfaceActive = depthActive && sample.surfaceEligible[iv][it]
-                        && !(forceCoreBottomRow && iv === 0);
+                    const maskEligible = sample.surfaceEligible[iv][it] && !(forceCoreBottomRow && iv === 0);
                     const state = (sample.cellMaskA[iv][it] ? 1 : 0) + (sample.cellMaskB[iv][it] ? 2 : 0);
 
+                    if (cutoutMode) {
+                        // A masked cell becomes a full-thickness hole (both layers left empty)
+                        // instead of a colored surface insert - buildOccupancyMesh already caps
+                        // any occupied cell's exposed faces, so the hole comes out watertight
+                        // with no extra meshing work. stateCounts stays untouched here so the
+                        // color-mode surface-group builder below naturally builds nothing.
+                        if (maskEligible && state !== 0) {
+                            cutoutCellCount++;
+                        } else {
+                            coreOcc[0][iv][it] = true;
+                            coreOcc[1][iv][it] = true;
+                        }
+                        continue;
+                    }
+
+                    const surfaceActive = depthActive && maskEligible;
                     if (surfaceActive) {
                         if (state === 0) {
                             coreOcc[0][iv][it] = true;
@@ -4479,16 +5070,29 @@ ${trianglesXml.join('\n')}
                 }
             }
 
+            let disconnectedIslands = 0;
+            if (cutoutMode && cutoutCellCount > 0) {
+                const components = splitOccupancyComponents(coreOcc, sample.resV, sample.resT);
+                disconnectedIslands = Math.max(0, components.length - 1);
+            }
+
             return {
                 coreOcc,
                 surfaceOccs,
                 stateCounts,
-                hasSurface: stateCounts[1] > 0 || stateCounts[2] > 0 || stateCounts[3] > 0
+                hasSurface: stateCounts[1] > 0 || stateCounts[2] > 0 || stateCounts[3] > 0,
+                cutoutMode,
+                cutoutCellCount,
+                disconnectedIslands
             };
         }
 
         function splitOccupancyComponents(occ, resV, resT) {
-            const seen = new Set();
+            // Visited flags as a flat Uint8Array instead of a Set<string> - the cell space
+            // (2*resV*resT) is small and fully known upfront, so a direct numeric index beats
+            // building and hashing a template-literal key for every one of the ~2*resV*resT
+            // cells this flood fill can visit.
+            const seen = new Uint8Array(2 * resV * resT);
             const components = [];
             const directions = [
                 [1, 0, 0], [-1, 0, 0],
@@ -4496,8 +5100,8 @@ ${trianglesXml.join('\n')}
                 [0, 0, 1], [0, 0, -1]
             ];
 
-            function cellKey(k, iv, it) {
-                return `${k}|${iv}|${mod(it, resT)}`;
+            function cellIndex(k, iv, it) {
+                return (k * resV + iv) * resT + mod(it, resT);
             }
 
             function inBounds(k, iv) {
@@ -4508,12 +5112,12 @@ ${trianglesXml.join('\n')}
                 for (let iv = 0; iv < resV; iv++) {
                     for (let it = 0; it < resT; it++) {
                         if (!occ[k][iv][it]) continue;
-                        const seedKey = cellKey(k, iv, it);
-                        if (seen.has(seedKey)) continue;
+                        const seedIndex = cellIndex(k, iv, it);
+                        if (seen[seedIndex]) continue;
 
                         const queue = [[k, iv, it]];
                         const cells = [];
-                        seen.add(seedKey);
+                        seen[seedIndex] = 1;
 
                         while (queue.length) {
                             const [ck, civ, cit] = queue.pop();
@@ -4524,9 +5128,9 @@ ${trianglesXml.join('\n')}
                                 const niv = civ + div;
                                 const nit = mod(cit + dit, resT);
                                 if (!inBounds(nk, niv) || !occ[nk][niv][nit]) continue;
-                                const nextKey = cellKey(nk, niv, nit);
-                                if (seen.has(nextKey)) continue;
-                                seen.add(nextKey);
+                                const nextIndex = cellIndex(nk, niv, nit);
+                                if (seen[nextIndex]) continue;
+                                seen[nextIndex] = 1;
                                 queue.push([nk, niv, nit]);
                             }
                         }
@@ -4556,8 +5160,10 @@ ${trianglesXml.join('\n')}
                 return layers[layer][iv][mod(it, resT)];
             }
 
+            // Dense numeric key: layer in [0,3), iv in [0,resV], it in [0,resT) - the same
+            // bounds already used to size the layer arrays, so this is exact, not a hash.
             function getIndex(layer, iv, it) {
-                const key = `${layer}_${iv}_${mod(it, resT)}`;
+                const key = (layer * (resV + 1) + iv) * resT + mod(it, resT);
                 if (vertexMap.has(key)) return vertexMap.get(key);
                 const p = getNode(layer, iv, it);
                 const idx = positions.length / 3;
@@ -4673,42 +5279,57 @@ ${trianglesXml.join('\n')}
             return cleanupMesh({ positions, indices });
         }
 
-        function cleanupMesh(mesh) {
+        // Fallback palette for the rare caller that hands cleanupMesh a raw per-vertex `colors`
+        // array without an explicit palette (matches the default color inputs' defaults).
+        const DEFAULT_CLEANUP_PALETTE = [
+            hexToRgb01('#0f4d80'), hexToRgb01('#ff7062'), hexToRgb01('#5f4a8b'), hexToRgb01('#8ab04d')
+        ];
+
+        function cleanupMesh(mesh, palette = null) {
             const inPos = mesh.positions;
             const inIdx = mesh.indices;
+            const vertexCount = inPos.length / 3;
             const weldedPositions = [];
-            const remap = new Map();
-            const vertMap = new Map();
+            // Int32Array remap: original vertex index -> welded index. Original indices are
+            // already a dense 0..vertexCount-1 range, so a typed array beats a Map here.
+            const remap = new Int32Array(vertexCount);
+            // Spatial hash for welding: quantize to the same 1e-6 grid as before, but key by
+            // a numeric hash (see "Optimized Spatial Hashing", Teschner et al.) instead of a
+            // template-literal string - this used to allocate + hash a new string per vertex.
+            // The hash isn't injective, so each bucket keeps the quantized triples to verify
+            // an exact match rather than trusting a hash collision.
+            const buckets = new Map();
             const eps = 1e-6;
+            const invEps = 1 / eps;
 
-            function keyFor(x, y, z) {
-                return `${Math.round(x / eps)}_${Math.round(y / eps)}_${Math.round(z / eps)}`;
+            function findOrAddVertex(x, y, z) {
+                const qx = Math.round(x * invEps);
+                const qy = Math.round(y * invEps);
+                const qz = Math.round(z * invEps);
+                const hash = (qx * 73856093) ^ (qy * 19349663) ^ (qz * 83492791);
+                let bucket = buckets.get(hash);
+                if (bucket) {
+                    for (let i = 0; i < bucket.length; i++) {
+                        const cand = bucket[i];
+                        if (cand.qx === qx && cand.qy === qy && cand.qz === qz) return cand.index;
+                    }
+                } else {
+                    bucket = [];
+                    buckets.set(hash, bucket);
+                }
+                const idx = weldedPositions.length / 3;
+                weldedPositions.push(x, y, z);
+                bucket.push({ qx, qy, qz, index: idx });
+                return idx;
             }
 
             for (let i = 0; i < inPos.length; i += 3) {
-                const x = inPos[i], y = inPos[i + 1], z = inPos[i + 2];
-                const key = keyFor(x, y, z);
-                let idx = vertMap.get(key);
-                if (idx === undefined) {
-                    idx = weldedPositions.length / 3;
-                    weldedPositions.push(x, y, z);
-                    vertMap.set(key, idx);
-                }
-                remap.set(i / 3, idx);
+                remap[i / 3] = findOrAddVertex(inPos[i], inPos[i + 1], inPos[i + 2]);
             }
 
             const triangleColorIndices = [];
             const hasColors = mesh.colors && mesh.colors.length >= inPos.length;
-            let palette = null;
-            if (hasColors) {
-                const cfg = getConfig();
-                palette = [
-                    hexToRgb01(cfg.baseColor),
-                    hexToRgb01(cfg.patternColor1),
-                    hexToRgb01(cfg.patternColor2),
-                    hexToRgb01(cfg.overlapColor)
-                ];
-            }
+            const activePalette = hasColors ? (palette || DEFAULT_CLEANUP_PALETTE) : null;
 
             function getColorIndexForTri(origA, origB, origC) {
                 const r = (mesh.colors[origA * 3] + mesh.colors[origB * 3] + mesh.colors[origC * 3]) / 3;
@@ -4717,7 +5338,7 @@ ${trianglesXml.join('\n')}
                 let bestIdx = 0;
                 let bestDist = Infinity;
                 for (let i = 0; i < 4; i++) {
-                    const dist = Math.hypot(r - palette[i][0], g - palette[i][1], b - palette[i][2]);
+                    const dist = Math.hypot(r - activePalette[i][0], g - activePalette[i][1], b - activePalette[i][2]);
                     if (dist < bestDist) {
                         bestDist = dist;
                         bestIdx = i;
@@ -4727,15 +5348,28 @@ ${trianglesXml.join('\n')}
             }
 
             const cleaned = [];
-            const triSeen = new Set();
+            // Numeric trie (lo -> mid -> Set(hi)) instead of a sorted-and-joined string key.
+            // Arithmetic packing (lo*N*N + mid*N + hi) would be faster still, but silently
+            // collides once N^3 exceeds Number.MAX_SAFE_INTEGER - a real risk since resV/resT
+            // are free-typed number inputs. This stays numeric-keyed and exact at any scale.
+            const triSeen = new Map();
+            function isDuplicateTri(lo, mid, hi) {
+                let midMap = triSeen.get(lo);
+                if (!midMap) { midMap = new Map(); triSeen.set(lo, midMap); }
+                let hiSet = midMap.get(mid);
+                if (!hiSet) { hiSet = new Set(); midMap.set(mid, hiSet); }
+                if (hiSet.has(hi)) return true;
+                hiSet.add(hi);
+                return false;
+            }
 
             for (let i = 0; i < inIdx.length; i += 3) {
                 const origA = inIdx[i];
                 const origB = inIdx[i + 1];
                 const origC = inIdx[i + 2];
-                const a = remap.get(origA);
-                const b = remap.get(origB);
-                const c = remap.get(origC);
+                const a = remap[origA];
+                const b = remap[origB];
+                const c = remap[origC];
                 if (a === b || b === c || a === c) continue;
 
                 const ax = weldedPositions[a * 3], ay = weldedPositions[a * 3 + 1], az = weldedPositions[a * 3 + 2];
@@ -4750,9 +5384,8 @@ ${trianglesXml.join('\n')}
                 const area2 = Math.sqrt(nx * nx + ny * ny + nz * nz);
                 if (area2 < 1e-8) continue;
 
-                const key = [a, b, c].slice().sort((m, n) => m - n).join('_');
-                if (triSeen.has(key)) continue;
-                triSeen.add(key);
+                const lo = Math.min(a, b, c), hi = Math.max(a, b, c), mid = a + b + c - lo - hi;
+                if (isDuplicateTri(lo, mid, hi)) continue;
                 cleaned.push(a, b, c);
 
                 if (mesh.triangleColorIndices) {
@@ -4772,9 +5405,15 @@ ${trianglesXml.join('\n')}
             }
             if (!faces.length) return mesh;
 
+            // min*vertexCount+max packs an (a,b) edge into one exact integer key - safe here
+            // since vertexCount^2 is nowhere near Number.MAX_SAFE_INTEGER for any mesh this
+            // app can produce, unlike a triangle's 3-index packing (see cleanupMesh above).
+            const vertexCount = mesh.positions.length / 3;
+            function edgeKey(a, b) { return a < b ? a * vertexCount + b : b * vertexCount + a; }
+
             const edgeMap = new Map();
             function addFaceEdge(faceIndex, a, b) {
-                const key = a < b ? `${a}_${b}` : `${b}_${a}`;
+                const key = edgeKey(a, b);
                 let list = edgeMap.get(key);
                 if (!list) {
                     list = [];
@@ -4821,7 +5460,7 @@ ${trianglesXml.join('\n')}
                     ];
 
                     for (const [a, b] of triEdges) {
-                        const key = a < b ? `${a}_${b}` : `${b}_${a}`;
+                        const key = edgeKey(a, b);
                         const shared = edgeMap.get(key) || [];
                         for (const entry of shared) {
                             const fj = entry.faceIndex;
@@ -4865,6 +5504,7 @@ ${trianglesXml.join('\n')}
 
         function validateMesh(mesh) {
             const edges = new Map();
+            const vertexCount = mesh.positions.length / 3;
             let signedVolume = 0;
             for (let i = 0; i < mesh.indices.length; i += 3) {
                 const a = mesh.indices[i];
@@ -4874,7 +5514,7 @@ ${trianglesXml.join('\n')}
                 for (let e = 0; e < 3; e++) {
                     const u = tri[e];
                     const v = tri[(e + 1) % 3];
-                    const key = u < v ? `${u}_${v}` : `${v}_${u}`;
+                    const key = u < v ? u * vertexCount + v : v * vertexCount + u;
                     edges.set(key, (edges.get(key) || 0) + 1);
                 }
 
@@ -4896,6 +5536,37 @@ ${trianglesXml.join('\n')}
                 nonManifoldEdges,
                 signedVolume
             };
+        }
+
+        // Rough filament estimate for the status bar. Core + every surface (pattern color)
+        // mesh partition the same solid with no overlap, so their volumes just sum. Model
+        // units are already cm (matches the Base Radius / Height inputs), so no conversion
+        // is needed beyond the PLA density figure itself.
+        const PLA_DENSITY_G_PER_CM3 = 1.24;
+
+        function estimatePartsVolumeCm3(parts) {
+            if (!parts) return 0;
+            let total = Math.abs((parts.coreValidation || {}).signedVolume || 0);
+            (parts.surfaceGroups || []).forEach(part => {
+                const validation = part.mergedValidation || part.validation;
+                if (validation) total += Math.abs(validation.signedVolume || 0);
+            });
+            return total;
+        }
+
+        function formatMaterialEstimate(volumeCm3) {
+            const grams = volumeCm3 * PLA_DENSITY_G_PER_CM3;
+            return `~${volumeCm3.toFixed(1)} cm3 / ~${grams.toFixed(0)} g PLA`;
+        }
+
+        // Most 0.4mm-nozzle FDM printers need at least ~2 perimeter widths (~0.8mm) of wall
+        // to print solid and not just as a single unsupported line. minWallCm comes from the
+        // same outer/inner sampling buildLayeredSample already does for pattern-depth clamping.
+        const MIN_SAFE_WALL_CM = 0.08;
+
+        function formatMinWallWarning(minWallCm) {
+            if (!isFinite(minWallCm) || minWallCm <= 0 || minWallCm >= MIN_SAFE_WALL_CM) return '';
+            return `Thin wall ${(minWallCm * 10).toFixed(2)}mm (below ${(MIN_SAFE_WALL_CM * 10).toFixed(1)}mm nozzle-safe minimum)`;
         }
 
         function appendCylindricalDrainClosure(mesh, sample, cfg, outerColumnFilter = null) {
@@ -4990,6 +5661,21 @@ ${trianglesXml.join('\n')}
             return { positions, indices };
         }
 
+        // Single-entry memoization for the two expensive mesh builders below. Every field is
+        // sampled, welded, and validated all over again on every preview render; if the user's
+        // very next action is an export with nothing changed, this lets that export reuse the
+        // result instead of repeating all of it. Keyed by the exact serialized cfg per builder
+        // function, so any change at all (including a resolution change) is a clean cache miss.
+        const singleEntryMeshCache = new Map();
+        function memoizedMeshBuild(builderFn, cfg) {
+            const key = JSON.stringify(cfg);
+            const entry = singleEntryMeshCache.get(builderFn);
+            if (entry && entry.key === key) return entry.result;
+            const result = builderFn(cfg);
+            singleEntryMeshCache.set(builderFn, { key, result });
+            return result;
+        }
+
         function buildMultipartMeshes(cfg) {
             const sample = buildLayeredSample(cfg);
             const occ = buildOccupancies(sample, cfg);
@@ -5062,7 +5748,11 @@ ${trianglesXml.join('\n')}
                 coreValidation: validateMesh(coreMesh),
                 surfaceGroups,
                 hasSurface: occ.hasSurface,
-                stateCounts: occ.stateCounts ? occ.stateCounts.slice() : [0, 0, 0, 0]
+                stateCounts: occ.stateCounts ? occ.stateCounts.slice() : [0, 0, 0, 0],
+                minWallCm: sample.minWallCm,
+                cutoutMode: !!occ.cutoutMode,
+                cutoutCellCount: occ.cutoutCellCount || 0,
+                disconnectedIslands: occ.disconnectedIslands || 0
             };
         }
 
@@ -5084,23 +5774,68 @@ ${trianglesXml.join('\n')}
             scene.remove(obj);
         }
 
+        // Interactive resolution cap used only during rapid, continuous editing (see
+        // updatePreview below). Phase 0's compiled equations already remove most of the
+        // per-sample cost, but mesh building itself (welding, occupancy grids, orientation)
+        // still scales with resV*resT, so a high-resolution design can still feel sluggish
+        // while typing. Dropping to a coarse draft during rapid input and settling to full
+        // resolution once input pauses keeps editing responsive without ever showing a
+        // permanently lower-quality result.
+        const INTERACTIVE_RES_CAP_V = 64;
+        const INTERACTIVE_RES_CAP_T = 96;
+        const FULL_RES_SETTLE_MS = 300;
+        const RAPID_INPUT_WINDOW_MS = 400;
+
+        function getInteractivePreviewConfig(cfg) {
+            const needsClamp = cfg.resV > INTERACTIVE_RES_CAP_V || cfg.resT > INTERACTIVE_RES_CAP_T ||
+                cfg.patternResV > INTERACTIVE_RES_CAP_V || cfg.patternResT > INTERACTIVE_RES_CAP_T;
+            if (!needsClamp) return cfg;
+            return Object.assign({}, cfg, {
+                resV: Math.min(cfg.resV, INTERACTIVE_RES_CAP_V),
+                resT: Math.min(cfg.resT, INTERACTIVE_RES_CAP_T),
+                patternResV: Math.min(cfg.patternResV, INTERACTIVE_RES_CAP_V),
+                patternResT: Math.min(cfg.patternResT, INTERACTIVE_RES_CAP_T)
+            });
+        }
+
         function updatePreview() {
             if (suppressPreviewUpdates) return;
             if (renderTimeout) clearTimeout(renderTimeout);
+            if (fullResTimeout) { clearTimeout(fullResTimeout); fullResTimeout = null; }
             setGenerationNotice('');
             setStatus("Generating preview...");
 
+            const now = performance.now();
+            const isRapidSuccession = (now - lastUpdatePreviewCall) < RAPID_INPUT_WINDOW_MS;
+            lastUpdatePreviewCall = now;
+
             renderTimeout = setTimeout(() => {
+                const cfg = getConfig();
+                const interactiveCfg = isRapidSuccession ? getInteractivePreviewConfig(cfg) : cfg;
+                const isDraft = interactiveCfg !== cfg;
+                renderConfigToScene(interactiveCfg, isDraft);
+
+                if (isDraft) {
+                    fullResTimeout = setTimeout(() => {
+                        fullResTimeout = null;
+                        renderConfigToScene(cfg, false);
+                    }, FULL_RES_SETTLE_MS);
+                }
+            }, 30);
+        }
+
+        function renderConfigToScene(cfg, isInteractivePass) {
                 try {
                     if (currentObject) {
                         disposeObject(currentObject);
                         currentObject = null;
                     }
 
-                    const cfg = getConfig();
+                    const compileErrors = refreshExpressionCompileStatus();
+                    const draftSuffix = isInteractivePass ? ' | draft preview' : '';
 
                     if (supportsMultipart(cfg)) {
-                        const parts = buildMultipartMeshes(cfg);
+                        const parts = memoizedMeshBuild(buildMultipartMeshes, cfg);
                         const group = new THREE.Group();
 
                         const coreGeom = meshToThreeGeometry(parts.coreMesh);
@@ -5131,7 +5866,7 @@ ${trianglesXml.join('\n')}
                         });
 
                         if (cfg.includePlate) {
-                            const plateParts = buildPlateMultipartMeshes(cfg);
+                            const plateParts = memoizedMeshBuild(buildPlateMultipartMeshes, cfg);
                             const plateHeight = plateParts.plateHeight || cfg.plateHeight || 1.5;
                             group.children.forEach(child => { child.position.y += plateHeight; });
 
@@ -5157,6 +5892,8 @@ ${trianglesXml.join('\n')}
                         controls.update();
 
                         const warnBits = [];
+                        const wallWarning = formatMinWallWarning(parts.minWallCm);
+                        if (wallWarning) warnBits.push(wallWarning);
                         if (parts.coreValidation.boundaryEdges || parts.coreValidation.nonManifoldEdges) warnBits.push(`Core B:${parts.coreValidation.boundaryEdges} N:${parts.coreValidation.nonManifoldEdges}`);
                         parts.surfaceGroups.forEach(part => {
                             const totals = part.validations.reduce((acc, validation) => {
@@ -5169,12 +5906,17 @@ ${trianglesXml.join('\n')}
                             }
                         });
                         if (cfg.requestedPatternDepthCm > cfg.patternDepthCm + 1e-6) warnBits.push(`Depth clamped to ${(cfg.patternDepthCm * 10).toFixed(1)} mm`);
+                        if (parts.cutoutMode && parts.disconnectedIslands > 0) {
+                            warnBits.push(`Cutout split into ${parts.disconnectedIslands + 1} disconnected pieces`);
+                        }
 
                         const coreBoundary = parts.coreValidation.boundaryEdges || 0;
                         const coreNonManifold = parts.coreValidation.nonManifoldEdges || 0;
                         const brokenCoreGeneration = coreBoundary === 0 && coreNonManifold > 0;
 
-                        if (brokenCoreGeneration) {
+                        if (parts.cutoutMode && parts.disconnectedIslands > 0) {
+                            setGenerationNotice(`Cutout warning: pattern holes split the shell into ${parts.disconnectedIslands + 1} disconnected pieces. Reduce cutout coverage or adjust the mask so material stays connected.`);
+                        } else if (brokenCoreGeneration) {
                             setGenerationNotice(`Generation warning: geometry is slightly broken (Core B:${coreBoundary} N:${coreNonManifold}) and may need repair in slicer software.`);
                         } else {
                             setGenerationNotice('');
@@ -5184,12 +5926,13 @@ ${trianglesXml.join('\n')}
                         const suffix = warnBits.length ? ` | ${warnBits.join(' | ')}` : ``;
                         if (cfg.includePlate && group.userData.plateInfo) {
                             const plateInfo = group.userData.plateInfo;
-                            setStatus(`pot+plate preview | Depth ${(cfg.patternDepthCm * 10).toFixed(1)} mm | Plate ${(plateInfo.plateOuterDiameter).toFixed(2)} cm dia x ${(plateInfo.plateHeight).toFixed(2)} cm high | ${activeStates}${suffix}`, warnBits.length ? 'warn' : '');
+                            const combinedVolumeCm3 = estimatePartsVolumeCm3(parts) + estimatePartsVolumeCm3(plateInfo);
+                            setStatus(`pot+plate preview | Depth ${(cfg.patternDepthCm * 10).toFixed(1)} mm | Plate ${(plateInfo.plateOuterDiameter).toFixed(2)} cm dia x ${(plateInfo.plateHeight).toFixed(2)} cm high | ${formatMaterialEstimate(combinedVolumeCm3)} | ${activeStates}${suffix}${draftSuffix}`, warnBits.length ? 'warn' : '');
                         } else {
-                            setStatus(`field+distortion preview | Depth ${(cfg.patternDepthCm * 10).toFixed(1)} mm | ${activeStates}${suffix}`, warnBits.length ? 'warn' : '');
+                            setStatus(`field+distortion preview | Depth ${(cfg.patternDepthCm * 10).toFixed(1)} mm | ${formatMaterialEstimate(estimatePartsVolumeCm3(parts))} | ${activeStates}${suffix}${draftSuffix}`, warnBits.length ? 'warn' : '');
                         }
                     } else {
-                        const parts = buildPlateMultipartMeshes(cfg);
+                        const parts = memoizedMeshBuild(buildPlateMultipartMeshes, cfg);
                         const group = new THREE.Group();
                         const plateColors = [cfg.baseColor, cfg.patternColor1, cfg.patternColor2, cfg.overlapColor];
                         if (parts.coreMesh.indices.length) {
@@ -5210,6 +5953,8 @@ ${trianglesXml.join('\n')}
                         controls.update();
 
                         const plateWarnBits = [];
+                        const plateWallWarning = formatMinWallWarning(parts.minWallCm);
+                        if (plateWallWarning) plateWarnBits.push(plateWallWarning);
                         if (parts.coreValidation.boundaryEdges || parts.coreValidation.nonManifoldEdges) {
                             plateWarnBits.push(`Core B:${parts.coreValidation.boundaryEdges} N:${parts.coreValidation.nonManifoldEdges}`);
                         }
@@ -5219,15 +5964,25 @@ ${trianglesXml.join('\n')}
                         });
                         const plateModeLabel = cfg.sys === 'spherical' ? 'spherical' : 'cylindrical';
                         const plateSuffix = plateWarnBits.length ? ` | ${plateWarnBits.join(' | ')}` : '';
-                        setStatus(`Plate preview | Host ${(parts.plateHostDiameter).toFixed(2)} cm | Outer ${(parts.plateOuterDiameter).toFixed(2)} cm | Height ${(parts.plateHeight).toFixed(2)} cm | ${plateModeLabel}${plateSuffix}`, plateWarnBits.length ? 'warn' : '');
+                        setStatus(`Plate preview | Host ${(parts.plateHostDiameter).toFixed(2)} cm | Outer ${(parts.plateOuterDiameter).toFixed(2)} cm | Height ${(parts.plateHeight).toFixed(2)} cm | ${formatMaterialEstimate(estimatePartsVolumeCm3(parts))} | ${plateModeLabel}${plateSuffix}${draftSuffix}`, plateWarnBits.length ? 'warn' : '');
                         setGenerationNotice(plateWarnBits.length ? `Plate manifold check: ${plateWarnBits.join(' | ')}` : '');
+                    }
+
+                    // Equation compile errors take priority over manifold/status text below them:
+                    // a broken equation silently falling back to a fallback shape used to look
+                    // like a perfectly fine cylinder. Affected fields are also outlined in red.
+                    if (compileErrors.length) {
+                        const summary = compileErrors.length === 1
+                            ? compileErrors[0]
+                            : `${compileErrors[0]} (+${compileErrors.length - 1} more)`;
+                        setGenerationNotice(`Equation error - ${summary}`);
+                        setStatus(`Equation error: ${summary}`, 'error');
                     }
                 } catch (err) {
                     console.error(err);
                     setGenerationNotice('OBJECT GENERATION FAILED - Fix the geometry before export.');
                     setStatus("Error: invalid equation or geometry failure.", 'error');
                 }
-            }, 30);
         }
 
         function chooseColor(cfg, theta, z, phi, v) {
@@ -5248,6 +6003,7 @@ ${trianglesXml.join('\n')}
 
         function generateCylindrical(cfg) {
             const vertices = [], indices = [], colors = [];
+            const baseColorRGB = hexToRgb01(cfg.baseColor);
             const addV = (x, y, z, color) => {
                 vertices.push(x, y, z);
                 colors.push(color[0], color[1], color[2]);
@@ -5273,7 +6029,7 @@ ${trianglesXml.join('\n')}
                     const texDisp = evalFieldWithModifier(cfg.texEq, cfg, theta, zO, 0, v, 0, true, 'texture');
                     const rOut = rBaseOuter + (texDisp * cfg.texInt);
                     outerProfileRow.push({ r: Math.max(0.1, rOut), z: zO });
-                    colorRow.push(chooseColor(cfg, theta, zO, 0, v));
+                    colorRow.push(cfg.wantColors ? chooseColor(cfg, theta, zO, 0, v) : baseColorRGB);
                 }
                 outerRows.push(outerProfileRow);
                 ringColors.push(colorRow);
@@ -5378,7 +6134,7 @@ ${trianglesXml.join('\n')}
             let hB = [], hT = [];
             for (let it = 0; it < cfg.resT; it++) {
                 const theta = (2 * Math.PI * it) / cfg.resT;
-                const holeColor = hexToRgb01(cfg.baseColor);
+                const holeColor = baseColorRGB;
 
                 // If drain is 0, center the points exactly at 0,0
                 const bx = actualDrain <= 0 ? 0 : actualDrain * Math.cos(theta);
@@ -5426,6 +6182,8 @@ ${trianglesXml.join('\n')}
         function generateSpherical(cfg) {
             const vertices = [], indices = [], colors = [];
             let minY = Infinity;
+            const baseColorRGB = hexToRgb01(cfg.baseColor);
+            const shouldApplyColor = cfg.wantColors && cfg.applyPlateColoring !== false;
 
             // Check if the cut is essentially at the pole (180°)
             const isSolidBottom = cfg.isPot && cfg.sphBotCut >= Math.PI - 0.005;
@@ -5464,8 +6222,6 @@ ${trianglesXml.join('\n')}
                         if (iY < innerBottomY) iY = innerBottomY;
                     }
 
-                    const baseColorRGB = hexToRgb01(cfg.baseColor);
-                    const shouldApplyColor = cfg.applyPlateColoring !== false;
                     const outerColor = shouldApplyColor ? chooseColor(cfg, theta, 0, phi, v) : baseColorRGB;
                     const outerPt = applyDistortionPoint(cfg, { x: oX, y: oY, z: -oZ }, theta, 0, phi, v);
                     const innerPt = applyDistortionPoint(cfg, { x: iX, y: iY, z: -iZ }, theta, 0, phi, v);
@@ -5528,12 +6284,28 @@ ${trianglesXml.join('\n')}
             return { vertices, indices, colors };
         }
 
+        // Cutout mode removes material through the occupancy-grid pipeline
+        // (buildMultipartMeshes), which the simpler ring-based generateCylindrical/
+        // generateSpherical used for single-part STL export has no concept of - it would
+        // silently export a solid, unperforated shape. Route cutout-mode pot exports through
+        // the same multipart core mesh the preview and 3MF export already use instead. Color
+        // mode is unaffected: its outer silhouette is identical either way, so the existing
+        // ring-based path (and its wantColors:false STL-doesn't-carry-color optimization)
+        // stays exactly as before.
+        function buildPrimaryMeshDataForExport(cfg) {
+            if (cfg.isPot && cfg.patternMode === 'cutout' && supportsMultipart(cfg)) {
+                const parts = memoizedMeshBuild(buildMultipartMeshes, cfg);
+                return { vertices: parts.coreMesh.positions, indices: parts.coreMesh.indices };
+            }
+            return buildPrimaryMeshData(cfg);
+        }
+
         function exportSTL() {
             try {
                 const cfg = getConfig();
 
                 if (cfg.includePlate) {
-                    const potMeshData = buildPrimaryMeshData(cfg);
+                    const potMeshData = buildPrimaryMeshDataForExport(cfg);
                     const plateMeshData = generatePlate(cfg);
 
                     downloadBlob(meshDataToStlBlob(rotateRawMeshDataForPrinterCoordinates(potMeshData)), `${buildExportStemForKind(cfg, 'Pot', false)}.stl`);
@@ -5546,7 +6318,7 @@ ${trianglesXml.join('\n')}
                     return;
                 }
 
-                const meshData = cfg.isPlate ? generatePlate(cfg) : buildPrimaryMeshData(cfg);
+                const meshData = cfg.isPlate ? generatePlate(cfg) : buildPrimaryMeshDataForExport(cfg);
                 downloadBlob(meshDataToStlBlob(rotateRawMeshDataForPrinterCoordinates(meshData)), `${buildExportStem(cfg, false)}.stl`);
 
                 if (cfg.isPlate) {
@@ -5570,7 +6342,7 @@ ${trianglesXml.join('\n')}
 
                 const exportSeparatePlate = !!cfg.includePlate;
                 const plateMeshData = exportSeparatePlate ? generatePlate(cfg) : null;
-                const parts = buildMultipartMeshes(cfg);
+                const parts = memoizedMeshBuild(buildMultipartMeshes, cfg);
                 const cleanSurfaceGroups = parts.surfaceGroups.every(part =>
                     part.validations.every(v => !v.boundaryEdges && !v.nonManifoldEdges) &&
                     !part.mergedValidation.boundaryEdges &&

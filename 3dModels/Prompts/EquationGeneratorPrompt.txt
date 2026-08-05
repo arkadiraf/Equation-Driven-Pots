@@ -124,22 +124,10 @@ Together they create four color states:
 - pattern B only
 - A and B overlap
 
-Pattern mode (patterns.mode, "color" or "cutout"):
-- "color" (default): masked regions are painted with the four color states above.
-- "cutout": masked regions are removed as full-thickness holes through the wall instead of
-  colored, for perforated lattice/lantern effects. Colors and depthMm are ignored in this mode.
-  Keep cutout coverage moderate and avoid masks that could isolate a region of the wall
-  completely surrounded by holes, since that produces a disconnected floating piece.
-
 LAYER 5: MODIFIER
 This does not change XYZ space directly.
-It remaps theta sampling before the selected field is evaluated (modifier.equation).
+It remaps theta sampling only before the selected field is evaluated.
 Use it for twist, drift, petal migration, diagonal sweep, and region-aware angular remapping.
-
-An optional second expression, modifier.equationV, additionally remaps v (vertical position)
-the same way, sharing the same strength and target. Leave it as an empty string ("") unless a
-vertical warp (conformal spiral pacing, vertical feature migration) is specifically useful -
-most designs should only use the theta modifier.
 
 LAYER 6: DISTORTION
 This acts after the field is generated.
@@ -313,28 +301,20 @@ Variables:
 - theta, z, phi, v, R
 
 Functions and constants:
-- pi, sin, cos, tan, asin, acos, atan, atan2, sinh, cosh, tanh, pow, min, max, abs, exp, sqrt, log, floor, ceil, round, sign, mod, fract, clamp, smoothstep, hypot
-
-Procedural noise functions (all deterministic for a given seed - same seed always produces the same exported geometry):
-- cnoise(theta, v, st, sv, seed): seeded 3D simplex noise sampled on a cylinder of radius st and height scale sv. Range roughly [-1, 1]. Seam-free in theta by construction.
-- fbm(theta, v, st, sv, octaves, seed): fractal Brownian motion built from cnoise (amplitude halves, frequency doubles each octave; octaves capped at 8).
-- ridged(theta, v, st, sv, octaves, seed): ridged multifractal noise (sharp ridges along zero crossings). Range [0, 1].
-- worley(theta, v, st, sv, seed): cellular F1 distance noise. Range roughly [0, 1]. Good for crackle/leather/hammered surfaces.
-- phyllo(theta, v, n, size): golden-angle phyllotaxis bump field with n seeds spread through v; size sets bump radius as a fraction of the full circle/height. Range [0, 1].
+- pi, sin, cos, tan, asin, acos, atan, pow, min, max, abs, exp, sqrt, log, floor, ceil, round, sign, mod, fract, clamp, smoothstep
 
 For pattern equations, you may also use:
-- textureFill(value, pct)
-- outerDeviation(dev)
-- texPosNorm (0-1 normalized position within the positive texture range, useful with textureFill)
+- textureFill(...)
+- outerDeviation(...)
 
 For distortion equations, you may use:
 Variables:
 - x, y, z, theta, zs, phi, v, R
 
 Functions and constants:
-- pi, sin, cos, tan, asin, acos, atan, atan2, sinh, cosh, tanh, pow, min, max, abs, exp, sqrt, log, floor, ceil, round, sign, mod, fract, clamp, smoothstep, hypot
+- pi, sin, cos, tan, asin, acos, atan, pow, min, max, abs, exp, sqrt, log, floor, ceil, round, sign, mod, fract, clamp, smoothstep
 
-Do not use other variables or unsupported functions. Anything not on these lists will fail to compile and the field will fall back to a neutral value (R for base/distortion, 0 for texture, -1 for patterns) - always double-check identifiers before finalizing.
+Do not use other variables or unsupported functions.
 
 ==================================================
 8. BASIC EFFECT EXAMPLES TO BUILD FROM
@@ -528,22 +508,6 @@ Name: 4-Petal Mask
 Description: Floral mask strongest through the middle body.
 Equation: asin(0.98 * sin(4*theta)) * sin(pi*v)
 
-Name: Marble Veins
-Description: Thin winding marble veins where a noise-warped wave crosses zero.
-Equation: 0.12 - abs(sin(3*theta + 1.5*pi*v + 3.5*fbm(theta, v, 3, 4, 4, 9)))
-
-Name: Voronoi Pebbles
-Description: Organic non-repeating pebble spots centered on Worley cells.
-Equation: 0.34 - worley(theta, v, 7, 8, 3)
-
-Name: Shoreline Split
-Description: Two-tone horizontal split with a coastline-like wandering boundary.
-Equation: tanh(3.5*(v - 0.52 + 0.16*cnoise(theta, v, 3, 3, 8)))
-
-Name: Sunburst Medallion
-Description: Pinwheel rays radiating from one point on the front face, Gaussian-windowed.
-Equation: exp(-(pow(theta - pi, 2) + 8*pow(v - 0.55, 2)) * 1.6) * (0.35 + sin(7*atan2(v - 0.55, 0.4*(theta - pi)))) - 0.12
-
 ------------------------------
 MODIFIER EXAMPLES
 ------------------------------
@@ -660,7 +624,6 @@ Neutral equations:
 - patterns.equation1: "-1"
 - patterns.equation2: "-1"
 - modifier.equation: "0"
-- modifier.equationV: "" (empty string - only fill in for an intentional vertical warp)
 - distortion.dx: "0"
 - distortion.dy: "0"
 - distortion.dz: "0"
@@ -688,7 +651,6 @@ Safe defaults:
 - Texture preset: "None (Flat Surface)"
 - Pattern preset 1: "None (Solid Base Color)"
 - Pattern preset 2: "None (Solid Base Color)"
-- Pattern mode: "color"
 - Modifier preset: "None (No Modifier)"
 - Distortion preset: "None (No Distortion)"
 
@@ -780,10 +742,6 @@ modifier.target must be one of:
 - "pattern"
 - "all"
 
-patterns.mode must be one of:
-- "color" (default - paints the four mask states)
-- "cutout" (masked regions become full-thickness holes; colors/depthMm are ignored)
-
 distortion.type must be one of:
 - "all", "utility", "basicEffect", "wind", "gravity", "swirl", "torsion", "pressure", "custom"
 
@@ -813,9 +771,7 @@ Always output the full plate section with all parameters regardless of mode.
 
 IMPORTANT MODIFIER RULE
 - Do not output any "modifiedCoordinate" field.
-- modifier.equation remaps theta sampling; the optional modifier.equationV remaps v sampling.
-  Both share modifier.strength and modifier.target. Leave equationV as "" unless a vertical
-  warp is specifically intended.
+- The modifier only remaps theta sampling.
 
 ==================================================
 14. JSON SCHEMA TO OUTPUT
@@ -854,7 +810,6 @@ IMPORTANT MODIFIER RULE
     "intensity": 0.15
   },
   "patterns": {
-    "mode": "color",
     "preset1": "None (Solid Base Color)",
     "equation1": "-1",
     "preset2": "None (Solid Base Color)",
@@ -875,7 +830,6 @@ IMPORTANT MODIFIER RULE
     "type": "utility",
     "preset": "None (No Modifier)",
     "equation": "0",
-    "equationV": "",
     "strength": 0.0,
     "target": "base"
   },
