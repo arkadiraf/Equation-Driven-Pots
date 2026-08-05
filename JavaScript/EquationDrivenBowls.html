@@ -235,6 +235,134 @@
         .status-warn {
             background: rgba(230, 126, 34, 0.92) !important;
         }
+
+        @media (max-width: 768px) {
+            body {
+                height: 100dvh;
+            }
+
+            #sidebar {
+                width: clamp(160px, 42vw, 230px);
+                padding: 8px 8px 10px;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            #viewer-container {
+                min-width: 0;
+            }
+
+            h2 {
+                font-size: 0.88rem !important;
+                margin: 0 0 5px 0 !important;
+            }
+
+            .section-title {
+                font-size: 0.62rem;
+                font-weight: 700;
+                margin-top: 6px;
+                margin-bottom: 3px;
+                padding: 2px 22px 2px 0;
+                letter-spacing: 0.28px;
+            }
+
+            .input-group {
+                margin-bottom: 2px;
+            }
+
+            .grid-inputs,
+            .grid-3 {
+                gap: 3px;
+                margin-bottom: 2px;
+            }
+
+            .color-row {
+                gap: 3px;
+            }
+
+            label {
+                font-size: 0.58rem;
+                margin-bottom: 1px;
+                line-height: 1.05;
+            }
+
+            input[type="number"],
+            input[type="text"],
+            select,
+            textarea {
+                padding: 4px;
+                font-size: 0.68rem;
+            }
+
+            textarea {
+                height: 36px;
+                font-size: 0.58rem;
+                line-height: 1.12;
+                margin-bottom: 2px;
+                background: #f2f4f7;
+            }
+
+            .desc-text {
+                font-size: 0.48rem;
+                margin-top: -1px;
+                margin-bottom: 3px;
+                line-height: 1.1;
+            }
+
+            .pattern-settings,
+            .sys-settings {
+                margin-bottom: 3px;
+            }
+
+            .color-chip {
+                height: 28px;
+                padding: 2px;
+            }
+
+            button {
+                padding: 8px 2px;
+                font-size: 0.62rem;
+                margin-top: 4px;
+            }
+
+            #status {
+                font-size: 9px;
+                padding: 4px 10px;
+                bottom: 10px;
+                left: 10px;
+                max-width: calc(100% - 20px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            #sidebar {
+                width: clamp(150px, 44vw, 210px);
+            }
+
+            .section-title {
+                font-size: 0.6rem;
+            }
+
+            label {
+                font-size: 0.55rem;
+            }
+
+            input[type="number"],
+            input[type="text"],
+            select,
+            textarea {
+                font-size: 0.68rem;
+            }
+
+            textarea {
+                height: 36px;
+                font-size: 0.58rem;
+            }
+
+            button {
+                font-size: 0.6rem;
+            }
+        }
     </style>
 </head>
 
@@ -309,11 +437,19 @@
         </div>
 
         <div id="ringBaseSettings" class="sys-settings">
-            <div class="input-group" style="display:flex; align-items:center; gap:8px; margin:2px 0 4px;">
-                <input type="checkbox" id="ringBaseEnabled" onchange="updatePreview()"
-                    style="width:auto; height:18px; cursor:pointer; margin:0;">
-                <label for="ringBaseEnabled" style="margin:0; cursor:pointer; overflow:visible;">Add Ring Base
-                    (stand)</label>
+            <div class="input-group" style="display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin:2px 0 4px;">
+                <span style="display:inline-flex; align-items:center; gap:8px;">
+                    <input type="checkbox" id="ringBaseEnabled" onchange="updatePreview()"
+                        style="width:auto; height:18px; cursor:pointer; margin:0;">
+                    <label for="ringBaseEnabled" style="margin:0; cursor:pointer; overflow:visible;">Add Ring Base
+                        (stand)</label>
+                </span>
+                <span style="display:inline-flex; align-items:center; gap:8px;">
+                    <input type="checkbox" id="ringColorEnabled" checked onchange="updatePreview()"
+                        style="width:auto; height:18px; cursor:pointer; margin:0;">
+                    <label for="ringColorEnabled" style="margin:0; cursor:pointer; overflow:visible;">Color ring with
+                        pattern</label>
+                </span>
             </div>
             <div class="grid-3">
                 <div class="input-group"><label>Ring Radius (cm)</label><input type="number" id="ringRadius"
@@ -360,7 +496,7 @@
         </div>
         <div id="patternDesc" class="desc-text"></div>
         <div class="input-group" style="display:flex; align-items:center; gap:8px; margin:2px 0 4px;">
-            <input type="checkbox" id="solidLiner" checked onchange="updatePreview()"
+            <input type="checkbox" id="solidLiner" checked onchange="onSolidLinerToggle()"
                 style="width:auto; height:18px; cursor:pointer; margin:0;">
             <label for="solidLiner" style="margin:0; cursor:pointer; overflow:visible;">Solid inner liner (watertight
                 wall under the pattern)</label>
@@ -370,6 +506,12 @@
                 style="width:auto; height:18px; cursor:pointer; margin:0;">
             <label for="transparentFrame" style="margin:0; cursor:pointer; overflow:visible;">Semi-transparent inner
                 frame (preview)</label>
+        </div>
+        <div id="linerThicknessGroup" class="input-group"
+            style="display:flex; align-items:center; gap:8px; margin:0 0 6px;">
+            <label for="linerThickness" style="margin:0; white-space:nowrap;">Liner Wall Thickness (mm)</label>
+            <input type="number" id="linerThickness" value="1" step="0.1" min="0.1" style="max-width:90px;"
+                oninput="updatePreview()">
         </div>
 
         <div id="voronoiSettings" class="pattern-settings active">
@@ -742,8 +884,9 @@
             <div class="input-group"><label>Shell Smooth Passes</label><input type="number" id="shellSmoothPasses"
                     value="2" step="1" min="0" max="12" oninput="updatePreview()"></div>
         </div>
-        <div class="desc-text">Laplacian-relaxes the shell node grid to soften faceting and harsh equation transitions
-            (base ring and rim stay anchored).</div>
+        <div class="desc-text">Laplacian-relaxes the outer shell to soften faceting and harsh equation transitions; the
+            inner wall and liner ride along with the same motion, so wall thickness (and the pattern cut into it)
+            stays exact instead of drifting (base ring and rim stay anchored).</div>
 
         <div class="section-title">5. Design File</div>
         <div class="input-group">
@@ -995,11 +1138,13 @@
                 basePattern: document.getElementById('basePattern').checked,
                 baseColorEnabled: document.getElementById('baseColorEnabled').checked,
                 ringBaseEnabled: document.getElementById('ringBaseEnabled').checked,
+                ringColorEnabled: document.getElementById('ringColorEnabled').checked,
                 ringRadius: Math.max(0.5, num('ringRadius', 4)),
                 ringWidth: Math.max(0.2, num('ringWidth', 1.2)),
                 ringCut: Math.max(0, num('ringCut', 0.25)),
                 style: document.getElementById('patternStyle').value,
                 solidLiner: document.getElementById('solidLiner').checked,
+                linerWall: Math.max(0.1, num('linerThickness', 1)) / 10,
                 transparentFrame: document.getElementById('transparentFrame').checked,
                 vorDensity: Math.max(3, intv('vorDensity', 160)),
                 vorThickness: Math.max(0.4, num('vorThickness', 2.0)) / 10,
@@ -1568,7 +1713,7 @@
         /* ---------- shell node grids (coordinate-agnostic output) ---------- */
         function buildShell(cfg) {
             const resT = cfg.resT, resV = cfg.resV, dT = 2 * Math.PI / resT;
-            // I2 is a second, deeper inner grid (offset 2*wall) used by Solid Liner mode.
+            // I2 is a second, deeper inner grid (offset wall + linerWall) used by Solid Liner mode.
             const O = [], I = [], I2 = [], vrow = [];
             if (cfg.sys === 'cylindrical') {
                 for (let iv = 0; iv <= resV; iv++) {
@@ -1578,7 +1723,7 @@
                         const th = it * dT;
                         const ro = Math.max(0.12, evalForm(cfg.eq, th, z, 0, v, cfg.R));
                         const ri = Math.max(0.06, ro - cfg.wall);
-                        const ri2 = Math.max(0.04, ro - 2 * cfg.wall);
+                        const ri2 = Math.max(0.04, ro - cfg.wall - cfg.linerWall);
                         orow.push({ x: ro * Math.cos(th), y: z, z: -ro * Math.sin(th) });
                         irow.push({ x: ri * Math.cos(th), y: z, z: -ri * Math.sin(th) });
                         i2row.push({ x: ri2 * Math.cos(th), y: z, z: -ri2 * Math.sin(th) });
@@ -1597,7 +1742,7 @@
                         const th = it * dT;
                         const ro = Math.max(0.12, evalForm(cfg.eq, th, 0, phi, v, cfg.R));
                         const ri = Math.max(0.06, ro - cfg.wall);
-                        const ri2 = Math.max(0.04, ro - 2 * cfg.wall);
+                        const ri2 = Math.max(0.04, ro - cfg.wall - cfg.linerWall);
                         const op = { x: ro * sp * Math.cos(th), y: ro * cp, z: -ro * sp * Math.sin(th) };
                         const ip = { x: ri * sp * Math.cos(th), y: ri * cp, z: -ri * sp * Math.sin(th) };
                         const i2p = { x: ri2 * sp * Math.cos(th), y: ri2 * cp, z: -ri2 * sp * Math.sin(th) };
@@ -1625,7 +1770,25 @@
                     collapse(O[0]); collapse(I[0]); collapse(I2[0]);
                 }
             }
-            if (cfg.shellSmoothPasses > 0) { smoothGrid(O, cfg.shellSmoothPasses); smoothGrid(I, cfg.shellSmoothPasses); smoothGrid(I2, cfg.shellSmoothPasses); }
+            if (cfg.shellSmoothPasses > 0) {
+                // Smooth the outer surface only, then carry the inner wall / liner along by the
+                // exact same per-vertex displacement. Relaxing O, I, I2 independently would let
+                // wall thickness drift (each grid pulled toward its own neighbours); rigidly
+                // translating I/I2 by O's motion keeps the O->I->I2 offsets exact everywhere,
+                // including the pattern struts cut between them.
+                const rowN = O.length;
+                const Oraw = O.map(row => row.map(p => ({ x: p.x, y: p.y, z: p.z })));
+                smoothGrid(O, cfg.shellSmoothPasses);
+                for (let iv = 0; iv < rowN; iv++) {
+                    for (let it = 0; it < resT; it++) {
+                        const dx = O[iv][it].x - Oraw[iv][it].x;
+                        const dy = O[iv][it].y - Oraw[iv][it].y;
+                        const dz = O[iv][it].z - Oraw[iv][it].z;
+                        I[iv][it].x += dx; I[iv][it].y += dy; I[iv][it].z += dz;
+                        I2[iv][it].x += dx; I2[iv][it].y += dy; I2[iv][it].z += dz;
+                    }
+                }
+            }
             return { O, I, I2, vrow, rowN: resV + 1, resT };
         }
 
@@ -1653,6 +1816,198 @@
             }
             function quad(a, b, c, d, ci) { tri(a, b, c, ci); tri(a, c, d, ci); }
             return { positions, indices, triColor, triLayer, tri, quad, setLayer: (l) => { curLayer = l; } };
+        }
+
+        function cleanupMesh(mesh) {
+            const inPos = mesh.positions || [];
+            const inIdx = mesh.indices || [];
+            const weldedPositions = [];
+            const remap = new Map();
+            const vertMap = new Map();
+            const eps = 1e-6;
+
+            function keyFor(x, y, z) {
+                return `${Math.round(x / eps)}_${Math.round(y / eps)}_${Math.round(z / eps)}`;
+            }
+
+            for (let i = 0; i < inPos.length; i += 3) {
+                const x = inPos[i], y = inPos[i + 1], z = inPos[i + 2];
+                const key = keyFor(x, y, z);
+                let idx = vertMap.get(key);
+                if (idx === undefined) {
+                    idx = weldedPositions.length / 3;
+                    weldedPositions.push(x, y, z);
+                    vertMap.set(key, idx);
+                }
+                remap.set(i / 3, idx);
+            }
+
+            const cleaned = [];
+            const triangleColorIndices = [];
+            const triLayer = [];
+            const triSeen = new Set();
+            const hasColors = mesh.triangleColorIndices && mesh.triangleColorIndices.length;
+            const hasLayers = mesh.triLayer && mesh.triLayer.length;
+
+            for (let i = 0; i < inIdx.length; i += 3) {
+                const triIdx = i / 3;
+                const a = remap.get(inIdx[i]);
+                const b = remap.get(inIdx[i + 1]);
+                const c = remap.get(inIdx[i + 2]);
+                if (a === b || b === c || a === c) continue;
+
+                const ax = weldedPositions[a * 3], ay = weldedPositions[a * 3 + 1], az = weldedPositions[a * 3 + 2];
+                const bx = weldedPositions[b * 3], by = weldedPositions[b * 3 + 1], bz = weldedPositions[b * 3 + 2];
+                const cx = weldedPositions[c * 3], cy = weldedPositions[c * 3 + 1], cz = weldedPositions[c * 3 + 2];
+                const abx = bx - ax, aby = by - ay, abz = bz - az;
+                const acx = cx - ax, acy = cy - ay, acz = cz - az;
+                const nx = aby * acz - abz * acy;
+                const ny = abz * acx - abx * acz;
+                const nz = abx * acy - aby * acx;
+                if (Math.hypot(nx, ny, nz) < 1e-8) continue;
+
+                const key = [a, b, c].slice().sort((m, n) => m - n).join('_');
+                if (triSeen.has(key)) continue;
+                triSeen.add(key);
+
+                cleaned.push(a, b, c);
+                triangleColorIndices.push(hasColors ? (mesh.triangleColorIndices[triIdx] || 0) : 0);
+                triLayer.push(hasLayers ? (mesh.triLayer[triIdx] || 0) : 1);
+            }
+
+            return orientMeshConsistently({
+                positions: weldedPositions,
+                indices: cleaned,
+                triangleColorIndices,
+                triLayer
+            });
+        }
+
+        function orientMeshConsistently(mesh) {
+            const faces = [];
+            for (let i = 0; i < mesh.indices.length; i += 3) {
+                faces.push([mesh.indices[i], mesh.indices[i + 1], mesh.indices[i + 2]]);
+            }
+            if (!faces.length) return mesh;
+
+            const edgeMap = new Map();
+            function addFaceEdge(faceIndex, a, b) {
+                const key = a < b ? `${a}_${b}` : `${b}_${a}`;
+                let list = edgeMap.get(key);
+                if (!list) {
+                    list = [];
+                    edgeMap.set(key, list);
+                }
+                list.push({ faceIndex, a, b });
+            }
+
+            for (let fi = 0; fi < faces.length; fi++) {
+                const tri = faces[fi];
+                addFaceEdge(fi, tri[0], tri[1]);
+                addFaceEdge(fi, tri[1], tri[2]);
+                addFaceEdge(fi, tri[2], tri[0]);
+            }
+
+            const visited = new Array(faces.length).fill(false);
+            const flipped = new Array(faces.length).fill(false);
+
+            function faceVolume(face) {
+                const a = face[0] * 3, b = face[1] * 3, c = face[2] * 3;
+                const ax = mesh.positions[a], ay = mesh.positions[a + 1], az = mesh.positions[a + 2];
+                const bx = mesh.positions[b], by = mesh.positions[b + 1], bz = mesh.positions[b + 2];
+                const cx = mesh.positions[c], cy = mesh.positions[c + 1], cz = mesh.positions[c + 2];
+                return (ax * (by * cz - bz * cy) + ay * (bz * cx - bx * cz) + az * (bx * cy - by * cx)) / 6.0;
+            }
+
+            for (let seed = 0; seed < faces.length; seed++) {
+                if (visited[seed]) continue;
+
+                const stack = [seed];
+                const component = [];
+                visited[seed] = true;
+                flipped[seed] = false;
+
+                while (stack.length) {
+                    const fi = stack.pop();
+                    component.push(fi);
+                    const tri = faces[fi];
+                    const triEdges = [
+                        [tri[0], tri[1]],
+                        [tri[1], tri[2]],
+                        [tri[2], tri[0]]
+                    ];
+
+                    for (const [a, b] of triEdges) {
+                        const key = a < b ? `${a}_${b}` : `${b}_${a}`;
+                        const shared = edgeMap.get(key) || [];
+                        for (const entry of shared) {
+                            const fj = entry.faceIndex;
+                            if (fj === fi) continue;
+                            const sameDirection = entry.a === a && entry.b === b;
+                            const requiredFlip = flipped[fi] ^ sameDirection;
+                            if (!visited[fj]) {
+                                visited[fj] = true;
+                                flipped[fj] = requiredFlip;
+                                stack.push(fj);
+                            }
+                        }
+                    }
+                }
+
+                let signedVolume = 0;
+                for (const fi of component) {
+                    const face = flipped[fi] ? [faces[fi][0], faces[fi][2], faces[fi][1]] : faces[fi];
+                    signedVolume += faceVolume(face);
+                }
+                if (signedVolume < 0) {
+                    for (const fi of component) flipped[fi] = !flipped[fi];
+                }
+            }
+
+            const outIndices = [];
+            for (let fi = 0; fi < faces.length; fi++) {
+                const face = flipped[fi] ? [faces[fi][0], faces[fi][2], faces[fi][1]] : faces[fi];
+                outIndices.push(face[0], face[1], face[2]);
+            }
+
+            return {
+                positions: mesh.positions.slice(),
+                indices: outIndices,
+                triangleColorIndices: mesh.triangleColorIndices,
+                triLayer: mesh.triLayer
+            };
+        }
+
+        function validateMesh(mesh) {
+            const edges = new Map();
+            let signedVolume = 0;
+            for (let i = 0; i < mesh.indices.length; i += 3) {
+                const a = mesh.indices[i], b = mesh.indices[i + 1], c = mesh.indices[i + 2];
+                const tri = [a, b, c];
+                for (let e = 0; e < 3; e++) {
+                    const u = tri[e], v = tri[(e + 1) % 3];
+                    const key = u < v ? `${u}_${v}` : `${v}_${u}`;
+                    edges.set(key, (edges.get(key) || 0) + 1);
+                }
+
+                const ax = mesh.positions[a * 3], ay = mesh.positions[a * 3 + 1], az = mesh.positions[a * 3 + 2];
+                const bx = mesh.positions[b * 3], by = mesh.positions[b * 3 + 1], bz = mesh.positions[b * 3 + 2];
+                const cx = mesh.positions[c * 3], cy = mesh.positions[c * 3 + 1], cz = mesh.positions[c * 3 + 2];
+                signedVolume += (ax * (by * cz - bz * cy) + ay * (bz * cx - bx * cz) + az * (bx * cy - by * cx)) / 6.0;
+            }
+            let boundaryEdges = 0;
+            let nonManifoldEdges = 0;
+            for (const count of edges.values()) {
+                if (count === 1) boundaryEdges++;
+                else if (count !== 2) nonManifoldEdges++;
+            }
+            return {
+                vertices: mesh.positions.length / 3,
+                triangles: mesh.indices.length / 3,
+                boundaryEdges,
+                nonManifoldEdges,
+                signedVolume
+            };
         }
 
         /* ---------- base disk punched with the chosen Surface Pattern (cylindrical only) ----------
@@ -1757,6 +2112,19 @@
            surface, so one quad grid over (theta, phi) fully describes it — no separate inner/outer
            walls needed. Disjoint from the bowl mesh (not welded), appended into the same vertex pool
            for a single combined export. */
+        function colorMaskState(cfg, theta, v) {
+            const eq1 = (cfg.patternEq1 || '').trim(), eq2 = (cfg.patternEq2 || '').trim();
+            const triv1 = (eq1 === '' || eq1 === '-1'), triv2 = (eq2 === '' || eq2 === '-1');
+            if (triv1 && triv2) return 0;
+            let z = 0, phi = 0;
+            if (cfg.sys === 'cylindrical') z = cfg.h * v;
+            else phi = cfg.sphBottom + (cfg.sphRim - cfg.sphBottom) * v;
+            const fR = evalForm(cfg.eq, theta, z, phi, v, cfg.R);
+            const a = !triv1 && evalMask(cfg.patternEq1, theta, z, phi, v, cfg.R, fR) > 0;
+            const b = !triv2 && evalMask(cfg.patternEq2, theta, z, phi, v, cfg.R, fR) > 0;
+            return (a ? 1 : 0) + (b ? 2 : 0);
+        }
+
         function buildRingBase(pool, cfg) {
             const thetaSegs = Math.min(cfg.resT, 160);
             const tubeSegs = 24;
@@ -1782,11 +2150,15 @@
             }
             for (let it = 0; it < thetaSegs; it++) {
                 const jt = (it + 1) % thetaSegs;
+                const thetaMid = (it + 0.5) * dT;
                 for (let ip = 0; ip < tubeSegs; ip++) {
-                    pool.quad(pts[it][ip], pts[jt][ip], pts[jt][ip + 1], pts[it][ip + 1], 0); // tube surface
+                    const vMid = (ip + 0.5) / tubeSegs;
+                    const ci = cfg.ringColorEnabled ? colorMaskState(cfg, thetaMid, vMid) : 0;
+                    pool.quad(pts[it][ip], pts[jt][ip], pts[jt][ip + 1], pts[it][ip + 1], ci); // tube surface
                 }
                 // flat base where the cut removed the bottom arc (outer edge = ip 0, inner edge = ip tubeSegs)
-                pool.quad(pts[it][tubeSegs], pts[jt][tubeSegs], pts[jt][0], pts[it][0], 0);
+                const ci = cfg.ringColorEnabled ? colorMaskState(cfg, thetaMid, 0.5) : 0;
+                pool.quad(pts[it][tubeSegs], pts[jt][tubeSegs], pts[jt][0], pts[it][0], ci);
             }
         }
 
@@ -1799,7 +2171,9 @@
         function buildRingMeshData(cfg) {
             const pool = makePool();
             buildRingBase(pool, cfg);
-            return { positions: pool.positions, indices: pool.indices, triangleColorIndices: pool.triColor, triLayer: pool.triLayer };
+            const mesh = cleanupMesh({ positions: pool.positions, indices: pool.indices, triangleColorIndices: pool.triColor, triLayer: pool.triLayer });
+            mesh.validation = validateMesh(mesh);
+            return mesh;
         }
 
         /* ---------- the bowl mesh ---------- */
@@ -1940,6 +2314,12 @@
             const bc = ringCentroid(O[0]);             // bottom centre
             const fc = ringCentroid(Icav[baseTopRow]); // cavity-floor centre
             const basePatternActive = cfg.basePattern && cfg.sys === 'cylindrical';
+            function emitExposedBaseTopLedge(it, ci) {
+                if (occAt(baseTopRow, it)) return;
+                const j = (it + 1) % resT;
+                const inner = liner ? I : Icav;
+                pool.quad(inner[baseTopRow][it], O[baseTopRow][it], O[baseTopRow][j], inner[baseTopRow][j], ci);
+            }
 
             if (cfg.lampMode) {
                 /* --- central hole bored down through the base (lamp cord/fitting) --- */
@@ -1957,17 +2337,17 @@
                     pool.quad(holeBot[it], O[0][it], O[0][j], holeBot[j], 0);                       // bottom annulus
                     pool.quad(holeTop[it], holeTop[j], Icav[baseTopRow][j], Icav[baseTopRow][it], 0); // cavity-floor annulus
                     pool.quad(holeBot[it], holeBot[j], holeTop[j], holeTop[it], 0);                 // hole tube wall
-                    pool.quad(Icav[baseTopRow][it], O[baseTopRow][it], O[baseTopRow][j], Icav[baseTopRow][j], 0); // ledge
+                    emitExposedBaseTopLedge(it, 0);
                 }
             } else if (basePatternActive) {
                 /* --- base punched through with the chosen Surface Pattern (cylindrical only) --- */
                 const baseColFn = baseColorOn ? (theta => baseMaskColor(theta, 0.5 * vTopRow)) : null;
                 buildBasePattern(pool, O[0], Icav[baseTopRow], bc, fc, resT, dT, isStrut, bandS0, baseColFn);
-                /* --- base-top annulus (ledge) stays solid, same as the plain closed base --- */
+                /* --- base-top annulus is only exposed below open wall cells; emitting it below
+                   occupied cells creates internal faces and three-face shared edges. --- */
                 for (let it = 0; it < resT; it++) {
-                    const j = (it + 1) % resT;
                     const ci = baseColorOn ? baseMaskColor((it + 0.5) * dT, vTopRow) : 0;
-                    pool.quad(Icav[baseTopRow][it], O[baseTopRow][it], O[baseTopRow][j], Icav[baseTopRow][j], ci);
+                    emitExposedBaseTopLedge(it, ci);
                 }
             } else {
                 /* --- bottom closure (flat disk / sphere pole) --- */
@@ -1981,7 +2361,7 @@
                     const j = (it + 1) % resT;
                     const ci = baseColorOn ? baseMaskColor((it + 0.5) * dT, vTopRow) : 0;
                     pool.tri(fc, Icav[baseTopRow][it], Icav[baseTopRow][j], ci);                              // cavity floor (up)
-                    pool.quad(Icav[baseTopRow][it], O[baseTopRow][it], O[baseTopRow][j], Icav[baseTopRow][j], ci); // ledge
+                    emitExposedBaseTopLedge(it, ci);
                 }
             }
 
@@ -2024,10 +2404,18 @@
                 }
             }
 
-            return {
-                positions: pool.positions, indices: pool.indices, triangleColorIndices: pool.triColor,
-                triLayer: pool.triLayer, baseTopRow, rimBotRow, rowN, removedCells
-            };
+            const mesh = cleanupMesh({
+                positions: pool.positions,
+                indices: pool.indices,
+                triangleColorIndices: pool.triColor,
+                triLayer: pool.triLayer
+            });
+            mesh.baseTopRow = baseTopRow;
+            mesh.rimBotRow = rimBotRow;
+            mesh.rowN = rowN;
+            mesh.removedCells = removedCells;
+            mesh.validation = validateMesh(mesh);
+            return mesh;
         }
 
         /* ---------- preview geometry (smooth normals + per-face colour) ---------- */
@@ -2145,7 +2533,17 @@
                     const styleLbl = cfg.style.charAt(0).toUpperCase() + cfg.style.slice(1);
                     const islandNote = mesh.removedCells ? ` | removed ${mesh.removedCells} disconnected cell${mesh.removedCells === 1 ? '' : 's'}` : '';
                     const ringNote = hasRing ? ` | + ring ${(ringMesh.indices.length / 3).toLocaleString()} tris` : '';
-                    setStatus(`${cfg.sys} | ${styleLbl} | R ${cfg.R}cm | ${tris.toLocaleString()} triangles${ringNote}${islandNote}`, mesh.removedCells ? 'warn' : '');
+                    const validation = mesh.validation || validateMesh(mesh);
+                    const ringValidation = hasRing ? (ringMesh.validation || validateMesh(ringMesh)) : null;
+                    const manifoldIssues = [];
+                    if (validation.boundaryEdges || validation.nonManifoldEdges) {
+                        manifoldIssues.push(`B:${validation.boundaryEdges} N:${validation.nonManifoldEdges}`);
+                    }
+                    if (ringValidation && (ringValidation.boundaryEdges || ringValidation.nonManifoldEdges)) {
+                        manifoldIssues.push(`ring B:${ringValidation.boundaryEdges} N:${ringValidation.nonManifoldEdges}`);
+                    }
+                    const manifoldNote = manifoldIssues.length ? ` | manifold ${manifoldIssues.join(' | ')}` : '';
+                    setStatus(`${cfg.sys} | ${styleLbl} | R ${cfg.R}cm | ${tris.toLocaleString()} triangles${ringNote}${islandNote}${manifoldNote}`, (mesh.removedCells || manifoldIssues.length) ? 'warn' : '');
                 } catch (err) {
                     console.error(err);
                     setStatus("Error: invalid equation or geometry failure.", 'error');
@@ -2233,52 +2631,23 @@
             return `<m:color color="${norm}" />`;
         }
 
-        // Splits a mesh into one sub-mesh per triangle-colour-index (same technique as
-        // EquationDrivenPotDesigner.html's splitMeshByColorIndex): each colour becomes its own 3MF
-        // <object>, so slicers see distinct, independently-selectable colour bodies rather than one
-        // mesh with per-triangle colour properties.
-        function splitMeshByColorIndex(mesh) {
-            if (!mesh.triangleColorIndices || !mesh.triangleColorIndices.length) {
-                return [{ colorIndex: 0, mesh }];
-            }
-            const colorGroups = new Map();
-            for (let i = 0; i < mesh.indices.length; i += 3) {
-                const triIdx = i / 3;
-                const colorIdx = mesh.triangleColorIndices[triIdx] !== undefined ? mesh.triangleColorIndices[triIdx] : 0;
-                if (!colorGroups.has(colorIdx)) colorGroups.set(colorIdx, []);
-                colorGroups.get(colorIdx).push(i, i + 1, i + 2);
-            }
-            const components = [];
-            colorGroups.forEach((triIndices, colorIndex) => {
-                const newIndices = [];
-                const vertexMap = new Map();
-                const newPositions = [];
-                let newVertexIdx = 0;
-                for (let i = 0; i < triIndices.length; i++) {
-                    const oldVertexIdx = mesh.indices[triIndices[i]];
-                    if (!vertexMap.has(oldVertexIdx)) {
-                        vertexMap.set(oldVertexIdx, newVertexIdx);
-                        newPositions.push(mesh.positions[oldVertexIdx * 3], mesh.positions[oldVertexIdx * 3 + 1], mesh.positions[oldVertexIdx * 3 + 2]);
-                        newVertexIdx++;
-                    }
-                    newIndices.push(vertexMap.get(oldVertexIdx));
-                }
-                components.push({ colorIndex, mesh: { positions: newPositions, indices: newIndices } });
-            });
-            return components;
-        }
-
         function meshTo3mfObjectXml(objectId, name, mesh, colorGroupId, colorIndex) {
             const positions = mesh.positions || [], indices = mesh.indices || [];
             const verticesXml = [];
             for (let i = 0; i < positions.length; i += 3) {
                 verticesXml.push(`      <vertex x="${(positions[i] * 10).toFixed(6)}" y="${(positions[i + 1] * 10).toFixed(6)}" z="${(positions[i + 2] * 10).toFixed(6)}" />`);
             }
-            const propertyAttrs = (colorGroupId !== null && colorIndex !== null)
-                ? ` pid="${colorGroupId}" p1="${colorIndex}" p2="${colorIndex}" p3="${colorIndex}"` : '';
+            function propertyAttrsForTriangle(triIdx) {
+                if (colorGroupId === null) return '';
+                const ci = colorIndex !== null && colorIndex !== undefined
+                    ? colorIndex
+                    : ((mesh.triangleColorIndices && mesh.triangleColorIndices[triIdx] !== undefined)
+                        ? mesh.triangleColorIndices[triIdx] : 0);
+                return ` pid="${colorGroupId}" p1="${ci}" p2="${ci}" p3="${ci}"`;
+            }
             const trianglesXml = [];
             for (let i = 0; i < indices.length; i += 3) {
-                trianglesXml.push(`      <triangle v1="${indices[i]}" v2="${indices[i + 1]}" v3="${indices[i + 2]}"${propertyAttrs} />`);
+                trianglesXml.push(`      <triangle v1="${indices[i]}" v2="${indices[i + 1]}" v3="${indices[i + 2]}"${propertyAttrsForTriangle(i / 3)} />`);
             }
             return `
   <object id="${objectId}" type="model" name="${xmlEscape(name)}">
@@ -2293,14 +2662,10 @@ ${trianglesXml.join('\n')}
   </object>`;
         }
 
-        const COLOR_PART_NAMES = ['Base', 'Pattern A', 'Pattern B', 'Overlap'];
-
-        // Builds one assembly 3MF (colour group + one <object> per colour + a parent object that
-        // references them as <component>s, single build item) — the same structure
-        // EquationDrivenPotDesigner.html uses for its multi-part 3MF exports.
+        // Builds one closed 3MF object with per-triangle colour assignments.
+        // Keeping the bowl as a single mesh preserves manifold edges across colour boundaries.
         async function buildAssembly3MFBlob(cfg, mesh, assemblyName) {
             const rotated = rotateMeshForPrinterCoordinates(mesh);
-            const parts = splitMeshByColorIndex(rotated);
             const colorGroupId = 1;
             const resources = [`
   <m:colorgroup id="${colorGroupId}">
@@ -2309,21 +2674,8 @@ ${trianglesXml.join('\n')}
     ${colorGroupColorXml(cfg.patternColor2)}
     ${colorGroupColorXml(cfg.overlapColor)}
   </m:colorgroup>`];
-            let nextObjectId = 2;
-            const componentIds = [];
-            parts.forEach(part => {
-                if (!part.mesh.indices.length) return;
-                resources.push(meshTo3mfObjectXml(nextObjectId, COLOR_PART_NAMES[part.colorIndex] || 'Part', part.mesh, colorGroupId, part.colorIndex));
-                componentIds.push(nextObjectId++);
-            });
-            const assemblyId = nextObjectId;
-            const componentsXml = componentIds.map(id => `<component objectid="${id}" />`).join('');
-            resources.push(`
-  <object id="${assemblyId}" type="model" name="${xmlEscape(assemblyName)}">
-    <components>
-      ${componentsXml}
-    </components>
-  </object>`);
+            const objectId = 2;
+            resources.push(meshTo3mfObjectXml(objectId, assemblyName, rotated, colorGroupId, null));
 
             const modelXml = `<?xml version="1.0" encoding="UTF-8"?>
 <model unit="millimeter" xml:lang="en-US"
@@ -2334,7 +2686,7 @@ ${trianglesXml.join('\n')}
     ${resources.join('')}
   </resources>
   <build>
-    <item objectid="${assemblyId}" />
+    <item objectid="${objectId}" />
   </build>
 </model>`;
             const contentTypesXml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -2352,7 +2704,7 @@ ${trianglesXml.join('\n')}
             zip.folder('_rels').file('.rels', relsXml);
             zip.folder('3D').file('3dmodel.model', modelXml);
             const blob = await zip.generateAsync({ type: 'blob', mimeType: 'model/3mf' });
-            return { blob, bodies: componentIds.length };
+            return { blob, objects: mesh.indices.length ? 1 : 0 };
         }
 
         // Ring Base exports as its own 3MF alongside the bowl's — matching how
@@ -2374,9 +2726,9 @@ ${trianglesXml.join('\n')}
                 const ringName = `${stem}_Ring.3mf`;
                 const ringResult = await buildAssembly3MFBlob(cfg, ringMesh, 'Ring Assembly');
                 downloadBlob(ringResult.blob, ringName);
-                setStatus(`Separate color 3MF exports | ${bowlName} (${bowlTris.toLocaleString()} tris, ${bowlResult.bodies} colour ${bowlResult.bodies === 1 ? 'body' : 'bodies'}) + ${ringName} (${(ringMesh.indices.length / 3).toLocaleString()} tris)`, 'warn');
+                setStatus(`Separate color 3MF exports | ${bowlName} (${bowlTris.toLocaleString()} tris, closed coloured mesh) + ${ringName} (${(ringMesh.indices.length / 3).toLocaleString()} tris)`, 'warn');
             } else {
-                setStatus(`Exported color .3mf (${bowlTris.toLocaleString()} triangles, ${bowlResult.bodies} colour ${bowlResult.bodies === 1 ? 'body' : 'bodies'})`);
+                setStatus(`Exported color .3mf (${bowlTris.toLocaleString()} triangles, closed coloured mesh)`);
             }
         }
 
@@ -2384,7 +2736,7 @@ ${trianglesXml.join('\n')}
         // every GUI control, so a design round-trips exactly.
         const DESIGN_VALUE_IDS = [
             'coordSystem', 'presetSelect', 'equation', 'baseRadius', 'height', 'sphRim', 'sphBottom',
-            'wall', 'baseSolid', 'rimSolid', 'lampHoleRadius', 'ringRadius', 'ringWidth', 'ringCut', 'patternStyle',
+            'wall', 'baseSolid', 'rimSolid', 'linerThickness', 'lampHoleRadius', 'ringRadius', 'ringWidth', 'ringCut', 'patternStyle',
             'vorDensity', 'vorThickness', 'vorJitter', 'vorSeed', 'latDensity', 'latThickness',
             'weaveDensity', 'weaveThickness', 'waveDensity', 'waveThicknessV', 'waveThicknessH', 'waveAmp', 'waveCount',
             'gyroidDensity', 'gyroidThickness', 'origamiSides', 'origamiRows', 'origamiJitter',
@@ -2400,7 +2752,7 @@ ${trianglesXml.join('\n')}
             'baseColor', 'patternColor1', 'patternColor2', 'overlapColor',
             'resV', 'resT', 'shellSmoothPasses'
         ];
-        const DESIGN_CHECK_IDS = ['lampMode', 'basePattern', 'baseColorEnabled', 'ringBaseEnabled', 'solidLiner', 'transparentFrame', 'shellSmoothEnabled', 'showWire'];
+        const DESIGN_CHECK_IDS = ['lampMode', 'basePattern', 'baseColorEnabled', 'ringBaseEnabled', 'ringColorEnabled', 'solidLiner', 'transparentFrame', 'shellSmoothEnabled', 'showWire'];
 
         function getDesignerConfig() {
             const cfg = { app: 'EquationDrivenBowls', version: 1, name: document.getElementById('designName').value.trim(), values: {}, checks: {} };
@@ -2420,6 +2772,7 @@ ${trianglesXml.join('\n')}
         function applyDesignConfig(cfg) {
             if (!cfg || typeof cfg !== 'object' || Array.isArray(cfg)) throw new Error('JSON must describe a design object.');
             const values = cfg.values || {}, checks = cfg.checks || {};
+            if (checks.ringColorEnabled === undefined) checks.ringColorEnabled = true;
             suppressPreviewUpdates = true;
             try {
                 // coordinate system first so the preset list matches before we restore it
@@ -2438,6 +2791,7 @@ ${trianglesXml.join('\n')}
                 const pr = presetLibs[sys] && presetLibs[sys][document.getElementById('presetSelect').value];
                 document.getElementById('baseDesc').textContent = pr ? pr.desc : '';
                 updateBasePatternAvailability();
+                updateLinerVisibility();
                 // show the correct pattern panel WITHOUT re-triggering the liner default
                 const s = document.getElementById('patternStyle').value;
                 ['voronoi', 'lattice', 'weave', 'wave', 'gyroid', 'origami', 'fibonacci', 'phyllotaxis', 'turing', 'fluting', 'life', 'chladni']
@@ -2501,6 +2855,14 @@ ${trianglesXml.join('\n')}
         function onBasePatternToggle() {
             if (document.getElementById('basePattern').checked) document.getElementById('lampMode').checked = false;
             refreshAutoName(); updatePreview();
+        }
+        function updateLinerVisibility() {
+            document.getElementById('linerThicknessGroup').style.display =
+                document.getElementById('solidLiner').checked ? '' : 'none';
+        }
+        function onSolidLinerToggle() {
+            updateLinerVisibility();
+            updatePreview();
         }
         // Base Pattern only applies to the cylindrical revolve (the flat base/cavity-floor disks
         // it punches through don't exist as flat planes in the spherical system).
@@ -2592,6 +2954,7 @@ ${trianglesXml.join('\n')}
                 'truchet', 'quasicrystal', 'maze', 'scales', 'star', 'greekkey'];
             panels.forEach(p => document.getElementById(p + 'Settings').classList.toggle('active', s === p));
             if (linerDefaultStyles.includes(s)) document.getElementById('solidLiner').checked = true;
+            updateLinerVisibility();
             document.getElementById('patternDesc').textContent = patternDescs[s] || '';
             refreshAutoName();
             updatePreview();
@@ -2620,7 +2983,7 @@ ${trianglesXml.join('\n')}
 
         function resetParameters() {
             const defs = {
-                baseRadius: 7, height: 6, sphRim: 90, sphBottom: 178, wall: 0.3, baseSolid: 0.7, rimSolid: 0.4,
+                baseRadius: 7, height: 6, sphRim: 90, sphBottom: 178, wall: 0.3, baseSolid: 0.7, rimSolid: 0.4, linerThickness: 1,
                 ringRadius: 4, ringWidth: 1.2, ringCut: 0.25,
                 vorDensity: 160, vorThickness: 2.0, vorJitter: 0.7, vorSeed: 7, latDensity: 22, latThickness: 2.0,
                 weaveDensity: 20, weaveThickness: 2.0, waveDensity: 16, waveThicknessV: 2.0, waveThicknessH: 2.0, waveAmp: 0.5, waveCount: 3,
@@ -2655,6 +3018,7 @@ ${trianglesXml.join('\n')}
             document.getElementById('basePattern').checked = false;
             document.getElementById('baseColorEnabled').checked = false;
             document.getElementById('ringBaseEnabled').checked = false;
+            document.getElementById('ringColorEnabled').checked = true;
             document.getElementById('shellSmoothEnabled').checked = false;
             document.getElementById('shellSmoothPasses').value = 2;
             document.getElementById('designName').value = '';
@@ -2680,6 +3044,7 @@ ${trianglesXml.join('\n')}
                 "wall": "0.3",
                 "baseSolid": "0.7",
                 "rimSolid": "0.4",
+                "linerThickness": "1",
                 "lampHoleRadius": "2",
                 "ringRadius": "4.5",
                 "ringWidth": "1.2",
@@ -2743,6 +3108,7 @@ ${trianglesXml.join('\n')}
                 "basePattern": false,
                 "baseColorEnabled": true,
                 "ringBaseEnabled": true,
+                "ringColorEnabled": true,
                 "solidLiner": false,
                 "transparentFrame": false,
                 "shellSmoothEnabled": false,
