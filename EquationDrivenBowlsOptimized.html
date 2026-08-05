@@ -502,6 +502,12 @@
                 <option value="slits">Ray Slits / Louvers (lamp)</option>
                 <option value="halftone">Halftone Glow (lamp)</option>
                 <option value="constellation">Constellation (lamp)</option>
+                <option value="kumiko">Kumiko Asanoha (lamp)</option>
+                <option value="veins">Branching Veins (lamp)</option>
+                <option value="foam">Soap Foam (lamp)</option>
+                <option value="ripples">Ripple Interference (lamp)</option>
+                <option value="spirograph">Spirograph Band (lamp)</option>
+                <option value="gradientcells">Gradient Cells (lamp)</option>
             </select>
         </div>
         <div id="patternDesc" class="desc-text"></div>
@@ -901,6 +907,110 @@
             </div>
             <div class="desc-text">A night-sky pendant: scattered star holes in three sizes, each linked to its
                 nearest neighbor(s) by a thin chord slot.</div>
+        </div>
+
+        <div id="kumikoSettings" class="pattern-settings">
+            <div class="grid-inputs">
+                <div class="input-group"><label>Density (triangles around)</label><input type="number"
+                        id="kumikoDensity" value="12" step="1" min="3" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Strut Thickness (mm)</label><input type="number" id="kumikoThickness"
+                        value="1.6" step="0.1" min="0.4" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">Traditional Japanese shoji hemp-leaf (asanoha) lattice: an equilateral triangular
+                grid with spokes from each triangle's centroid to its three corners, casting six-pointed star
+                shadows. Recommend liner OFF for the crispest shadows.</div>
+        </div>
+
+        <div id="veinsSettings" class="pattern-settings">
+            <div class="grid-inputs">
+                <div class="input-group"><label>Root Count</label><input type="number" id="veinRoots" value="8"
+                        step="1" min="1" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Trunk Thickness (mm)</label><input type="number" id="veinThickness"
+                        value="3.0" step="0.2" min="0.6" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Split Probability</label><input type="number" id="veinSplitProb"
+                        value="0.06" step="0.01" min="0" max="0.3" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Wander</label><input type="number" id="veinWander" value="0.35"
+                        step="0.05" min="0" max="2" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Random Seed</label><input type="number" id="veinSeed" value="11"
+                        step="1" min="0" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">A leaf-skeleton / lightning-tree lamp: branching struts grow upward from the solid
+                base, tapering as they split. Every strut is connected to the base by construction.</div>
+        </div>
+
+        <div id="foamSettings" class="pattern-settings">
+            <div class="grid-3">
+                <div class="input-group"><label>Bubble Count</label><input type="number" id="foamCount" value="70"
+                        step="5" min="6" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Min Hole (mm)</label><input type="number" id="foamMinHole" value="2.0"
+                        step="0.2" min="0.4" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Max Hole (mm)</label><input type="number" id="foamMaxHole" value="7.0"
+                        step="0.2" min="0.6" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Web Gap (mm)</label><input type="number" id="foamWeb" value="1.5"
+                        step="0.1" min="0.4" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Random Seed</label><input type="number" id="foamSeed" value="13"
+                        step="1" min="0" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">Seeded soap-bubble holes placed by rejection sampling, so the web between bubbles
+                never pinches thinner than Web Gap - no post-hoc printability check needed.</div>
+        </div>
+
+        <div id="ripplesSettings" class="pattern-settings">
+            <div class="grid-inputs">
+                <div class="input-group"><label>Sources (2-4)</label><input type="number" id="rippleSources" value="3"
+                        step="1" min="2" max="4" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Wavelength (cm)</label><input type="number" id="rippleWavelength"
+                        value="1.2" step="0.1" min="0.3" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Web Width</label><input type="number" id="rippleWidth" value="0.15"
+                        step="0.01" min="0.05" max="0.4" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Random Seed</label><input type="number" id="rippleSeed" value="17"
+                        step="1" min="0" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">Two to four point sources emit circular waves; material follows the interference
+                pattern's nodal web - a concentric moire that reads beautifully in cast light.</div>
+        </div>
+
+        <div id="spirographSettings" class="pattern-settings">
+            <div class="grid-3">
+                <div class="input-group"><label>Wraps (k)</label><input type="number" id="spiroWraps" value="3"
+                        step="1" min="1" max="12" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Lobes (m)</label><input type="number" id="spiroLobes" value="7"
+                        step="1" min="1" max="30" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Loop Size (cm)</label><input type="number" id="spiroLoop" value="1.2"
+                        step="0.1" min="0" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Band Height (0-1)</label><input type="number" id="spiroHeight"
+                        value="0.9" step="0.05" min="0.1" max="1" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Ribbon Thickness (mm)</label><input type="number" id="spiroThickness"
+                        value="2.2" step="0.1" min="0.5" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">A single continuous cycloidal ribbon winds k times around the band; loops appear
+                once Loop Size overcomes the linear advance. Band Height near 1 lets the loops graze base and rim.</div>
+        </div>
+
+        <div id="gradientcellsSettings" class="pattern-settings">
+            <div class="grid-inputs">
+                <div class="input-group"><label>Cell Count</label><input type="number" id="gcCount" value="90"
+                        step="5" min="6" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Strut Thickness (mm)</label><input type="number" id="gcThickness"
+                        value="2.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Mask Contrast</label><input type="number" id="gcContrast" value="1.5"
+                        step="0.1" min="0.5" max="3" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Random Seed</label><input type="number" id="gcSeed" value="21"
+                        step="1" min="0" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">The halftone idea applied to cell size: a Voronoi web whose cell density follows
+                the Pattern A mask below - small dense cells where the mask is high, large open cells where it's low.
+                With Pattern A left at "None", cells are uniform (plain crackle).</div>
         </div>
 
         <div class="section-title">3. Dual Pattern Color Layer</div>
@@ -1621,6 +1731,31 @@
                 constMaxStar: Math.max(0.6, num('constMaxStar', 3.5)) / 10,
                 constLineW: Math.max(0.4, num('constLineW', 1.2)) / 10,
                 constSeed: Math.max(0, intv('constSeed', 9)),
+                kumikoDensity: Math.max(3, intv('kumikoDensity', 12)),
+                kumikoThickness: Math.max(0.4, num('kumikoThickness', 1.6)) / 10,
+                veinRoots: Math.max(1, intv('veinRoots', 8)),
+                veinThickness: Math.max(0.6, num('veinThickness', 3.0)) / 10,
+                veinSplitProb: clamp(num('veinSplitProb', 0.06), 0, 0.3),
+                veinWander: clamp(num('veinWander', 0.35), 0, 2),
+                veinSeed: Math.max(0, intv('veinSeed', 11)),
+                foamCount: Math.max(6, intv('foamCount', 70)),
+                foamMinHole: Math.max(0.4, num('foamMinHole', 2.0)) / 10,
+                foamMaxHole: Math.max(0.6, num('foamMaxHole', 7.0)) / 10,
+                foamWeb: Math.max(0.4, num('foamWeb', 1.5)) / 10,
+                foamSeed: Math.max(0, intv('foamSeed', 13)),
+                rippleSources: clamp(intv('rippleSources', 3), 2, 4),
+                rippleWavelength: Math.max(0.3, num('rippleWavelength', 1.2)),
+                rippleWidth: clamp(num('rippleWidth', 0.15), 0.05, 0.4),
+                rippleSeed: Math.max(0, intv('rippleSeed', 17)),
+                spiroWraps: Math.max(1, intv('spiroWraps', 3)),
+                spiroLobes: Math.max(1, intv('spiroLobes', 7)),
+                spiroLoop: Math.max(0, num('spiroLoop', 1.2)),
+                spiroHeight: clamp(num('spiroHeight', 0.9), 0.1, 1),
+                spiroThickness: Math.max(0.5, num('spiroThickness', 2.2)) / 10,
+                gcCount: Math.max(6, intv('gcCount', 90)),
+                gcThickness: Math.max(0.4, num('gcThickness', 2.0)) / 10,
+                gcContrast: clamp(num('gcContrast', 1.5), 0.5, 3),
+                gcSeed: Math.max(0, intv('gcSeed', 21)),
                 patternEq1: document.getElementById('patternEquation1').value || "-1",
                 patternEq2: document.getElementById('patternEquation2').value || "-1",
                 baseColor: document.getElementById('baseColor').value || '#2a7ab0',
@@ -2270,6 +2405,345 @@
                         if (segDist(qu, s, 0, a.v, dx, b.v) < half) return false;
                     }
                     return true;
+                };
+            }
+
+            if (cfg.style === 'kumiko') {
+                // Japanese Asanoha (hemp-leaf) lattice: an equilateral triangular grid where
+                // each triangle draws 3 spokes from its own centroid to its own 3 corners (the
+                // triangle's edges themselves are NOT struts). Fully analytic via skewed lattice
+                // coordinates (a,b) along basis vectors e1=(cellW,0), e2=(cellW/2,rowH); the
+                // parallelogram at (floor(a),floor(b)) splits into 2 triangles by the fa+fb<1
+                // diagonal test. cols is always an integer (the density input), so the lattice
+                // tiles seamlessly around theta. Six triangles meeting at each grid vertex each
+                // contribute one spoke, forming the classic six-pointed asanoha star.
+                const half = cfg.kumikoThickness / 2;
+                const cols = Math.max(1, Math.round(cfg.kumikoDensity));
+                const cellW = circ / cols;
+                const rowH = cellW * Math.sqrt(3) / 2;
+                function kVertex(i, j) { return { u: i * cellW + j * cellW * 0.5, s: j * rowH }; }
+                return (theta, s) => {
+                    const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
+                    const b = ss / rowH;
+                    const a = u / cellW - b * 0.5;
+                    const ia = Math.floor(a), ib = Math.floor(b);
+                    const fa = a - ia, fb = b - ib;
+                    let p0, p1, p2;
+                    if (fa + fb < 1) {
+                        p0 = kVertex(ia, ib); p1 = kVertex(ia + 1, ib); p2 = kVertex(ia, ib + 1);
+                    } else {
+                        p0 = kVertex(ia + 1, ib); p1 = kVertex(ia + 1, ib + 1); p2 = kVertex(ia, ib + 1);
+                    }
+                    const cu = (p0.u + p1.u + p2.u) / 3, cs = (p0.s + p1.s + p2.s) / 3;
+                    const d = Math.min(
+                        segDist(u, ss, cu, cs, p0.u, p0.s),
+                        segDist(u, ss, cu, cs, p1.u, p1.s),
+                        segDist(u, ss, cu, cs, p2.u, p2.s)
+                    );
+                    return d < half;
+                };
+            }
+
+            if (cfg.style === 'veins') {
+                // leaf-skeleton growth: veinRoots tips start at the band's bottom edge and
+                // climb with seeded lateral wander, occasionally splitting, tapering in width
+                // each generation. Every strut is base-rooted by construction, so the island
+                // flood-fill should remove 0 cells - a cheap self-check the growth code is right.
+                const rng = mulberry32(cfg.veinSeed * 2654435761 + 777);
+                const ds = Math.max(0.05, Math.min(0.3, bandH / 40));
+                const wander = cfg.veinWander;
+                const splitProb = cfg.veinSplitProb;
+                const trunkW = cfg.veinThickness;
+                const maxSegs = 3000;
+                const segs = [];
+                let tips = [];
+                const rootSpacing = circ / cfg.veinRoots;
+                for (let i = 0; i < cfg.veinRoots; i++) {
+                    const ju = (rng() - 0.5) * rootSpacing * 0.6;
+                    const u0 = (((i + 0.5) * rootSpacing + ju) % circ + circ) % circ;
+                    tips.push({ u: u0, s: bandS0, drift: 0, gen: 0 });
+                }
+                while (tips.length && segs.length < maxSegs) {
+                    const next = [];
+                    for (const tip of tips) {
+                        if (segs.length >= maxSegs) break;
+                        const newDrift = tip.drift + (rng() - 0.5) * wander;
+                        const nu = tip.u + newDrift * ds;
+                        const ns = tip.s + ds;
+                        const w = Math.max(0.08, trunkW * Math.pow(0.82, tip.gen));
+                        segs.push({ u0: tip.u, s0: tip.s, u1: nu, s1: ns, halfW: w / 2 });
+                        if (ns >= bandS1) continue; // left the top of the band
+                        if (rng() < splitProb && segs.length + next.length < maxSegs - 1) {
+                            next.push({ u: nu, s: ns, drift: newDrift + wander, gen: tip.gen + 1 });
+                            next.push({ u: nu, s: ns, drift: newDrift - wander, gen: tip.gen + 1 });
+                        } else {
+                            next.push({ u: nu, s: ns, drift: newDrift, gen: tip.gen });
+                        }
+                    }
+                    tips = next;
+                }
+                // bucket segments (grid cell = a safe bound on segment length) for the query
+                const cellSize = Math.max(0.2, ds * 2.5);
+                const bucketCols = Math.max(1, Math.round(circ / cellSize));
+                const bucketW = circ / bucketCols;
+                const buckets = new Map();
+                function vBucketKey(bx, by) { return by * bucketCols + ((bx % bucketCols) + bucketCols) % bucketCols; }
+                for (const seg of segs) {
+                    const midU = (seg.u0 + seg.u1) * 0.5, midS = (seg.s0 + seg.s1) * 0.5;
+                    const bx = Math.floor(midU / bucketW), by = Math.floor(midS / cellSize);
+                    const key = vBucketKey(bx, by);
+                    let list = buckets.get(key);
+                    if (!list) { list = []; buckets.set(key, list); }
+                    list.push(seg);
+                }
+                return (theta, s) => {
+                    const u = (theta / (2 * Math.PI)) * circ;
+                    const bx = Math.floor(u / bucketW), by = Math.floor(s / cellSize);
+                    for (let dy = -1; dy <= 1; dy++) {
+                        for (let dx = -1; dx <= 1; dx++) {
+                            const list = buckets.get(vBucketKey(bx + dx, by + dy));
+                            if (!list) continue;
+                            for (const seg of list) {
+                                let du = seg.u0 - u; du -= circ * Math.round(du / circ);
+                                const lu0 = u + du, lu1 = lu0 + (seg.u1 - seg.u0);
+                                if (segDist(u, s, lu0, seg.s0, lu1, seg.s1) < seg.halfW) return true;
+                            }
+                        }
+                    }
+                    return false;
+                };
+            }
+
+            if (cfg.style === 'foam') {
+                // soap-bubble holes via rejection sampling: each accepted disk is guaranteed at
+                // least foamWeb clearance from every other disk AT PLACEMENT TIME, so the web
+                // between holes never needs a post-hoc pinch check. Hole-based: material where
+                // the query is outside every accepted disk.
+                const rng = mulberry32(cfg.foamSeed * 2654435761 + 888);
+                const rMin = cfg.foamMinHole, rMax = cfg.foamMaxHole, web = cfg.foamWeb;
+                const rows = Math.max(1, Math.round(Math.sqrt(cfg.foamCount * bandH / circ)));
+                const cols = Math.max(1, Math.round(cfg.foamCount / rows));
+                const cw = circ / cols, ch = bandH / rows;
+                const buckets = new Map();
+                function fBucketKey(cx, cy) { return cy * cols + ((cx % cols) + cols) % cols; }
+                const collideWin = Math.max(1, Math.ceil((rMax + web) / Math.min(cw, ch)) + 1);
+                function collides(su, sv, r) {
+                    const cx = Math.floor(su / cw), cy = Math.floor((sv - bandS0) / ch);
+                    for (let dy = -collideWin; dy <= collideWin; dy++) {
+                        for (let dx = -collideWin; dx <= collideWin; dx++) {
+                            const list = buckets.get(fBucketKey(cx + dx, cy + dy));
+                            if (!list) continue;
+                            for (const d of list) {
+                                let ddx = d.u - su; ddx -= circ * Math.round(ddx / circ);
+                                const ddy = d.v - sv;
+                                if (Math.hypot(ddx, ddy) - d.r - r < web) return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+                for (let cy = 0; cy < rows; cy++) {
+                    for (let cx = 0; cx < cols; cx++) {
+                        const ju = (rng() - 0.5) * 0.95, jv = (rng() - 0.5) * 0.95;
+                        let su = (cx + 0.5 + ju) * cw; su = ((su % circ) + circ) % circ;
+                        const sv = bandS0 + clamp(cy + 0.5 + jv, 0.05, rows - 0.05) * ch;
+                        const r = rMin + (rMax - rMin) * Math.pow(rng(), 1.5);
+                        if (collides(su, sv, r)) continue;
+                        const disk = { u: su, v: sv, r };
+                        const key = fBucketKey(cx, cy);
+                        let list = buckets.get(key);
+                        if (!list) { list = []; buckets.set(key, list); }
+                        list.push(disk);
+                    }
+                }
+                const winX = Math.max(1, Math.ceil(rMax / cw) + 1);
+                const winY = Math.max(1, Math.ceil(rMax / ch) + 1);
+                return (theta, s) => {
+                    const u = (theta / (2 * Math.PI)) * circ;
+                    const qx = Math.floor(u / cw), qy = Math.floor((s - bandS0) / ch);
+                    for (let dy = -winY; dy <= winY; dy++) {
+                        for (let dx = -winX; dx <= winX; dx++) {
+                            const list = buckets.get(fBucketKey(qx + dx, qy + dy));
+                            if (!list) continue;
+                            for (const d of list) {
+                                let ddx = d.u - u; ddx -= circ * Math.round(ddx / circ);
+                                const ddy = d.v - s;
+                                if (Math.hypot(ddx, ddy) - d.r < 0) return false;
+                            }
+                        }
+                    }
+                    return true;
+                };
+            }
+
+            if (cfg.style === 'ripples') {
+                // point-source wave interference: material follows the nodal web where the
+                // summed field is near zero. Purely analytic, zero precomputation.
+                const K = clamp(Math.round(cfg.rippleSources), 2, 4);
+                const lambda = Math.max(0.1, cfg.rippleWavelength);
+                const width = cfg.rippleWidth;
+                const rng = mulberry32(cfg.rippleSeed * 2654435761 + 222);
+                const poles = [];
+                for (let i = 0; i < K; i++) {
+                    poles.push({ u: rng() * circ, v: bandS0 + rng() * bandH });
+                }
+                return (theta, s) => {
+                    const u = (theta / (2 * Math.PI)) * circ;
+                    let W = 0;
+                    for (const p of poles) {
+                        let du = p.u - u; du -= circ * Math.round(du / circ);
+                        const dv = p.v - s;
+                        W += Math.sin(2 * Math.PI * Math.hypot(du, dv) / lambda);
+                    }
+                    return Math.abs(W) < width * K;
+                };
+            }
+
+            if (cfg.style === 'spirograph') {
+                // a single continuous cycloidal ribbon wound k times around the band; loops
+                // appear once the sine amplitude (spiroLoop) beats the linear u-advance per
+                // radian. Sampled into a polyline once, then bucketed for the query.
+                const half = cfg.spiroThickness / 2;
+                const k = Math.max(1, Math.round(cfg.spiroWraps));
+                const m = Math.max(1, Math.round(cfg.spiroLobes));
+                const b = cfg.spiroLoop;
+                const c = clamp(cfg.spiroHeight, 0, 1) * bandH * 0.5;
+                const mid = bandS0 + bandH * 0.5;
+                const N = 4000;
+                const pts = new Array(N + 1);
+                for (let i = 0; i <= N; i++) {
+                    const t = (i / N) * 2 * Math.PI;
+                    pts[i] = {
+                        u: circ * (k * t / (2 * Math.PI)) + b * Math.sin(m * t),
+                        s: mid + c * Math.cos(m * t)
+                    };
+                }
+                const cellSize = Math.max(0.3, (circ * k / N) * 4);
+                const bucketCols = Math.max(1, Math.round(circ / cellSize));
+                const bucketW = circ / bucketCols;
+                const buckets = new Map();
+                function sBucketKey(bx, by) { return by * bucketCols + ((bx % bucketCols) + bucketCols) % bucketCols; }
+                for (let i = 0; i < N; i++) {
+                    const p0 = pts[i], p1 = pts[i + 1];
+                    const midU = (p0.u + p1.u) * 0.5, midS = (p0.s + p1.s) * 0.5;
+                    const bx = Math.floor(midU / bucketW), by = Math.floor(midS / cellSize);
+                    const key = sBucketKey(bx, by);
+                    let list = buckets.get(key);
+                    if (!list) { list = []; buckets.set(key, list); }
+                    list.push([p0, p1]);
+                }
+                return (theta, s) => {
+                    const u = (theta / (2 * Math.PI)) * circ;
+                    const bx = Math.floor(u / bucketW), by = Math.floor(s / cellSize);
+                    for (let dy = -1; dy <= 1; dy++) {
+                        for (let dx = -1; dx <= 1; dx++) {
+                            const list = buckets.get(sBucketKey(bx + dx, by + dy));
+                            if (!list) continue;
+                            for (const [p0, p1] of list) {
+                                let du = p0.u - u; du -= circ * Math.round(du / circ);
+                                const lu0 = u + du, lu1 = lu0 + (p1.u - p0.u);
+                                if (segDist(u, s, lu0, p0.s, lu1, p1.s) < half) return true;
+                            }
+                        }
+                    }
+                    return false;
+                };
+            }
+
+            if (cfg.style === 'gradientcells') {
+                // the halftone idea applied to cell size: a Voronoi web whose density follows
+                // the Pattern A mask via rejection sampling (small/dense cells where the mask is
+                // high, large/open cells where low). With Pattern A = -1, every candidate is
+                // kept at the target density -> plain uniform crackle.
+                const half = cfg.gcThickness / 2;
+                const contrast = cfg.gcContrast;
+                const rng = mulberry32(cfg.gcSeed * 2654435761 + 333);
+                const eq1 = (cfg.patternEq1 || '').trim();
+                const maskActive = eq1 !== '' && eq1 !== '-1';
+                const wantCount = cfg.gcCount;
+                const gridCount = maskActive ? wantCount * 4 : wantCount;
+                const rows = Math.max(1, Math.round(Math.sqrt(gridCount * bandH / circ)));
+                const cols = Math.max(1, Math.round(gridCount / rows));
+                const cw = circ / cols, ch = bandH / rows;
+
+                const rawCandidates = [];
+                let minVal = Infinity, maxVal = -Infinity;
+                for (let cy = 0; cy < rows; cy++) {
+                    for (let cx = 0; cx < cols; cx++) {
+                        const ju = (rng() - 0.5) * 0.9, jv = (rng() - 0.5) * 0.9;
+                        let su = (cx + 0.5 + ju) * cw; su = ((su % circ) + circ) % circ;
+                        const sv = bandS0 + clamp(cy + 0.5 + jv, 0.05, rows - 0.05) * ch;
+                        let val = 0;
+                        if (maskActive) {
+                            val = sampleMaskValue(su, sv);
+                            if (val < minVal) minVal = val;
+                            if (val > maxVal) maxVal = val;
+                        }
+                        rawCandidates.push({ u: su, v: sv, val, cx, cy });
+                    }
+                }
+
+                let seeds;
+                if (!maskActive) {
+                    seeds = rawCandidates; // every grid cell kept -> uniform density
+                } else {
+                    const range = (maxVal - minVal) || 1;
+                    seeds = [];
+                    for (const cand of rawCandidates) {
+                        const norm = clamp((cand.val - minVal) / range, 0, 1);
+                        const keepProb = 0.15 + 0.85 * Math.pow(norm, contrast);
+                        if (rng() < keepProb) seeds.push(cand);
+                    }
+                    if (!seeds.length) seeds.push(rawCandidates[0]);
+                }
+
+                const seedBuckets = new Map();
+                function gcBucketKey(bx, by) { return by * cols + ((bx % cols) + cols) % cols; }
+                seeds.forEach(sd => {
+                    const key = gcBucketKey(sd.cx, sd.cy);
+                    let list = seedBuckets.get(key);
+                    if (!list) { list = []; seedBuckets.set(key, list); }
+                    list.push(sd);
+                });
+                const WIN = 3; // wider than voronoi's +/-2: rejection sampling means local
+                // density isn't uniformly bounded, so a plain scan-all fallback covers the rest.
+                function nearbySeeds(qx, qy) {
+                    const out = [];
+                    for (let dy = -WIN; dy <= WIN; dy++) {
+                        const cy = qy + dy;
+                        if (cy < 0 || cy >= rows) continue;
+                        for (let dx = -WIN; dx <= WIN; dx++) {
+                            const list = seedBuckets.get(gcBucketKey(qx + dx, cy));
+                            if (list) for (const sd of list) out.push(sd);
+                        }
+                    }
+                    return out;
+                }
+                return (theta, s) => {
+                    const pu = (theta / (2 * Math.PI)) * circ, pv = s;
+                    const qx = Math.floor(pu / cw), qy = Math.floor((pv - bandS0) / ch);
+                    let candidates = nearbySeeds(qx, qy);
+                    if (!candidates.length) candidates = seeds;
+                    let best = Infinity, brx = 0, bry = 0;
+                    for (let i = 0; i < candidates.length; i++) {
+                        let dx = candidates[i].u - pu; dx -= circ * Math.round(dx / circ);
+                        const dy = candidates[i].v - pv;
+                        const d2 = dx * dx + dy * dy;
+                        if (d2 < best) { best = d2; brx = dx; bry = dy; }
+                    }
+                    let edge = Infinity;
+                    for (let i = 0; i < candidates.length; i++) {
+                        let dx = candidates[i].u - pu; dx -= circ * Math.round(dx / circ);
+                        const dy = candidates[i].v - pv;
+                        const rdx = dx - brx, rdy = dy - bry;
+                        const len2 = rdx * rdx + rdy * rdy;
+                        if (len2 < 1e-7) continue;
+                        const len = Math.sqrt(len2);
+                        const mx = 0.5 * (brx + dx), my = 0.5 * (bry + dy);
+                        const d = (mx * rdx + my * rdy) / len;
+                        if (d < edge) edge = d;
+                    }
+                    return edge < half;
                 };
             }
 
@@ -3235,7 +3709,9 @@
             schwarzp: ['schwarzThickness'], schwarzd: ['schwarzdThickness'], honeycomb: ['hexThickness'],
             truchet: ['truchetThickness'], maze: ['mazeThickness'], scales: ['scaleThickness'],
             star: ['starThickness'], greekkey: ['greekThickness'],
-            worleycrackle: ['crackleThickness'], constellation: ['constLineW']
+            worleycrackle: ['crackleThickness'], constellation: ['constLineW'],
+            kumiko: ['kumikoThickness'], veins: ['veinThickness'], foam: ['foamWeb'],
+            spirograph: ['spiroThickness'], gradientcells: ['gcThickness']
         };
         function formatThinStrutWarning(cfg) {
             const fields = STYLE_THICKNESS_FIELDS[cfg.style];
@@ -3561,6 +4037,12 @@ ${trianglesXml.join('\n')}
             'slitCount', 'slitRows', 'slitWidth', 'slitLength', 'slitTilt',
             'htDensity', 'htMinHole', 'htMaxHole',
             'constCount', 'constMaxStar', 'constLineW', 'constSeed',
+            'kumikoDensity', 'kumikoThickness',
+            'veinRoots', 'veinThickness', 'veinSplitProb', 'veinWander', 'veinSeed',
+            'foamCount', 'foamMinHole', 'foamMaxHole', 'foamWeb', 'foamSeed',
+            'rippleSources', 'rippleWavelength', 'rippleWidth', 'rippleSeed',
+            'spiroWraps', 'spiroLobes', 'spiroLoop', 'spiroHeight', 'spiroThickness',
+            'gcCount', 'gcThickness', 'gcContrast', 'gcSeed',
             'patternPresetSelect1', 'patternPresetSelect2', 'patternEquation1', 'patternEquation2',
             'baseColor', 'patternColor1', 'patternColor2', 'overlapColor',
             'resV', 'resT', 'shellSmoothPasses'
@@ -3647,7 +4129,9 @@ ${trianglesXml.join('\n')}
             truchet: 'Truchet', quasicrystal: 'Quasicrystal', maze: 'Maze', scales: 'Fish-Scale',
             star: 'Star Lattice', greekkey: 'Greek Key',
             worleycrackle: 'Worley Crackle', caustic: 'Caustic Web', slits: 'Ray Slits',
-            halftone: 'Halftone Glow', constellation: 'Constellation'
+            halftone: 'Halftone Glow', constellation: 'Constellation',
+            kumiko: 'Kumiko Asanoha', veins: 'Branching Veins', foam: 'Soap Foam',
+            ripples: 'Ripple Interference', spirograph: 'Spirograph', gradientcells: 'Gradient Cells'
         };
         function computeAutoName() {
             const sn = styleNameMap[document.getElementById('patternStyle').value] || '';
@@ -3762,10 +4246,17 @@ ${trianglesXml.join('\n')}
             caustic: "Flowing fractal-noise web like light through water.",
             slits: "Staggered tilted slot louvers that project crisp light rays.",
             halftone: "Hex hole grid sized by the Pattern A mask - a light-intensity image.",
-            constellation: "Scattered star holes linked by thin chord slots."
+            constellation: "Scattered star holes linked by thin chord slots.",
+            kumiko: "Japanese asanoha hemp-leaf triangular lattice with centroid spokes.",
+            veins: "Branching leaf-skeleton struts grown upward from the base.",
+            foam: "Merged soap-bubble holes placed by rejection sampling.",
+            ripples: "Point-source wave interference nodal web.",
+            spirograph: "A single continuous cycloidal ribbon wound around the band.",
+            gradientcells: "Voronoi web whose cell density follows the Pattern A mask."
         };
         // styles that are open/fragile enough to want the solid liner on by default
-        const linerDefaultStyles = ['turing', 'fluting', 'life', 'wave', 'caustic', 'halftone', 'constellation'];
+        const linerDefaultStyles = ['turing', 'fluting', 'life', 'wave', 'caustic', 'halftone', 'constellation',
+            'foam', 'ripples', 'gradientcells'];
         // Every pattern-style settings-panel id (minus the 'Settings' suffix) - the single
         // source of truth for which panel to show, shared by onPatternStyleChange (live UI) and
         // applyDesignConfig (design .json load). Previously applyDesignConfig had its own
@@ -3774,7 +4265,8 @@ ${trianglesXml.join('\n')}
         const PATTERN_PANEL_IDS = ['voronoi', 'lattice', 'weave', 'wave', 'gyroid', 'origami', 'fibonacci', 'phyllotaxis',
             'turing', 'fluting', 'life', 'chladni', 'schwarzp', 'schwarzd', 'honeycomb', 'trabecular',
             'truchet', 'quasicrystal', 'maze', 'scales', 'star', 'greekkey',
-            'worleycrackle', 'caustic', 'slits', 'halftone', 'constellation'];
+            'worleycrackle', 'caustic', 'slits', 'halftone', 'constellation',
+            'kumiko', 'veins', 'foam', 'ripples', 'spirograph', 'gradientcells'];
         function onPatternStyleChange() {
             const s = document.getElementById('patternStyle').value;
             PATTERN_PANEL_IDS.forEach(p => document.getElementById(p + 'Settings').classList.toggle('active', s === p));
@@ -3826,6 +4318,12 @@ ${trianglesXml.join('\n')}
                 slitCount: 16, slitRows: 6, slitWidth: 3.0, slitLength: 0.6, slitTilt: 12,
                 htDensity: 16, htMinHole: 1.0, htMaxHole: 4.5,
                 constCount: 60, constMaxStar: 3.5, constLineW: 1.2, constSeed: 9,
+                kumikoDensity: 12, kumikoThickness: 1.6,
+                veinRoots: 8, veinThickness: 3.0, veinSplitProb: 0.06, veinWander: 0.35, veinSeed: 11,
+                foamCount: 70, foamMinHole: 2.0, foamMaxHole: 7.0, foamWeb: 1.5, foamSeed: 13,
+                rippleSources: 3, rippleWavelength: 1.2, rippleWidth: 0.15, rippleSeed: 17,
+                spiroWraps: 3, spiroLobes: 7, spiroLoop: 1.2, spiroHeight: 0.9, spiroThickness: 2.2,
+                gcCount: 90, gcThickness: 2.0, gcContrast: 1.5, gcSeed: 21,
                 resV: 200, resT: 300
             };
             for (const id in defs) document.getElementById(id).value = defs[id];
