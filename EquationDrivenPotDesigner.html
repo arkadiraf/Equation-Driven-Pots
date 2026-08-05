@@ -188,6 +188,61 @@
             background: #ffffff;
         }
 
+        .color-input-row {
+            display: flex;
+            gap: 4px;
+            align-items: stretch;
+        }
+
+        .color-input-row .color-chip {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .bambu-toggle {
+            flex: 0 0 auto;
+            width: 30px;
+            height: 42px;
+            padding: 0;
+            margin: 0;
+            border: 1px solid #d8dee6;
+            border-radius: 6px;
+            background: #ffffff;
+            font-size: 1rem;
+            line-height: 1;
+            color: initial;
+        }
+
+        .bambu-palette {
+            display: none;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 3px;
+            margin: 4px 0 2px;
+            padding: 5px;
+            background: #f2f4f7;
+            border: 1px solid #d8dee6;
+            border-radius: 6px;
+        }
+
+        .bambu-palette.open {
+            display: grid;
+        }
+
+        .bambu-swatch {
+            width: 100%;
+            aspect-ratio: 1;
+            min-height: 16px;
+            padding: 0;
+            margin: 0;
+            border: 1px solid rgba(0, 0, 0, 0.18);
+            border-radius: 3px;
+        }
+
+        .bambu-swatch:hover {
+            outline: 2px solid var(--primary);
+            outline-offset: 1px;
+        }
+
         button {
             width: 100%;
             padding: 10px;
@@ -489,6 +544,16 @@
                 padding: 2px;
             }
 
+            .bambu-toggle {
+                height: 28px;
+                width: 22px;
+                font-size: 0.75rem;
+            }
+
+            .bambu-palette {
+                grid-template-columns: repeat(5, 1fr);
+            }
+
             button {
                 padding: 8px 2px;
                 font-size: 0.62rem;
@@ -761,16 +826,40 @@
             </div>
         </div>
         <div class="grid-inputs color-row">
-            <div class="input-group"><label>Neither / Base</label><input type="color" id="baseColor" class="color-chip"
-                    value="#0f4d80" oninput="updatePreview()"></div>
-            <div class="input-group"><label>Pattern A Only</label><input type="color" id="patternColor1"
-                    class="color-chip" value="#ff7062" oninput="updatePreview()"></div>
+            <div class="input-group"><label>Neither / Base</label>
+                <div class="color-input-row">
+                    <input type="color" id="baseColor" class="color-chip" value="#0f4d80" oninput="updatePreview()">
+                    <button type="button" class="bambu-toggle" onclick="toggleBambuPalette('baseColor')"
+                        title="Bambu Lab PLA colors" aria-label="Bambu Lab PLA colors">&#127912;</button>
+                </div>
+                <div class="bambu-palette" id="baseColor-palette"></div>
+            </div>
+            <div class="input-group"><label>Pattern A Only</label>
+                <div class="color-input-row">
+                    <input type="color" id="patternColor1" class="color-chip" value="#ff7062" oninput="updatePreview()">
+                    <button type="button" class="bambu-toggle" onclick="toggleBambuPalette('patternColor1')"
+                        title="Bambu Lab PLA colors" aria-label="Bambu Lab PLA colors">&#127912;</button>
+                </div>
+                <div class="bambu-palette" id="patternColor1-palette"></div>
+            </div>
         </div>
         <div class="grid-inputs color-row">
-            <div class="input-group"><label>Pattern B Only</label><input type="color" id="patternColor2"
-                    class="color-chip" value="#5f4a8b" oninput="updatePreview()"></div>
-            <div class="input-group"><label>Overlap (A + B)</label><input type="color" id="overlapColor"
-                    class="color-chip" value="#8ab04d" oninput="updatePreview()"></div>
+            <div class="input-group"><label>Pattern B Only</label>
+                <div class="color-input-row">
+                    <input type="color" id="patternColor2" class="color-chip" value="#5f4a8b" oninput="updatePreview()">
+                    <button type="button" class="bambu-toggle" onclick="toggleBambuPalette('patternColor2')"
+                        title="Bambu Lab PLA colors" aria-label="Bambu Lab PLA colors">&#127912;</button>
+                </div>
+                <div class="bambu-palette" id="patternColor2-palette"></div>
+            </div>
+            <div class="input-group"><label>Overlap (A + B)</label>
+                <div class="color-input-row">
+                    <input type="color" id="overlapColor" class="color-chip" value="#8ab04d" oninput="updatePreview()">
+                    <button type="button" class="bambu-toggle" onclick="toggleBambuPalette('overlapColor')"
+                        title="Bambu Lab PLA colors" aria-label="Bambu Lab PLA colors">&#127912;</button>
+                </div>
+                <div class="bambu-palette" id="overlapColor-palette"></div>
+            </div>
         </div>
         <div class="desc-text">Two masks define four surface color states: neither, A only, B only, and A+B overlap.
         </div>
@@ -2926,6 +3015,60 @@
             setStatus('Parameters reset | Cylindrical | Pot+Plate | Circle', '');
         }
 
+        /* ---------- Bambu Lab PLA Basic color palette (see PLA_Colors.txt) ----------
+           A small on-demand swatch grid next to each of the four color pickers, so a design's
+           colors can be matched to filament that's actually printable rather than an arbitrary
+           picked hex. */
+        const BAMBU_COLORS = [
+            ['Jade White', '#FFFFFF'], ['Beige', '#F7E6DE'], ['Gold', '#E4BD68'], ['Silver', '#A6A9AA'],
+            ['Gray', '#8E9089'], ['Bronze', '#847D48'], ['Brown', '#9D432C'], ['Cocoa Brown', '#6F5034'],
+            ['Maroon Red', '#9D2235'], ['Red', '#C12E1F'], ['Magenta', '#EC008C'], ['Pink', '#F55A74'],
+            ['Hot Pink', '#F5547C'], ['Orange', '#FF6A13'], ['Pumpkin Orange', '#FF9016'],
+            ['Sunflower Yellow', '#FEC600'], ['Yellow', '#F4EE2A'], ['Bright Green', '#BECF00'],
+            ['Bambu Green', '#00AE42'], ['Mistletoe Green', '#3F8E43'], ['Turquoise', '#00B1B7'],
+            ['Cyan', '#0086D6'], ['Blue', '#0A2989'], ['Cobalt Blue', '#0056B8'], ['Purple', '#5E43B7'],
+            ['Indigo Purple', '#482960'], ['Blue Gray', '#5B6579'], ['Light Gray', '#D1D3D5'],
+            ['Dark Gray', '#545454'], ['Black', '#000000']
+        ];
+        const BAMBU_PALETTE_TARGET_IDS = ['baseColor', 'patternColor1', 'patternColor2', 'overlapColor'];
+
+        function initBambuPalettes() {
+            BAMBU_PALETTE_TARGET_IDS.forEach(id => {
+                const container = document.getElementById(id + '-palette');
+                if (!container) return;
+                BAMBU_COLORS.forEach(([name, hex]) => {
+                    const swatch = document.createElement('button');
+                    swatch.type = 'button';
+                    swatch.className = 'bambu-swatch';
+                    swatch.style.background = hex;
+                    swatch.title = `${name} (${hex})`;
+                    swatch.setAttribute('aria-label', name);
+                    swatch.onclick = () => pickBambuColor(id, hex);
+                    container.appendChild(swatch);
+                });
+            });
+        }
+
+        function toggleBambuPalette(id) {
+            const container = document.getElementById(id + '-palette');
+            if (!container) return;
+            const isOpen = container.classList.contains('open');
+            BAMBU_PALETTE_TARGET_IDS.forEach(otherId => {
+                const other = document.getElementById(otherId + '-palette');
+                if (other) other.classList.remove('open');
+            });
+            if (!isOpen) container.classList.add('open');
+        }
+
+        function pickBambuColor(id, hex) {
+            const input = document.getElementById(id);
+            if (!input) return;
+            input.value = hex;
+            const container = document.getElementById(id + '-palette');
+            if (container) container.classList.remove('open');
+            updatePreview();
+        }
+
         window.onload = function () {
             // Check for config URL parameter
             const urlParams = new URLSearchParams(window.location.search);
@@ -2970,6 +3113,7 @@
 
             populatePatternPresets();
             initCollapsibleSections();
+            initBambuPalettes();
 
             const defaultJson = {
                 "name": "Five Petal Interlaced Bloom",
