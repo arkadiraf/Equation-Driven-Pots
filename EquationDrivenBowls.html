@@ -152,6 +152,11 @@
             background: #f2f4f7;
         }
 
+        .expr-error {
+            border-color: var(--danger) !important;
+            box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.22);
+        }
+
         .desc-text {
             font-size: 0.7rem;
             color: #7b8794;
@@ -492,6 +497,17 @@
                 <option value="scales">Fish-Scale (Seigaiha)</option>
                 <option value="star">Islamic Star Lattice</option>
                 <option value="greekkey">Greek Key (Meander)</option>
+                <option value="worleycrackle">Worley Crackle (lamp)</option>
+                <option value="caustic">Caustic Web (lamp)</option>
+                <option value="slits">Ray Slits / Louvers (lamp)</option>
+                <option value="halftone">Halftone Glow (lamp)</option>
+                <option value="constellation">Constellation (lamp)</option>
+                <option value="kumiko">Kumiko Asanoha (lamp)</option>
+                <option value="veins">Branching Veins (lamp)</option>
+                <option value="foam">Soap Foam (lamp)</option>
+                <option value="ripples">Ripple Interference (lamp)</option>
+                <option value="spirograph">Spirograph Band (lamp)</option>
+                <option value="gradientcells">Gradient Cells (lamp)</option>
             </select>
         </div>
         <div id="patternDesc" class="desc-text"></div>
@@ -810,6 +826,193 @@
             <div class="desc-text">Repeating Greek key / meander fret tiled around (and up) the wall.</div>
         </div>
 
+        <div id="worleycrackleSettings" class="pattern-settings">
+            <div class="grid-inputs">
+                <div class="input-group"><label>Density (cells around)</label><input type="number" id="crackleDensity"
+                        value="14" step="1" min="2" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Strut Thickness (mm)</label><input type="number" id="crackleThickness"
+                        value="2.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
+            </div>
+            <div class="input-group"><label>Random Seed</label><input type="number" id="crackleSeed" value="3" step="1"
+                    min="0" oninput="updatePreview()"></div>
+            <div class="desc-text">Infinite, non-repeating stone-crack web from hashed cell feature points - the
+                organic upgrade of Voronoi Cells, with no visible seam or repeat.</div>
+        </div>
+
+        <div id="causticSettings" class="pattern-settings">
+            <div class="grid-inputs">
+                <div class="input-group"><label>Scale (frequency)</label><input type="number" id="causticScale"
+                        value="5" step="0.5" min="0.5" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Web Level</label><input type="number" id="causticLevel" value="0.1"
+                        step="0.01" min="0.02" max="0.4" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Octaves</label><input type="number" id="causticOctaves" value="3"
+                        step="1" min="1" max="6" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Random Seed</label><input type="number" id="causticSeed" value="4"
+                        step="1" min="0" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">A flowing fractal-noise web whose shadows ripple like light through water -
+                built for a lamp, not just a bowl. Lower Web Level = thinner, sparser web.</div>
+        </div>
+
+        <div id="slitsSettings" class="pattern-settings">
+            <div class="grid-3">
+                <div class="input-group"><label>Columns</label><input type="number" id="slitCount" value="16"
+                        step="1" min="2" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Rows</label><input type="number" id="slitRows" value="6" step="1"
+                        min="1" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Slot Width (mm)</label><input type="number" id="slitWidth" value="3.0"
+                        step="0.2" min="0.8" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Slot Length (0-1)</label><input type="number" id="slitLength"
+                        value="0.6" step="0.05" min="0.1" max="1" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Tilt (&deg;)</label><input type="number" id="slitTilt" value="12"
+                        step="1" min="-60" max="60" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">Classic lampshade louvers: staggered rows of tilted slot holes that project crisp
+                light rays. Recommend liner OFF for the sharpest cast-shadow rays.</div>
+        </div>
+
+        <div id="halftoneSettings" class="pattern-settings">
+            <div class="grid-inputs">
+                <div class="input-group"><label>Density (hexes around)</label><input type="number" id="htDensity"
+                        value="16" step="1" min="3" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Min Hole (mm)</label><input type="number" id="htMinHole" value="1.0"
+                        step="0.1" min="0.2" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Max Hole (mm)</label><input type="number" id="htMaxHole" value="4.5"
+                        step="0.1" min="0.4" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">The signature lamp feature: a staggered grid of round holes whose size is driven by
+                the Pattern A mask equation below, so the mask becomes a light-intensity image when lit from inside.
+                With Pattern A left at "None", every hole is a fixed mid-size. Try the noise/exotic mask presets or
+                "sin(pi*v)" for a bright equator band.</div>
+        </div>
+
+        <div id="constellationSettings" class="pattern-settings">
+            <div class="grid-inputs">
+                <div class="input-group"><label>Star Count</label><input type="number" id="constCount" value="60"
+                        step="5" min="4" max="120" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Max Star (mm)</label><input type="number" id="constMaxStar" value="3.5"
+                        step="0.2" min="0.6" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Line Width (mm)</label><input type="number" id="constLineW" value="1.2"
+                        step="0.1" min="0.4" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Random Seed</label><input type="number" id="constSeed" value="9"
+                        step="1" min="0" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">A night-sky pendant: scattered star holes in three sizes, each linked to its
+                nearest neighbor(s) by a thin chord slot.</div>
+        </div>
+
+        <div id="kumikoSettings" class="pattern-settings">
+            <div class="grid-inputs">
+                <div class="input-group"><label>Density (triangles around)</label><input type="number"
+                        id="kumikoDensity" value="12" step="1" min="3" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Strut Thickness (mm)</label><input type="number" id="kumikoThickness"
+                        value="1.6" step="0.1" min="0.4" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">Traditional Japanese shoji hemp-leaf (asanoha) lattice: an equilateral triangular
+                grid with spokes from each triangle's centroid to its three corners, casting six-pointed star
+                shadows. Recommend liner OFF for the crispest shadows.</div>
+        </div>
+
+        <div id="veinsSettings" class="pattern-settings">
+            <div class="grid-inputs">
+                <div class="input-group"><label>Root Count</label><input type="number" id="veinRoots" value="8"
+                        step="1" min="1" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Trunk Thickness (mm)</label><input type="number" id="veinThickness"
+                        value="3.0" step="0.2" min="0.6" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Split Probability</label><input type="number" id="veinSplitProb"
+                        value="0.06" step="0.01" min="0" max="0.3" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Wander</label><input type="number" id="veinWander" value="0.35"
+                        step="0.05" min="0" max="2" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Random Seed</label><input type="number" id="veinSeed" value="11"
+                        step="1" min="0" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">A leaf-skeleton / lightning-tree lamp: branching struts grow upward from the solid
+                base, tapering as they split. Every strut is connected to the base by construction.</div>
+        </div>
+
+        <div id="foamSettings" class="pattern-settings">
+            <div class="grid-3">
+                <div class="input-group"><label>Bubble Count</label><input type="number" id="foamCount" value="70"
+                        step="5" min="6" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Min Hole (mm)</label><input type="number" id="foamMinHole" value="2.0"
+                        step="0.2" min="0.4" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Max Hole (mm)</label><input type="number" id="foamMaxHole" value="7.0"
+                        step="0.2" min="0.6" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Web Gap (mm)</label><input type="number" id="foamWeb" value="1.5"
+                        step="0.1" min="0.4" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Random Seed</label><input type="number" id="foamSeed" value="13"
+                        step="1" min="0" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">Seeded soap-bubble holes placed by rejection sampling, so the web between bubbles
+                never pinches thinner than Web Gap - no post-hoc printability check needed.</div>
+        </div>
+
+        <div id="ripplesSettings" class="pattern-settings">
+            <div class="grid-inputs">
+                <div class="input-group"><label>Sources (2-4)</label><input type="number" id="rippleSources" value="3"
+                        step="1" min="2" max="4" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Wavelength (cm)</label><input type="number" id="rippleWavelength"
+                        value="1.2" step="0.1" min="0.3" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Web Width</label><input type="number" id="rippleWidth" value="0.15"
+                        step="0.01" min="0.05" max="0.4" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Random Seed</label><input type="number" id="rippleSeed" value="17"
+                        step="1" min="0" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">Two to four point sources emit circular waves; material follows the interference
+                pattern's nodal web - a concentric moire that reads beautifully in cast light.</div>
+        </div>
+
+        <div id="spirographSettings" class="pattern-settings">
+            <div class="grid-3">
+                <div class="input-group"><label>Wraps (k)</label><input type="number" id="spiroWraps" value="3"
+                        step="1" min="1" max="12" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Lobes (m)</label><input type="number" id="spiroLobes" value="7"
+                        step="1" min="1" max="30" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Loop Size (cm)</label><input type="number" id="spiroLoop" value="1.2"
+                        step="0.1" min="0" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Band Height (0-1)</label><input type="number" id="spiroHeight"
+                        value="0.9" step="0.05" min="0.1" max="1" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Ribbon Thickness (mm)</label><input type="number" id="spiroThickness"
+                        value="2.2" step="0.1" min="0.5" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">A single continuous cycloidal ribbon winds k times around the band; loops appear
+                once Loop Size overcomes the linear advance. Band Height near 1 lets the loops graze base and rim.</div>
+        </div>
+
+        <div id="gradientcellsSettings" class="pattern-settings">
+            <div class="grid-inputs">
+                <div class="input-group"><label>Cell Count</label><input type="number" id="gcCount" value="90"
+                        step="5" min="6" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Strut Thickness (mm)</label><input type="number" id="gcThickness"
+                        value="2.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Mask Contrast</label><input type="number" id="gcContrast" value="1.5"
+                        step="0.1" min="0.5" max="3" oninput="updatePreview()"></div>
+                <div class="input-group"><label>Random Seed</label><input type="number" id="gcSeed" value="21"
+                        step="1" min="0" oninput="updatePreview()"></div>
+            </div>
+            <div class="desc-text">The halftone idea applied to cell size: a Voronoi web whose cell density follows
+                the Pattern A mask below - small dense cells where the mask is high, large open cells where it's low.
+                With Pattern A left at "None", cells are uniform (plain crackle).</div>
+        </div>
+
         <div class="section-title">3. Dual Pattern Color Layer</div>
         <div class="grid-inputs">
             <div class="input-group">
@@ -915,10 +1118,11 @@
     <script>
         /* ---------- math helpers (exposed to user equations) ---------- */
         const pi = Math.PI, sin = Math.sin, cos = Math.cos, tan = Math.tan,
-            asin = Math.asin, acos = Math.acos, atan = Math.atan, pow = Math.pow,
+            asin = Math.asin, acos = Math.acos, atan = Math.atan, atan2 = Math.atan2,
+            sinh = Math.sinh, cosh = Math.cosh, tanh = Math.tanh, pow = Math.pow,
             min = Math.min, max = Math.max, abs = Math.abs, exp = Math.exp,
             sqrt = Math.sqrt, log = Math.log, floor = Math.floor, ceil = Math.ceil,
-            round = Math.round, sign = Math.sign;
+            round = Math.round, sign = Math.sign, hypot = Math.hypot;
         const clamp = (x, a, b) => min(max(x, a), b);
         const fract = x => x - floor(x);
         const smoothstep = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
@@ -942,6 +1146,290 @@
         function hexToRgb01(hex) {
             const n = parseInt((hex || "#000000").replace('#', ''), 16);
             return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+        }
+
+        // ---- Expression compiler ----
+        // evalForm/evalMask used to run through raw eval() once per sample point - ~60k calls
+        // for a single 200x300 preview, each re-parsing the source string and able to execute
+        // arbitrary JS (a real concern given design .json files can be shared/loaded). Every
+        // equation field is now whitelist-validated once and compiled with `new Function`, then
+        // the compiled function is reused for every sample. Compiled functions only see the
+        // explicit parameter list below - no page globals, no DOM - so the whitelist IS the
+        // sandbox. Ported from EquationDrivenPotDesignerOptimized.html.
+        const EXPR_MATH_NAMES = ['pi', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'atan2',
+            'sinh', 'cosh', 'tanh', 'pow', 'min', 'max', 'abs', 'exp', 'sqrt', 'log',
+            'floor', 'ceil', 'round', 'sign', 'clamp', 'fract', 'smoothstep', 'mod', 'hypot',
+            'cnoise', 'fbm', 'ridged', 'worley', 'phyllo'];
+        const EXPR_MATH_VALUES = [pi, sin, cos, tan, asin, acos, atan, atan2,
+            sinh, cosh, tanh, pow, min, max, abs, exp, sqrt, log,
+            floor, ceil, round, sign, clamp, fract, smoothstep, mod, hypot,
+            cnoise, fbm, ridged, worley, phyllo];
+
+        // theta/z/phi/v/R: the form equation's scope.
+        const EXPR_FIELD_NAMES = ['theta', 'z', 'phi', 'v', 'R'];
+        const EXPR_FIELD_KEY = EXPR_FIELD_NAMES.join(',');
+        // Mask equations (Pattern A/B) get the form scope plus the derived radius/texture
+        // scalars and two helper functions evalMask has always exposed to eval().
+        const EXPR_MASK_NAMES = ['theta', 'z', 'phi', 'v', 'R',
+            'radiusDev', 'texPosNorm', 'texNorm', 'radiusNorm', 'outerDeviation', 'textureFill'];
+        const EXPR_MASK_KEY = EXPR_MASK_NAMES.join(',');
+
+        const EXPR_ALLOWED_NAMES = new Set([...EXPR_MATH_NAMES, ...EXPR_FIELD_NAMES, ...EXPR_MASK_NAMES]);
+        const EXPR_IDENTIFIER_RE = /[A-Za-z_$][A-Za-z0-9_$]*/g;
+        const EXPR_FORBIDDEN_RE = /[`\[\]{};]|=>|\bfunction\b|\bnew\b|\bthis\b|\bwindow\b|\bdocument\b|\bglobalThis\b|\bconstructor\b|\b__proto__\b/;
+
+        function validateExprSource(src) {
+            if (EXPR_FORBIDDEN_RE.test(src)) {
+                throw new Error('contains disallowed syntax');
+            }
+            const tokens = src.match(EXPR_IDENTIFIER_RE) || [];
+            for (const token of tokens) {
+                if (!EXPR_ALLOWED_NAMES.has(token)) {
+                    throw new Error(`unknown name "${token}"`);
+                }
+            }
+        }
+
+        const exprCache = new Map();
+
+        function getCompiledExpr(source, varNames, varKey) {
+            const safeSource = (typeof source === 'string' && source.trim().length) ? source : '0';
+            const cacheKey = varKey + String.fromCharCode(1) + safeSource;
+            const cached = exprCache.get(cacheKey);
+            if (cached !== undefined) return cached;
+
+            let compiled;
+            try {
+                validateExprSource(safeSource);
+                // Math constants go first so .bind() (a native V8 primitive) can pre-fix them
+                // once at compile time - the per-sample call then only passes the handful of
+                // real variable args, not ~30 constants re-spread every time.
+                const raw = new Function(...EXPR_MATH_NAMES, ...varNames,
+                    '"use strict"; return (' + safeSource + ');');
+                compiled = raw.bind(null, ...EXPR_MATH_VALUES);
+            } catch (err) {
+                compiled = err instanceof Error ? err : new Error(String(err));
+            }
+
+            // Unbounded growth guard: equations recompile on every keystroke while typing.
+            if (exprCache.size > 800) exprCache.clear();
+            exprCache.set(cacheKey, compiled);
+            return compiled;
+        }
+
+        // Public entry point for UI-facing compile checks (see refreshExpressionCompileStatus).
+        function compileExpr(source, varNames) {
+            return getCompiledExpr(source, varNames, varNames.join(','));
+        }
+
+        // Every equation-bearing textarea, paired with the variable scope it compiles against.
+        // Checked once per render pass so a bad equation gets a visible red outline + status
+        // message instead of silently falling back to a plain bowl with no explanation.
+        const EXPR_FIELD_SPECS = [
+            { id: 'equation', label: 'Form Equation', varNames: EXPR_FIELD_NAMES },
+            { id: 'patternEquation1', label: 'Pattern A Mask', varNames: EXPR_MASK_NAMES },
+            { id: 'patternEquation2', label: 'Pattern B Mask', varNames: EXPR_MASK_NAMES }
+        ];
+
+        function refreshExpressionCompileStatus() {
+            const errors = [];
+            EXPR_FIELD_SPECS.forEach(spec => {
+                const el = document.getElementById(spec.id);
+                if (!el) return;
+                const compiled = compileExpr(el.value, spec.varNames);
+                const hasError = compiled instanceof Error;
+                el.classList.toggle('expr-error', hasError);
+                if (hasError) errors.push(`${spec.label}: ${compiled.message}`);
+            });
+            return errors;
+        }
+
+        // ---- Procedural noise (equation scope helpers, ported from the pot designer) ----
+        // All four helpers are seam-free in theta by construction: they sample a 3D noise/hash
+        // field at a point embedded on a cylinder (radius st, height scale sv), so theta=0 and
+        // theta=2*pi land on the exact same (x,y) - no explicit wraparound handling needed.
+        const SIMPLEX_F3 = 1 / 3, SIMPLEX_G3 = 1 / 6;
+        const SIMPLEX_GRAD3 = [
+            [1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
+            [1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
+            [0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]
+        ];
+        const simplexPermCache = new Map();
+
+        function getSimplexPerm(seed) {
+            const key = Math.floor(seed) || 0;
+            const cached = simplexPermCache.get(key);
+            if (cached) return cached;
+
+            const rand = mulberry32((key * 2654435761) ^ 0x9E3779B9);
+            const p = new Uint8Array(256);
+            for (let i = 0; i < 256; i++) p[i] = i;
+            for (let i = 255; i > 0; i--) {
+                const j = Math.floor(rand() * (i + 1));
+                const tmp = p[i]; p[i] = p[j]; p[j] = tmp;
+            }
+            const perm = new Uint8Array(512);
+            const permMod12 = new Uint8Array(512);
+            for (let i = 0; i < 512; i++) {
+                perm[i] = p[i & 255];
+                permMod12[i] = perm[i] % 12;
+            }
+            const table = { perm, permMod12 };
+            if (simplexPermCache.size > 64) simplexPermCache.clear();
+            simplexPermCache.set(key, table);
+            return table;
+        }
+
+        function rawSimplex3(x, y, z, seed) {
+            const { perm, permMod12 } = getSimplexPerm(seed);
+
+            const s = (x + y + z) * SIMPLEX_F3;
+            const i = Math.floor(x + s), j = Math.floor(y + s), k = Math.floor(z + s);
+            const t = (i + j + k) * SIMPLEX_G3;
+            const x0 = x - (i - t), y0 = y - (j - t), z0 = z - (k - t);
+
+            let i1, j1, k1, i2, j2, k2;
+            if (x0 >= y0) {
+                if (y0 >= z0) { i1 = 1; j1 = 0; k1 = 0; i2 = 1; j2 = 1; k2 = 0; }
+                else if (x0 >= z0) { i1 = 1; j1 = 0; k1 = 0; i2 = 1; j2 = 0; k2 = 1; }
+                else { i1 = 0; j1 = 0; k1 = 1; i2 = 1; j2 = 0; k2 = 1; }
+            } else {
+                if (y0 < z0) { i1 = 0; j1 = 0; k1 = 1; i2 = 0; j2 = 1; k2 = 1; }
+                else if (x0 < z0) { i1 = 0; j1 = 1; k1 = 0; i2 = 0; j2 = 1; k2 = 1; }
+                else { i1 = 0; j1 = 1; k1 = 0; i2 = 1; j2 = 1; k2 = 0; }
+            }
+
+            const x1 = x0 - i1 + SIMPLEX_G3, y1 = y0 - j1 + SIMPLEX_G3, z1 = z0 - k1 + SIMPLEX_G3;
+            const x2 = x0 - i2 + 2 * SIMPLEX_G3, y2 = y0 - j2 + 2 * SIMPLEX_G3, z2 = z0 - k2 + 2 * SIMPLEX_G3;
+            const x3 = x0 - 1 + 3 * SIMPLEX_G3, y3 = y0 - 1 + 3 * SIMPLEX_G3, z3 = z0 - 1 + 3 * SIMPLEX_G3;
+
+            const ii = i & 255, jj = j & 255, kk = k & 255;
+            let n0 = 0, n1 = 0, n2 = 0, n3 = 0;
+
+            let t0 = 0.6 - x0 * x0 - y0 * y0 - z0 * z0;
+            if (t0 >= 0) {
+                const g = SIMPLEX_GRAD3[permMod12[ii + perm[jj + perm[kk]]]];
+                t0 *= t0;
+                n0 = t0 * t0 * (g[0] * x0 + g[1] * y0 + g[2] * z0);
+            }
+            let t1 = 0.6 - x1 * x1 - y1 * y1 - z1 * z1;
+            if (t1 >= 0) {
+                const g = SIMPLEX_GRAD3[permMod12[ii + i1 + perm[jj + j1 + perm[kk + k1]]]];
+                t1 *= t1;
+                n1 = t1 * t1 * (g[0] * x1 + g[1] * y1 + g[2] * z1);
+            }
+            let t2 = 0.6 - x2 * x2 - y2 * y2 - z2 * z2;
+            if (t2 >= 0) {
+                const g = SIMPLEX_GRAD3[permMod12[ii + i2 + perm[jj + j2 + perm[kk + k2]]]];
+                t2 *= t2;
+                n2 = t2 * t2 * (g[0] * x2 + g[1] * y2 + g[2] * z2);
+            }
+            let t3 = 0.6 - x3 * x3 - y3 * y3 - z3 * z3;
+            if (t3 >= 0) {
+                const g = SIMPLEX_GRAD3[permMod12[ii + 1 + perm[jj + 1 + perm[kk + 1]]]];
+                t3 *= t3;
+                n3 = t3 * t3 * (g[0] * x3 + g[1] * y3 + g[2] * z3);
+            }
+            return 32 * (n0 + n1 + n2 + n3);
+        }
+
+        // cnoise(theta, v, st, sv, seed): seeded 3D simplex noise on a cylinder of radius st
+        // and height scale sv. Range roughly [-1, 1].
+        function cnoise(theta, v, st, sv, seed) {
+            const radius = st || 1;
+            return rawSimplex3(radius * cos(theta), radius * sin(theta), (sv || 1) * v, Math.floor(seed) || 0);
+        }
+
+        // fbm(theta, v, st, sv, octaves, seed): fractal Brownian motion - amplitude halves and
+        // frequency doubles each octave (capped at 8).
+        function fbm(theta, v, st, sv, octaves, seed) {
+            const n = Math.max(1, Math.min(8, Math.floor(octaves) || 1));
+            const baseSeed = Math.floor(seed) || 0;
+            let amplitude = 0.5, frequency = 1, sum = 0, norm = 0;
+            for (let o = 0; o < n; o++) {
+                sum += amplitude * cnoise(theta, v, st * frequency, sv * frequency, baseSeed + o * 101);
+                norm += amplitude;
+                amplitude *= 0.5;
+                frequency *= 2;
+            }
+            return norm > 0 ? sum / norm : 0;
+        }
+
+        // ridged(theta, v, st, sv, octaves, seed): ridged multifractal (1 - |fbm octave|,
+        // summed) - sharp ridges along each octave's zero crossings. Range [0, 1].
+        function ridged(theta, v, st, sv, octaves, seed) {
+            const n = Math.max(1, Math.min(8, Math.floor(octaves) || 1));
+            const baseSeed = Math.floor(seed) || 0;
+            let amplitude = 0.5, frequency = 1, sum = 0, norm = 0;
+            for (let o = 0; o < n; o++) {
+                const sample = cnoise(theta, v, st * frequency, sv * frequency, baseSeed + o * 101);
+                sum += amplitude * (1 - abs(sample));
+                norm += amplitude;
+                amplitude *= 0.5;
+                frequency *= 2;
+            }
+            return norm > 0 ? sum / norm : 0;
+        }
+
+        // Deterministic hash -> [0,1), used to jitter Worley cell feature points.
+        function worleyHashComponent(ix, iy, iz, seed, salt) {
+            let h = (ix * 374761393 + iy * 668265263 + iz * 2147483647 + seed * 3266489917 + salt * 2246822519) | 0;
+            h = Math.imul(h ^ (h >>> 13), 1274126177);
+            h = (h ^ (h >>> 16)) >>> 0;
+            return h / 4294967296;
+        }
+
+        function worley3(x, y, z, seed) {
+            const ix = Math.floor(x), iy = Math.floor(y), iz = Math.floor(z);
+            let minDist2 = Infinity;
+            for (let dx = -1; dx <= 1; dx++) {
+                for (let dy = -1; dy <= 1; dy++) {
+                    for (let dz = -1; dz <= 1; dz++) {
+                        const cx = ix + dx, cy = iy + dy, cz = iz + dz;
+                        const fx = cx + worleyHashComponent(cx, cy, cz, seed, 1);
+                        const fy = cy + worleyHashComponent(cx, cy, cz, seed, 2);
+                        const fz = cz + worleyHashComponent(cx, cy, cz, seed, 3);
+                        const ddx = fx - x, ddy = fy - y, ddz = fz - z;
+                        const dist2 = ddx * ddx + ddy * ddy + ddz * ddz;
+                        if (dist2 < minDist2) minDist2 = dist2;
+                    }
+                }
+            }
+            return sqrt(minDist2);
+        }
+
+        // worley(theta, v, st, sv, seed): cellular F1 distance noise on the same cylinder
+        // embedding as cnoise. Normalized to roughly [0, 1].
+        function worley(theta, v, st, sv, seed) {
+            const radius = st || 1;
+            const d = worley3(radius * cos(theta), radius * sin(theta), (sv || 1) * v, Math.floor(seed) || 0);
+            return min(1, d / 1.2);
+        }
+
+        // phyllo(theta, v, n, size): golden-angle phyllotaxis bump field, checked in a small
+        // window around the query's v-band rather than against all n seeds.
+        const PHYLLO_GOLDEN_ANGLE = pi * (3 - sqrt(5));
+        function phyllo(theta, v, n, size) {
+            const count = Math.max(1, Math.min(2000, Math.floor(n) || 1));
+            const bumpSize = Math.max(1e-4, size || 0.05);
+            const invSize2 = 1 / (bumpSize * bumpSize);
+            const vClamped = clamp(v, 0, 1);
+            const centerK = Math.round(vClamped * (count - 1));
+            const halfWindow = 10;
+            let best = 0;
+            const loK = Math.max(0, centerK - halfWindow);
+            const hiK = Math.min(count - 1, centerK + halfWindow);
+            for (let k = loK; k <= hiK; k++) {
+                const vk = count > 1 ? k / (count - 1) : 0;
+                const thetaK = mod(k * PHYLLO_GOLDEN_ANGLE, 2 * pi);
+                const dThetaRaw = mod(theta - thetaK + pi, 2 * pi) - pi;
+                const dThetaFrac = dThetaRaw / (2 * pi);
+                const dv = vClamped - vk;
+                const dist2 = dThetaFrac * dThetaFrac + dv * dv;
+                const bump = exp(-dist2 * invSize2);
+                if (bump > best) best = bump;
+            }
+            return best;
         }
 
         /* ---------- bowl profile libraries (per coordinate system) ----------
@@ -1067,11 +1555,25 @@
             "6-Petal Mask": { eq: "asin(0.98 * sin(6*theta)) * sin(pi*v)", desc: "Six-petal mask regions strongest through the middle body." },
             "Equatorial Arc Belt": { eq: "asin(0.98 * sin(8*theta)) * exp(-pow(v - 0.5, 2) * 30)", desc: "Arc-belt mask concentrated around the mid-body or equatorial zone." },
             "Rim Band": { eq: "v - 0.8", desc: "Colors only the upper rim band." },
-            "Foot Band": { eq: "0.2 - v", desc: "Colors only the lower foot band." }
+            "Foot Band": { eq: "0.2 - v", desc: "Colors only the lower foot band." },
+            // noise / procedural (ported from EquationDrivenPotDesignerOptimized.html - B14)
+            "Noise Islands": { eq: "cnoise(theta, v, 3, 4, 11) - 0.15", desc: "Seeded simplex noise thresholded into irregular organic color islands." },
+            "Marble Veins": { eq: "0.12 - abs(sin(3*theta + 1.5*pi*v + 3.5*fbm(theta, v, 3, 4, 4, 9)))", desc: "Thin winding veins where a noise-warped wave crosses zero - classic marble figuring. Raise 0.12 for thicker veins." },
+            "Voronoi Pebbles": { eq: "0.34 - worley(theta, v, 7, 8, 3)", desc: "Rounded organic spots centered on each Worley cell - a pebble or animal-spot scatter that never repeats around the body." },
+            "Leopard Rosettes": { eq: "(worley(theta, v, 8, 9, 12) - 0.22) * (0.38 - worley(theta, v, 8, 9, 12))", desc: "Ring-shaped rosettes: the product selects only a distance band around each cell center, turning every Worley cell into a hollow ring." },
+            "Crackle Mortar": { eq: "worley(theta, v, 6, 7, 4) - 0.42", desc: "The complement of the pebble mask - selects the web of boundaries between cells for a cracked-glaze or giraffe-hide look." },
+            "Lightning Filaments": { eq: "ridged(theta, v, 4, 6, 4, 6) - 0.85", desc: "Selects only the sharpest crests of ridged multifractal noise, leaving branching filament networks. Lower 0.85 toward 0.75 for denser branching." },
+            "Phyllotaxis Dot Grid": { eq: "phyllo(theta, v, 320, 0.03) - 0.45", desc: "A sunflower-seed lattice of dots placed by the golden angle - evenly spaced yet never aligning into straight rows. Pairs well with Halftone Glow / Gradient Cells." },
+            "Shoreline Split": { eq: "tanh(3.5*(v - 0.52 + 0.16*cnoise(theta, v, 3, 3, 8)))", desc: "A two-tone horizontal split whose boundary wanders like a coastline instead of a straight line." },
+            // exotic math (ported from EquationDrivenPotDesignerOptimized.html - B14)
+            "Sunburst Medallion": { eq: "exp(-(pow(theta - pi, 2) + 8*pow(v - 0.55, 2)) * 1.6) * (0.35 + sin(7*atan2(v - 0.55, 0.4*(theta - pi)))) - 0.12", desc: "A pinwheel of rays radiating from a single point on the front face, built with atan2 and confined by a Gaussian window so the back stays clean." },
+            "Halo Ring": { eq: "0.12 - abs(hypot(theta - pi, 3*(v - 0.6)) - 0.9)", desc: "A single elliptical ring emblem on the front face - hypot measures distance from a center point, and the mask keeps only a thin annulus of it." }
         };
 
         let scene, camera, renderer, controls, currentObject = null;
         let renderTimeout = null;
+        let fullResTimeout = null;
+        let lastUpdatePreviewCall = 0;
         let suppressPreviewUpdates = false;
 
         /* ---------- three.js ---------- */
@@ -1210,6 +1712,50 @@
                 starThickness: Math.max(0.4, num('starThickness', 2.0)) / 10,
                 greekCount: Math.max(2, intv('greekCount', 8)),
                 greekThickness: Math.max(0.4, num('greekThickness', 2.0)) / 10,
+                crackleDensity: Math.max(2, intv('crackleDensity', 14)),
+                crackleThickness: Math.max(0.4, num('crackleThickness', 2.0)) / 10,
+                crackleSeed: Math.max(0, intv('crackleSeed', 3)),
+                causticScale: Math.max(0.5, num('causticScale', 5)),
+                causticLevel: clamp(num('causticLevel', 0.1), 0.02, 0.4),
+                causticOctaves: clamp(intv('causticOctaves', 3), 1, 6),
+                causticSeed: Math.max(0, intv('causticSeed', 4)),
+                slitCount: Math.max(2, intv('slitCount', 16)),
+                slitRows: Math.max(1, intv('slitRows', 6)),
+                slitWidth: Math.max(0.4, num('slitWidth', 3.0)) / 10,
+                slitLength: clamp(num('slitLength', 0.6), 0.1, 1),
+                slitTilt: num('slitTilt', 12),
+                htDensity: Math.max(3, intv('htDensity', 16)),
+                htMinHole: Math.max(0.2, num('htMinHole', 1.0)) / 10,
+                htMaxHole: Math.max(0.4, num('htMaxHole', 4.5)) / 10,
+                constCount: clamp(intv('constCount', 60), 4, 120),
+                constMaxStar: Math.max(0.6, num('constMaxStar', 3.5)) / 10,
+                constLineW: Math.max(0.4, num('constLineW', 1.2)) / 10,
+                constSeed: Math.max(0, intv('constSeed', 9)),
+                kumikoDensity: Math.max(3, intv('kumikoDensity', 12)),
+                kumikoThickness: Math.max(0.4, num('kumikoThickness', 1.6)) / 10,
+                veinRoots: Math.max(1, intv('veinRoots', 8)),
+                veinThickness: Math.max(0.6, num('veinThickness', 3.0)) / 10,
+                veinSplitProb: clamp(num('veinSplitProb', 0.06), 0, 0.3),
+                veinWander: clamp(num('veinWander', 0.35), 0, 2),
+                veinSeed: Math.max(0, intv('veinSeed', 11)),
+                foamCount: Math.max(6, intv('foamCount', 70)),
+                foamMinHole: Math.max(0.4, num('foamMinHole', 2.0)) / 10,
+                foamMaxHole: Math.max(0.6, num('foamMaxHole', 7.0)) / 10,
+                foamWeb: Math.max(0.4, num('foamWeb', 1.5)) / 10,
+                foamSeed: Math.max(0, intv('foamSeed', 13)),
+                rippleSources: clamp(intv('rippleSources', 3), 2, 4),
+                rippleWavelength: Math.max(0.3, num('rippleWavelength', 1.2)),
+                rippleWidth: clamp(num('rippleWidth', 0.15), 0.05, 0.4),
+                rippleSeed: Math.max(0, intv('rippleSeed', 17)),
+                spiroWraps: Math.max(1, intv('spiroWraps', 3)),
+                spiroLobes: Math.max(1, intv('spiroLobes', 7)),
+                spiroLoop: Math.max(0, num('spiroLoop', 1.2)),
+                spiroHeight: clamp(num('spiroHeight', 0.9), 0.1, 1),
+                spiroThickness: Math.max(0.5, num('spiroThickness', 2.2)) / 10,
+                gcCount: Math.max(6, intv('gcCount', 90)),
+                gcThickness: Math.max(0.4, num('gcThickness', 2.0)) / 10,
+                gcContrast: clamp(num('gcContrast', 1.5), 0.5, 3),
+                gcSeed: Math.max(0, intv('gcSeed', 21)),
                 patternEq1: document.getElementById('patternEquation1').value || "-1",
                 patternEq2: document.getElementById('patternEquation2').value || "-1",
                 baseColor: document.getElementById('baseColor').value || '#2a7ab0',
@@ -1224,16 +1770,20 @@
             };
         }
 
-        /* ---------- equation evaluation ---------- */
+        /* ---------- equation evaluation (compiled - see "Expression compiler" above) ---------- */
         function evalForm(eq, theta, z, phi, v, R) {
+            const compiled = getCompiledExpr(eq, EXPR_FIELD_NAMES, EXPR_FIELD_KEY);
+            if (compiled instanceof Error) return R;
             try {
-                const result = eval(eq);
+                const result = compiled(theta, z, phi, v, R);
                 return (typeof result === 'number' && isFinite(result)) ? result : R;
             } catch (e) { return R; }
         }
         // colour mask: returns a signed value (>0 = mask active). texture-derived
         // helpers are stubbed so geometric presets run, exotic ones fall back to base.
         function evalMask(eq, theta, z, phi, v, R, formR) {
+            const compiled = getCompiledExpr(eq, EXPR_MASK_NAMES, EXPR_MASK_KEY);
+            if (compiled instanceof Error) return -1;
             try {
                 // radius/texture proxies derived from how far the form bulges past R,
                 // so the pot designer's texture- and radius-derived masks work here.
@@ -1245,7 +1795,7 @@
                 const radiusNorm = clamp(fr / Math.max(1e-6, 1.3 * (R || 1)), 0, 1);
                 function textureFill(value, pct) { const p = clamp(pct, 0, 100); if (p <= 0) return -1; if (p >= 100) return value > 0 ? 1 : -1; return value - (1 - p / 100); }
                 function outerDeviation(dev) { return fr - (R + (dev || 0)); }
-                const result = eval(eq);
+                const result = compiled(theta, z, phi, v, R, radiusDev, texPosNorm, texNorm, radiusNorm, outerDeviation, textureFill);
                 return (typeof result === 'number' && isFinite(result)) ? result : -1;
             } catch (e) { return -1; }
         }
@@ -1253,12 +1803,25 @@
         /* ---------- pattern occupancy (openwork) ----------
            Works in an unrolled (u, s) cm-space: u = theta * circumference,
            s = arc length up the meridian. Band = [bandS0, bandS1].          */
-        function buildPattern(cfg, bandS0, bandS1) {
+        function buildPattern(cfg, bandS0, bandS1, sToV) {
             const Rref = Math.max(0.5, cfg.R);
             const circ = 2 * Math.PI * Rref;
             const bandH = Math.max(0.01, bandS1 - bandS0);
 
             if (cfg.style === 'solid') return () => true;
+
+            // Mask-driven styles (halftone, gradientcells) need the Pattern A mask value at an
+            // arbitrary unrolled (u, s) point. sToV inverts the meridian's arc-length table built
+            // by buildMeshData back to v (exact, unlike assuming s is proportional to v); z/phi
+            // follow the same coordinate-system branch buildMeshData itself uses.
+            function sampleMaskValue(u, sVal) {
+                const theta = (u / circ) * 2 * Math.PI;
+                const v = sToV(sVal);
+                const z = cfg.sys === 'cylindrical' ? cfg.h * v : 0;
+                const phi = cfg.sys === 'cylindrical' ? 0 : cfg.sphBottom + (cfg.sphRim - cfg.sphBottom) * v;
+                const fR = evalForm(cfg.eq, theta, z, phi, v, cfg.R);
+                return evalMask(cfg.patternEq1, theta, z, phi, v, cfg.R, fR);
+            }
 
             if (cfg.style === 'lattice') {
                 const half = cfg.latThickness / 2;
@@ -1412,9 +1975,17 @@
                     const sv = bandS0 + bandH * ((i + 0.5) / N);
                     seeds.push({ u: su, v: sv });
                 }
+                // Seeds are ordered by s (sv rises monotonically with i), so for any query only
+                // a small index window around its band position can be within holeR - looping
+                // every seed on every query is unnecessary.
+                const perIndexH = bandH / N;
+                const halfWindow = Math.ceil(holeR / Math.max(1e-9, perIndexH)) + 1;
                 return (theta, s) => {
                     const pu = (theta / (2 * Math.PI)) * circ, pv = s;
-                    for (let i = 0; i < seeds.length; i++) {
+                    const centerI = ((pv - bandS0) / bandH) * N - 0.5;
+                    const loI = Math.max(0, Math.floor(centerI - halfWindow));
+                    const hiI = Math.min(N - 1, Math.ceil(centerI + halfWindow));
+                    for (let i = loI; i <= hiI; i++) {
                         let dx = seeds[i].u - pu; dx -= circ * Math.round(dx / circ);
                         const dy = seeds[i].v - pv;
                         if (dx * dx + dy * dy < holeR * holeR) return false; // inside a hole
@@ -1644,6 +2215,538 @@
                 };
             }
 
+            if (cfg.style === 'worleycrackle') {
+                // infinite, non-repeating crack web from hashed per-cell feature points (no
+                // seed array - every cell coordinate is hashed on demand, so it extends cleanly
+                // to any s, including buildBasePattern's continuation below the band). Strut
+                // where the gap between the two nearest feature distances is small, i.e. near a
+                // cell boundary. Seamless in theta because the cell index is wrapped mod cols
+                // before hashing, so cell `cols` and cell `0` hash identically.
+                const half = cfg.crackleThickness / 2;
+                const cols = Math.max(1, Math.round(cfg.crackleDensity));
+                const cell = circ / cols;
+                const seed = cfg.crackleSeed;
+                function featurePoint(icx, icy) {
+                    const wcx = ((icx % cols) + cols) % cols;
+                    return {
+                        x: (icx + worleyHashComponent(wcx, icy, 0, seed, 1)) * cell,
+                        y: (icy + worleyHashComponent(wcx, icy, 0, seed, 2)) * cell
+                    };
+                }
+                return (theta, s) => {
+                    const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
+                    const icx0 = Math.floor(u / cell), icy0 = Math.floor(ss / cell);
+                    let f1 = Infinity, f2 = Infinity;
+                    for (let dy = -1; dy <= 1; dy++) {
+                        for (let dx = -1; dx <= 1; dx++) {
+                            const p = featurePoint(icx0 + dx, icy0 + dy);
+                            let ddx = p.x - u; ddx -= circ * Math.round(ddx / circ);
+                            const ddy = p.y - ss;
+                            const d = Math.hypot(ddx, ddy);
+                            if (d < f1) { f2 = f1; f1 = d; } else if (d < f2) { f2 = d; }
+                        }
+                    }
+                    return (f2 - f1) < half;
+                };
+            }
+
+            if (cfg.style === 'caustic') {
+                // flowing organic web from fbm's zero-crossings, sampled on the cylinder
+                // embedding (seam-free in theta by construction).
+                const level = cfg.causticLevel, octaves = cfg.causticOctaves;
+                const seed = cfg.causticSeed, scale = cfg.causticScale;
+                return (theta, s) => {
+                    const v = (s - bandS0) / bandH;
+                    return Math.abs(fbm(theta, v, scale, scale, octaves, seed)) < level;
+                };
+            }
+
+            if (cfg.style === 'slits') {
+                // capsule-shaped slots that project crisp light rays: slitCount columns x
+                // slitRows staggered rows, each a tilted segment centered in its cell.
+                // Hole-based: returns !insideHole.
+                const cols = Math.max(1, Math.round(cfg.slitCount));
+                const rowsN = Math.max(1, Math.round(cfg.slitRows));
+                const cw = circ / cols, rh = bandH / rowsN;
+                const halfW = cfg.slitWidth / 2;
+                const segLen = clamp(cfg.slitLength, 0, 1) * rh;
+                const tilt = cfg.slitTilt * Math.PI / 180;
+                const hx = Math.sin(tilt) * segLen * 0.5, hy = Math.cos(tilt) * segLen * 0.5;
+                return (theta, s) => {
+                    const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
+                    const cx = Math.floor(u / cw), cy = Math.floor(ss / rh);
+                    for (let dcy = -1; dcy <= 1; dcy++) {
+                        const gcy = cy + dcy;
+                        const stagger = (((gcy % 2) + 2) % 2) ? cw * 0.5 : 0;
+                        const centerS = (gcy + 0.5) * rh;
+                        for (let dcx = -1; dcx <= 1; dcx++) {
+                            const centerU = (cx + dcx + 0.5) * cw + stagger;
+                            let du = u - centerU; du -= circ * Math.round(du / circ);
+                            const d = segDist(du, ss, -hx, centerS - hy, hx, centerS + hy);
+                            if (d < halfW) return false; // inside a slot -> hole
+                        }
+                    }
+                    return true;
+                };
+            }
+
+            if (cfg.style === 'halftone') {
+                // staggered hex grid of round holes (same center layout as honeycomb) whose
+                // radius is driven by the Pattern A mask sampled at each hole's own center -
+                // bright where the mask is high, dark where low. Hole-based: !insideHole.
+                const cols = Math.max(1, Math.round(cfg.htDensity));
+                const cellW = circ / cols;
+                const rowH = cellW * Math.sqrt(3) / 2;
+                const rowsN = Math.max(1, Math.round(bandH / rowH));
+                const rMin = cfg.htMinHole, rMax = cfg.htMaxHole;
+                const maxAllowed = 0.45 * Math.min(cellW, rowH);
+                const eq1 = (cfg.patternEq1 || '').trim();
+                const maskActive = eq1 !== '' && eq1 !== '-1';
+
+                let raw = null, minVal = Infinity, maxVal = -Infinity;
+                if (maskActive) {
+                    raw = [];
+                    for (let r = 0; r <= rowsN; r++) {
+                        const offU = (r & 1) ? cellW * 0.5 : 0;
+                        const rowVals = new Array(cols);
+                        const sv = bandS0 + r * rowH;
+                        for (let c = 0; c < cols; c++) {
+                            const u = (c + 0.5) * cellW + offU;
+                            const val = sampleMaskValue(u, sv);
+                            rowVals[c] = val;
+                            if (val < minVal) minVal = val;
+                            if (val > maxVal) maxVal = val;
+                        }
+                        raw.push(rowVals);
+                    }
+                }
+                const range = (maxVal - minVal) || 1;
+                function holeRadiusAt(r, c) {
+                    if (!maskActive) return 0.5 * (rMin + rMax);
+                    const norm = clamp((raw[r][c] - minVal) / range, 0, 1);
+                    return Math.min(maxAllowed, rMin + (rMax - rMin) * norm);
+                }
+
+                return (theta, s) => {
+                    const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
+                    const r0 = Math.round(ss / rowH);
+                    for (let dr = -1; dr <= 1; dr++) {
+                        // clamp (not skip) so buildBasePattern's continuation below bandS0
+                        // reuses the edge row's radii, matching turing/life's convention.
+                        const r = r0 + dr < 0 ? 0 : (r0 + dr > rowsN ? rowsN : r0 + dr);
+                        const offU = (r & 1) ? cellW * 0.5 : 0;
+                        const c0 = Math.round((u - offU) / cellW);
+                        for (let dc = -1; dc <= 1; dc++) {
+                            const c = ((c0 + dc) % cols + cols) % cols;
+                            const cx = (c0 + dc) * cellW + offU;
+                            let dx = u - cx; dx -= circ * Math.round(dx / circ);
+                            const dy = ss - r * rowH;
+                            const rad = holeRadiusAt(r, c);
+                            if (dx * dx + dy * dy < rad * rad) return false;
+                        }
+                    }
+                    return true;
+                };
+            }
+
+            if (cfg.style === 'constellation') {
+                // seeded star map: scattered round holes in 3 sizes plus thin chord-slots
+                // joining each star to its nearest neighbor(s). Hole-based: !insideHole.
+                // starCount is UI-capped at 120 so the plain O(points+segments) query (no
+                // bucketing needed) stays cheap.
+                const N = Math.min(120, Math.max(4, Math.round(cfg.constCount)));
+                const rMax = cfg.constMaxStar, half = cfg.constLineW / 2;
+                const rng = mulberry32(cfg.constSeed * 2654435761 + 555);
+                const rowsN = Math.max(1, Math.round(Math.sqrt(N * bandH / circ)));
+                const colsN = Math.max(1, Math.round(N / rowsN));
+                const cw = circ / colsN, ch = bandH / rowsN;
+                const stars = [];
+                for (let cy = 0; cy < rowsN; cy++) {
+                    for (let cx = 0; cx < colsN; cx++) {
+                        const ju = (rng() - 0.5) * 0.9, jv = (rng() - 0.5) * 0.9;
+                        let su = (cx + 0.5 + ju) * cw; su = ((su % circ) + circ) % circ;
+                        const sv = bandS0 + clamp(cy + 0.5 + jv, 0.05, rowsN - 0.05) * ch;
+                        const rank = rng();
+                        const r = rank < 0.15 ? rMax : (rank < 0.5 ? rMax * 0.6 : rMax * 0.32);
+                        stars.push({ u: su, v: sv, r });
+                    }
+                }
+                // connect each star to its nearest neighbor (+ 2nd with 40% chance), deduped
+                const segSet = new Set(), segs = [];
+                function addSeg(i, j) {
+                    const key = i < j ? i * stars.length + j : j * stars.length + i;
+                    if (segSet.has(key)) return;
+                    segSet.add(key); segs.push([i, j]);
+                }
+                for (let i = 0; i < stars.length; i++) {
+                    let best = -1, bestD = Infinity, second = -1, secondD = Infinity;
+                    for (let j = 0; j < stars.length; j++) {
+                        if (j === i) continue;
+                        let dx = stars[j].u - stars[i].u; dx -= circ * Math.round(dx / circ);
+                        const dy = stars[j].v - stars[i].v;
+                        const d2 = dx * dx + dy * dy;
+                        if (d2 < bestD) { second = best; secondD = bestD; best = j; bestD = d2; }
+                        else if (d2 < secondD) { second = j; secondD = d2; }
+                    }
+                    if (best >= 0) addSeg(i, best);
+                    if (second >= 0 && rng() < 0.4) addSeg(i, second);
+                }
+                return (theta, s) => {
+                    const u = (theta / (2 * Math.PI)) * circ;
+                    for (let i = 0; i < stars.length; i++) {
+                        let dx = stars[i].u - u; dx -= circ * Math.round(dx / circ);
+                        const dy = stars[i].v - s;
+                        if (dx * dx + dy * dy < stars[i].r * stars[i].r) return false;
+                    }
+                    for (let k = 0; k < segs.length; k++) {
+                        const a = stars[segs[k][0]], b = stars[segs[k][1]];
+                        let dx = b.u - a.u; dx -= circ * Math.round(dx / circ);
+                        let qu = u - a.u; qu -= circ * Math.round(qu / circ);
+                        if (segDist(qu, s, 0, a.v, dx, b.v) < half) return false;
+                    }
+                    return true;
+                };
+            }
+
+            if (cfg.style === 'kumiko') {
+                // Japanese Asanoha (hemp-leaf) lattice: an equilateral triangular grid where
+                // each triangle draws 3 spokes from its own centroid to its own 3 corners (the
+                // triangle's edges themselves are NOT struts). Fully analytic via skewed lattice
+                // coordinates (a,b) along basis vectors e1=(cellW,0), e2=(cellW/2,rowH); the
+                // parallelogram at (floor(a),floor(b)) splits into 2 triangles by the fa+fb<1
+                // diagonal test. cols is always an integer (the density input), so the lattice
+                // tiles seamlessly around theta. Six triangles meeting at each grid vertex each
+                // contribute one spoke, forming the classic six-pointed asanoha star.
+                const half = cfg.kumikoThickness / 2;
+                const cols = Math.max(1, Math.round(cfg.kumikoDensity));
+                const cellW = circ / cols;
+                const rowH = cellW * Math.sqrt(3) / 2;
+                function kVertex(i, j) { return { u: i * cellW + j * cellW * 0.5, s: j * rowH }; }
+                return (theta, s) => {
+                    const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
+                    const b = ss / rowH;
+                    const a = u / cellW - b * 0.5;
+                    const ia = Math.floor(a), ib = Math.floor(b);
+                    const fa = a - ia, fb = b - ib;
+                    let p0, p1, p2;
+                    if (fa + fb < 1) {
+                        p0 = kVertex(ia, ib); p1 = kVertex(ia + 1, ib); p2 = kVertex(ia, ib + 1);
+                    } else {
+                        p0 = kVertex(ia + 1, ib); p1 = kVertex(ia + 1, ib + 1); p2 = kVertex(ia, ib + 1);
+                    }
+                    const cu = (p0.u + p1.u + p2.u) / 3, cs = (p0.s + p1.s + p2.s) / 3;
+                    const d = Math.min(
+                        segDist(u, ss, cu, cs, p0.u, p0.s),
+                        segDist(u, ss, cu, cs, p1.u, p1.s),
+                        segDist(u, ss, cu, cs, p2.u, p2.s)
+                    );
+                    return d < half;
+                };
+            }
+
+            if (cfg.style === 'veins') {
+                // leaf-skeleton growth: veinRoots tips start at the band's bottom edge and
+                // climb with seeded lateral wander, occasionally splitting, tapering in width
+                // each generation. Every strut is base-rooted by construction, so the island
+                // flood-fill should remove 0 cells - a cheap self-check the growth code is right.
+                const rng = mulberry32(cfg.veinSeed * 2654435761 + 777);
+                const ds = Math.max(0.05, Math.min(0.3, bandH / 40));
+                const wander = cfg.veinWander;
+                const splitProb = cfg.veinSplitProb;
+                const trunkW = cfg.veinThickness;
+                const maxSegs = 3000;
+                const segs = [];
+                let tips = [];
+                const rootSpacing = circ / cfg.veinRoots;
+                for (let i = 0; i < cfg.veinRoots; i++) {
+                    const ju = (rng() - 0.5) * rootSpacing * 0.6;
+                    const u0 = (((i + 0.5) * rootSpacing + ju) % circ + circ) % circ;
+                    tips.push({ u: u0, s: bandS0, drift: 0, gen: 0 });
+                }
+                while (tips.length && segs.length < maxSegs) {
+                    const next = [];
+                    for (const tip of tips) {
+                        if (segs.length >= maxSegs) break;
+                        const newDrift = tip.drift + (rng() - 0.5) * wander;
+                        const nu = tip.u + newDrift * ds;
+                        const ns = tip.s + ds;
+                        const w = Math.max(0.08, trunkW * Math.pow(0.82, tip.gen));
+                        segs.push({ u0: tip.u, s0: tip.s, u1: nu, s1: ns, halfW: w / 2 });
+                        if (ns >= bandS1) continue; // left the top of the band
+                        if (rng() < splitProb && segs.length + next.length < maxSegs - 1) {
+                            next.push({ u: nu, s: ns, drift: newDrift + wander, gen: tip.gen + 1 });
+                            next.push({ u: nu, s: ns, drift: newDrift - wander, gen: tip.gen + 1 });
+                        } else {
+                            next.push({ u: nu, s: ns, drift: newDrift, gen: tip.gen });
+                        }
+                    }
+                    tips = next;
+                }
+                // bucket segments (grid cell = a safe bound on segment length) for the query
+                const cellSize = Math.max(0.2, ds * 2.5);
+                const bucketCols = Math.max(1, Math.round(circ / cellSize));
+                const bucketW = circ / bucketCols;
+                const buckets = new Map();
+                function vBucketKey(bx, by) { return by * bucketCols + ((bx % bucketCols) + bucketCols) % bucketCols; }
+                for (const seg of segs) {
+                    const midU = (seg.u0 + seg.u1) * 0.5, midS = (seg.s0 + seg.s1) * 0.5;
+                    const bx = Math.floor(midU / bucketW), by = Math.floor(midS / cellSize);
+                    const key = vBucketKey(bx, by);
+                    let list = buckets.get(key);
+                    if (!list) { list = []; buckets.set(key, list); }
+                    list.push(seg);
+                }
+                return (theta, s) => {
+                    const u = (theta / (2 * Math.PI)) * circ;
+                    const bx = Math.floor(u / bucketW), by = Math.floor(s / cellSize);
+                    for (let dy = -1; dy <= 1; dy++) {
+                        for (let dx = -1; dx <= 1; dx++) {
+                            const list = buckets.get(vBucketKey(bx + dx, by + dy));
+                            if (!list) continue;
+                            for (const seg of list) {
+                                let du = seg.u0 - u; du -= circ * Math.round(du / circ);
+                                const lu0 = u + du, lu1 = lu0 + (seg.u1 - seg.u0);
+                                if (segDist(u, s, lu0, seg.s0, lu1, seg.s1) < seg.halfW) return true;
+                            }
+                        }
+                    }
+                    return false;
+                };
+            }
+
+            if (cfg.style === 'foam') {
+                // soap-bubble holes via rejection sampling: each accepted disk is guaranteed at
+                // least foamWeb clearance from every other disk AT PLACEMENT TIME, so the web
+                // between holes never needs a post-hoc pinch check. Hole-based: material where
+                // the query is outside every accepted disk.
+                const rng = mulberry32(cfg.foamSeed * 2654435761 + 888);
+                const rMin = cfg.foamMinHole, rMax = cfg.foamMaxHole, web = cfg.foamWeb;
+                const rows = Math.max(1, Math.round(Math.sqrt(cfg.foamCount * bandH / circ)));
+                const cols = Math.max(1, Math.round(cfg.foamCount / rows));
+                const cw = circ / cols, ch = bandH / rows;
+                const buckets = new Map();
+                function fBucketKey(cx, cy) { return cy * cols + ((cx % cols) + cols) % cols; }
+                const collideWin = Math.max(1, Math.ceil((rMax + web) / Math.min(cw, ch)) + 1);
+                function collides(su, sv, r) {
+                    const cx = Math.floor(su / cw), cy = Math.floor((sv - bandS0) / ch);
+                    for (let dy = -collideWin; dy <= collideWin; dy++) {
+                        for (let dx = -collideWin; dx <= collideWin; dx++) {
+                            const list = buckets.get(fBucketKey(cx + dx, cy + dy));
+                            if (!list) continue;
+                            for (const d of list) {
+                                let ddx = d.u - su; ddx -= circ * Math.round(ddx / circ);
+                                const ddy = d.v - sv;
+                                if (Math.hypot(ddx, ddy) - d.r - r < web) return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+                for (let cy = 0; cy < rows; cy++) {
+                    for (let cx = 0; cx < cols; cx++) {
+                        const ju = (rng() - 0.5) * 0.95, jv = (rng() - 0.5) * 0.95;
+                        let su = (cx + 0.5 + ju) * cw; su = ((su % circ) + circ) % circ;
+                        const sv = bandS0 + clamp(cy + 0.5 + jv, 0.05, rows - 0.05) * ch;
+                        const r = rMin + (rMax - rMin) * Math.pow(rng(), 1.5);
+                        if (collides(su, sv, r)) continue;
+                        const disk = { u: su, v: sv, r };
+                        const key = fBucketKey(cx, cy);
+                        let list = buckets.get(key);
+                        if (!list) { list = []; buckets.set(key, list); }
+                        list.push(disk);
+                    }
+                }
+                const winX = Math.max(1, Math.ceil(rMax / cw) + 1);
+                const winY = Math.max(1, Math.ceil(rMax / ch) + 1);
+                return (theta, s) => {
+                    const u = (theta / (2 * Math.PI)) * circ;
+                    const qx = Math.floor(u / cw), qy = Math.floor((s - bandS0) / ch);
+                    for (let dy = -winY; dy <= winY; dy++) {
+                        for (let dx = -winX; dx <= winX; dx++) {
+                            const list = buckets.get(fBucketKey(qx + dx, qy + dy));
+                            if (!list) continue;
+                            for (const d of list) {
+                                let ddx = d.u - u; ddx -= circ * Math.round(ddx / circ);
+                                const ddy = d.v - s;
+                                if (Math.hypot(ddx, ddy) - d.r < 0) return false;
+                            }
+                        }
+                    }
+                    return true;
+                };
+            }
+
+            if (cfg.style === 'ripples') {
+                // point-source wave interference: material follows the nodal web where the
+                // summed field is near zero. Purely analytic, zero precomputation.
+                const K = clamp(Math.round(cfg.rippleSources), 2, 4);
+                const lambda = Math.max(0.1, cfg.rippleWavelength);
+                const width = cfg.rippleWidth;
+                const rng = mulberry32(cfg.rippleSeed * 2654435761 + 222);
+                const poles = [];
+                for (let i = 0; i < K; i++) {
+                    poles.push({ u: rng() * circ, v: bandS0 + rng() * bandH });
+                }
+                return (theta, s) => {
+                    const u = (theta / (2 * Math.PI)) * circ;
+                    let W = 0;
+                    for (const p of poles) {
+                        let du = p.u - u; du -= circ * Math.round(du / circ);
+                        const dv = p.v - s;
+                        W += Math.sin(2 * Math.PI * Math.hypot(du, dv) / lambda);
+                    }
+                    return Math.abs(W) < width * K;
+                };
+            }
+
+            if (cfg.style === 'spirograph') {
+                // a single continuous cycloidal ribbon wound k times around the band; loops
+                // appear once the sine amplitude (spiroLoop) beats the linear u-advance per
+                // radian. Sampled into a polyline once, then bucketed for the query.
+                const half = cfg.spiroThickness / 2;
+                const k = Math.max(1, Math.round(cfg.spiroWraps));
+                const m = Math.max(1, Math.round(cfg.spiroLobes));
+                const b = cfg.spiroLoop;
+                const c = clamp(cfg.spiroHeight, 0, 1) * bandH * 0.5;
+                const mid = bandS0 + bandH * 0.5;
+                const N = 4000;
+                const pts = new Array(N + 1);
+                for (let i = 0; i <= N; i++) {
+                    const t = (i / N) * 2 * Math.PI;
+                    pts[i] = {
+                        u: circ * (k * t / (2 * Math.PI)) + b * Math.sin(m * t),
+                        s: mid + c * Math.cos(m * t)
+                    };
+                }
+                const cellSize = Math.max(0.3, (circ * k / N) * 4);
+                const bucketCols = Math.max(1, Math.round(circ / cellSize));
+                const bucketW = circ / bucketCols;
+                const buckets = new Map();
+                function sBucketKey(bx, by) { return by * bucketCols + ((bx % bucketCols) + bucketCols) % bucketCols; }
+                for (let i = 0; i < N; i++) {
+                    const p0 = pts[i], p1 = pts[i + 1];
+                    const midU = (p0.u + p1.u) * 0.5, midS = (p0.s + p1.s) * 0.5;
+                    const bx = Math.floor(midU / bucketW), by = Math.floor(midS / cellSize);
+                    const key = sBucketKey(bx, by);
+                    let list = buckets.get(key);
+                    if (!list) { list = []; buckets.set(key, list); }
+                    list.push([p0, p1]);
+                }
+                return (theta, s) => {
+                    const u = (theta / (2 * Math.PI)) * circ;
+                    const bx = Math.floor(u / bucketW), by = Math.floor(s / cellSize);
+                    for (let dy = -1; dy <= 1; dy++) {
+                        for (let dx = -1; dx <= 1; dx++) {
+                            const list = buckets.get(sBucketKey(bx + dx, by + dy));
+                            if (!list) continue;
+                            for (const [p0, p1] of list) {
+                                let du = p0.u - u; du -= circ * Math.round(du / circ);
+                                const lu0 = u + du, lu1 = lu0 + (p1.u - p0.u);
+                                if (segDist(u, s, lu0, p0.s, lu1, p1.s) < half) return true;
+                            }
+                        }
+                    }
+                    return false;
+                };
+            }
+
+            if (cfg.style === 'gradientcells') {
+                // the halftone idea applied to cell size: a Voronoi web whose density follows
+                // the Pattern A mask via rejection sampling (small/dense cells where the mask is
+                // high, large/open cells where low). With Pattern A = -1, every candidate is
+                // kept at the target density -> plain uniform crackle.
+                const half = cfg.gcThickness / 2;
+                const contrast = cfg.gcContrast;
+                const rng = mulberry32(cfg.gcSeed * 2654435761 + 333);
+                const eq1 = (cfg.patternEq1 || '').trim();
+                const maskActive = eq1 !== '' && eq1 !== '-1';
+                const wantCount = cfg.gcCount;
+                const gridCount = maskActive ? wantCount * 4 : wantCount;
+                const rows = Math.max(1, Math.round(Math.sqrt(gridCount * bandH / circ)));
+                const cols = Math.max(1, Math.round(gridCount / rows));
+                const cw = circ / cols, ch = bandH / rows;
+
+                const rawCandidates = [];
+                let minVal = Infinity, maxVal = -Infinity;
+                for (let cy = 0; cy < rows; cy++) {
+                    for (let cx = 0; cx < cols; cx++) {
+                        const ju = (rng() - 0.5) * 0.9, jv = (rng() - 0.5) * 0.9;
+                        let su = (cx + 0.5 + ju) * cw; su = ((su % circ) + circ) % circ;
+                        const sv = bandS0 + clamp(cy + 0.5 + jv, 0.05, rows - 0.05) * ch;
+                        let val = 0;
+                        if (maskActive) {
+                            val = sampleMaskValue(su, sv);
+                            if (val < minVal) minVal = val;
+                            if (val > maxVal) maxVal = val;
+                        }
+                        rawCandidates.push({ u: su, v: sv, val, cx, cy });
+                    }
+                }
+
+                let seeds;
+                if (!maskActive) {
+                    seeds = rawCandidates; // every grid cell kept -> uniform density
+                } else {
+                    const range = (maxVal - minVal) || 1;
+                    seeds = [];
+                    for (const cand of rawCandidates) {
+                        const norm = clamp((cand.val - minVal) / range, 0, 1);
+                        const keepProb = 0.15 + 0.85 * Math.pow(norm, contrast);
+                        if (rng() < keepProb) seeds.push(cand);
+                    }
+                    if (!seeds.length) seeds.push(rawCandidates[0]);
+                }
+
+                const seedBuckets = new Map();
+                function gcBucketKey(bx, by) { return by * cols + ((bx % cols) + cols) % cols; }
+                seeds.forEach(sd => {
+                    const key = gcBucketKey(sd.cx, sd.cy);
+                    let list = seedBuckets.get(key);
+                    if (!list) { list = []; seedBuckets.set(key, list); }
+                    list.push(sd);
+                });
+                const WIN = 3; // wider than voronoi's +/-2: rejection sampling means local
+                // density isn't uniformly bounded, so a plain scan-all fallback covers the rest.
+                function nearbySeeds(qx, qy) {
+                    const out = [];
+                    for (let dy = -WIN; dy <= WIN; dy++) {
+                        const cy = qy + dy;
+                        if (cy < 0 || cy >= rows) continue;
+                        for (let dx = -WIN; dx <= WIN; dx++) {
+                            const list = seedBuckets.get(gcBucketKey(qx + dx, cy));
+                            if (list) for (const sd of list) out.push(sd);
+                        }
+                    }
+                    return out;
+                }
+                return (theta, s) => {
+                    const pu = (theta / (2 * Math.PI)) * circ, pv = s;
+                    const qx = Math.floor(pu / cw), qy = Math.floor((pv - bandS0) / ch);
+                    let candidates = nearbySeeds(qx, qy);
+                    if (!candidates.length) candidates = seeds;
+                    let best = Infinity, brx = 0, bry = 0;
+                    for (let i = 0; i < candidates.length; i++) {
+                        let dx = candidates[i].u - pu; dx -= circ * Math.round(dx / circ);
+                        const dy = candidates[i].v - pv;
+                        const d2 = dx * dx + dy * dy;
+                        if (d2 < best) { best = d2; brx = dx; bry = dy; }
+                    }
+                    let edge = Infinity;
+                    for (let i = 0; i < candidates.length; i++) {
+                        let dx = candidates[i].u - pu; dx -= circ * Math.round(dx / circ);
+                        const dy = candidates[i].v - pv;
+                        const rdx = dx - brx, rdy = dy - bry;
+                        const len2 = rdx * rdx + rdy * rdy;
+                        if (len2 < 1e-7) continue;
+                        const len = Math.sqrt(len2);
+                        const mx = 0.5 * (brx + dx), my = 0.5 * (bry + dy);
+                        const d = (mx * rdx + my * rdy) / len;
+                        if (d < edge) edge = d;
+                    }
+                    return edge < half;
+                };
+            }
+
             // voronoi
             const rng = mulberry32(cfg.vorSeed * 2654435761 + 12345);
             const N = cfg.vorDensity;
@@ -1662,19 +2765,35 @@
                 }
             }
             const half = cfg.vorThickness / 2;
+            // Seeds sit on a jittered grid (jitter <= 0.5 cell, since vorJitter in [0,1] is
+            // halved by the (rng()-0.5) spread), so the seeds that can matter for any query are
+            // always within +/-2 grid cells of it - an exact neighborhood lookup instead of the
+            // O(seeds) scan above, run twice. seeds[] is already in (cy*cols+cx) row-major order
+            // from the generation loop, so no separate lookup structure is needed.
+            function seedAt(cx, cy) {
+                const wcx = ((cx % cols) + cols) % cols;
+                return seeds[cy * cols + wcx];
+            }
             return (theta, s) => {
                 const pu = (theta / (2 * Math.PI)) * circ, pv = s;
+                const qx = Math.floor(pu / cw), qy = Math.floor((pv - bandS0) / ch);
+                const candidates = [];
+                for (let dy = -2; dy <= 2; dy++) {
+                    const cy = qy + dy;
+                    if (cy < 0 || cy >= rows) continue;   // band doesn't wrap vertically
+                    for (let dx = -2; dx <= 2; dx++) candidates.push(seedAt(qx + dx, cy));
+                }
                 let best = Infinity, brx = 0, bry = 0;
-                for (let i = 0; i < seeds.length; i++) {
-                    let dx = seeds[i].u - pu; dx -= circ * Math.round(dx / circ);
-                    const dy = seeds[i].v - pv;
+                for (let i = 0; i < candidates.length; i++) {
+                    let dx = candidates[i].u - pu; dx -= circ * Math.round(dx / circ);
+                    const dy = candidates[i].v - pv;
                     const d2 = dx * dx + dy * dy;
                     if (d2 < best) { best = d2; brx = dx; bry = dy; }
                 }
                 let edge = Infinity;
-                for (let i = 0; i < seeds.length; i++) {
-                    let dx = seeds[i].u - pu; dx -= circ * Math.round(dx / circ);
-                    const dy = seeds[i].v - pv;
+                for (let i = 0; i < candidates.length; i++) {
+                    let dx = candidates[i].u - pu; dx -= circ * Math.round(dx / circ);
+                    const dy = candidates[i].v - pv;
                     const rdx = dx - brx, rdy = dy - bry;
                     const len2 = rdx * rdx + rdy * rdy;
                     if (len2 < 1e-7) continue;
@@ -1801,13 +2920,28 @@
         /* ---------- vertex pool with per-triangle colour + layer ----------
            layer 0 = inner liner / frame surfaces, 1 = outer shape (default) ---------- */
         function makePool() {
-            const positions = [], indices = [], triColor = [], triLayer = [], map = new Map(), Q = 1e4;
+            // Spatial hash instead of a template-literal string key: quantize to the Q=1e4 grid,
+            // hash the quantized triple to a bucket, then verify exact quantized equality within
+            // the (rarely >1-entry) bucket - avoids allocating + hashing a new string per vertex.
+            const positions = [], indices = [], triColor = [], triLayer = [], buckets = new Map(), Q = 1e4;
             let curLayer = 1;
             function vid(p) {
-                const key = Math.round(p.x * Q) + ',' + Math.round(p.y * Q) + ',' + Math.round(p.z * Q);
-                let i = map.get(key);
-                if (i === undefined) { i = positions.length / 3; positions.push(p.x, p.y, p.z); map.set(key, i); }
-                return i;
+                const qx = Math.round(p.x * Q), qy = Math.round(p.y * Q), qz = Math.round(p.z * Q);
+                const hash = (qx * 73856093) ^ (qy * 19349663) ^ (qz * 83492791);
+                let bucket = buckets.get(hash);
+                if (bucket) {
+                    for (let i = 0; i < bucket.length; i++) {
+                        const cand = bucket[i];
+                        if (cand.qx === qx && cand.qy === qy && cand.qz === qz) return cand.index;
+                    }
+                } else {
+                    bucket = [];
+                    buckets.set(hash, bucket);
+                }
+                const idx = positions.length / 3;
+                positions.push(p.x, p.y, p.z);
+                bucket.push({ qx, qy, qz, index: idx });
+                return idx;
             }
             function tri(a, b, c, ci) {
                 const ia = vid(a), ib = vid(b), ic = vid(c);
@@ -1821,39 +2955,69 @@
         function cleanupMesh(mesh) {
             const inPos = mesh.positions || [];
             const inIdx = mesh.indices || [];
+            const vertexCount = inPos.length / 3;
             const weldedPositions = [];
-            const remap = new Map();
-            const vertMap = new Map();
+            // Original indices are already a dense 0..vertexCount-1 range, so a typed array
+            // beats a Map for the remap table.
+            const remap = new Int32Array(vertexCount);
+            // Spatial hash for welding (see makePool.vid above): quantize to the same 1e-6
+            // grid as before, but key by a numeric hash instead of a template-literal string,
+            // verifying exact quantized-triple equality within the bucket.
+            const buckets = new Map();
             const eps = 1e-6;
+            const invEps = 1 / eps;
 
-            function keyFor(x, y, z) {
-                return `${Math.round(x / eps)}_${Math.round(y / eps)}_${Math.round(z / eps)}`;
+            function findOrAddVertex(x, y, z) {
+                const qx = Math.round(x * invEps);
+                const qy = Math.round(y * invEps);
+                const qz = Math.round(z * invEps);
+                const hash = (qx * 73856093) ^ (qy * 19349663) ^ (qz * 83492791);
+                let bucket = buckets.get(hash);
+                if (bucket) {
+                    for (let i = 0; i < bucket.length; i++) {
+                        const cand = bucket[i];
+                        if (cand.qx === qx && cand.qy === qy && cand.qz === qz) return cand.index;
+                    }
+                } else {
+                    bucket = [];
+                    buckets.set(hash, bucket);
+                }
+                const idx = weldedPositions.length / 3;
+                weldedPositions.push(x, y, z);
+                bucket.push({ qx, qy, qz, index: idx });
+                return idx;
             }
 
             for (let i = 0; i < inPos.length; i += 3) {
-                const x = inPos[i], y = inPos[i + 1], z = inPos[i + 2];
-                const key = keyFor(x, y, z);
-                let idx = vertMap.get(key);
-                if (idx === undefined) {
-                    idx = weldedPositions.length / 3;
-                    weldedPositions.push(x, y, z);
-                    vertMap.set(key, idx);
-                }
-                remap.set(i / 3, idx);
+                remap[i / 3] = findOrAddVertex(inPos[i], inPos[i + 1], inPos[i + 2]);
             }
 
             const cleaned = [];
             const triangleColorIndices = [];
             const triLayer = [];
-            const triSeen = new Set();
             const hasColors = mesh.triangleColorIndices && mesh.triangleColorIndices.length;
             const hasLayers = mesh.triLayer && mesh.triLayer.length;
 
+            // Numeric trie (lo -> mid -> Set(hi)) instead of a sorted-and-joined string key.
+            // Exact at any resolution, unlike an arithmetic lo*N*N+mid*N+hi pack which would
+            // silently collide once N^3 passes Number.MAX_SAFE_INTEGER (resV/resT are free
+            // -typed number inputs, so that ceiling isn't hypothetical).
+            const triSeen = new Map();
+            function isDuplicateTri(lo, mid, hi) {
+                let midMap = triSeen.get(lo);
+                if (!midMap) { midMap = new Map(); triSeen.set(lo, midMap); }
+                let hiSet = midMap.get(mid);
+                if (!hiSet) { hiSet = new Set(); midMap.set(mid, hiSet); }
+                if (hiSet.has(hi)) return true;
+                hiSet.add(hi);
+                return false;
+            }
+
             for (let i = 0; i < inIdx.length; i += 3) {
                 const triIdx = i / 3;
-                const a = remap.get(inIdx[i]);
-                const b = remap.get(inIdx[i + 1]);
-                const c = remap.get(inIdx[i + 2]);
+                const a = remap[inIdx[i]];
+                const b = remap[inIdx[i + 1]];
+                const c = remap[inIdx[i + 2]];
                 if (a === b || b === c || a === c) continue;
 
                 const ax = weldedPositions[a * 3], ay = weldedPositions[a * 3 + 1], az = weldedPositions[a * 3 + 2];
@@ -1866,9 +3030,8 @@
                 const nz = abx * acy - aby * acx;
                 if (Math.hypot(nx, ny, nz) < 1e-8) continue;
 
-                const key = [a, b, c].slice().sort((m, n) => m - n).join('_');
-                if (triSeen.has(key)) continue;
-                triSeen.add(key);
+                const lo = Math.min(a, b, c), hi = Math.max(a, b, c), mid = a + b + c - lo - hi;
+                if (isDuplicateTri(lo, mid, hi)) continue;
 
                 cleaned.push(a, b, c);
                 triangleColorIndices.push(hasColors ? (mesh.triangleColorIndices[triIdx] || 0) : 0);
@@ -1890,9 +3053,15 @@
             }
             if (!faces.length) return mesh;
 
+            // min*vertexCount+max packs an (a,b) edge into one exact integer key - safe since
+            // vertexCount^2 is nowhere near Number.MAX_SAFE_INTEGER for any mesh this app
+            // produces, unlike cleanupMesh's triangle key (see the trie comment above).
+            const vertexCount = mesh.positions.length / 3;
+            function edgeKey(a, b) { return a < b ? a * vertexCount + b : b * vertexCount + a; }
+
             const edgeMap = new Map();
             function addFaceEdge(faceIndex, a, b) {
-                const key = a < b ? `${a}_${b}` : `${b}_${a}`;
+                const key = edgeKey(a, b);
                 let list = edgeMap.get(key);
                 if (!list) {
                     list = [];
@@ -1938,7 +3107,7 @@
                     ];
 
                     for (const [a, b] of triEdges) {
-                        const key = a < b ? `${a}_${b}` : `${b}_${a}`;
+                        const key = edgeKey(a, b);
                         const shared = edgeMap.get(key) || [];
                         for (const entry of shared) {
                             const fj = entry.faceIndex;
@@ -1980,13 +3149,14 @@
 
         function validateMesh(mesh) {
             const edges = new Map();
+            const vertexCount = mesh.positions.length / 3;
             let signedVolume = 0;
             for (let i = 0; i < mesh.indices.length; i += 3) {
                 const a = mesh.indices[i], b = mesh.indices[i + 1], c = mesh.indices[i + 2];
                 const tri = [a, b, c];
                 for (let e = 0; e < 3; e++) {
                     const u = tri[e], v = tri[(e + 1) % 3];
-                    const key = u < v ? `${u}_${v}` : `${v}_${u}`;
+                    const key = u < v ? u * vertexCount + v : v * vertexCount + u;
                     edges.set(key, (edges.get(key) || 0) + 1);
                 }
 
@@ -2215,7 +3385,21 @@
             while (rimBotRow > baseTopRow + 1 && (totalArc - sArc[rimBotRow]) < cfg.rimSolid) rimBotRow--;
 
             const bandS0 = sArc[baseTopRow], bandS1 = sArc[rimBotRow];
-            const isStrut = buildPattern(cfg, bandS0, bandS1);
+            // Inverts the meridian arc-length table back to v (binary search + lerp) for the
+            // mask-driven pattern styles (halftone, gradientcells) - see buildPattern's
+            // sampleMaskValue.
+            function sToV(sVal) {
+                if (sVal <= sArc[0]) return vrow[0];
+                if (sVal >= sArc[rowN - 1]) return vrow[rowN - 1];
+                let lo = 0, hi = rowN - 1;
+                while (hi - lo > 1) {
+                    const mid = (lo + hi) >> 1;
+                    if (sArc[mid] <= sVal) lo = mid; else hi = mid;
+                }
+                const t = (sVal - sArc[lo]) / Math.max(1e-9, sArc[hi] - sArc[lo]);
+                return vrow[lo] + t * (vrow[hi] - vrow[lo]);
+            }
+            const isStrut = buildPattern(cfg, bandS0, bandS1, sToV);
             const dT = 2 * Math.PI / resT;
 
             // occupancy + colour state for wall/rim rows
@@ -2475,80 +3659,180 @@
             scene.remove(obj);
         }
 
+        // ---- Draft preview + build memoization ----
+        // Bowls default to 200x300 (60k form samples, plus up to 2 mask evals/wall cell), so a
+        // full rebuild on every keystroke is the heaviest interaction in the app. While input is
+        // arriving in rapid succession, render at a capped resolution immediately, then settle to
+        // the real resolution once input pauses.
+        const INTERACTIVE_RES_CAP_V = 80;
+        const INTERACTIVE_RES_CAP_T = 120;
+        const FULL_RES_SETTLE_MS = 300;
+        const RAPID_INPUT_WINDOW_MS = 400;
+
+        function getInteractivePreviewConfig(cfg) {
+            if (cfg.resV <= INTERACTIVE_RES_CAP_V && cfg.resT <= INTERACTIVE_RES_CAP_T) return cfg;
+            return Object.assign({}, cfg, {
+                resV: Math.min(cfg.resV, INTERACTIVE_RES_CAP_V),
+                resT: Math.min(cfg.resT, INTERACTIVE_RES_CAP_T)
+            });
+        }
+
+        // Single-entry memoization for the two mesh builders: every field gets sampled, welded,
+        // and validated again on every preview render. If the very next action is an export with
+        // nothing changed since, this lets it reuse the previous result instead of repeating all
+        // of it. Keyed by builder fn + exact serialized cfg, so any change (incl. resolution) is
+        // a clean cache miss.
+        const singleEntryMeshCache = new Map();
+        function memoizedMeshBuild(builderFn, cfg) {
+            const key = JSON.stringify(cfg);
+            const entry = singleEntryMeshCache.get(builderFn);
+            if (entry && entry.key === key) return entry.result;
+            const result = builderFn(cfg);
+            singleEntryMeshCache.set(builderFn, { key, result });
+            return result;
+        }
+
+        // ---- A5 readouts ----
+        const PLA_DENSITY_G_PER_CM3 = 1.24;
+        function formatMaterialEstimate(volumeCm3) {
+            const grams = volumeCm3 * PLA_DENSITY_G_PER_CM3;
+            return `~${volumeCm3.toFixed(1)} cm3 / ~${grams.toFixed(0)} g PLA`;
+        }
+        // Most 0.4mm-nozzle FDM printers need ~2 perimeter widths (~0.8mm) of strut to print
+        // solid rather than as a single unsupported line. Pure UI check on cfg - no geometry
+        // sampling needed, since every style's strut width is already one of its own inputs.
+        const MIN_SAFE_WALL_CM = 0.08;
+        const STYLE_THICKNESS_FIELDS = {
+            voronoi: ['vorThickness'], lattice: ['latThickness'], weave: ['weaveThickness'],
+            wave: ['waveThicknessV', 'waveThicknessH'], gyroid: ['gyroidThickness'],
+            fibonacci: ['fibThickness'], fluting: ['flThickness'], chladni: ['chlThickness'],
+            schwarzp: ['schwarzThickness'], schwarzd: ['schwarzdThickness'], honeycomb: ['hexThickness'],
+            truchet: ['truchetThickness'], maze: ['mazeThickness'], scales: ['scaleThickness'],
+            star: ['starThickness'], greekkey: ['greekThickness'],
+            worleycrackle: ['crackleThickness'], constellation: ['constLineW'],
+            kumiko: ['kumikoThickness'], veins: ['veinThickness'], foam: ['foamWeb'],
+            spirograph: ['spiroThickness'], gradientcells: ['gcThickness']
+        };
+        function formatThinStrutWarning(cfg) {
+            const fields = STYLE_THICKNESS_FIELDS[cfg.style];
+            if (!fields) return '';
+            for (const f of fields) {
+                const val = cfg[f];
+                if (typeof val === 'number' && val > 0 && val < MIN_SAFE_WALL_CM) {
+                    return `Thin strut ${(val * 10).toFixed(2)}mm (below ${(MIN_SAFE_WALL_CM * 10).toFixed(1)}mm nozzle-safe minimum)`;
+                }
+            }
+            return '';
+        }
+
         function updatePreview() {
             if (suppressPreviewUpdates) return;
             if (renderTimeout) clearTimeout(renderTimeout);
+            if (fullResTimeout) { clearTimeout(fullResTimeout); fullResTimeout = null; }
             setStatus("Generating preview...");
+
+            const now = performance.now();
+            const isRapidSuccession = (now - lastUpdatePreviewCall) < RAPID_INPUT_WINDOW_MS;
+            lastUpdatePreviewCall = now;
+
             renderTimeout = setTimeout(() => {
-                try {
-                    if (currentObject) { disposeObject(currentObject); currentObject = null; }
-                    const cfg = getConfig();
-                    const mesh = buildMeshData(cfg);
-                    const palette = paletteOf(cfg);
-                    const flat = cfg.style === 'origami';
-                    const linerActive = cfg.solidLiner && cfg.style !== 'solid' && cfg.style !== 'origami';
-                    const hasRing = ringActive(cfg);
-                    const ringMesh = hasRing ? buildRingMeshData(cfg) : null;
+                const cfg = getConfig();
+                const interactiveCfg = isRapidSuccession ? getInteractivePreviewConfig(cfg) : cfg;
+                const isDraft = interactiveCfg !== cfg;
+                renderConfigToScene(interactiveCfg, isDraft);
 
-                    let bowlObject;
-                    if (linerActive && cfg.transparentFrame) {
-                        // outer shape opaque & coloured, inner liner frame semi-transparent
-                        const group = new THREE.Group();
-                        group.add(new THREE.Mesh(
-                            buildPreviewGeometry(mesh, palette, flat, 1),
-                            new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: 0.06, side: THREE.DoubleSide, wireframe: cfg.wire })
-                        ));
-                        group.add(new THREE.Mesh(
-                            buildPreviewGeometry(mesh, palette, false, 0),
-                            new THREE.MeshStandardMaterial({ color: cfg.baseColor, transparent: true, opacity: 0.3, roughness: 0.5, metalness: 0.05, side: THREE.DoubleSide, depthWrite: false, wireframe: cfg.wire })
-                        ));
-                        bowlObject = group;
-                    } else {
-                        const mat = new THREE.MeshStandardMaterial({
-                            vertexColors: true, roughness: 0.62, metalness: 0.06,
-                            side: THREE.DoubleSide, wireframe: cfg.wire
-                        });
-                        bowlObject = new THREE.Mesh(buildPreviewGeometry(mesh, palette, flat, null), mat);
-                    }
-
-                    if (hasRing) {
-                        // ring stand is a disjoint body from the bowl — a separate mesh in the same scene
-                        const group = new THREE.Group();
-                        group.add(bowlObject);
-                        group.add(new THREE.Mesh(
-                            buildPreviewGeometry(ringMesh, palette, false, null),
-                            new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: 0.06, side: THREE.DoubleSide, wireframe: cfg.wire })
-                        ));
-                        currentObject = group;
-                    } else {
-                        currentObject = bowlObject;
-                    }
-
-                    scene.add(currentObject);
-                    const box = new THREE.Box3().setFromObject(currentObject);
-                    const center = box.getCenter(new THREE.Vector3());
-                    controls.target.set(0, center.y, 0);
-                    controls.update();
-                    const tris = mesh.indices.length / 3;
-                    const styleLbl = cfg.style.charAt(0).toUpperCase() + cfg.style.slice(1);
-                    const islandNote = mesh.removedCells ? ` | removed ${mesh.removedCells} disconnected cell${mesh.removedCells === 1 ? '' : 's'}` : '';
-                    const ringNote = hasRing ? ` | + ring ${(ringMesh.indices.length / 3).toLocaleString()} tris` : '';
-                    const validation = mesh.validation || validateMesh(mesh);
-                    const ringValidation = hasRing ? (ringMesh.validation || validateMesh(ringMesh)) : null;
-                    const manifoldIssues = [];
-                    if (validation.boundaryEdges || validation.nonManifoldEdges) {
-                        manifoldIssues.push(`B:${validation.boundaryEdges} N:${validation.nonManifoldEdges}`);
-                    }
-                    if (ringValidation && (ringValidation.boundaryEdges || ringValidation.nonManifoldEdges)) {
-                        manifoldIssues.push(`ring B:${ringValidation.boundaryEdges} N:${ringValidation.nonManifoldEdges}`);
-                    }
-                    const manifoldNote = manifoldIssues.length ? ` | manifold ${manifoldIssues.join(' | ')}` : '';
-                    setStatus(`${cfg.sys} | ${styleLbl} | R ${cfg.R}cm | ${tris.toLocaleString()} triangles${ringNote}${islandNote}${manifoldNote}`, (mesh.removedCells || manifoldIssues.length) ? 'warn' : '');
-                } catch (err) {
-                    console.error(err);
-                    setStatus("Error: invalid equation or geometry failure.", 'error');
+                if (isDraft) {
+                    fullResTimeout = setTimeout(() => {
+                        fullResTimeout = null;
+                        renderConfigToScene(cfg, false);
+                    }, FULL_RES_SETTLE_MS);
                 }
             }, 30);
+        }
+
+        function renderConfigToScene(cfg, isDraft) {
+            try {
+                if (currentObject) { disposeObject(currentObject); currentObject = null; }
+                const compileErrors = refreshExpressionCompileStatus();
+                const mesh = memoizedMeshBuild(buildMeshData, cfg);
+                const palette = paletteOf(cfg);
+                const flat = cfg.style === 'origami';
+                const linerActive = cfg.solidLiner && cfg.style !== 'solid' && cfg.style !== 'origami';
+                const hasRing = ringActive(cfg);
+                const ringMesh = hasRing ? memoizedMeshBuild(buildRingMeshData, cfg) : null;
+
+                let bowlObject;
+                if (linerActive && cfg.transparentFrame) {
+                    // outer shape opaque & coloured, inner liner frame semi-transparent
+                    const group = new THREE.Group();
+                    group.add(new THREE.Mesh(
+                        buildPreviewGeometry(mesh, palette, flat, 1),
+                        new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: 0.06, side: THREE.DoubleSide, wireframe: cfg.wire })
+                    ));
+                    group.add(new THREE.Mesh(
+                        buildPreviewGeometry(mesh, palette, false, 0),
+                        new THREE.MeshStandardMaterial({ color: cfg.baseColor, transparent: true, opacity: 0.3, roughness: 0.5, metalness: 0.05, side: THREE.DoubleSide, depthWrite: false, wireframe: cfg.wire })
+                    ));
+                    bowlObject = group;
+                } else {
+                    const mat = new THREE.MeshStandardMaterial({
+                        vertexColors: true, roughness: 0.62, metalness: 0.06,
+                        side: THREE.DoubleSide, wireframe: cfg.wire
+                    });
+                    bowlObject = new THREE.Mesh(buildPreviewGeometry(mesh, palette, flat, null), mat);
+                }
+
+                if (hasRing) {
+                    // ring stand is a disjoint body from the bowl — a separate mesh in the same scene
+                    const group = new THREE.Group();
+                    group.add(bowlObject);
+                    group.add(new THREE.Mesh(
+                        buildPreviewGeometry(ringMesh, palette, false, null),
+                        new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: 0.06, side: THREE.DoubleSide, wireframe: cfg.wire })
+                    ));
+                    currentObject = group;
+                } else {
+                    currentObject = bowlObject;
+                }
+
+                scene.add(currentObject);
+                const box = new THREE.Box3().setFromObject(currentObject);
+                const center = box.getCenter(new THREE.Vector3());
+                controls.target.set(0, center.y, 0);
+                controls.update();
+                const tris = mesh.indices.length / 3;
+                const styleLbl = cfg.style.charAt(0).toUpperCase() + cfg.style.slice(1);
+                const islandNote = mesh.removedCells ? ` | removed ${mesh.removedCells} disconnected cell${mesh.removedCells === 1 ? '' : 's'}` : '';
+                const ringNote = hasRing ? ` | + ring ${(ringMesh.indices.length / 3).toLocaleString()} tris` : '';
+                const validation = mesh.validation || validateMesh(mesh);
+                const ringValidation = hasRing ? (ringMesh.validation || validateMesh(ringMesh)) : null;
+                const manifoldIssues = [];
+                if (validation.boundaryEdges || validation.nonManifoldEdges) {
+                    manifoldIssues.push(`B:${validation.boundaryEdges} N:${validation.nonManifoldEdges}`);
+                }
+                if (ringValidation && (ringValidation.boundaryEdges || ringValidation.nonManifoldEdges)) {
+                    manifoldIssues.push(`ring B:${ringValidation.boundaryEdges} N:${ringValidation.nonManifoldEdges}`);
+                }
+                const manifoldNote = manifoldIssues.length ? ` | manifold ${manifoldIssues.join(' | ')}` : '';
+                const volumeCm3 = Math.abs(validation.signedVolume || 0) + (ringValidation ? Math.abs(ringValidation.signedVolume || 0) : 0);
+                const materialNote = ` | ${formatMaterialEstimate(volumeCm3)}`;
+                const wallWarning = formatThinStrutWarning(cfg);
+                const wallNote = wallWarning ? ` | ${wallWarning}` : '';
+                const draftSuffix = isDraft ? ' | draft preview' : '';
+                const warnActive = !!(mesh.removedCells || manifoldIssues.length || wallWarning);
+
+                if (compileErrors.length) {
+                    const summary = compileErrors.length === 1
+                        ? compileErrors[0]
+                        : `${compileErrors[0]} (+${compileErrors.length - 1} more)`;
+                    setStatus(`Equation error: ${summary}`, 'error');
+                } else {
+                    setStatus(`${cfg.sys} | ${styleLbl} | R ${cfg.R}cm | ${tris.toLocaleString()} triangles${ringNote}${islandNote}${manifoldNote}${materialNote}${wallNote}${draftSuffix}`, warnActive ? 'warn' : '');
+                }
+            } catch (err) {
+                console.error(err);
+                setStatus("Error: invalid equation or geometry failure.", 'error');
+            }
         }
 
         /* ---------- exports ---------- */
@@ -2605,13 +3889,13 @@
         function exportSTL() {
             const cfg = getConfig();
             const stem = exportStem(cfg);
-            const mesh = rotateMeshForPrinterCoordinates(buildMeshData(cfg));
+            const mesh = rotateMeshForPrinterCoordinates(memoizedMeshBuild(buildMeshData, cfg));
             const hasRing = ringActive(cfg);
             const bowlName = hasRing ? `${stem}_Bowl.stl` : `${stem}.stl`;
             downloadBlob(meshDataToStlBlob(mesh), bowlName);
             const bowlTris = mesh.indices.length / 3;
             if (hasRing) {
-                const ringMesh = rotateMeshForPrinterCoordinates(buildRingMeshData(cfg));
+                const ringMesh = rotateMeshForPrinterCoordinates(memoizedMeshBuild(buildRingMeshData, cfg));
                 const ringName = `${stem}_Ring.stl`;
                 downloadBlob(meshDataToStlBlob(ringMesh), ringName);
                 setStatus(`Separate STL exports | ${bowlName} (${bowlTris.toLocaleString()} tris) + ${ringName} (${(ringMesh.indices.length / 3).toLocaleString()} tris)`, 'warn');
@@ -2713,7 +3997,7 @@ ${trianglesXml.join('\n')}
         async function export3MF() {
             const cfg = getConfig();
             const stem = exportStem(cfg);
-            const mesh = buildMeshData(cfg);
+            const mesh = memoizedMeshBuild(buildMeshData, cfg);
             const hasRing = ringActive(cfg);
 
             const bowlName = hasRing ? `${stem}_Bowl.3mf` : `${stem}.3mf`;
@@ -2722,7 +4006,7 @@ ${trianglesXml.join('\n')}
             const bowlTris = mesh.indices.length / 3;
 
             if (hasRing) {
-                const ringMesh = buildRingMeshData(cfg);
+                const ringMesh = memoizedMeshBuild(buildRingMeshData, cfg);
                 const ringName = `${stem}_Ring.3mf`;
                 const ringResult = await buildAssembly3MFBlob(cfg, ringMesh, 'Ring Assembly');
                 downloadBlob(ringResult.blob, ringName);
@@ -2748,6 +4032,17 @@ ${trianglesXml.join('\n')}
             'truchetDensity', 'truchetThickness', 'truchetSeed', 'quasiDensity', 'quasiWaves', 'quasiWidth',
             'mazeDensity', 'mazeThickness', 'mazeSeed', 'scaleDensity', 'scaleThickness',
             'starDensity', 'starThickness', 'greekCount', 'greekThickness',
+            'crackleDensity', 'crackleThickness', 'crackleSeed',
+            'causticScale', 'causticLevel', 'causticOctaves', 'causticSeed',
+            'slitCount', 'slitRows', 'slitWidth', 'slitLength', 'slitTilt',
+            'htDensity', 'htMinHole', 'htMaxHole',
+            'constCount', 'constMaxStar', 'constLineW', 'constSeed',
+            'kumikoDensity', 'kumikoThickness',
+            'veinRoots', 'veinThickness', 'veinSplitProb', 'veinWander', 'veinSeed',
+            'foamCount', 'foamMinHole', 'foamMaxHole', 'foamWeb', 'foamSeed',
+            'rippleSources', 'rippleWavelength', 'rippleWidth', 'rippleSeed',
+            'spiroWraps', 'spiroLobes', 'spiroLoop', 'spiroHeight', 'spiroThickness',
+            'gcCount', 'gcThickness', 'gcContrast', 'gcSeed',
             'patternPresetSelect1', 'patternPresetSelect2', 'patternEquation1', 'patternEquation2',
             'baseColor', 'patternColor1', 'patternColor2', 'overlapColor',
             'resV', 'resT', 'shellSmoothPasses'
@@ -2794,8 +4089,7 @@ ${trianglesXml.join('\n')}
                 updateLinerVisibility();
                 // show the correct pattern panel WITHOUT re-triggering the liner default
                 const s = document.getElementById('patternStyle').value;
-                ['voronoi', 'lattice', 'weave', 'wave', 'gyroid', 'origami', 'fibonacci', 'phyllotaxis', 'turing', 'fluting', 'life', 'chladni']
-                    .forEach(p => document.getElementById(p + 'Settings').classList.toggle('active', s === p));
+                PATTERN_PANEL_IDS.forEach(p => document.getElementById(p + 'Settings').classList.toggle('active', s === p));
                 document.getElementById('patternDesc').textContent = patternDescs[s] || '';
             } finally {
                 suppressPreviewUpdates = false;
@@ -2833,7 +4127,11 @@ ${trianglesXml.join('\n')}
             fibonacci: 'Fibonacci', phyllotaxis: 'Phyllotaxis', turing: 'Turing', fluting: 'Fluted',
             life: 'Cellular', chladni: 'Chladni', honeycomb: 'Honeycomb', trabecular: 'Trabecular',
             truchet: 'Truchet', quasicrystal: 'Quasicrystal', maze: 'Maze', scales: 'Fish-Scale',
-            star: 'Star Lattice', greekkey: 'Greek Key'
+            star: 'Star Lattice', greekkey: 'Greek Key',
+            worleycrackle: 'Worley Crackle', caustic: 'Caustic Web', slits: 'Ray Slits',
+            halftone: 'Halftone Glow', constellation: 'Constellation',
+            kumiko: 'Kumiko Asanoha', veins: 'Branching Veins', foam: 'Soap Foam',
+            ripples: 'Ripple Interference', spirograph: 'Spirograph', gradientcells: 'Gradient Cells'
         };
         function computeAutoName() {
             const sn = styleNameMap[document.getElementById('patternStyle').value] || '';
@@ -2943,16 +4241,35 @@ ${trianglesXml.join('\n')}
             maze: "A solvable maze; its corridors form the material.",
             scales: "Overlapping fish-scale / Seigaiha wave rings.",
             star: "Islamic star-and-cross geometric lattice.",
-            greekkey: "Repeating Greek key / meander fret."
+            greekkey: "Repeating Greek key / meander fret.",
+            worleycrackle: "Infinite, non-repeating stone-crack web (hashed, seamless).",
+            caustic: "Flowing fractal-noise web like light through water.",
+            slits: "Staggered tilted slot louvers that project crisp light rays.",
+            halftone: "Hex hole grid sized by the Pattern A mask - a light-intensity image.",
+            constellation: "Scattered star holes linked by thin chord slots.",
+            kumiko: "Japanese asanoha hemp-leaf triangular lattice with centroid spokes.",
+            veins: "Branching leaf-skeleton struts grown upward from the base.",
+            foam: "Merged soap-bubble holes placed by rejection sampling.",
+            ripples: "Point-source wave interference nodal web.",
+            spirograph: "A single continuous cycloidal ribbon wound around the band.",
+            gradientcells: "Voronoi web whose cell density follows the Pattern A mask."
         };
         // styles that are open/fragile enough to want the solid liner on by default
-        const linerDefaultStyles = ['turing', 'fluting', 'life', 'wave'];
+        const linerDefaultStyles = ['turing', 'fluting', 'life', 'wave', 'caustic', 'halftone', 'constellation',
+            'foam', 'ripples', 'gradientcells'];
+        // Every pattern-style settings-panel id (minus the 'Settings' suffix) - the single
+        // source of truth for which panel to show, shared by onPatternStyleChange (live UI) and
+        // applyDesignConfig (design .json load). Previously applyDesignConfig had its own
+        // shorter, stale copy of this list that silently hid the settings panel for any style
+        // added after it was last updated.
+        const PATTERN_PANEL_IDS = ['voronoi', 'lattice', 'weave', 'wave', 'gyroid', 'origami', 'fibonacci', 'phyllotaxis',
+            'turing', 'fluting', 'life', 'chladni', 'schwarzp', 'schwarzd', 'honeycomb', 'trabecular',
+            'truchet', 'quasicrystal', 'maze', 'scales', 'star', 'greekkey',
+            'worleycrackle', 'caustic', 'slits', 'halftone', 'constellation',
+            'kumiko', 'veins', 'foam', 'ripples', 'spirograph', 'gradientcells'];
         function onPatternStyleChange() {
             const s = document.getElementById('patternStyle').value;
-            const panels = ['voronoi', 'lattice', 'weave', 'wave', 'gyroid', 'origami', 'fibonacci', 'phyllotaxis',
-                'turing', 'fluting', 'life', 'chladni', 'schwarzp', 'schwarzd', 'honeycomb', 'trabecular',
-                'truchet', 'quasicrystal', 'maze', 'scales', 'star', 'greekkey'];
-            panels.forEach(p => document.getElementById(p + 'Settings').classList.toggle('active', s === p));
+            PATTERN_PANEL_IDS.forEach(p => document.getElementById(p + 'Settings').classList.toggle('active', s === p));
             if (linerDefaultStyles.includes(s)) document.getElementById('solidLiner').checked = true;
             updateLinerVisibility();
             document.getElementById('patternDesc').textContent = patternDescs[s] || '';
@@ -2996,6 +4313,17 @@ ${trianglesXml.join('\n')}
                 truchetDensity: 12, truchetThickness: 2.0, truchetSeed: 1, quasiDensity: 6, quasiWaves: 5, quasiWidth: 0.18,
                 mazeDensity: 16, mazeThickness: 2.5, mazeSeed: 1, scaleDensity: 10, scaleThickness: 2.0,
                 starDensity: 8, starThickness: 2.0, greekCount: 8, greekThickness: 2.0,
+                crackleDensity: 14, crackleThickness: 2.0, crackleSeed: 3,
+                causticScale: 5, causticLevel: 0.1, causticOctaves: 3, causticSeed: 4,
+                slitCount: 16, slitRows: 6, slitWidth: 3.0, slitLength: 0.6, slitTilt: 12,
+                htDensity: 16, htMinHole: 1.0, htMaxHole: 4.5,
+                constCount: 60, constMaxStar: 3.5, constLineW: 1.2, constSeed: 9,
+                kumikoDensity: 12, kumikoThickness: 1.6,
+                veinRoots: 8, veinThickness: 3.0, veinSplitProb: 0.06, veinWander: 0.35, veinSeed: 11,
+                foamCount: 70, foamMinHole: 2.0, foamMaxHole: 7.0, foamWeb: 1.5, foamSeed: 13,
+                rippleSources: 3, rippleWavelength: 1.2, rippleWidth: 0.15, rippleSeed: 17,
+                spiroWraps: 3, spiroLobes: 7, spiroLoop: 1.2, spiroHeight: 0.9, spiroThickness: 2.2,
+                gcCount: 90, gcThickness: 2.0, gcContrast: 1.5, gcSeed: 21,
                 resV: 200, resT: 300
             };
             for (const id in defs) document.getElementById(id).value = defs[id];
