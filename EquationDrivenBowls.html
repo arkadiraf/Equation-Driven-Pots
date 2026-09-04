@@ -4574,65 +4574,11 @@ ${trianglesXml.join('\n')}
         }
 
         function resetParameters() {
-            const defs = {
-                baseRadius: 7, height: 6, sphRim: 90, sphBottom: 178, wall: 0.3, baseSolid: 0.7, rimSolid: 0.4, linerThickness: 1,
-                ringRadius: 4, ringWidth: 1.2, ringCut: 0.25,
-                vorDensity: 160, vorThickness: 2.0, vorJitter: 0.7, vorSeed: 7, latDensity: 22, latThickness: 2.0,
-                weaveDensity: 20, weaveThickness: 2.0, waveDensity: 16, waveThicknessV: 2.0, waveThicknessH: 2.0, waveAmp: 0.5, waveCount: 3,
-                gyroidDensity: 14, gyroidThickness: 2.0, origamiSides: 16, origamiRows: 9, origamiJitter: 0.12,
-                fibA: 8, fibB: 13, fibTwist: 2, fibThickness: 2.0, phylCount: 260, phylHoleR: 3.0,
-                turingDetail: 150, turingSteps: 10, turingLevel: 0.25, turingSeed: 3,
-                flCount: 18, flThickness: 2.4, flWander: 0.3, flVFreq: 2, flWidthMod: 0.4,
-                lifeDetail: 64, lifeGens: 12, lifeFill: 38, lifeSeed: 5, chlN: 6, chlM: 3, chlThickness: 2.2,
-                schwarzDensity: 12, schwarzThickness: 2.5, schwarzdDensity: 12, schwarzdThickness: 2.5, hexDensity: 14, hexThickness: 2.0, boneDensity: 10, boneFill: 0.1,
-                truchetDensity: 12, truchetThickness: 2.0, truchetSeed: 1, quasiDensity: 6, quasiWaves: 5, quasiWidth: 0.18,
-                mazeDensity: 16, mazeThickness: 2.5, mazeSeed: 1, scaleDensity: 10, scaleThickness: 2.0,
-                starDensity: 8, starThickness: 2.0, greekCount: 8, greekThickness: 2.0,
-                crackleDensity: 14, crackleThickness: 2.0, crackleSeed: 3,
-                causticScale: 5, causticLevel: 0.1, causticOctaves: 3, causticSeed: 4,
-                slitCount: 16, slitRows: 6, slitWidth: 3.0, slitLength: 0.6, slitTilt: 12,
-                htDensity: 16, htMinHole: 1.0, htMaxHole: 4.5,
-                constCount: 60, constMaxStar: 3.5, constLineW: 1.2, constSeed: 9,
-                kumikoDensity: 12, kumikoThickness: 1.6,
-                veinRoots: 8, veinThickness: 3.0, veinSplitProb: 0.06, veinWander: 0.35, veinSeed: 11,
-                foamCount: 70, foamMinHole: 2.0, foamMaxHole: 7.0, foamWeb: 1.5, foamSeed: 13,
-                rippleSources: 3, rippleWavelength: 1.2, rippleWidth: 0.15, rippleSeed: 17,
-                spiroWraps: 3, spiroLobes: 7, spiroLoop: 1.2, spiroHeight: 0.9, spiroThickness: 2.2,
-                gcCount: 90, gcThickness: 2.0, gcContrast: 1.5, gcSeed: 21,
-                resV: 200, resT: 300
-            };
-            for (const id in defs) document.getElementById(id).value = defs[id];
-            document.getElementById('coordSystem').value = 'cylindrical';
-            document.getElementById('patternStyle').value = 'voronoi';
-            document.getElementById('turingType').value = 'maze';
-            document.getElementById('baseColor').value = '#2a7ab0';
-            document.getElementById('patternColor1').value = '#ff7062';
-            document.getElementById('patternColor2').value = '#5f4a8b';
-            document.getElementById('overlapColor').value = '#8ab04d';
-            document.getElementById('patternEquation1').value = '-1';
-            document.getElementById('patternEquation2').value = '-1';
-            document.getElementById('patternPresetSelect1').value = 'None (Solid Base Color)';
-            document.getElementById('patternPresetSelect2').value = 'None (Solid Base Color)';
-            document.getElementById('showWire').checked = false;
-            document.getElementById('solidLiner').checked = true;
-            document.getElementById('transparentFrame').checked = true;
-            document.getElementById('lampMode').checked = false;
-            document.getElementById('lampHoleRadius').value = 2;
-            document.getElementById('basePattern').checked = false;
-            document.getElementById('baseColorEnabled').checked = false;
-            document.getElementById('ringBaseEnabled').checked = false;
-            document.getElementById('ringColorEnabled').checked = true;
-            document.getElementById('smoothPatternEdges').checked = false;
-            document.getElementById('shellSmoothEnabled').checked = false;
-            document.getElementById('shellSmoothPasses').value = 2;
-            document.getElementById('designName').value = '';
-            populatePresets();
-            document.getElementById('presetSelect').value = 'Classic Bowl';
-            switchSystem();
-            onPatternStyleChange();
+            applyDesignConfig(DEFAULT_DESIGN);
+            lastAutoName = document.getElementById('designName').value.trim();
         }
 
-        // design loaded when the app first opens (Gyroid_Bowl)
+        // design loaded when the app first opens (Gyroid 5-Petal Flower)
         const DEFAULT_DESIGN = {
             "app": "EquationDrivenBowls",
             "version": 1,
@@ -4695,11 +4641,78 @@ ${trianglesXml.join('\n')}
                 "chlN": "6",
                 "chlM": "3",
                 "chlThickness": "2.2",
-                "patternPresetSelect1": "Basic Band Mask",
-                "patternPresetSelect2": "Double Helix Mask",
-                "patternEquation1": "sin(8*pi*v)",
-                "patternEquation2": "cos(6*theta + 10*pi*v) * cos(6*theta - 10*pi*v)",
-                "baseColor": "#2a7ab0",
+                "schwarzDensity": "12",
+                "schwarzThickness": "2.5",
+                "schwarzdDensity": "12",
+                "schwarzdThickness": "2.5",
+                "hexDensity": "14",
+                "hexThickness": "2.0",
+                "boneDensity": "10",
+                "boneFill": "0.1",
+                "truchetDensity": "12",
+                "truchetThickness": "2.0",
+                "truchetSeed": "1",
+                "quasiDensity": "6",
+                "quasiWaves": "5",
+                "quasiWidth": "0.18",
+                "mazeDensity": "16",
+                "mazeThickness": "2.5",
+                "mazeSeed": "1",
+                "scaleDensity": "10",
+                "scaleThickness": "2.0",
+                "starDensity": "8",
+                "starThickness": "2.0",
+                "greekCount": "8",
+                "greekThickness": "2.0",
+                "crackleDensity": "14",
+                "crackleThickness": "2.0",
+                "crackleSeed": "3",
+                "causticScale": "5",
+                "causticLevel": "0.1",
+                "causticOctaves": "3",
+                "causticSeed": "4",
+                "slitCount": "16",
+                "slitRows": "6",
+                "slitWidth": "3.0",
+                "slitLength": "0.6",
+                "slitTilt": "12",
+                "htDensity": "16",
+                "htMinHole": "1.0",
+                "htMaxHole": "4.5",
+                "constCount": "60",
+                "constMaxStar": "3.5",
+                "constLineW": "1.2",
+                "constSeed": "9",
+                "kumikoDensity": "12",
+                "kumikoThickness": "1.6",
+                "veinRoots": "8",
+                "veinThickness": "3.0",
+                "veinSplitProb": "0.06",
+                "veinWander": "0.35",
+                "veinSeed": "11",
+                "foamCount": "70",
+                "foamMinHole": "2.0",
+                "foamMaxHole": "7.0",
+                "foamWeb": "1.5",
+                "foamSeed": "13",
+                "rippleSources": "3",
+                "rippleWavelength": "1.2",
+                "rippleWidth": "0.15",
+                "rippleSeed": "17",
+                "spiroWraps": "3",
+                "spiroLobes": "7",
+                "spiroLoop": "1.2",
+                "spiroHeight": "0.9",
+                "spiroThickness": "2.2",
+                "gcCount": "90",
+                "gcThickness": "2.0",
+                "gcContrast": "1.5",
+                "gcSeed": "21",
+                "patternPresetSelect1": "None (Solid Base Color)",
+                "patternPresetSelect2": "None (Solid Base Color)",
+                "patternEquation1": "-1",
+                "patternEquation2": "-1",
+                "baseColor": "#680085",
                 "patternColor1": "#ff7062",
                 "patternColor2": "#5f4a8b",
                 "overlapColor": "#8ab04d",
@@ -4715,7 +4728,7 @@ ${trianglesXml.join('\n')}
                 "ringColorEnabled": true,
                 "solidLiner": false,
                 "transparentFrame": false,
-                "smoothPatternEdges": false,
+                "smoothPatternEdges": true,
                 "shellSmoothEnabled": false,
                 "showWire": false
             }
