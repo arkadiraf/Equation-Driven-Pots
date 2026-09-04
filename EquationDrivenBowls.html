@@ -535,7 +535,7 @@
                 <div class="input-group"><label>Density (cell count)</label><input type="number" id="vorDensity"
                         value="160" step="10" min="3" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Strut Thickness (mm)</label><input type="number" id="vorThickness"
-                        value="2.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
             </div>
             <div class="grid-inputs">
                 <div class="input-group"><label>Cell Irregularity</label><input type="number" id="vorJitter"
@@ -1658,7 +1658,7 @@
                 linerWall: Math.max(0.1, num('linerThickness', 1)) / 10,
                 transparentFrame: document.getElementById('transparentFrame').checked,
                 vorDensity: Math.max(3, intv('vorDensity', 160)),
-                vorThickness: Math.max(0.4, num('vorThickness', 2.0)) / 10,
+                vorThickness: Math.max(0.4, num('vorThickness', 5.0)) / 10,
                 vorJitter: clamp(num('vorJitter', 0.7), 0, 1),
                 vorSeed: Math.max(0, intv('vorSeed', 7)),
                 latDensity: Math.max(2, intv('latDensity', 22)),
@@ -2789,7 +2789,7 @@
                 const wcx = ((cx % cols) + cols) % cols;
                 return seeds[cy * cols + wcx];
             }
-            return (theta, s) => {
+            const field = (theta, s, x, y, z) => {
                 const pu = (theta / (2 * Math.PI)) * circ, pv = s;
                 const qx = Math.floor(pu / cw), qy = Math.floor((pv - bandS0) / ch);
                 const candidates = [];
@@ -2798,6 +2798,7 @@
                     if (cy < 0 || cy >= rows) continue;   // band doesn't wrap vertically
                     for (let dx = -2; dx <= 2; dx++) candidates.push(seedAt(qx + dx, cy));
                 }
+                if (candidates.length === 0) return -half;
                 let best = Infinity, brx = 0, bry = 0;
                 for (let i = 0; i < candidates.length; i++) {
                     let dx = candidates[i].u - pu; dx -= circ * Math.round(dx / circ);
@@ -2814,11 +2815,15 @@
                     if (len2 < 1e-7) continue;
                     const len = Math.sqrt(len2);
                     const mx = 0.5 * (brx + dx), my = 0.5 * (bry + dy);
-                    const d = (mx * rdx + my * rdy) / len;
+                    const d = Math.max(0, (mx * rdx + my * rdy) / len);
                     if (d < edge) edge = d;
                 }
-                return edge < half;
+                if (!Number.isFinite(edge)) return -half;
+                return half - edge;
             };
+            const predicate = (theta, s, x, y, z) => field(theta, s, x, y, z) > 0;
+            predicate.field = field;
+            return predicate;
         }
 
         /* ---------- shrink-resistant 3D shell smoothing -------------------------------
@@ -3842,25 +3847,55 @@
                             visitedBoundary.add(u); stack.push(u);
                         }
                     }
-                    if (component.length !== 3) continue;
-                    const [a, b, c] = component;
-                    const edgeCount = [edgeKey(a, b), edgeKey(b, c), edgeKey(c, a)]
-                        .filter(key => edgeInfo.get(key) && edgeInfo.get(key).count === 1).length;
-                    if (edgeCount !== 3) continue;
-                    const pa = a * 3, pb = b * 3, pc = c * 3;
-                    const abx = mesh.positions[pb] - mesh.positions[pa];
-                    const aby = mesh.positions[pb + 1] - mesh.positions[pa + 1];
-                    const abz = mesh.positions[pb + 2] - mesh.positions[pa + 2];
-                    const acx = mesh.positions[pc] - mesh.positions[pa];
-                    const acy = mesh.positions[pc + 1] - mesh.positions[pa + 1];
-                    const acz = mesh.positions[pc + 2] - mesh.positions[pa + 2];
-                    const nx = aby * acz - abz * acy, ny = abz * acx - abx * acz, nz = abx * acy - aby * acx;
-                    if (nx * nx + ny * ny + nz * nz > 1e-12) continue;
-                    const sampleEdge = edgeInfo.get(edgeKey(a, b));
-                    mesh.indices.push(a, b, c);
-                    mesh.triangleColorIndices.push(mesh.triangleColorIndices[sampleEdge.tri] || 0);
-                    mesh.triLayer.push(mesh.triLayer[sampleEdge.tri] || 0);
-                    sealedContourCracks++;
+                    if (component.length < 3 || component.length > 4) continue;
+                    const cycle = [component[0]];
+                    let curr = component[0], prev = -1;
+                    for (let step = 0; step < component.length - 1; step++) {
+                        const nbs = adjacency.get(curr) || [];
+                        const next = (nbs[0] === prev) ? nbs[1] : nbs[0];
+                        if (next === undefined) break;
+                        cycle.push(next);
+                        prev = curr;
+                        curr = next;
+                    }
+                    if (cycle.length !== component.length) continue;
+                    let validCycle = true;
+                    for (let i = 0; i < cycle.length; i++) {
+                        const k = edgeKey(cycle[i], cycle[(i + 1) % cycle.length]);
+                        if (!edgeInfo.has(k) || edgeInfo.get(k).count !== 1) { validCycle = false; break; }
+                    }
+                    if (!validCycle) continue;
+
+                    let maxD2 = 0;
+                    const p0 = cycle[0] * 3;
+                    for (let i = 1; i < cycle.length; i++) {
+                        const pi = cycle[i] * 3;
+                        const dx = mesh.positions[pi] - mesh.positions[p0];
+                        const dy = mesh.positions[pi + 1] - mesh.positions[p0 + 1];
+                        const dz = mesh.positions[pi + 2] - mesh.positions[p0 + 2];
+                        const d2 = dx * dx + dy * dy + dz * dz;
+                        if (d2 > maxD2) maxD2 = d2;
+                    }
+                    if (maxD2 > 2.5e-5) continue; // (0.005 cm)^2: tiny microscopic cracks only
+
+                    const sampleEdge = edgeInfo.get(edgeKey(cycle[0], cycle[1]));
+                    const triCol = mesh.triangleColorIndices[sampleEdge.tri] || 0;
+                    const triLay = mesh.triLayer[sampleEdge.tri] || 0;
+
+                    if (cycle.length === 3) {
+                        mesh.indices.push(cycle[0], cycle[1], cycle[2]);
+                        mesh.triangleColorIndices.push(triCol);
+                        mesh.triLayer.push(triLay);
+                        sealedContourCracks++;
+                    } else if (cycle.length === 4) {
+                        mesh.indices.push(cycle[0], cycle[1], cycle[2]);
+                        mesh.triangleColorIndices.push(triCol);
+                        mesh.triLayer.push(triLay);
+                        mesh.indices.push(cycle[0], cycle[2], cycle[3]);
+                        mesh.triangleColorIndices.push(triCol);
+                        mesh.triLayer.push(triLay);
+                        sealedContourCracks += 2;
+                    }
                 }
                 if (sealedContourCracks) mesh = orientMeshConsistently(mesh);
             }
@@ -4601,7 +4636,7 @@ ${trianglesXml.join('\n')}
                 "ringCut": "0.25",
                 "patternStyle": "gyroid",
                 "vorDensity": "160",
-                "vorThickness": "2.0",
+                "vorThickness": "5.0",
                 "vorJitter": "0.7",
                 "vorSeed": "7",
                 "latDensity": "22",

@@ -131,6 +131,20 @@ Pattern mode (patterns.mode, "color" or "cutout"):
   Keep cutout coverage moderate and avoid masks that could isolate a region of the wall
   completely surrounded by holes, since that produces a disconnected floating piece.
 
+Smooth pattern edges (patterns.smoothPatternEdges, boolean):
+- false (default): pattern boundaries follow the mesh grid, so edges look stepped/blocky
+  unless resV/resT/patternResV/patternResT are pushed high.
+- true: pattern boundaries are recalculated as diagonal contour cuts interpolated from the
+  mask equations' actual zero-crossings, instead of stepped grid cells - a "high quality"
+  finish that works with any pattern equation, in both "color" and "cutout" mode. It costs
+  extra build time and produces a small margin of solid material at the very base/rim rows
+  (patterns never quite reach the absolute edge), so prefer it when the mask has curved,
+  diagonal, or organic boundaries (marble veins, voronoi pebbles, sunburst rays, noise-based
+  masks) where a stepped edge would look obviously wrong, or whenever the user asks for a
+  smooth/high-quality/refined finish. Leave it false for simple axis-aligned masks (stripes,
+  bands, a plain vertical/horizontal split) where stepping is barely visible, or when the user
+  wants a fast/draft preview.
+
 LAYER 5: MODIFIER
 This does not change XYZ space directly.
 It remaps theta sampling before the selected field is evaluated (modifier.equation).
@@ -689,6 +703,7 @@ Safe defaults:
 - Pattern preset 1: "None (Solid Base Color)"
 - Pattern preset 2: "None (Solid Base Color)"
 - Pattern mode: "color"
+- Smooth pattern edges: false
 - Modifier preset: "None (No Modifier)"
 - Distortion preset: "None (No Distortion)"
 
@@ -806,6 +821,10 @@ patterns.mode must be one of:
 - "color" (default - paints the four mask states)
 - "cutout" (masked regions become full-thickness holes; colors/depthMm are ignored)
 
+patterns.smoothPatternEdges must be a boolean:
+- false (default)
+- true (recalculates pattern boundaries as smooth diagonal contours - see LAYER 4 above)
+
 distortion.type must be one of:
 - "all", "utility", "basicEffect", "wind", "gravity", "swirl", "torsion", "pressure", "custom"
 
@@ -877,6 +896,7 @@ IMPORTANT MODIFIER RULE
   },
   "patterns": {
     "mode": "color",
+    "smoothPatternEdges": false,
     "preset1": "None (Solid Base Color)",
     "equation1": "-1",
     "preset2": "None (Solid Base Color)",
@@ -929,6 +949,10 @@ IMPORTANT MODIFIER RULE
 - Always output the full plate section with all parameters regardless of mode.
 - If a field is inactive, keep its preset neutral and still output its neutral equation.
 - If a field is active, choose the nearest valid preset but write your own custom equation.
+- Set patterns.smoothPatternEdges to true only when a pattern mask is active (preset1 or
+  preset2 is not "None (Solid Base Color)") and its boundary is curved/diagonal/organic
+  enough that stepped grid edges would look wrong, or the user asked for a smooth/high-quality
+  finish; otherwise leave it false.
 - The generated configuration must be loadable into the current Equation Driven Pot Designer.
 
 ==================================================

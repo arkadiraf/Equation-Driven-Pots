@@ -867,6 +867,17 @@
             <label>Color Layer Depth (mm)</label>
             <input type="number" id="patternDepthMm" value="1.2" step="0.1" min="0" oninput="updatePreview()">
         </div>
+        <div class="input-group" style="display:flex; align-items:center; gap:8px; margin:2px 0 4px;">
+            <input type="checkbox" id="smoothPatternEdges" onchange="updatePreview()"
+                style="width:auto; height:18px; cursor:pointer; margin:0;">
+            <label for="smoothPatternEdges" style="margin:0; cursor:pointer; overflow:visible;">Smooth Pattern Edges
+                (high quality)</label>
+        </div>
+        <div class="desc-text">Uses interpolated diagonal contour triangles instead of whole stepped cells at every
+            pattern boundary, recalculated from Pattern A/B's actual equation values rather than a fixed grid - works
+            for any preset in both Color and Cutout mode. Off preserves the original mesh exactly. Color-mode plain
+            STL export (single-part, no AMS colors) already uses a separate smooth vertex-colored generator and is
+            unaffected either way; this affects the live preview, Cutout STL export, and 3MF multi-part export.</div>
 
         <div class="section-title">5. Mesh Resolution</div>
         <div class="grid-inputs">
@@ -2904,6 +2915,7 @@
                 setColorFieldValue('overlapColor', getAIValue(patterns, ['overlapColor']));
                 setFieldValue('patternDepthMm', getAIValue(patterns, ['depthMm', 'patternDepthMm', 'depth']));
                 setSelectValue('patternMode', getAIValue(patterns, ['mode', 'patternMode']));
+                setCheckboxValue('smoothPatternEdges', getAIValue(patterns, ['smoothPatternEdges', 'smoothEdges']));
 
                 setFieldValue('resV', getAIValue(mesh, ['resV', 'verticalNodes']));
                 setFieldValue('resT', getAIValue(mesh, ['resT', 'radialNodes']));
@@ -3411,6 +3423,7 @@
                 patternEq1: document.getElementById('patternEquation1').value,
                 patternEq2: document.getElementById('patternEquation2').value,
                 patternMode: document.getElementById('patternMode')?.value === 'cutout' ? 'cutout' : 'color',
+                smoothPatternEdges: document.getElementById('smoothPatternEdges')?.checked || false,
                 baseColor: document.getElementById('baseColor').value || '#0f4d80',
                 patternColor1: document.getElementById('patternColor1').value || '#ff7062',
                 patternColor2: document.getElementById('patternColor2').value || '#5f4a8b',
@@ -4270,7 +4283,32 @@
                 surfaceEligible.push(rowEligible);
             }
 
-            return { grid, sample: { layers, cellMaskA, cellMaskB, surfaceEligible, resV, resT, yShift: 0, minWallCm: isFinite(minWallCm) ? minWallCm : 0 } };
+            // Vertex-sampled continuous mask fields for optional smooth (marching-triangle)
+            // pattern-edge contouring - mirrors the cellMaskA/cellMaskB loop above but at grid
+            // VERTICES (iv, it), using the already-vertex-indexed outerGrid/positions directly
+            // instead of averaging pairs of columns, and left as raw signed numbers.
+            const fieldA = [], fieldB = [];
+            for (let iv = 0; iv < numRings; iv++) {
+                const rowA = [], rowB = [];
+                for (let it = 0; it < resT; it++) {
+                    const yV = layers[0][iv][it].y;
+                    const tV = height > 1e-9 ? yV / height : 0;
+                    const zV = tV * cfg.h;
+                    const inSolidBase = yV <= baseThickness + 1e-6;
+                    const allowPattern = cfg.applyPlateColoring && !inSolidBase;
+                    if (!allowPattern) { rowA.push(-1); rowB.push(-1); continue; }
+                    const theta = (2 * Math.PI * it) / resT;
+                    const oIdx = outerGrid[iv][it];
+                    const outerRadius = Math.sqrt(positions[oIdx * 3] * positions[oIdx * 3] + positions[oIdx * 3 + 2] * positions[oIdx * 3 + 2]);
+                    const texRaw = evalFieldWithModifier(cfg.texEq, plateColorCfg, theta, zV, 0, tV, 0, true, 'texture');
+                    rowA.push(evaluatePatternValue(cfg.patternEq1, plateColorCfg, theta, zV, 0, tV, outerRadius, outerRadius, texRaw, stats));
+                    rowB.push(evaluatePatternValue(cfg.patternEq2, plateColorCfg, theta, zV, 0, tV, outerRadius, outerRadius, texRaw, stats));
+                }
+                fieldA.push(rowA);
+                fieldB.push(rowB);
+            }
+
+            return { grid, sample: { layers, cellMaskA, cellMaskB, surfaceEligible, fieldA, fieldB, resV, resT, yShift: 0, minWallCm: isFinite(minWallCm) ? minWallCm : 0 } };
         }
 
         function generatePlate(cfg) {
@@ -4538,6 +4576,7 @@ ${trianglesXml.join('\n')}
             // forceCoreBottomRow guarantee fires — the iv=0 ring is forced core, which
             // is the watertight precondition for appendCylindricalDrainClosure.
             const occ = buildOccupancies(sample, plateCfg);
+            const smooth = !!plateCfg.smoothPatternEdges && !!sample.fieldA;
 
             // Per-column state at iv=0 for coloured bottom closure.
             const columnStates = Array.from({ length: sample.resT }, (_, it) => {
@@ -4547,17 +4586,36 @@ ${trianglesXml.join('\n')}
                 return 0;
             });
 
-            let coreMesh = buildOccupancyMesh(sample, occ.coreOcc, { skipMinusIVFace: (k, iv) => iv === 0 });
+            let coreMesh;
+            let smoothColorMeshes = null;
+            if (smooth && occ.cutoutMode) {
+                coreMesh = buildSmoothCutoutMesh(sample, plateCfg, { skipBottomCap: true });
+            } else if (smooth) {
+                smoothColorMeshes = buildSmoothColorMeshes(sample, plateCfg, { skipBottomCap: true });
+                coreMesh = smoothColorMeshes[0];
+            } else {
+                coreMesh = buildOccupancyMesh(sample, occ.coreOcc, { skipMinusIVFace: (k, iv) => iv === 0 });
+            }
             // Outer bottom fan: core columns only; inner floor: all columns.
             coreMesh = appendCylindricalDrainClosure(coreMesh, sample, plateCfg, it => columnStates[it] === 0);
+            if (smooth) coreMesh = sealSmoothContourCracks(coreMesh);
 
             const stateNames = { 1: 'Pattern A', 2: 'Pattern B', 3: 'Overlap' };
             const surfaceGroups = [];
-            for (let state = 1; state <= 3; state++) {
-                if (occ.stateCounts[state] <= 0) continue;
-                const componentOccs = splitOccupancyComponents(occ.surfaceOccs[state], sample.resV, sample.resT);
-                const meshes = componentOccs.map(componentOcc => buildOccupancyMesh(sample, componentOcc));
-                let merged = mergeMeshes(meshes);
+            // Cutout mode never has per-state surface meshes - smoothColorMeshes is only built
+            // in the color-mode smooth branch above, so it'd be null here.
+            for (let state = 1; state <= 3 && !occ.cutoutMode; state++) {
+                let merged;
+                if (smooth) {
+                    const mesh = smoothColorMeshes[state];
+                    if (!mesh.positions.length) continue;
+                    merged = mesh;
+                } else {
+                    if (occ.stateCounts[state] <= 0) continue;
+                    const componentOccs = splitOccupancyComponents(occ.surfaceOccs[state], sample.resV, sample.resT);
+                    const meshes = componentOccs.map(componentOcc => buildOccupancyMesh(sample, componentOcc));
+                    merged = mergeMeshes(meshes);
+                }
                 // Add inner bottom fans (r_pattern → centre) for this state's columns.
                 merged = appendCylindricalPatternBottomFans(merged, sample, plateCfg, it => columnStates[it] === state);
                 surfaceGroups.push({ colorIndex: state, name: stateNames[state], mesh: merged, validation: validateMesh(merged) });
@@ -5022,7 +5080,35 @@ ${trianglesXml.join('\n')}
                 surfaceEligible.push(rowEligible);
             }
 
-            return { outer, inner, cellMaskA, cellMaskB, surfaceEligible, resV: shellResV, resT: cfg.resT, yShift: 0 };
+            // Vertex-sampled continuous mask fields for optional smooth (marching-triangle)
+            // pattern-edge contouring (buildSmoothPatternGeometry): same evaluatePatternValue()
+            // calls as cellMaskA/cellMaskB above, but at grid VERTICES (iv, it) instead of cell
+            // centers, and left as raw signed numbers instead of thresholded booleans. Forced
+            // negative ("no pattern") at the same base rows cellMaskA/cellMaskB exclude above,
+            // so the smoothed contour never reopens the solid base.
+            const fieldA = [], fieldB = [];
+            for (let iv = 0; iv <= shellResV; iv++) {
+                const zV = zNodes[iv];
+                const vV = cfg.h > 1e-8 ? zV / cfg.h : 0;
+                // iv<=1 mirrors buildOccupancies' unconditional forceCoreBottomRow (belt-and-
+                // braces: cell iv=0 is always core for cylindrical pots, even when actualBase
+                // is ~0) on top of the real base-height suppression below.
+                const forceCore = cfg.isPot && (iv <= 1 || zV <= actualBase + 1e-6);
+                const rowA = [], rowB = [];
+                for (let it = 0; it < cfg.resT; it++) {
+                    if (forceCore) { rowA.push(-1); rowB.push(-1); continue; }
+                    const theta = (2 * Math.PI * it) / cfg.resT;
+                    const texRaw = evalFieldWithModifier(cfg.texEq, cfg, theta, zV, 0, vV, 0, true, 'texture');
+                    const rBaseOuter = evalFieldWithModifier(cfg.eq, cfg, theta, zV, 0, vV, cfg.R, false, 'base');
+                    const outerRadius = Math.max(0.1, rBaseOuter + (texRaw * cfg.texInt));
+                    rowA.push(evaluatePatternValue(cfg.patternEq1, cfg, theta, zV, 0, vV, outerRadius, rBaseOuter, texRaw, stats));
+                    rowB.push(evaluatePatternValue(cfg.patternEq2, cfg, theta, zV, 0, vV, outerRadius, rBaseOuter, texRaw, stats));
+                }
+                fieldA.push(rowA);
+                fieldB.push(rowB);
+            }
+
+            return { outer, inner, cellMaskA, cellMaskB, surfaceEligible, fieldA, fieldB, resV: shellResV, resT: cfg.resT, yShift: 0 };
         }
 
         function buildSphericalShell(cfg) {
@@ -5124,7 +5210,28 @@ ${trianglesXml.join('\n')}
                 surfaceEligible.push(rowEligible);
             }
 
-            return { outer, inner, cellMaskA, cellMaskB, surfaceEligible, resV: cfg.resV, resT: cfg.resT, yShift: minY };
+            // Vertex-sampled continuous mask fields for optional smooth (marching-triangle)
+            // pattern-edge contouring - see the matching block in buildCylindricalShell. No
+            // base/pole forcing here: spherical shells have no inSolidBase-style eligibility
+            // gate today (rowEligible is unconditionally true above), so this mirrors that.
+            const fieldA = [], fieldB = [];
+            for (let iv = 0; iv <= cfg.resV; iv++) {
+                const phi = phiStart + (phiEnd - phiStart) * (iv / cfg.resV);
+                const v = (phi - phiEnd) / (phiStart - phiEnd);
+                const rowA = [], rowB = [];
+                for (let it = 0; it < cfg.resT; it++) {
+                    const theta = (2 * Math.PI * it) / cfg.resT;
+                    const texRaw = evalFieldWithModifier(cfg.texEq, cfg, theta, 0, phi, v, 0, true, 'texture');
+                    const rBaseOuter = evalFieldWithModifier(cfg.eq, cfg, theta, 0, phi, v, cfg.R, false, 'base');
+                    const outerRadius = Math.max(0.1, rBaseOuter + (texRaw * cfg.texInt));
+                    rowA.push(evaluatePatternValue(cfg.patternEq1, cfg, theta, 0, phi, v, outerRadius, rBaseOuter, texRaw, stats));
+                    rowB.push(evaluatePatternValue(cfg.patternEq2, cfg, theta, 0, phi, v, outerRadius, rBaseOuter, texRaw, stats));
+                }
+                fieldA.push(rowA);
+                fieldB.push(rowB);
+            }
+
+            return { outer, inner, cellMaskA, cellMaskB, surfaceEligible, fieldA, fieldB, resV: cfg.resV, resT: cfg.resT, yShift: minY };
         }
 
         function buildLayeredSample(cfg) {
@@ -5156,6 +5263,8 @@ ${trianglesXml.join('\n')}
                 cellMaskA: shell.cellMaskA,
                 cellMaskB: shell.cellMaskB,
                 surfaceEligible: shell.surfaceEligible,
+                fieldA: shell.fieldA,
+                fieldB: shell.fieldB,
                 resV: shell.resV,
                 resT: shell.resT,
                 yShift: shell.yShift,
@@ -5421,6 +5530,342 @@ ${trianglesXml.join('\n')}
             }
 
             return cleanupMesh({ positions, indices });
+        }
+
+        // ---- Smooth Pattern Edges: marching-triangle contouring over the vertex-sampled
+        // fieldA/fieldB grids (see buildCylindricalShell/buildSphericalShell/
+        // buildCylindricalPlateSample), replacing buildOccupancyMesh's per-cell boxy stepping
+        // with diagonal cuts interpolated at the pattern equations' actual zero-crossings.
+        // Ported technique from EquationDrivenBowls.html's useContourEdges/emitContourTriangle.
+
+        // Snaps any vertex-field sample that's suspiciously close to zero to its 4-neighbour
+        // average (if that average is itself not near zero) - without this, a value
+        // infinitesimally across the threshold can create a sub-weld-tolerance sliver at high
+        // resolutions. Returns a new grid; never mutates the input.
+        function smoothFieldNearZeroFix(field, resVPlus1, resT) {
+            const fixed = field.map(row => row.slice());
+            const fixes = [];
+            for (let iv = 1; iv < resVPlus1 - 1; iv++) {
+                for (let it = 0; it < resT; it++) {
+                    if (Math.abs(fixed[iv][it]) >= 1e-3) continue;
+                    const pt = (it - 1 + resT) % resT, nt = (it + 1) % resT;
+                    const avg = 0.25 * (fixed[iv][pt] + fixed[iv][nt] + fixed[iv - 1][it] + fixed[iv + 1][it]);
+                    if (Math.abs(avg) >= 1e-3) fixes.push([iv, it, avg]);
+                }
+            }
+            for (const fix of fixes) fixed[fix[0]][fix[1]] = fix[2];
+            // Backstop: anything still near zero (an entire grid-aligned flat/degenerate
+            // region - e.g. a simple vertical/horizontal split mask at low resolution - can
+            // leave the neighbour average above ALSO near zero, so the fix skips it) gets a
+            // tiny deterministic, position-hashed nudge. Without this, two adjacent ORIGINAL
+            // grid vertices can both stay exactly/near zero, and buildSmoothColorMeshes' wall
+            // detection (which flags a polygon edge as an internal state-boundary cut when
+            // both endpoints read ~0) then misfires on that shared original edge from more
+            // than one direction, producing duplicate/non-manifold wall geometry.
+            for (let iv = 0; iv < resVPlus1; iv++) {
+                for (let it = 0; it < resT; it++) {
+                    if (Math.abs(fixed[iv][it]) >= 1e-3) continue;
+                    const h = Math.sin(iv * 12.9898 + it * 78.233) * 43758.5453;
+                    fixed[iv][it] = ((h - Math.floor(h)) < 0.5 ? -1 : 1) * 2e-3;
+                }
+            }
+            return fixed;
+        }
+
+        // Quantized welding in cleanupMesh can occasionally leave a microscopic three-edge
+        // crack where a contour crossing lands almost exactly on an existing vertex (ported
+        // from EquationDrivenBowls.html's equivalent post-pass): find any isolated 3-vertex
+        // boundary loop whose triangle is genuinely degenerate (near-zero area) and add that
+        // one triangle back to close it, since it contributes no visible geometry either way.
+        function sealSmoothContourCracks(mesh) {
+            const vertexCount = mesh.positions.length / 3;
+            if (!vertexCount) return mesh;
+            const edgeInfo = new Map();
+            const edgeKey = (a, b) => a < b ? a * vertexCount + b : b * vertexCount + a;
+            for (let n = 0; n < mesh.indices.length; n += 3) {
+                const a = mesh.indices[n], b = mesh.indices[n + 1], c = mesh.indices[n + 2];
+                for (const edge of [[a, b], [b, c], [c, a]]) {
+                    const key = edgeKey(edge[0], edge[1]);
+                    const info = edgeInfo.get(key);
+                    if (info) info.count++;
+                    else edgeInfo.set(key, { a: edge[0], b: edge[1], count: 1 });
+                }
+            }
+            const boundary = Array.from(edgeInfo.values()).filter(e => e.count === 1);
+            if (!boundary.length) return mesh;
+            const adjacency = new Map();
+            for (const e of boundary) {
+                if (!adjacency.has(e.a)) adjacency.set(e.a, []);
+                if (!adjacency.has(e.b)) adjacency.set(e.b, []);
+                adjacency.get(e.a).push(e.b); adjacency.get(e.b).push(e.a);
+            }
+            const visited = new Set();
+            let sealed = 0;
+            for (const start of adjacency.keys()) {
+                if (visited.has(start)) continue;
+                const component = [], stack = [start];
+                visited.add(start);
+                while (stack.length) {
+                    const v = stack.pop(); component.push(v);
+                    for (const u of adjacency.get(v) || []) if (!visited.has(u)) { visited.add(u); stack.push(u); }
+                }
+                if (component.length !== 3) continue;
+                const [a, b, c] = component;
+                const edgeCount = [edgeKey(a, b), edgeKey(b, c), edgeKey(c, a)]
+                    .filter(key => edgeInfo.get(key) && edgeInfo.get(key).count === 1).length;
+                if (edgeCount !== 3) continue;
+                const pa = a * 3, pb = b * 3, pc = c * 3;
+                const abx = mesh.positions[pb] - mesh.positions[pa], aby = mesh.positions[pb + 1] - mesh.positions[pa + 1], abz = mesh.positions[pb + 2] - mesh.positions[pa + 2];
+                const acx = mesh.positions[pc] - mesh.positions[pa], acy = mesh.positions[pc + 1] - mesh.positions[pa + 1], acz = mesh.positions[pc + 2] - mesh.positions[pa + 2];
+                const nx = aby * acz - abz * acy, ny = abz * acx - abx * acz, nz = abx * acy - aby * acx;
+                if (nx * nx + ny * ny + nz * nz > 1e-12) continue;
+                mesh.indices.push(a, b, c);
+                sealed++;
+            }
+            return sealed ? orientMeshConsistently(mesh) : mesh;
+        }
+
+        // Accumulates raw (ungrouped) triangles for one output mesh; cleanupMesh does the
+        // welding/degenerate-triangle cleanup afterwards, so no de-dup is needed here.
+        function makeContourPool() {
+            const positions = [], indices = [];
+            function tri(a, b, c) {
+                const i0 = positions.length / 3;
+                positions.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
+                indices.push(i0, i0 + 1, i0 + 2);
+            }
+            function quad(a, b, c, d) { tri(a, b, c); tri(a, c, d); }
+            function fan(poly, key) {
+                for (let i = 1; i < poly.length - 1; i++) tri(poly[0][key], poly[i][key], poly[i + 1][key]);
+            }
+            return { positions, indices, tri, quad, fan };
+        }
+
+        // Sutherland-Hodgman half-plane clip of a convex polygon (vertex objects carrying a
+        // scalar `[fieldKey]` plus arbitrary point-valued `pointKeys`, all linearly
+        // interpolated together at each crossing) against `[fieldKey] >= 0` (keepPositive) or
+        // `<= 0`. Returns a new (still convex) polygon; empty/degenerate input yields [].
+        function contourClipPolygon(poly, fieldKey, keepPositive, pointKeys) {
+            const n = poly.length;
+            if (n < 3) return [];
+            function crossing(a, b) {
+                const denom = a[fieldKey] - b[fieldKey];
+                const t = Math.abs(denom) < 1e-12 ? 0.5 : clamp(a[fieldKey] / denom, 0, 1);
+                const out = { fa: a.fa + (b.fa - a.fa) * t, fb: a.fb + (b.fb - a.fb) * t };
+                for (const k of pointKeys) out[k] = lerpPt(a[k], b[k], t);
+                return out;
+            }
+            const inside = q => keepPositive ? q[fieldKey] >= 0 : q[fieldKey] <= 0;
+            const out = [];
+            for (let i = 0; i < n; i++) {
+                const a = poly[i], b = poly[(i + 1) % n];
+                const ain = inside(a), bin = inside(b);
+                if (ain && bin) out.push(b);
+                else if (ain && !bin) out.push(crossing(a, b));
+                else if (!ain && bin) { out.push(crossing(a, b)); out.push(b); }
+            }
+            // Compact consecutive (incl. wrap-around) near-coincident vertices, keyed on the
+            // first point channel. A crossing computed against a vertex that's already exactly
+            // on this field's zero line (e.g. a crossing point produced by an EARLIER clip
+            // pass on a different field, chained into this one - see buildSmoothColorMeshes'
+            // two-stage fa-then-fb clip) can land its interpolation parameter at t=0 or t=1,
+            // coinciding with an existing vertex; left uncompacted this produces degenerate
+            // zero-length polygon edges that still pass a "both endpoints on the zero line"
+            // wall-detection check downstream, emitting spurious duplicate wall geometry.
+            const key = pointKeys[0];
+            const compact = [];
+            for (const p of out) {
+                const prev = compact.length ? compact[compact.length - 1] : null;
+                if (prev) {
+                    const dx = p[key].x - prev[key].x, dy = p[key].y - prev[key].y, dz = p[key].z - prev[key].z;
+                    if (dx * dx + dy * dy + dz * dz < 1e-14) continue;
+                }
+                compact.push(p);
+            }
+            if (compact.length > 1) {
+                const first = compact[0][key], last = compact[compact.length - 1][key];
+                const dx = first.x - last.x, dy = first.y - last.y, dz = first.z - last.z;
+                if (dx * dx + dy * dy + dz * dz < 1e-14) compact.pop();
+            }
+            return compact;
+        }
+
+        // Cutout mode: a single combined material field M = -max(fieldA, fieldB) (positive =
+        // keep, through the full outer->inner wall thickness; negative = hole), contoured
+        // exactly like Bowls' single-field gyroid case. Returns one {positions, indices} mesh,
+        // a drop-in replacement for buildOccupancyMesh(sample, occ.coreOcc, options).
+        function buildSmoothCutoutMesh(sample, cfg, options) {
+            const resV = sample.resV, resT = sample.resT;
+            const fA = smoothFieldNearZeroFix(sample.fieldA, resV + 1, resT);
+            const fB = smoothFieldNearZeroFix(sample.fieldB, resV + 1, resT);
+            const pool = makeContourPool();
+            const pointKeys = ['o', 'i'];
+
+            function corner(iv, it) {
+                // The absolute top/bottom vertex rings are forced to material so the boundary
+                // cap below is always a plain, uncut quad (see plan: a deliberate one-row
+                // margin trade-off for the smoothed geometry, independent of any pattern).
+                const boundary = iv <= 0 || iv >= resV;
+                const f = boundary ? 1 : -Math.max(fA[iv][it], fB[iv][it]);
+                return { o: sample.layers[0][iv][it], i: sample.layers[2][iv][it], fa: f, fb: 0 };
+            }
+
+            function emitTriangle(tri) {
+                const material = contourClipPolygon(tri, 'fa', true, pointKeys);
+                pool.fan(material, 'o');
+                pool.fan(material, 'i');
+                const cuts = [];
+                for (let n = 0; n < 3; n++) {
+                    const a = tri[n], b = tri[(n + 1) % 3];
+                    if ((a.fa >= 0) !== (b.fa >= 0)) {
+                        const denom = a.fa - b.fa;
+                        const t = Math.abs(denom) < 1e-12 ? 0.5 : clamp(a.fa / denom, 0, 1);
+                        cuts.push({ o: lerpPt(a.o, b.o, t), i: lerpPt(a.i, b.i, t) });
+                    }
+                }
+                if (cuts.length === 2) {
+                    const dx = cuts[1].o.x - cuts[0].o.x, dy = cuts[1].o.y - cuts[0].o.y, dz = cuts[1].o.z - cuts[0].o.z;
+                    if (dx * dx + dy * dy + dz * dz >= 1e-14) pool.quad(cuts[0].o, cuts[1].o, cuts[1].i, cuts[0].i);
+                }
+            }
+
+            for (let iv = 0; iv < resV; iv++) {
+                for (let it = 0; it < resT; it++) {
+                    const j = (it + 1) % resT;
+                    const A = corner(iv, it), B = corner(iv, j), C = corner(iv + 1, j), D = corner(iv + 1, it);
+                    emitTriangle([A, B, C]);
+                    emitTriangle([A, C, D]);
+                }
+            }
+
+            if (!options.skipBottomCap) {
+                for (let it = 0; it < resT; it++) {
+                    const j = (it + 1) % resT;
+                    pool.quad(sample.layers[0][0][it], sample.layers[0][0][j], sample.layers[2][0][j], sample.layers[2][0][it]);
+                }
+            }
+            for (let it = 0; it < resT; it++) {
+                const j = (it + 1) % resT;
+                pool.quad(sample.layers[0][resV][it], sample.layers[0][resV][j], sample.layers[2][resV][j], sample.layers[2][resV][it]);
+            }
+
+            return sealSmoothContourCracks(cleanupMesh({ positions: pool.positions, indices: pool.indices }));
+        }
+
+        // Color mode: a 4-way partition of the layer0->layer1 relief slab only (layer1->layer2
+        // is always solid core regardless of state - untouched, no smoothing needed). Each
+        // triangle is clipped first by fieldA's sign then by fieldB's sign (two sequential
+        // contourClipPolygon passes) into up to 4 convex, state-tagged sub-polygons; a polygon
+        // edge whose two endpoints are both ~0 on the same field is an internal state-boundary
+        // cut and gets extruded into a wall, emitted into BOTH neighbouring states' own pools
+        // (their coordinates match exactly, since both derive from the same shared corner
+        // field values, so each state's mesh stays independently watertight and the two meet
+        // seamlessly). Returns { 0: mesh, 1: mesh, 2: mesh, 3: mesh } - drop-in replacements for
+        // coreMesh (state 0) and each surfaceGroups[state].mergedMesh.
+        function buildSmoothColorMeshes(sample, cfg, options) {
+            const resV = sample.resV, resT = sample.resT;
+            const fA = smoothFieldNearZeroFix(sample.fieldA, resV + 1, resT);
+            const fB = smoothFieldNearZeroFix(sample.fieldB, resV + 1, resT);
+            const pools = { 0: makeContourPool(), 1: makeContourPool(), 2: makeContourPool(), 3: makeContourPool() };
+            const pointKeys = ['top', 'bot'];
+            const eps = 1e-9;
+
+            function corner(iv, it) {
+                // Same absolute-boundary-ring margin as the cutout path, forced to state 0
+                // (base) so the boundary cap below is a plain quad into pools[0] only.
+                const boundary = iv <= 0 || iv >= resV;
+                return {
+                    top: sample.layers[0][iv][it],
+                    bot: sample.layers[1][iv][it],
+                    fa: boundary ? -1 : fA[iv][it],
+                    fb: boundary ? -1 : fB[iv][it]
+                };
+            }
+
+            function emitState(poly, state) {
+                if (poly.length < 3) return;
+                const pool = pools[state];
+                pool.fan(poly, 'top');
+                // State 0 never closes its own underside at layer1 - the always-present
+                // layer1->layer2 core body below provides that closure instead, so state 0
+                // stays welded directly into the core with no separate/duplicate seam. States
+                // 1-3 are real, separate colour inserts sitting in a "socket" cut into the
+                // core: they close their own underside here AND that exact same underside
+                // polygon is ALSO the core's own roof exactly beneath them (fanned again, into
+                // pools[0] - reusing this already-clipped polygon instead of a separately
+                // re-derived boundary guarantees the two line up vertex-for-vertex).
+                if (state !== 0) {
+                    pool.fan(poly, 'bot');
+                    pools[0].fan(poly, 'bot');
+                }
+                const n = poly.length;
+                for (let i = 0; i < n; i++) {
+                    const v1 = poly[i], v2 = poly[(i + 1) % n];
+                    const wallA = Math.abs(v1.fa) < eps && Math.abs(v2.fa) < eps;
+                    const wallB = Math.abs(v1.fb) < eps && Math.abs(v2.fb) < eps;
+                    if (!wallA && !wallB) continue;
+                    // A near-corner clip (e.g. a triangle vertex sitting close to both the fa=0
+                    // and fb=0 lines at once) can leave two consecutive polygon vertices
+                    // coincident - a zero-length "edge" that still passes the field-value wall
+                    // check. Skip it: extruding it would emit spurious duplicate/degenerate
+                    // wall geometry (non-manifold edges after welding).
+                    const dx = v2.top.x - v1.top.x, dy = v2.top.y - v1.top.y, dz = v2.top.z - v1.top.z;
+                    if (dx * dx + dy * dy + dz * dz < 1e-14) continue;
+                    pool.quad(v1.top, v2.top, v2.bot, v1.bot);
+                }
+            }
+
+            function emitTriangle(tri) {
+                const posA = contourClipPolygon(tri, 'fa', true, pointKeys);
+                const negA = contourClipPolygon(tri, 'fa', false, pointKeys);
+                emitState(contourClipPolygon(posA, 'fb', true, pointKeys), 3);
+                emitState(contourClipPolygon(posA, 'fb', false, pointKeys), 1);
+                emitState(contourClipPolygon(negA, 'fb', true, pointKeys), 2);
+                emitState(contourClipPolygon(negA, 'fb', false, pointKeys), 0);
+            }
+
+            for (let iv = 0; iv < resV; iv++) {
+                for (let it = 0; it < resT; it++) {
+                    const j = (it + 1) % resT;
+                    const A = corner(iv, it), B = corner(iv, j), C = corner(iv + 1, j), D = corner(iv + 1, it);
+                    emitTriangle([A, B, C]);
+                    emitTriangle([A, C, D]);
+                }
+            }
+
+            // Absolute top/bottom boundary rings are forced to state 0 (see corner()), so no
+            // pattern ever reaches them - the end cap there is the full outer->inner thickness
+            // directly (layer0->layer2), skipping layer1 entirely, exactly like the "no seam
+            // under state 0" reasoning below.
+            if (!options.skipBottomCap) {
+                for (let it = 0; it < resT; it++) {
+                    const j = (it + 1) % resT;
+                    pools[0].quad(sample.layers[0][0][it], sample.layers[0][0][j], sample.layers[2][0][j], sample.layers[2][0][it]);
+                }
+            }
+            for (let it = 0; it < resT; it++) {
+                const j = (it + 1) % resT;
+                pools[0].quad(sample.layers[0][resV][it], sample.layers[0][resV][j], sample.layers[2][resV][j], sample.layers[2][resV][it]);
+            }
+
+            // The layer1->layer2 cavity wall is always present, for every cell, regardless of
+            // state - it's the pot/plate's structural core, not part of the pattern, and stays
+            // a single colour (state 0/base). Its roof at layer1 is provided above wherever a
+            // pattern sits (states 1-3 fan their own underside into pools[0] too - see
+            // emitState) and directly by state 0's own top cap everywhere else (state 0 never
+            // closes its own underside, so the two weld into one seamless body there).
+            for (let iv = 0; iv < resV; iv++) {
+                for (let it = 0; it < resT; it++) {
+                    const j = (it + 1) % resT;
+                    pools[0].quad(sample.layers[2][iv][j], sample.layers[2][iv][it], sample.layers[2][iv + 1][it], sample.layers[2][iv + 1][j]);
+                }
+            }
+
+            const result = {};
+            for (const state of [0, 1, 2, 3]) {
+                result[state] = sealSmoothContourCracks(cleanupMesh({ positions: pools[state].positions, indices: pools[state].indices }));
+            }
+            return result;
         }
 
         // Fallback palette for the rare caller that hands cleanupMesh a raw per-vertex `colors`
@@ -5825,6 +6270,10 @@ ${trianglesXml.join('\n')}
             const occ = buildOccupancies(sample, cfg);
 
             const shouldCloseBottom = cfg.sys === 'cylindrical' && cfg.isPot;
+            // sample.fieldA is only present once every mask-sampling builder has been updated
+            // to compute it (buildCylindricalShell/buildSphericalShell so far) - the guard lets
+            // any not-yet-updated path fall back to the boxy mesh instead of crashing.
+            const smooth = !!cfg.smoothPatternEdges && !!sample.fieldA;
 
             // Per-column state at iv=0 for coloured bottom closure (0 = base/core).
             const columnStates = shouldCloseBottom
@@ -5836,14 +6285,24 @@ ${trianglesXml.join('\n')}
                 })
                 : null;
 
-            let coreMesh = buildOccupancyMesh(sample, occ.coreOcc, {
-                skipMinusIVFace: (k, iv) => shouldCloseBottom && iv === 0
-            });
+            let coreMesh;
+            let smoothColorMeshes = null;
+            if (smooth && occ.cutoutMode) {
+                coreMesh = buildSmoothCutoutMesh(sample, cfg, { skipBottomCap: shouldCloseBottom });
+            } else if (smooth) {
+                smoothColorMeshes = buildSmoothColorMeshes(sample, cfg, { skipBottomCap: shouldCloseBottom });
+                coreMesh = smoothColorMeshes[0];
+            } else {
+                coreMesh = buildOccupancyMesh(sample, occ.coreOcc, {
+                    skipMinusIVFace: (k, iv) => shouldCloseBottom && iv === 0
+                });
+            }
 
             if (shouldCloseBottom) {
                 // Outer bottom fan: only core-coloured columns; inner floor: all columns.
                 coreMesh = appendCylindricalDrainClosure(coreMesh, sample, cfg,
                     columnStates ? it => columnStates[it] === 0 : null);
+                if (smooth) coreMesh = sealSmoothContourCracks(coreMesh);
             }
 
             const stateNames = {
@@ -5852,22 +6311,35 @@ ${trianglesXml.join('\n')}
                 3: 'Overlap'
             };
             const surfaceGroups = [];
-            for (let state = 1; state <= 3; state++) {
-                if (occ.stateCounts[state] <= 0) continue;
-
-                const componentOccs = splitOccupancyComponents(occ.surfaceOccs[state], sample.resV, sample.resT);
-                const meshes = [];
-                const validations = [];
-                componentOccs.forEach((componentOcc, idx) => {
-                    const mesh = buildOccupancyMesh(sample, componentOcc);
-                    meshes.push({
-                        name: `${stateNames[state]} ${idx + 1}`,
-                        mesh
+            // Cutout mode never has per-state surface meshes (a masked cell is a hole, not a
+            // colour insert) in either boxy or smooth mode - smoothColorMeshes is only built
+            // in the color-mode smooth branch above, so it'd be null here.
+            for (let state = 1; state <= 3 && !occ.cutoutMode; state++) {
+                let mergedMesh, meshes, validations;
+                if (smooth) {
+                    // Gate on the smooth mesh actually having geometry (not occ.stateCounts,
+                    // which is cell-center sampled and can occasionally disagree at the
+                    // vertex-sampled contour boundary) so a thin sliver isn't silently dropped.
+                    const mesh = smoothColorMeshes[state];
+                    if (!mesh.positions.length) continue;
+                    mergedMesh = mesh;
+                    meshes = [{ name: `${stateNames[state]} 1`, mesh }];
+                    validations = [validateMesh(mesh)];
+                } else {
+                    if (occ.stateCounts[state] <= 0) continue;
+                    const componentOccs = splitOccupancyComponents(occ.surfaceOccs[state], sample.resV, sample.resT);
+                    meshes = [];
+                    validations = [];
+                    componentOccs.forEach((componentOcc, idx) => {
+                        const mesh = buildOccupancyMesh(sample, componentOcc);
+                        meshes.push({
+                            name: `${stateNames[state]} ${idx + 1}`,
+                            mesh
+                        });
+                        validations.push(validateMesh(mesh));
                     });
-                    validations.push(validateMesh(mesh));
-                });
-
-                let mergedMesh = mergeMeshes(meshes.map(component => component.mesh));
+                    mergedMesh = mergeMeshes(meshes.map(component => component.mesh));
+                }
 
                 // Add inner bottom fans for this state's columns (closes r_pattern→centre area).
                 if (shouldCloseBottom && columnStates) {
