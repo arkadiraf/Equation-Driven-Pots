@@ -122,6 +122,13 @@ base - when false the base always renders in baseColor regardless of the masks.
 LAYER 6: MESH + SMOOTHING
 resV / resT set resolution. shellSmoothEnabled + shellSmoothPasses Laplacian-smooth the shell to
 soften faceting (the foot and rim stay anchored).
+- smoothPatternEdges (boolean, default false): recalculates the open-work pattern's boundary as
+  interpolated diagonal contour triangles instead of whole stepped grid cells - a "high quality"
+  finish. Works for every patternStyle except "solid" and "origami" (neither has an open-work
+  boundary to smooth, so the flag has no effect there). Set it true whenever the strut/hole
+  boundary is curved, diagonal, or organic enough that stepping would be visible, or a smooth/
+  high-quality finish was requested - it costs extra build time and leaves a thin forced-solid
+  margin right at the foot/rim rows.
 
 ==================================================
 5. COORDINATE SYSTEMS
@@ -431,7 +438,7 @@ turingType: "maze" | "spots" | "stripes"
 presetSelect: a valid form preset name for the chosen coordinate system (see section 13).
 patternPresetSelect1 / patternPresetSelect2: a valid mask preset name (see section 13).
 checks (booleans): lampMode, basePattern, baseColorEnabled, ringBaseEnabled, ringColorEnabled,
-solidLiner, transparentFrame, shellSmoothEnabled, showWire.
+solidLiner, transparentFrame, shellSmoothEnabled, showWire, smoothPatternEdges.
 All "values" entries are strings; numeric ones are numbers written as strings (e.g. "16").
 Units: thickness/hole/gap/loop-size fields ending in Thickness, Hole, Width (slit/const/gc),
 Web, or W are millimeters, EXCEPT rippleWavelength and spiroLoop which are centimeters (like
@@ -504,27 +511,27 @@ patternStyle you actually chose; the rest are ignored by the app but must still 
     "ringCut": "0.25",
     "patternStyle": "voronoi",
     "vorDensity": "160",
-    "vorThickness": "2.0",
+    "vorThickness": "5.0",
     "vorJitter": "0.7",
     "vorSeed": "7",
     "latDensity": "22",
-    "latThickness": "2.0",
+    "latThickness": "5.0",
     "weaveDensity": "20",
-    "weaveThickness": "2.0",
+    "weaveThickness": "5.0",
     "waveDensity": "16",
-    "waveThicknessV": "2.0",
-    "waveThicknessH": "2.0",
+    "waveThicknessV": "5.0",
+    "waveThicknessH": "5.0",
     "waveAmp": "0.5",
     "waveCount": "3",
     "gyroidDensity": "16",
-    "gyroidThickness": "2.2",
+    "gyroidThickness": "5.0",
     "origamiSides": "16",
     "origamiRows": "9",
     "origamiJitter": "0.12",
     "fibA": "8",
     "fibB": "13",
     "fibTwist": "2",
-    "fibThickness": "2.0",
+    "fibThickness": "5.0",
     "phylCount": "260",
     "phylHoleR": "3.0",
     "turingType": "maze",
@@ -533,7 +540,7 @@ patternStyle you actually chose; the rest are ignored by the app but must still 
     "turingLevel": "0.25",
     "turingSeed": "3",
     "flCount": "18",
-    "flThickness": "2.4",
+    "flThickness": "5.0",
     "flWander": "0.3",
     "flVFreq": "2",
     "flWidthMod": "0.4",
@@ -543,32 +550,32 @@ patternStyle you actually chose; the rest are ignored by the app but must still 
     "lifeSeed": "5",
     "chlN": "6",
     "chlM": "3",
-    "chlThickness": "2.2",
+    "chlThickness": "5.0",
     "schwarzDensity": "12",
-    "schwarzThickness": "2.5",
+    "schwarzThickness": "5.0",
     "schwarzdDensity": "12",
-    "schwarzdThickness": "2.5",
+    "schwarzdThickness": "5.0",
     "hexDensity": "14",
-    "hexThickness": "2.0",
+    "hexThickness": "5.0",
     "boneDensity": "10",
     "boneFill": "0.1",
     "truchetDensity": "12",
-    "truchetThickness": "2.0",
+    "truchetThickness": "5.0",
     "truchetSeed": "1",
     "quasiDensity": "6",
     "quasiWaves": "5",
     "quasiWidth": "0.18",
     "mazeDensity": "16",
-    "mazeThickness": "2.5",
+    "mazeThickness": "5.0",
     "mazeSeed": "1",
     "scaleDensity": "10",
-    "scaleThickness": "2.0",
+    "scaleThickness": "5.0",
     "starDensity": "8",
-    "starThickness": "2.0",
+    "starThickness": "5.0",
     "greekCount": "8",
-    "greekThickness": "2.0",
+    "greekThickness": "5.0",
     "crackleDensity": "14",
-    "crackleThickness": "2.0",
+    "crackleThickness": "5.0",
     "crackleSeed": "3",
     "causticScale": "5",
     "causticLevel": "0.1",
@@ -587,16 +594,16 @@ patternStyle you actually chose; the rest are ignored by the app but must still 
     "constLineW": "1.2",
     "constSeed": "9",
     "kumikoDensity": "12",
-    "kumikoThickness": "1.6",
+    "kumikoThickness": "5.0",
     "veinRoots": "8",
-    "veinThickness": "3.0",
+    "veinThickness": "5.0",
     "veinSplitProb": "0.06",
     "veinWander": "0.35",
     "veinSeed": "11",
     "foamCount": "70",
     "foamMinHole": "2.0",
     "foamMaxHole": "7.0",
-    "foamWeb": "1.5",
+    "foamWeb": "5.0",
     "foamSeed": "13",
     "rippleSources": "3",
     "rippleWavelength": "1.2",
@@ -606,9 +613,9 @@ patternStyle you actually chose; the rest are ignored by the app but must still 
     "spiroLobes": "7",
     "spiroLoop": "1.2",
     "spiroHeight": "0.9",
-    "spiroThickness": "2.2",
+    "spiroThickness": "5.0",
     "gcCount": "90",
-    "gcThickness": "2.0",
+    "gcThickness": "5.0",
     "gcContrast": "1.5",
     "gcSeed": "21",
     "patternPresetSelect1": "None (Solid Base Color)",
@@ -632,7 +639,8 @@ patternStyle you actually chose; the rest are ignored by the app but must still 
     "solidLiner": false,
     "transparentFrame": false,
     "shellSmoothEnabled": false,
-    "showWire": false
+    "showWire": false,
+    "smoothPatternEdges": false
   }
 }
 
@@ -652,6 +660,10 @@ patternStyle you actually chose; the rest are ignored by the app but must still 
 - basePattern only in cylindrical mode; ringBaseEnabled only in spherical mode; never both true
   at once with lampMode.
 - Keep the design printable per section 11.
+- Set smoothPatternEdges to true when patternStyle is anything other than "solid" or "origami"
+  (see LAYER 6) and a smooth/high-quality finish was requested or the pattern's boundary is
+  clearly curved/diagonal/organic; otherwise leave it false, since it has no visible effect on
+  those two styles and costs extra build time.
 - The generated configuration must load into the current Equation Driven Bowls app.
 
 ==================================================

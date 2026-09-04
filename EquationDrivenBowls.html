@@ -552,7 +552,7 @@
                 <div class="input-group"><label>Density (divisions)</label><input type="number" id="latDensity"
                         value="22" step="1" min="2" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Strut Thickness (mm)</label><input type="number" id="latThickness"
-                        value="2.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
             </div>
             <div class="desc-text">A regular grid of vertical and horizontal ribs wrapping the body.</div>
         </div>
@@ -562,7 +562,7 @@
                 <div class="input-group"><label>Density (strands)</label><input type="number" id="weaveDensity"
                         value="20" step="1" min="2" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Strut Thickness (mm)</label><input type="number" id="weaveThickness"
-                        value="2.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
             </div>
             <div class="desc-text">Two crossing diagonal strand families form a braided, basket-weave net.</div>
         </div>
@@ -576,9 +576,9 @@
             </div>
             <div class="grid-inputs">
                 <div class="input-group"><label>Vertical Rib (mm)</label><input type="number" id="waveThicknessV"
-                        value="2.0" step="0.1" min="0" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Horizontal Rib (mm)</label><input type="number" id="waveThicknessH"
-                        value="2.0" step="0.1" min="0" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0" oninput="updatePreview()"></div>
             </div>
             <div class="input-group"><label>Waviness</label><input type="number" id="waveAmp" value="0.5" step="0.05"
                     min="0" max="1.5" oninput="updatePreview()"></div>
@@ -592,7 +592,7 @@
                 <div class="input-group"><label>Density (cells)</label><input type="number" id="gyroidDensity"
                         value="14" step="1" min="2" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Sheet Thickness (mm)</label><input type="number" id="gyroidThickness"
-                        value="2.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
             </div>
             <div class="desc-text">Gyroid triply-periodic minimal surface, sampled in world space so it tiles
                 seamlessly around the body. Density sets the cell count; thickness the wall of the gyroid sheet.</div>
@@ -622,7 +622,7 @@
                 <div class="input-group"><label>Twist (vert. wraps)</label><input type="number" id="fibTwist" value="2"
                         step="0.5" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Strut Thickness (mm)</label><input type="number" id="fibThickness"
-                        value="2.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
             </div>
             <div class="desc-text">Two counter-rotating spiral families with consecutive Fibonacci arm counts (e.g. 8 &
                 13) form the classic parastichy crisscross. Twist sets how steeply the arms climb.</div>
@@ -668,7 +668,7 @@
                 <div class="input-group"><label>Flute Count</label><input type="number" id="flCount" value="18"
                         step="1" min="1" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Strut Thickness (mm)</label><input type="number" id="flThickness"
-                        value="2.4" step="0.1" min="0.4" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
             </div>
             <div class="grid-3">
                 <div class="input-group"><label>Wander</label><input type="number" id="flWander" value="0.3"
@@ -707,7 +707,7 @@
                         step="1" min="1" oninput="updatePreview()"></div>
             </div>
             <div class="input-group"><label>Line Thickness (mm)</label><input type="number" id="chlThickness"
-                    value="2.2" step="0.1" min="0.4" oninput="updatePreview()"></div>
+                    value="5.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
             <div class="desc-text">Chladni resonance figure: material follows the nodal lines of a standing wave with
                 angular mode n and vertical mode m.</div>
         </div>
@@ -717,7 +717,7 @@
                 <div class="input-group"><label>Density (cells)</label><input type="number" id="schwarzDensity"
                         value="12" step="1" min="2" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Sheet Thickness (mm)</label><input type="number" id="schwarzThickness"
-                        value="2.5" step="0.1" min="0.4" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
             </div>
             <div class="desc-text">Schwarz P triply-periodic minimal surface: a boxy, architectural scaffold
                 (cos(kx)+cos(ky)+cos(kz)=0), sampled in world space so it tiles seamlessly.</div>
@@ -728,7 +728,7 @@
                 <div class="input-group"><label>Density (cells)</label><input type="number" id="schwarzdDensity"
                         value="12" step="1" min="2" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Sheet Thickness (mm)</label><input type="number" id="schwarzdThickness"
-                        value="2.5" step="0.1" min="0.4" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
             </div>
             <div class="desc-text">Schwarz D (Diamond) triply-periodic minimal surface: a denser, tetrahedral network
                 sitting between the gyroid and Schwarz P.</div>
@@ -739,7 +739,7 @@
                 <div class="input-group"><label>Density (hexes)</label><input type="number" id="hexDensity" value="14"
                         step="1" min="2" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Strut Thickness (mm)</label><input type="number" id="hexThickness"
-                        value="2.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
             </div>
             <div class="desc-text">Staggered hexagonal honeycomb cells (Voronoi of a hex lattice) for an efficient,
                 nature-inspired structure.</div>
@@ -761,7 +761,7 @@
                 <div class="input-group"><label>Density (tiles)</label><input type="number" id="truchetDensity"
                         value="12" step="1" min="2" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Strut (mm)</label><input type="number" id="truchetThickness"
-                        value="2.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Seed</label><input type="number" id="truchetSeed" value="1" step="1"
                         min="0" oninput="updatePreview()"></div>
             </div>
@@ -786,7 +786,7 @@
             <div class="grid-3">
                 <div class="input-group"><label>Density (cells)</label><input type="number" id="mazeDensity" value="16"
                         step="1" min="3" oninput="updatePreview()"></div>
-                <div class="input-group"><label>Strut (mm)</label><input type="number" id="mazeThickness" value="2.5"
+                <div class="input-group"><label>Strut (mm)</label><input type="number" id="mazeThickness" value="5.0"
                         step="0.1" min="0.4" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Seed</label><input type="number" id="mazeSeed" value="1" step="1"
                         min="0" oninput="updatePreview()"></div>
@@ -800,7 +800,7 @@
                 <div class="input-group"><label>Density (scales)</label><input type="number" id="scaleDensity"
                         value="10" step="1" min="2" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Strut Thickness (mm)</label><input type="number" id="scaleThickness"
-                        value="2.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
             </div>
             <div class="desc-text">Overlapping fish-scale / Seigaiha wave rings - a classic ceramic motif.</div>
         </div>
@@ -810,7 +810,7 @@
                 <div class="input-group"><label>Density</label><input type="number" id="starDensity" value="8" step="1"
                         min="2" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Strut Thickness (mm)</label><input type="number" id="starThickness"
-                        value="2.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
             </div>
             <div class="desc-text">Islamic-style star-and-cross lattice from overlaid orthogonal and diagonal line
                 families (octagons and stars).</div>
@@ -821,7 +821,7 @@
                 <div class="input-group"><label>Count (frets)</label><input type="number" id="greekCount" value="8"
                         step="1" min="2" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Strut Thickness (mm)</label><input type="number" id="greekThickness"
-                        value="2.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
             </div>
             <div class="desc-text">Repeating Greek key / meander fret tiled around (and up) the wall.</div>
         </div>
@@ -831,7 +831,7 @@
                 <div class="input-group"><label>Density (cells around)</label><input type="number" id="crackleDensity"
                         value="14" step="1" min="2" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Strut Thickness (mm)</label><input type="number" id="crackleThickness"
-                        value="2.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
             </div>
             <div class="input-group"><label>Random Seed</label><input type="number" id="crackleSeed" value="3" step="1"
                     min="0" oninput="updatePreview()"></div>
@@ -914,7 +914,7 @@
                 <div class="input-group"><label>Density (triangles around)</label><input type="number"
                         id="kumikoDensity" value="12" step="1" min="3" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Strut Thickness (mm)</label><input type="number" id="kumikoThickness"
-                        value="1.6" step="0.1" min="0.4" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
             </div>
             <div class="desc-text">Traditional Japanese shoji hemp-leaf (asanoha) lattice: an equilateral triangular
                 grid with spokes from each triangle's centroid to its three corners, casting six-pointed star
@@ -926,7 +926,7 @@
                 <div class="input-group"><label>Root Count</label><input type="number" id="veinRoots" value="8"
                         step="1" min="1" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Trunk Thickness (mm)</label><input type="number" id="veinThickness"
-                        value="3.0" step="0.2" min="0.6" oninput="updatePreview()"></div>
+                        value="5.0" step="0.2" min="0.6" oninput="updatePreview()"></div>
             </div>
             <div class="grid-inputs">
                 <div class="input-group"><label>Split Probability</label><input type="number" id="veinSplitProb"
@@ -950,7 +950,7 @@
                         step="0.2" min="0.6" oninput="updatePreview()"></div>
             </div>
             <div class="grid-inputs">
-                <div class="input-group"><label>Web Gap (mm)</label><input type="number" id="foamWeb" value="1.5"
+                <div class="input-group"><label>Web Gap (mm)</label><input type="number" id="foamWeb" value="5.0"
                         step="0.1" min="0.4" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Random Seed</label><input type="number" id="foamSeed" value="13"
                         step="1" min="0" oninput="updatePreview()"></div>
@@ -989,7 +989,7 @@
                 <div class="input-group"><label>Band Height (0-1)</label><input type="number" id="spiroHeight"
                         value="0.9" step="0.05" min="0.1" max="1" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Ribbon Thickness (mm)</label><input type="number" id="spiroThickness"
-                        value="2.2" step="0.1" min="0.5" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0.5" oninput="updatePreview()"></div>
             </div>
             <div class="desc-text">A single continuous cycloidal ribbon winds k times around the band; loops appear
                 once Loop Size overcomes the linear advance. Band Height near 1 lets the loops graze base and rim.</div>
@@ -1000,7 +1000,7 @@
                 <div class="input-group"><label>Cell Count</label><input type="number" id="gcCount" value="90"
                         step="5" min="6" oninput="updatePreview()"></div>
                 <div class="input-group"><label>Strut Thickness (mm)</label><input type="number" id="gcThickness"
-                        value="2.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
+                        value="5.0" step="0.1" min="0.4" oninput="updatePreview()"></div>
             </div>
             <div class="grid-inputs">
                 <div class="input-group"><label>Mask Contrast</label><input type="number" id="gcContrast" value="1.5"
@@ -1081,9 +1081,9 @@
             <label for="smoothPatternEdges" style="margin:0; cursor:pointer; overflow:visible;">Smooth Pattern Edges
                 (high quality)</label>
         </div>
-        <div class="desc-text">Uses interpolated diagonal contour triangles instead of whole stepped cells when a
-            pattern supplies a continuous field (currently Gyroid). Off preserves the original mesh exactly. A
-            perforated Base Pattern currently retains stepped edges so its radial mesh stays compatible.</div>
+        <div class="desc-text">Uses interpolated diagonal contour triangles instead of whole stepped cells, for every
+            open-work pattern style (Solid and Low-Poly have no boundary to smooth). Off preserves the original mesh
+            exactly. A perforated Base Pattern currently retains stepped edges so its radial mesh stays compatible.</div>
         <div class="grid-inputs">
             <div class="input-group" style="display:flex; align-items:flex-end;">
                 <span style="display:inline-flex; align-items:center; gap:8px; padding-bottom:8px;">
@@ -1662,23 +1662,23 @@
                 vorJitter: clamp(num('vorJitter', 0.7), 0, 1),
                 vorSeed: Math.max(0, intv('vorSeed', 7)),
                 latDensity: Math.max(2, intv('latDensity', 22)),
-                latThickness: Math.max(0.4, num('latThickness', 2.0)) / 10,
+                latThickness: Math.max(0.4, num('latThickness', 5.0)) / 10,
                 weaveDensity: Math.max(2, intv('weaveDensity', 20)),
-                weaveThickness: Math.max(0.4, num('weaveThickness', 2.0)) / 10,
+                weaveThickness: Math.max(0.4, num('weaveThickness', 5.0)) / 10,
                 waveDensity: Math.max(2, intv('waveDensity', 16)),
-                waveThicknessV: Math.max(0, num('waveThicknessV', 2.0)) / 10,
-                waveThicknessH: Math.max(0, num('waveThicknessH', 2.0)) / 10,
+                waveThicknessV: Math.max(0, num('waveThicknessV', 5.0)) / 10,
+                waveThicknessH: Math.max(0, num('waveThicknessH', 5.0)) / 10,
                 waveAmp: clamp(num('waveAmp', 0.5), 0, 1.5),
                 waveCount: Math.max(1, intv('waveCount', 3)),
                 gyroidDensity: Math.max(2, num('gyroidDensity', 14)),
-                gyroidThickness: Math.max(0.4, num('gyroidThickness', 2.0)) / 10,
+                gyroidThickness: Math.max(0.4, num('gyroidThickness', 5.0)) / 10,
                 origamiSides: Math.max(3, intv('origamiSides', 16)),
                 origamiRows: Math.max(2, intv('origamiRows', 9)),
                 origamiJitter: clamp(num('origamiJitter', 0.12), 0, 0.6),
                 fibA: Math.max(1, intv('fibA', 8)),
                 fibB: Math.max(1, intv('fibB', 13)),
                 fibTwist: num('fibTwist', 2),
-                fibThickness: Math.max(0.4, num('fibThickness', 2.0)) / 10,
+                fibThickness: Math.max(0.4, num('fibThickness', 5.0)) / 10,
                 phylCount: Math.max(10, intv('phylCount', 260)),
                 phylHoleR: Math.max(0.4, num('phylHoleR', 3.0)) / 10,
                 turingType: document.getElementById('turingType').value,
@@ -1687,7 +1687,7 @@
                 turingLevel: clamp(num('turingLevel', 0.25), 0.05, 0.8),
                 turingSeed: Math.max(0, intv('turingSeed', 3)),
                 flCount: Math.max(1, intv('flCount', 18)),
-                flThickness: Math.max(0.4, num('flThickness', 2.4)) / 10,
+                flThickness: Math.max(0.4, num('flThickness', 5.0)) / 10,
                 flWander: clamp(num('flWander', 0.3), 0, 2),
                 flVFreq: Math.max(0, num('flVFreq', 2)),
                 flWidthMod: clamp(num('flWidthMod', 0.4), 0, 0.95),
@@ -1697,32 +1697,32 @@
                 lifeSeed: Math.max(0, intv('lifeSeed', 5)),
                 chlN: Math.max(1, intv('chlN', 6)),
                 chlM: Math.max(1, intv('chlM', 3)),
-                chlThickness: Math.max(0.4, num('chlThickness', 2.2)) / 10,
+                chlThickness: Math.max(0.4, num('chlThickness', 5.0)) / 10,
                 schwarzDensity: Math.max(2, num('schwarzDensity', 12)),
-                schwarzThickness: Math.max(0.4, num('schwarzThickness', 2.5)) / 10,
+                schwarzThickness: Math.max(0.4, num('schwarzThickness', 5.0)) / 10,
                 schwarzdDensity: Math.max(2, num('schwarzdDensity', 12)),
-                schwarzdThickness: Math.max(0.4, num('schwarzdThickness', 2.5)) / 10,
+                schwarzdThickness: Math.max(0.4, num('schwarzdThickness', 5.0)) / 10,
                 hexDensity: Math.max(2, intv('hexDensity', 14)),
-                hexThickness: Math.max(0.4, num('hexThickness', 2.0)) / 10,
+                hexThickness: Math.max(0.4, num('hexThickness', 5.0)) / 10,
                 boneDensity: Math.max(2, num('boneDensity', 10)),
                 boneFill: clamp(num('boneFill', 0.1), -0.6, 0.6),
                 truchetDensity: Math.max(2, intv('truchetDensity', 12)),
-                truchetThickness: Math.max(0.4, num('truchetThickness', 2.0)) / 10,
+                truchetThickness: Math.max(0.4, num('truchetThickness', 5.0)) / 10,
                 truchetSeed: Math.max(0, intv('truchetSeed', 1)),
                 quasiDensity: Math.max(1, num('quasiDensity', 6)),
                 quasiWaves: clamp(intv('quasiWaves', 5), 2, 12),
                 quasiWidth: clamp(num('quasiWidth', 0.18), 0.03, 0.5),
                 mazeDensity: Math.max(3, intv('mazeDensity', 16)),
-                mazeThickness: Math.max(0.4, num('mazeThickness', 2.5)) / 10,
+                mazeThickness: Math.max(0.4, num('mazeThickness', 5.0)) / 10,
                 mazeSeed: Math.max(0, intv('mazeSeed', 1)),
                 scaleDensity: Math.max(2, intv('scaleDensity', 10)),
-                scaleThickness: Math.max(0.4, num('scaleThickness', 2.0)) / 10,
+                scaleThickness: Math.max(0.4, num('scaleThickness', 5.0)) / 10,
                 starDensity: Math.max(2, intv('starDensity', 8)),
-                starThickness: Math.max(0.4, num('starThickness', 2.0)) / 10,
+                starThickness: Math.max(0.4, num('starThickness', 5.0)) / 10,
                 greekCount: Math.max(2, intv('greekCount', 8)),
-                greekThickness: Math.max(0.4, num('greekThickness', 2.0)) / 10,
+                greekThickness: Math.max(0.4, num('greekThickness', 5.0)) / 10,
                 crackleDensity: Math.max(2, intv('crackleDensity', 14)),
-                crackleThickness: Math.max(0.4, num('crackleThickness', 2.0)) / 10,
+                crackleThickness: Math.max(0.4, num('crackleThickness', 5.0)) / 10,
                 crackleSeed: Math.max(0, intv('crackleSeed', 3)),
                 causticScale: Math.max(0.5, num('causticScale', 5)),
                 causticLevel: clamp(num('causticLevel', 0.1), 0.02, 0.4),
@@ -1741,16 +1741,16 @@
                 constLineW: Math.max(0.4, num('constLineW', 1.2)) / 10,
                 constSeed: Math.max(0, intv('constSeed', 9)),
                 kumikoDensity: Math.max(3, intv('kumikoDensity', 12)),
-                kumikoThickness: Math.max(0.4, num('kumikoThickness', 1.6)) / 10,
+                kumikoThickness: Math.max(0.4, num('kumikoThickness', 5.0)) / 10,
                 veinRoots: Math.max(1, intv('veinRoots', 8)),
-                veinThickness: Math.max(0.6, num('veinThickness', 3.0)) / 10,
+                veinThickness: Math.max(0.6, num('veinThickness', 5.0)) / 10,
                 veinSplitProb: clamp(num('veinSplitProb', 0.06), 0, 0.3),
                 veinWander: clamp(num('veinWander', 0.35), 0, 2),
                 veinSeed: Math.max(0, intv('veinSeed', 11)),
                 foamCount: Math.max(6, intv('foamCount', 70)),
                 foamMinHole: Math.max(0.4, num('foamMinHole', 2.0)) / 10,
                 foamMaxHole: Math.max(0.6, num('foamMaxHole', 7.0)) / 10,
-                foamWeb: Math.max(0.4, num('foamWeb', 1.5)) / 10,
+                foamWeb: Math.max(0.4, num('foamWeb', 5.0)) / 10,
                 foamSeed: Math.max(0, intv('foamSeed', 13)),
                 rippleSources: clamp(intv('rippleSources', 3), 2, 4),
                 rippleWavelength: Math.max(0.3, num('rippleWavelength', 1.2)),
@@ -1760,9 +1760,9 @@
                 spiroLobes: Math.max(1, intv('spiroLobes', 7)),
                 spiroLoop: Math.max(0, num('spiroLoop', 1.2)),
                 spiroHeight: clamp(num('spiroHeight', 0.9), 0.1, 1),
-                spiroThickness: Math.max(0.5, num('spiroThickness', 2.2)) / 10,
+                spiroThickness: Math.max(0.5, num('spiroThickness', 5.0)) / 10,
                 gcCount: Math.max(6, intv('gcCount', 90)),
-                gcThickness: Math.max(0.4, num('gcThickness', 2.0)) / 10,
+                gcThickness: Math.max(0.4, num('gcThickness', 5.0)) / 10,
                 gcContrast: clamp(num('gcContrast', 1.5), 0.5, 3),
                 gcSeed: Math.max(0, intv('gcSeed', 21)),
                 patternEq1: document.getElementById('patternEquation1').value || "-1",
@@ -1838,13 +1838,17 @@
                 const cols = cfg.latDensity;
                 const rows = Math.max(1, Math.round(cfg.latDensity * bandH / circ));
                 const du = circ / cols, dv = bandH / rows;
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ;
                     const dCol = Math.abs(((u % du) + du) % du - du / 2);
                     const ss = s - bandS0;
                     const dRow = Math.abs(((ss % dv) + dv) % dv - dv / 2);
-                    return (du / 2 - dCol) < half || (dv / 2 - dRow) < half;
+                    const fCol = half - du / 2 + dCol, fRow = half - dv / 2 + dRow;
+                    return Math.max(fCol, fRow);
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'weave') {
@@ -1856,10 +1860,18 @@
                     const f = ((phase % 1) + 1) % 1;
                     return (0.5 - Math.abs(f - 0.5)) * sp / SQ2;
                 };
-                return (theta, s) => {
+                // Signed distance INTO each strand (positive = material), unioned via max() -
+                // max(fA,fB) > 0 iff fA>0 or fB>0, so this reproduces the boolean OR test below
+                // exactly while staying continuous for the optional contour mesher.
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
-                    return diagDist((u + ss) / sp) < half || diagDist((u - ss) / sp) < half;
+                    const fA = half - diagDist((u + ss) / sp);
+                    const fB = half - diagDist((u - ss) / sp);
+                    return Math.max(fA, fB);
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'wave') {
@@ -1871,14 +1883,22 @@
                 const amp = cfg.waveAmp;
                 const kU = 2 * Math.PI * cfg.waveCount / bandH;   // vertical ribs wobble along s
                 const kV = 2 * Math.PI * cfg.waveCount / circ;    // horizontal ribs wobble along u
-                return (theta, s) => {
+                // Signed distance INTO each rib family (positive = material), unioned via
+                // max() the same way as weave() above; a disabled family (half<=0) is pinned
+                // deeply negative so it can never win the max and reappear as a phantom rib.
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
                     const uW = u + amp * du * Math.sin(kU * ss);
                     const dCol = Math.abs(((uW % du) + du) % du - du / 2);
                     const sW = ss + amp * dv * Math.cos(kV * u);
                     const dRow = Math.abs(((sW % dv) + dv) % dv - dv / 2);
-                    return (halfV > 0 && (du / 2 - dCol) < halfV) || (halfH > 0 && (dv / 2 - dRow) < halfH);
+                    const fV = halfV > 0 ? (halfV - du / 2 + dCol) : -1e9;
+                    const fH = halfH > 0 ? (halfH - dv / 2 + dRow) : -1e9;
+                    return Math.max(fV, fH);
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'origami') return () => true;   // solid; faceting handled in mesh build
@@ -1905,10 +1925,16 @@
                 const k = cfg.schwarzDensity / Rref;
                 const half = cfg.schwarzThickness / 2;
                 const t = clamp(half * k * 1.1, 0.04, 1.45);
-                return (theta, s, x, y, z) => {
+                // Positive means printable Schwarz P material - same signed-field convention
+                // as gyroid, so the optional contour mesher can interpolate the exact F=0
+                // crossing on triangle edges instead of stepping at the sampled cell grid.
+                const field = (theta, s, x, y, z) => {
                     const P = Math.cos(k * x) + Math.cos(k * y) + Math.cos(k * z);
-                    return Math.abs(P) < t;
+                    return t - Math.abs(P);
                 };
+                const predicate = (theta, s, x, y, z) => field(theta, s, x, y, z) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'schwarzd') {
@@ -1916,12 +1942,15 @@
                 const k = cfg.schwarzdDensity / Rref;
                 const half = cfg.schwarzdThickness / 2;
                 const t = clamp(half * k * 1.5, 0.04, 0.9);
-                return (theta, s, x, y, z) => {
+                const field = (theta, s, x, y, z) => {
                     const sx = Math.sin(k * x), sy = Math.sin(k * y), sz = Math.sin(k * z);
                     const cx = Math.cos(k * x), cy = Math.cos(k * y), cz = Math.cos(k * z);
                     const D = sx * sy * sz + sx * cy * cz + cx * sy * cz + cx * cy * sz;
-                    return Math.abs(D) < t;
+                    return t - Math.abs(D);
                 };
+                const predicate = (theta, s, x, y, z) => field(theta, s, x, y, z) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'honeycomb') {
@@ -1929,7 +1958,7 @@
                 const half = cfg.hexThickness / 2;
                 const cellW = circ / cfg.hexDensity;        // horizontal centre spacing
                 const rowH = cellW * Math.sqrt(3) / 2;       // vertical centre spacing
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
                     const r0 = Math.round(ss / rowH);
                     let d1 = Infinity, d2 = Infinity;
@@ -1944,8 +1973,11 @@
                             if (dd < d1) { d2 = d1; d1 = dd; } else if (dd < d2) { d2 = dd; }
                         }
                     }
-                    return (Math.sqrt(d2) - Math.sqrt(d1)) * 0.5 < half;   // near a Voronoi (hex) edge
+                    return half - (Math.sqrt(d2) - Math.sqrt(d1)) * 0.5;   // near a Voronoi (hex) edge
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'trabecular') {
@@ -1953,15 +1985,18 @@
                 const k = cfg.boneDensity / Rref;
                 const threshold = cfg.boneFill;
                 const dirs = [{ x: 0.8, y: 0.6, z: 0.0 }, { x: -0.6, y: 0.8, z: 0.0 }, { x: 0.0, y: 0.6, z: 0.8 }, { x: 0.5, y: -0.5, z: 0.7 }];
-                return (theta, s, x, y, z) => {
+                const field = (theta, s, x, y, z) => {
                     let val = 0, freq = k, amp = 1.0, maxAmp = 0;
                     for (let i = 0; i < 4; i++) {
                         const d = dirs[i];
                         val += Math.sin((x * d.x + y * d.y + z * d.z) * freq) * amp;
                         maxAmp += amp; freq *= 2.1; amp *= 0.5;
                     }
-                    return val / maxAmp > threshold;
+                    return val / maxAmp - threshold;
                 };
+                const predicate = (theta, s, x, y, z) => field(theta, s, x, y, z) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'fibonacci') {
@@ -1971,12 +2006,15 @@
                 const g1 = Math.hypot(n1 / circ, tw / bandH);     // |grad| of phase 1
                 const g2 = Math.hypot(n2 / circ, tw / bandH);
                 const distToLine = (phase, g) => { const f = ((phase % 1) + 1) % 1; return (0.5 - Math.abs(f - 0.5)) / g; };
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
                     const p1 = (u / circ) * n1 + tw * (ss / bandH);
                     const p2 = (u / circ) * n2 - tw * (ss / bandH);
-                    return distToLine(p1, g1) < half || distToLine(p2, g2) < half;
+                    return Math.max(half - distToLine(p1, g1), half - distToLine(p2, g2));
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'phyllotaxis') {
@@ -1995,18 +2033,25 @@
                 // every seed on every query is unnecessary.
                 const perIndexH = bandH / N;
                 const halfWindow = Math.ceil(holeR / Math.max(1e-9, perIndexH)) + 1;
-                return (theta, s) => {
+                // Signed distance to the nearest hole edge (positive = material, outside every
+                // hole in range); material = min > 0 since it must be outside ALL nearby holes.
+                const field = (theta, s) => {
                     const pu = (theta / (2 * Math.PI)) * circ, pv = s;
                     const centerI = ((pv - bandS0) / bandH) * N - 0.5;
                     const loI = Math.max(0, Math.floor(centerI - halfWindow));
                     const hiI = Math.min(N - 1, Math.ceil(centerI + halfWindow));
+                    let best = Infinity;
                     for (let i = loI; i <= hiI; i++) {
                         let dx = seeds[i].u - pu; dx -= circ * Math.round(dx / circ);
                         const dy = seeds[i].v - pv;
-                        if (dx * dx + dy * dy < holeR * holeR) return false; // inside a hole
+                        const d = Math.hypot(dx, dy) - holeR;
+                        if (d < best) best = d;
                     }
-                    return true;
+                    return best;
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'fluting') {
@@ -2014,14 +2059,17 @@
                 const N = cfg.flCount, halfBase = cfg.flThickness / 2;
                 const kS = 2 * Math.PI * cfg.flVFreq / bandH;
                 const span = circ / N;                       // angular cm per flute
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const ss = s - bandS0;
                     const phase = (N * theta) / (2 * Math.PI) + cfg.flWander * Math.sin(kS * ss);
                     const f = ((phase % 1) + 1) % 1;
                     const distCm = (0.5 - Math.abs(f - 0.5)) * span;
                     const half = Math.max(0.02, halfBase * (1 + cfg.flWidthMod * Math.sin(kS * ss + 1.3)));
-                    return distCm < half;
+                    return half - distCm;
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'chladni') {
@@ -2029,11 +2077,14 @@
                 const n = cfg.chlN, m = cfg.chlM, half = cfg.chlThickness / 2;
                 const meanGrad = Math.sqrt(Math.pow(n / Rref, 2) + Math.pow(m * Math.PI / bandH, 2)) || 1;
                 const level = half * meanGrad;
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const p = (s - bandS0) / bandH;
                     const C = Math.cos(n * theta) * Math.cos(m * Math.PI * p) + Math.cos(m * theta) * Math.cos(n * Math.PI * p);
-                    return Math.abs(C) < level;
+                    return level - Math.abs(C);
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'turing') {
@@ -2067,15 +2118,18 @@
                 // smooth even though the sim grid is much coarser than the mesh.
                 const Vf = V, level = cfg.turingLevel;
                 const cs = i => i < 0 ? 0 : (i >= Ns ? Ns - 1 : i);
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const gu = (theta / (2 * Math.PI)) * Nu - 0.5;
                     const gs = ((s - bandS0) / bandH) * Ns - 0.5;
                     const u0 = Math.floor(gu), s0 = Math.floor(gs), tu = gu - u0, ts = gs - s0;
                     const uA = wrap(u0), uB = wrap(u0 + 1), sA = cs(s0), sB = cs(s0 + 1);
                     const v0 = Vf[sA * Nu + uA] * (1 - tu) + Vf[sA * Nu + uB] * tu;
                     const v1 = Vf[sB * Nu + uA] * (1 - tu) + Vf[sB * Nu + uB] * tu;
-                    return (v0 * (1 - ts) + v1 * ts) > level;
+                    return (v0 * (1 - ts) + v1 * ts) - level;
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'life') {
@@ -2098,12 +2152,29 @@
                     }
                     const t = g; g = g2; g2 = t;
                 }
-                return (theta, s) => {
+                const predicate = (theta, s) => {
                     const iu = wrap(Math.floor((theta / (2 * Math.PI)) * Nu));
                     let is = Math.floor(((s - bandS0) / bandH) * Ns);
                     is = is < 0 ? 0 : (is >= Ns ? Ns - 1 : is);
                     return g[is * Nu + iu] === 1;
                 };
+                // Life's grid is genuinely binary (no continuous dynamics to sample, unlike
+                // turing's V field), so bilinearly blend the 0/1 cell states instead - this
+                // gives a smooth diagonal transition across each cell boundary that still
+                // crosses zero exactly at the true alive/dead grid line, which is all the
+                // contour mesher needs.
+                const cs = i => i < 0 ? 0 : (i >= Ns ? Ns - 1 : i);
+                const field = (theta, s) => {
+                    const gu = (theta / (2 * Math.PI)) * Nu - 0.5;
+                    const gs = ((s - bandS0) / bandH) * Ns - 0.5;
+                    const u0 = Math.floor(gu), s0 = Math.floor(gs), tu = gu - u0, ts = gs - s0;
+                    const uA = wrap(u0), uB = wrap(u0 + 1), sA = cs(s0), sB = cs(s0 + 1);
+                    const v0 = g[sA * Nu + uA] * (1 - tu) + g[sA * Nu + uB] * tu;
+                    const v1 = g[sB * Nu + uA] * (1 - tu) + g[sB * Nu + uB] * tu;
+                    return (v0 * (1 - ts) + v1 * ts) - 0.5;
+                };
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'truchet') {
@@ -2112,7 +2183,7 @@
                 const cols = cfg.truchetDensity, cw = circ / cols;
                 const rows = Math.max(1, Math.round(bandH / cw)), cv = bandH / rows;
                 const seed = cfg.truchetSeed;
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
                     const cx = Math.floor(u / cw), cy = Math.floor(ss / cv);
                     const cxw = ((cx % cols) + cols) % cols;
@@ -2121,8 +2192,11 @@
                     let d;
                     if (h < 0.5) d = Math.min(Math.abs(Math.hypot(fx, fy) - 0.5), Math.abs(Math.hypot(fx - 1, fy - 1) - 0.5));
                     else d = Math.min(Math.abs(Math.hypot(fx - 1, fy) - 0.5), Math.abs(Math.hypot(fx, fy - 1) - 0.5));
-                    return d * cw < half;
+                    return half - d * cw;
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'quasicrystal') {
@@ -2134,12 +2208,15 @@
                     const a = Math.PI * i / N;
                     waves.push({ mu: Math.round(k * Rref * Math.cos(a)), ms: k * Math.sin(a) });
                 }
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const ss = s - bandS0;
                     let val = 0;
                     for (let i = 0; i < N; i++) val += Math.cos(waves[i].mu * theta + waves[i].ms * ss);
-                    return Math.abs(val / N) < w;
+                    return w - Math.abs(val / N);
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'maze') {
@@ -2164,7 +2241,7 @@
                     conn[cur] |= p[2]; conn[id(p[0], p[1])] |= p[3];
                     seen[id(p[0], p[1])] = 1; stack.push(id(p[0], p[1]));
                 }
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
                     let cx = Math.floor(u / cw), cy = Math.floor(ss / cv);
                     cy = cy < 0 ? 0 : (cy >= H ? H - 1 : cy);
@@ -2175,8 +2252,11 @@
                     if (c & 4) d = Math.min(d, segDist(px, py, mx, my, 0, my));
                     if (c & 2) d = Math.min(d, segDist(px, py, mx, my, mx, cv));
                     if (c & 8) d = Math.min(d, segDist(px, py, mx, my, mx, 0));
-                    return d < half;
+                    return half - d;
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'scales') {
@@ -2184,7 +2264,7 @@
                 const half = cfg.scaleThickness / 2;
                 const cols = cfg.scaleDensity, cw = circ / cols;
                 const rad = cw * 0.62, rh = cw * 0.5;
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
                     const r0 = Math.round(ss / rh);
                     let best = Infinity;
@@ -2197,8 +2277,11 @@
                             best = Math.min(best, Math.abs(Math.hypot(dx, ss - cy) - rad));
                         }
                     }
-                    return best < half;
+                    return half - best;
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'star') {
@@ -2207,10 +2290,13 @@
                 const sp = circ / cfg.starDensity, SQ2 = Math.SQRT2;
                 const lineD = q => { const f = (((q / sp) % 1) + 1) % 1; return (0.5 - Math.abs(f - 0.5)) * sp; };
                 const diagD = q => { const f = ((q % 1) + 1) % 1; return (0.5 - Math.abs(f - 0.5)) * sp / SQ2; };
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
-                    return lineD(u) < half || lineD(ss) < half || diagD((u + ss) / sp) < half || diagD((u - ss) / sp) < half;
+                    return Math.max(half - lineD(u), half - lineD(ss), half - diagD((u + ss) / sp), half - diagD((u - ss) / sp));
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'greekkey') {
@@ -2220,14 +2306,17 @@
                 const rows = Math.max(1, Math.round(bandH / cw)), cv = bandH / rows;
                 const segs = [[0, 0, 1, 0], [0.2, 0, 0.2, 0.8], [0.2, 0.8, 0.8, 0.8],
                 [0.8, 0.8, 0.8, 0.3], [0.8, 0.3, 0.45, 0.3], [0.45, 0.3, 0.45, 0.55]];
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
                     const cx = Math.floor(u / cw), cy = Math.floor(ss / cv);
                     const px = u - cx * cw, py = ss - cy * cv;
                     let d = Infinity;
                     for (const g of segs) d = Math.min(d, segDist(px, py, g[0] * cw, g[1] * cv, g[2] * cw, g[3] * cv));
-                    return d < half;
+                    return half - d;
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'worleycrackle') {
@@ -2248,7 +2337,7 @@
                         y: (icy + worleyHashComponent(wcx, icy, 0, seed, 2)) * cell
                     };
                 }
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
                     const icx0 = Math.floor(u / cell), icy0 = Math.floor(ss / cell);
                     let f1 = Infinity, f2 = Infinity;
@@ -2261,8 +2350,11 @@
                             if (d < f1) { f2 = f1; f1 = d; } else if (d < f2) { f2 = d; }
                         }
                     }
-                    return (f2 - f1) < half;
+                    return half - (f2 - f1);
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'caustic') {
@@ -2270,10 +2362,13 @@
                 // embedding (seam-free in theta by construction).
                 const level = cfg.causticLevel, octaves = cfg.causticOctaves;
                 const seed = cfg.causticSeed, scale = cfg.causticScale;
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const v = (s - bandS0) / bandH;
-                    return Math.abs(fbm(theta, v, scale, scale, octaves, seed)) < level;
+                    return level - Math.abs(fbm(theta, v, scale, scale, octaves, seed));
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'slits') {
@@ -2287,9 +2382,13 @@
                 const segLen = clamp(cfg.slitLength, 0, 1) * rh;
                 const tilt = cfg.slitTilt * Math.PI / 180;
                 const hx = Math.sin(tilt) * segLen * 0.5, hy = Math.cos(tilt) * segLen * 0.5;
-                return (theta, s) => {
+                // Signed distance to the nearest slot edge (positive = material, outside every
+                // slot in the 3x3 neighbourhood); material = min > 0, same "outside all" AND
+                // semantics as the boolean loop below.
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
                     const cx = Math.floor(u / cw), cy = Math.floor(ss / rh);
+                    let best = Infinity;
                     for (let dcy = -1; dcy <= 1; dcy++) {
                         const gcy = cy + dcy;
                         const stagger = (((gcy % 2) + 2) % 2) ? cw * 0.5 : 0;
@@ -2297,12 +2396,15 @@
                         for (let dcx = -1; dcx <= 1; dcx++) {
                             const centerU = (cx + dcx + 0.5) * cw + stagger;
                             let du = u - centerU; du -= circ * Math.round(du / circ);
-                            const d = segDist(du, ss, -hx, centerS - hy, hx, centerS + hy);
-                            if (d < halfW) return false; // inside a slot -> hole
+                            const d = segDist(du, ss, -hx, centerS - hy, hx, centerS + hy) - halfW;
+                            if (d < best) best = d;
                         }
                     }
-                    return true;
+                    return best;
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'halftone') {
@@ -2342,9 +2444,10 @@
                     return Math.min(maxAllowed, rMin + (rMax - rMin) * norm);
                 }
 
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
                     const r0 = Math.round(ss / rowH);
+                    let best = Infinity;
                     for (let dr = -1; dr <= 1; dr++) {
                         // clamp (not skip) so buildBasePattern's continuation below bandS0
                         // reuses the edge row's radii, matching turing/life's convention.
@@ -2357,11 +2460,15 @@
                             let dx = u - cx; dx -= circ * Math.round(dx / circ);
                             const dy = ss - r * rowH;
                             const rad = holeRadiusAt(r, c);
-                            if (dx * dx + dy * dy < rad * rad) return false;
+                            const d = Math.hypot(dx, dy) - rad;
+                            if (d < best) best = d;
                         }
                     }
-                    return true;
+                    return best;
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'constellation') {
@@ -2406,21 +2513,27 @@
                     if (best >= 0) addSeg(i, best);
                     if (second >= 0 && rng() < 0.4) addSeg(i, second);
                 }
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ;
+                    let best = Infinity;
                     for (let i = 0; i < stars.length; i++) {
                         let dx = stars[i].u - u; dx -= circ * Math.round(dx / circ);
                         const dy = stars[i].v - s;
-                        if (dx * dx + dy * dy < stars[i].r * stars[i].r) return false;
+                        const d = Math.hypot(dx, dy) - stars[i].r;
+                        if (d < best) best = d;
                     }
                     for (let k = 0; k < segs.length; k++) {
                         const a = stars[segs[k][0]], b = stars[segs[k][1]];
                         let dx = b.u - a.u; dx -= circ * Math.round(dx / circ);
                         let qu = u - a.u; qu -= circ * Math.round(qu / circ);
-                        if (segDist(qu, s, 0, a.v, dx, b.v) < half) return false;
+                        const d = segDist(qu, s, 0, a.v, dx, b.v) - half;
+                        if (d < best) best = d;
                     }
-                    return true;
+                    return best;
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'kumiko') {
@@ -2437,7 +2550,7 @@
                 const cellW = circ / cols;
                 const rowH = cellW * Math.sqrt(3) / 2;
                 function kVertex(i, j) { return { u: i * cellW + j * cellW * 0.5, s: j * rowH }; }
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ, ss = s - bandS0;
                     const b = ss / rowH;
                     const a = u / cellW - b * 0.5;
@@ -2455,8 +2568,11 @@
                         segDist(u, ss, cu, cs, p1.u, p1.s),
                         segDist(u, ss, cu, cs, p2.u, p2.s)
                     );
-                    return d < half;
+                    return half - d;
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'veins') {
@@ -2511,9 +2627,10 @@
                     if (!list) { list = []; buckets.set(key, list); }
                     list.push(seg);
                 }
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ;
                     const bx = Math.floor(u / bucketW), by = Math.floor(s / cellSize);
+                    let best = -Infinity;
                     for (let dy = -1; dy <= 1; dy++) {
                         for (let dx = -1; dx <= 1; dx++) {
                             const list = buckets.get(vBucketKey(bx + dx, by + dy));
@@ -2521,12 +2638,16 @@
                             for (const seg of list) {
                                 let du = seg.u0 - u; du -= circ * Math.round(du / circ);
                                 const lu0 = u + du, lu1 = lu0 + (seg.u1 - seg.u0);
-                                if (segDist(u, s, lu0, seg.s0, lu1, seg.s1) < seg.halfW) return true;
+                                const f = seg.halfW - segDist(u, s, lu0, seg.s0, lu1, seg.s1);
+                                if (f > best) best = f;
                             }
                         }
                     }
-                    return false;
+                    return best;
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'foam') {
@@ -2573,9 +2694,10 @@
                 }
                 const winX = Math.max(1, Math.ceil(rMax / cw) + 1);
                 const winY = Math.max(1, Math.ceil(rMax / ch) + 1);
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ;
                     const qx = Math.floor(u / cw), qy = Math.floor((s - bandS0) / ch);
+                    let best = Infinity;
                     for (let dy = -winY; dy <= winY; dy++) {
                         for (let dx = -winX; dx <= winX; dx++) {
                             const list = buckets.get(fBucketKey(qx + dx, qy + dy));
@@ -2583,12 +2705,16 @@
                             for (const d of list) {
                                 let ddx = d.u - u; ddx -= circ * Math.round(ddx / circ);
                                 const ddy = d.v - s;
-                                if (Math.hypot(ddx, ddy) - d.r < 0) return false;
+                                const dd = Math.hypot(ddx, ddy) - d.r;
+                                if (dd < best) best = dd;
                             }
                         }
                     }
-                    return true;
+                    return best;
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'ripples') {
@@ -2602,7 +2728,7 @@
                 for (let i = 0; i < K; i++) {
                     poles.push({ u: rng() * circ, v: bandS0 + rng() * bandH });
                 }
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ;
                     let W = 0;
                     for (const p of poles) {
@@ -2610,8 +2736,11 @@
                         const dv = p.v - s;
                         W += Math.sin(2 * Math.PI * Math.hypot(du, dv) / lambda);
                     }
-                    return Math.abs(W) < width * K;
+                    return width * K - Math.abs(W);
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'spirograph') {
@@ -2647,9 +2776,10 @@
                     if (!list) { list = []; buckets.set(key, list); }
                     list.push([p0, p1]);
                 }
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const u = (theta / (2 * Math.PI)) * circ;
                     const bx = Math.floor(u / bucketW), by = Math.floor(s / cellSize);
+                    let best = -Infinity;
                     for (let dy = -1; dy <= 1; dy++) {
                         for (let dx = -1; dx <= 1; dx++) {
                             const list = buckets.get(sBucketKey(bx + dx, by + dy));
@@ -2657,12 +2787,16 @@
                             for (const [p0, p1] of list) {
                                 let du = p0.u - u; du -= circ * Math.round(du / circ);
                                 const lu0 = u + du, lu1 = lu0 + (p1.u - p0.u);
-                                if (segDist(u, s, lu0, p0.s, lu1, p1.s) < half) return true;
+                                const f = half - segDist(u, s, lu0, p0.s, lu1, p1.s);
+                                if (f > best) best = f;
                             }
                         }
                     }
-                    return false;
+                    return best;
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'gradientcells') {
@@ -2734,7 +2868,7 @@
                     }
                     return out;
                 }
-                return (theta, s) => {
+                const field = (theta, s) => {
                     const pu = (theta / (2 * Math.PI)) * circ, pv = s;
                     const qx = Math.floor(pu / cw), qy = Math.floor((pv - bandS0) / ch);
                     let candidates = nearbySeeds(qx, qy);
@@ -2758,8 +2892,11 @@
                         const d = (mx * rdx + my * rdy) / len;
                         if (d < edge) edge = d;
                     }
-                    return edge < half;
+                    return half - edge;
                 };
+                const predicate = (theta, s) => field(theta, s) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             // voronoi
@@ -4640,12 +4777,12 @@ ${trianglesXml.join('\n')}
                 "vorJitter": "0.7",
                 "vorSeed": "7",
                 "latDensity": "22",
-                "latThickness": "2.0",
+                "latThickness": "5.0",
                 "weaveDensity": "20",
-                "weaveThickness": "2.0",
+                "weaveThickness": "5.0",
                 "waveDensity": "16",
-                "waveThicknessV": "2.0",
-                "waveThicknessH": "2.0",
+                "waveThicknessV": "5.0",
+                "waveThicknessH": "5.0",
                 "waveAmp": "0.5",
                 "waveCount": "3",
                 "gyroidDensity": "20",
@@ -4656,7 +4793,7 @@ ${trianglesXml.join('\n')}
                 "fibA": "8",
                 "fibB": "13",
                 "fibTwist": "2",
-                "fibThickness": "2.0",
+                "fibThickness": "5.0",
                 "phylCount": "260",
                 "phylHoleR": "3.0",
                 "turingType": "maze",
@@ -4665,7 +4802,7 @@ ${trianglesXml.join('\n')}
                 "turingLevel": "0.25",
                 "turingSeed": "3",
                 "flCount": "18",
-                "flThickness": "2.4",
+                "flThickness": "5.0",
                 "flWander": "0.3",
                 "flVFreq": "2",
                 "flWidthMod": "0.4",
@@ -4675,32 +4812,32 @@ ${trianglesXml.join('\n')}
                 "lifeSeed": "5",
                 "chlN": "6",
                 "chlM": "3",
-                "chlThickness": "2.2",
+                "chlThickness": "5.0",
                 "schwarzDensity": "12",
-                "schwarzThickness": "2.5",
+                "schwarzThickness": "5.0",
                 "schwarzdDensity": "12",
-                "schwarzdThickness": "2.5",
+                "schwarzdThickness": "5.0",
                 "hexDensity": "14",
-                "hexThickness": "2.0",
+                "hexThickness": "5.0",
                 "boneDensity": "10",
                 "boneFill": "0.1",
                 "truchetDensity": "12",
-                "truchetThickness": "2.0",
+                "truchetThickness": "5.0",
                 "truchetSeed": "1",
                 "quasiDensity": "6",
                 "quasiWaves": "5",
                 "quasiWidth": "0.18",
                 "mazeDensity": "16",
-                "mazeThickness": "2.5",
+                "mazeThickness": "5.0",
                 "mazeSeed": "1",
                 "scaleDensity": "10",
-                "scaleThickness": "2.0",
+                "scaleThickness": "5.0",
                 "starDensity": "8",
-                "starThickness": "2.0",
+                "starThickness": "5.0",
                 "greekCount": "8",
-                "greekThickness": "2.0",
+                "greekThickness": "5.0",
                 "crackleDensity": "14",
-                "crackleThickness": "2.0",
+                "crackleThickness": "5.0",
                 "crackleSeed": "3",
                 "causticScale": "5",
                 "causticLevel": "0.1",
@@ -4719,16 +4856,16 @@ ${trianglesXml.join('\n')}
                 "constLineW": "1.2",
                 "constSeed": "9",
                 "kumikoDensity": "12",
-                "kumikoThickness": "1.6",
+                "kumikoThickness": "5.0",
                 "veinRoots": "8",
-                "veinThickness": "3.0",
+                "veinThickness": "5.0",
                 "veinSplitProb": "0.06",
                 "veinWander": "0.35",
                 "veinSeed": "11",
                 "foamCount": "70",
                 "foamMinHole": "2.0",
                 "foamMaxHole": "7.0",
-                "foamWeb": "1.5",
+                "foamWeb": "5.0",
                 "foamSeed": "13",
                 "rippleSources": "3",
                 "rippleWavelength": "1.2",
@@ -4738,9 +4875,9 @@ ${trianglesXml.join('\n')}
                 "spiroLobes": "7",
                 "spiroLoop": "1.2",
                 "spiroHeight": "0.9",
-                "spiroThickness": "2.2",
+                "spiroThickness": "5.0",
                 "gcCount": "90",
-                "gcThickness": "2.0",
+                "gcThickness": "5.0",
                 "gcContrast": "1.5",
                 "gcSeed": "21",
                 "patternPresetSelect1": "None (Solid Base Color)",
