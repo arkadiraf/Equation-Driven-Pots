@@ -1075,6 +1075,15 @@
             <div class="input-group"><label>Radial Nodes (&theta;)</label><input type="number" id="resT" value="300"
                     step="10" min="30" oninput="updatePreview()"></div>
         </div>
+        <div class="input-group" style="display:flex; align-items:center; gap:8px; margin:2px 0 4px;">
+            <input type="checkbox" id="smoothPatternEdges" onchange="updatePreview()"
+                style="width:auto; height:18px; cursor:pointer; margin:0;">
+            <label for="smoothPatternEdges" style="margin:0; cursor:pointer; overflow:visible;">Smooth Pattern Edges
+                (high quality)</label>
+        </div>
+        <div class="desc-text">Uses interpolated diagonal contour triangles instead of whole stepped cells when a
+            pattern supplies a continuous field (currently Gyroid). Off preserves the original mesh exactly. A
+            perforated Base Pattern currently retains stepped edges so its radial mesh stays compatible.</div>
         <div class="grid-inputs">
             <div class="input-group" style="display:flex; align-items:flex-end;">
                 <span style="display:inline-flex; align-items:center; gap:8px; padding-bottom:8px;">
@@ -1087,9 +1096,9 @@
             <div class="input-group"><label>Shell Smooth Passes</label><input type="number" id="shellSmoothPasses"
                     value="2" step="1" min="0" max="12" oninput="updatePreview()"></div>
         </div>
-        <div class="desc-text">Laplacian-relaxes the outer shell to soften faceting and harsh equation transitions; the
-            inner wall and liner ride along with the same motion, so wall thickness (and the pattern cut into it)
-            stays exact instead of drifting (base ring and rim stay anchored).</div>
+        <div class="desc-text">Shrink-resistant 3D smoothing relaxes X, Y and Z together to soften faceting and harsh
+            equation transitions. The inner wall and liner follow the same motion, so wall thickness (and the pattern
+            cut into it) stays exact; the base and rim remain anchored.</div>
 
         <div class="section-title">5. Design File</div>
         <div class="input-group">
@@ -1764,6 +1773,7 @@
                 overlapColor: document.getElementById('overlapColor').value || '#8ab04d',
                 resV: Math.max(30, intv('resV', 200)),
                 resT: Math.max(30, intv('resT', 300)),
+                smoothPatternEdges: document.getElementById('smoothPatternEdges').checked,
                 shellSmoothPasses: document.getElementById('shellSmoothEnabled').checked
                     ? Math.max(0, intv('shellSmoothPasses', 0)) : 0,
                 wire: document.getElementById('showWire').checked
@@ -1879,10 +1889,15 @@
                 const k = cfg.gyroidDensity / Rref;
                 const half = cfg.gyroidThickness / 2;
                 const t = clamp(half * k * 1.6, 0.04, 1.45);
-                return (theta, s, x, y, z) => {
+                // Positive means printable gyroid material. Keeping the signed value lets the
+                // optional contour mesher interpolate the exact F=0 crossing on triangle edges.
+                const field = (theta, s, x, y, z) => {
                     const G = Math.sin(k * x) * Math.cos(k * y) + Math.sin(k * y) * Math.cos(k * z) + Math.sin(k * z) * Math.cos(k * x);
-                    return Math.abs(G) < t;
+                    return t - Math.abs(G);
                 };
+                const predicate = (theta, s, x, y, z) => field(theta, s, x, y, z) > 0;
+                predicate.field = field;
+                return predicate;
             }
 
             if (cfg.style === 'schwarzp') {
@@ -2806,26 +2821,89 @@
             };
         }
 
-        /* ---------- Laplacian shell smoothing (port of pot designer's
-           laplacianSmoothRows, applied to 3D node grids; base + rim anchored) ---------- */
+        /* ---------- shrink-resistant 3D shell smoothing -------------------------------
+           A Taubin lambda/mu pair applies an inward Laplacian step followed by a small
+           inflation step. Unlike repeated averaging, this removes high-frequency facets
+           without steadily shrinking the whole form. Every step operates on Cartesian
+           x/y/z positions; theta wraps, while the base and rim rows remain fixed. ---------- */
         function smoothGrid(grid, passes) {
             if (!passes || passes <= 0) return;
             const rowN = grid.length, resT = grid[0].length;
-            for (let p = 0; p < passes; p++) {
-                const buf = grid.map(row => row.map(q => ({ x: q.x, y: q.y, z: q.z })));
-                for (let iv = 1; iv < rowN - 1; iv++) {               // keep iv=0 (base) and iv=rowN-1 (rim) fixed
+            if (rowN < 3 || resT < 3) return;
+
+            // At a spherical 180-degree bottom every theta sample in row zero is the same
+            // apex. Treat it as one neighbour (not resT coincident neighbours), and ease the
+            // smoothing in over the first few rings so the anchored point cannot form a dimple.
+            const p0 = grid[0][0];
+            const bottomIsPole = grid[0].every(q =>
+                Math.abs(q.x - p0.x) < 1e-10 &&
+                Math.abs(q.y - p0.y) < 1e-10 &&
+                Math.abs(q.z - p0.z) < 1e-10
+            );
+
+            // The eight surrounding samples give a directionally balanced filter on the
+            // rectangular parameter grid. Reading from a snapshot makes every update
+            // simultaneous and prevents a visible spiral bias around the theta seam.
+            function relax(amount) {
+                const src = grid.map(row => row.map(q => ({ x: q.x, y: q.y, z: q.z })));
+                for (let iv = 1; iv < rowN - 1; iv++) { // anchor base (0) and rim (rowN - 1)
                     for (let it = 0; it < resT; it++) {
-                        const pt = (it - 1 + resT) % resT, nt = (it + 1) % resT;
-                        let sx = buf[iv][pt].x + buf[iv][nt].x + buf[iv - 1][it].x + buf[iv + 1][it].x;
-                        let sy = buf[iv][pt].y + buf[iv][nt].y + buf[iv - 1][it].y + buf[iv + 1][it].y;
-                        let sz = buf[iv][pt].z + buf[iv][nt].z + buf[iv - 1][it].z + buf[iv + 1][it].z;
-                        grid[iv][it] = {
-                            x: 0.5 * buf[iv][it].x + 0.5 * (sx / 4),
-                            y: 0.5 * buf[iv][it].y + 0.5 * (sy / 4),
-                            z: 0.5 * buf[iv][it].z + 0.5 * (sz / 4)
-                        };
+                        let sx = 0, sy = 0, sz = 0, count = 0;
+                        const dedupePole = bottomIsPole && iv === 1;
+                        const neighbours = dedupePole ? [] : null;
+                        for (let dv = -1; dv <= 1; dv++) {
+                            for (let dt = -1; dt <= 1; dt++) {
+                                if (dv === 0 && dt === 0) continue;
+                                const jt = (it + dt + resT) % resT;
+                                const q = src[iv + dv][jt];
+                                // A collapsed polar row exposes the same geometric vertex at
+                                // several grid addresses. Count coincident samples only once.
+                                if (!dedupePole) {
+                                    sx += q.x; sy += q.y; sz += q.z; count++;
+                                    continue;
+                                }
+                                let duplicate = false;
+                                for (let n = 0; n < neighbours.length; n++) {
+                                    const u = neighbours[n];
+                                    if (Math.abs(q.x - u.x) < 1e-10 &&
+                                        Math.abs(q.y - u.y) < 1e-10 &&
+                                        Math.abs(q.z - u.z) < 1e-10) {
+                                        duplicate = true;
+                                        break;
+                                    }
+                                }
+                                if (!duplicate) neighbours.push(q);
+                            }
+                        }
+                        if (dedupePole) {
+                            for (let n = 0; n < neighbours.length; n++) {
+                                sx += neighbours[n].x;
+                                sy += neighbours[n].y;
+                                sz += neighbours[n].z;
+                            }
+                            count = neighbours.length;
+                        }
+                        if (!count) continue;
+                        const q = src[iv][it];
+                        const poleBlend = bottomIsPole ? Math.min(1, iv / 3) : 1;
+                        const step = amount * poleBlend;
+                        const nx = q.x + step * (sx / count - q.x);
+                        const ny = q.y + step * (sy / count - q.y);
+                        const nz = q.z + step * (sz / count - q.z);
+                        // A malformed equation must not let smoothing contaminate otherwise
+                        // valid vertices with NaN/Infinity.
+                        if (Number.isFinite(nx) && Number.isFinite(ny) && Number.isFinite(nz)) {
+                            grid[iv][it] = { x: nx, y: ny, z: nz };
+                        }
                     }
                 }
+            }
+
+            const lambda = 0.50;
+            const mu = -0.53;
+            for (let p = 0; p < passes; p++) {
+                relax(lambda);
+                relax(mu);
             }
         }
 
@@ -3400,7 +3478,15 @@
                 return vrow[lo] + t * (vrow[hi] - vrow[lo]);
             }
             const isStrut = buildPattern(cfg, bandS0, bandS1, sToV);
+            // A perforated flat base still uses its radial cell mesher; keep that combination
+            // on the legacy path until it has matching contour interpolation at the join.
+            const useContourEdges = cfg.smoothPatternEdges && !cfg.basePattern && typeof isStrut.field === 'function';
             const dT = 2 * Math.PI / resT;
+            const sphericalPole = cfg.sys === 'spherical' && O[0].every(p =>
+                Math.abs(p.x - O[0][0].x) < 1e-10 &&
+                Math.abs(p.y - O[0][0].y) < 1e-10 &&
+                Math.abs(p.z - O[0][0].z) < 1e-10
+            );
 
             // occupancy + colour state for wall/rim rows
             const eq1 = (cfg.patternEq1 || '').trim(), eq2 = (cfg.patternEq2 || '').trim();
@@ -3491,7 +3577,14 @@
                 for (let it = 0; it < resT; it++) {
                     const j = (it + 1) % resT;
                     const ci = baseColorOn ? baseMaskColor((it + 0.5) * dT, vMid) : 0;
-                    pool.quad(O[iv][it], O[iv][j], O[iv + 1][j], O[iv + 1][it], ci);
+                    if (iv === 0 && sphericalPole) {
+                        // A true spherical pole is one apex, not a zero-width quad. Emitting
+                        // the one real triangle directly avoids a discarded coincident face
+                        // and gives the normal builder a clean, predictable polar fan.
+                        pool.tri(O[0][0], O[1][j], O[1][it], ci);
+                    } else {
+                        pool.quad(O[iv][it], O[iv][j], O[iv + 1][j], O[iv + 1][it], ci);
+                    }
                 }
             }
 
@@ -3499,7 +3592,9 @@
             const fc = ringCentroid(Icav[baseTopRow]); // cavity-floor centre
             const basePatternActive = cfg.basePattern && cfg.sys === 'cylindrical';
             function emitExposedBaseTopLedge(it, ci) {
-                if (occAt(baseTopRow, it)) return;
+                // The contour path forces its first vertex ring solid, joining the patterned
+                // wall directly to the base without a rectangular cell-shaped ledge.
+                if (useContourEdges || occAt(baseTopRow, it)) return;
                 const j = (it + 1) % resT;
                 const inner = liner ? I : Icav;
                 pool.quad(inner[baseTopRow][it], O[baseTopRow][it], O[baseTopRow][j], inner[baseTopRow][j], ci);
@@ -3535,10 +3630,14 @@
                 }
             } else {
                 /* --- bottom closure (flat disk / sphere pole) --- */
-                for (let it = 0; it < resT; it++) {
-                    const j = (it + 1) % resT;
-                    const ci = baseColorOn ? baseMaskColor((it + 0.5) * dT, 0) : 0;
-                    pool.tri(bc, O[0][j], O[0][it], ci);
+                // At a true pole the outer fan above already closes the shell. A second fan
+                // would consist entirely of zero-area triangles at the same apex.
+                if (!sphericalPole) {
+                    for (let it = 0; it < resT; it++) {
+                        const j = (it + 1) % resT;
+                        const ci = baseColorOn ? baseMaskColor((it + 0.5) * dT, 0) : 0;
+                        pool.tri(bc, O[0][j], O[0][it], ci);
+                    }
                 }
                 /* --- cavity floor + base-top annulus at baseTopRow --- */
                 for (let it = 0; it < resT; it++) {
@@ -3550,10 +3649,122 @@
             }
 
             /* --- openwork wall + solid rim: rows baseTopRow..rowN-2 --- */
-            for (let iv = baseTopRow; iv <= rowN - 2; iv++) {
+            if (useContourEdges) {
+                // Signed samples live on grid vertices instead of cell centres. Forcing the
+                // first two and rim rings positive joins the contour cleanly into those solids.
+                const fieldRows = [];
+                for (let iv = baseTopRow; iv < rowN; iv++) {
+                    const row = new Float64Array(resT);
+                    for (let it = 0; it < resT; it++) {
+                        if (iv <= baseTopRow + 1 || iv >= rimBotRow) {
+                            row[it] = 1;
+                            continue;
+                        }
+                        const p = O[iv][it];
+                        let f = isStrut.field(it * dT, sArc[iv], p.x, p.y, p.z);
+                        if (!Number.isFinite(f)) f = -1;
+                        row[it] = f;
+                    }
+                    fieldRows[iv] = row;
+                }
+
+                // Resolve near-zero samples from their local field neighbourhood. Without
+                // this asymptotic tie-breaker, a value infinitesimally across the threshold
+                // can create a sub-weld-tolerance one-triangle island at high resolutions.
+                const fieldFixes = [];
+                for (let iv = baseTopRow + 1; iv < rimBotRow; iv++) {
+                    for (let it = 0; it < resT; it++) {
+                        if (Math.abs(fieldRows[iv][it]) >= 1e-3) continue;
+                        const pt = (it - 1 + resT) % resT, nt = (it + 1) % resT;
+                        const avg = 0.25 * (fieldRows[iv][pt] + fieldRows[iv][nt] +
+                            fieldRows[iv - 1][it] + fieldRows[iv + 1][it]);
+                        if (Math.abs(avg) >= 1e-3) fieldFixes.push([iv, it, avg]);
+                    }
+                }
+                for (const fix of fieldFixes) fieldRows[fix[0]][fix[1]] = fix[2];
+
+                const lerp3 = (a, b, t) => ({
+                    x: a.x + (b.x - a.x) * t,
+                    y: a.y + (b.y - a.y) * t,
+                    z: a.z + (b.z - a.z) * t
+                });
+                const crossing = (a, b) => {
+                    const denom = a.f - b.f;
+                    const t = Math.abs(denom) < 1e-12 ? 0.5 : clamp(a.f / denom, 0, 1);
+                    return { o: lerp3(a.o, b.o, t), i: lerp3(a.i, b.i, t), f: 0 };
+                };
+                function clipTriangle(vertices, keepPositive) {
+                    const out = [];
+                    const inside = q => keepPositive ? q.f >= 0 : q.f <= 0;
+                    for (let n = 0; n < 3; n++) {
+                        const a = vertices[n], b = vertices[(n + 1) % 3];
+                        const ain = inside(a), bin = inside(b);
+                        if (ain && bin) out.push(b);
+                        else if (ain && !bin) out.push(crossing(a, b));
+                        else if (!ain && bin) { out.push(crossing(a, b)); out.push(b); }
+                    }
+                    return out;
+                }
+                function emitPolygon(poly, surface, reverse, ci) {
+                    if (poly.length < 3) return;
+                    for (let n = 1; n < poly.length - 1; n++) {
+                        const a = poly[0][surface], b = poly[n][surface], c = poly[n + 1][surface];
+                        if (reverse) pool.tri(a, c, b, ci); else pool.tri(a, b, c, ci);
+                    }
+                }
+                function emitContourTriangle(vertices, ci) {
+                    const material = clipTriangle(vertices, true);
+                    pool.setLayer(1);
+                    emitPolygon(material, 'o', false, ci);
+                    if (!liner) emitPolygon(material, 'i', true, ci);
+
+                    if (liner) {
+                        // I is visible only inside a hole; I2 remains the continuous cavity wall.
+                        pool.setLayer(0);
+                        emitPolygon(clipTriangle(vertices, false), 'i', false, 0);
+                        pool.setLayer(1);
+                    }
+
+                    const cuts = [];
+                    for (let n = 0; n < 3; n++) {
+                        const a = vertices[n], b = vertices[(n + 1) % 3];
+                        if ((a.f >= 0) !== (b.f >= 0)) cuts.push(crossing(a, b));
+                    }
+                    if (cuts.length === 2) {
+                        // Extrude the interpolated diagonal contour through the wall thickness.
+                        pool.quad(cuts[0].o, cuts[1].o, cuts[1].i, cuts[0].i, ci);
+                    }
+                }
+
+                for (let iv = baseTopRow; iv <= rowN - 2; iv++) {
+                    for (let it = 0; it < resT; it++) {
+                        const j = (it + 1) % resT;
+                        if (liner) {
+                            pool.setLayer(0);
+                            pool.quad(I2[iv][it], I2[iv + 1][it], I2[iv + 1][j], I2[iv][j], 0);
+                            pool.setLayer(1);
+                        }
+                        const A = { o: O[iv][it], i: I[iv][it], f: fieldRows[iv][it] };
+                        const B = { o: O[iv][j], i: I[iv][j], f: fieldRows[iv][j] };
+                        const C = { o: O[iv + 1][j], i: I[iv + 1][j], f: fieldRows[iv + 1][j] };
+                        const D = { o: O[iv + 1][it], i: I[iv + 1][it], f: fieldRows[iv + 1][it] };
+                        const ci = cst[iv][it];
+                        emitContourTriangle([A, B, C], ci);
+                        emitContourTriangle([A, C, D], ci);
+                    }
+                }
+
+                // Complete rim annulus; all vertices on this ring were forced to material.
+                const top = rowN - 1;
                 for (let it = 0; it < resT; it++) {
                     const j = (it + 1) % resT;
-                    const occ_ = occAt(iv, it);
+                    pool.quad(O[top][it], O[top][j], Icav[top][j], Icav[top][it], cst[rowN - 2][it]);
+                }
+            } else {
+                for (let iv = baseTopRow; iv <= rowN - 2; iv++) {
+                    for (let it = 0; it < resT; it++) {
+                        const j = (it + 1) % resT;
+                        const occ_ = occAt(iv, it);
 
                     if (liner) {
                         // continuous liner inner surface (cavity) for every cell — frame layer
@@ -3585,19 +3796,80 @@
                         else
                             pool.quad(D, C, c, d, ci);  // O -> I (strut depth)
                     }
+                    }
                 }
             }
 
-            const mesh = cleanupMesh({
+            let mesh = cleanupMesh({
                 positions: pool.positions,
                 indices: pool.indices,
                 triangleColorIndices: pool.triColor,
                 triLayer: pool.triLayer
             });
+            let sealedContourCracks = 0;
+            if (useContourEdges) {
+                // Quantized export welding can occasionally leave a microscopic three-edge
+                // crack where a contour passes almost exactly through a sampled vertex. Seal
+                // only those tiny triangular loops; intentional Gyroid openings have many
+                // boundary segments and are therefore never candidates.
+                const vertexCount = mesh.positions.length / 3;
+                const edgeInfo = new Map();
+                const edgeKey = (a, b) => a < b ? a * vertexCount + b : b * vertexCount + a;
+                for (let n = 0, tri = 0; n < mesh.indices.length; n += 3, tri++) {
+                    const a = mesh.indices[n], b = mesh.indices[n + 1], c = mesh.indices[n + 2];
+                    for (const edge of [[a, b], [b, c], [c, a]]) {
+                        const key = edgeKey(edge[0], edge[1]);
+                        const info = edgeInfo.get(key);
+                        if (info) info.count++;
+                        else edgeInfo.set(key, { a: edge[0], b: edge[1], count: 1, tri });
+                    }
+                }
+                const boundary = Array.from(edgeInfo.values()).filter(e => e.count === 1);
+                const adjacency = new Map();
+                for (const e of boundary) {
+                    if (!adjacency.has(e.a)) adjacency.set(e.a, []);
+                    if (!adjacency.has(e.b)) adjacency.set(e.b, []);
+                    adjacency.get(e.a).push(e.b); adjacency.get(e.b).push(e.a);
+                }
+                const visitedBoundary = new Set();
+                for (const start of adjacency.keys()) {
+                    if (visitedBoundary.has(start)) continue;
+                    const component = [], stack = [start];
+                    visitedBoundary.add(start);
+                    while (stack.length) {
+                        const v = stack.pop(); component.push(v);
+                        for (const u of adjacency.get(v) || []) if (!visitedBoundary.has(u)) {
+                            visitedBoundary.add(u); stack.push(u);
+                        }
+                    }
+                    if (component.length !== 3) continue;
+                    const [a, b, c] = component;
+                    const edgeCount = [edgeKey(a, b), edgeKey(b, c), edgeKey(c, a)]
+                        .filter(key => edgeInfo.get(key) && edgeInfo.get(key).count === 1).length;
+                    if (edgeCount !== 3) continue;
+                    const pa = a * 3, pb = b * 3, pc = c * 3;
+                    const abx = mesh.positions[pb] - mesh.positions[pa];
+                    const aby = mesh.positions[pb + 1] - mesh.positions[pa + 1];
+                    const abz = mesh.positions[pb + 2] - mesh.positions[pa + 2];
+                    const acx = mesh.positions[pc] - mesh.positions[pa];
+                    const acy = mesh.positions[pc + 1] - mesh.positions[pa + 1];
+                    const acz = mesh.positions[pc + 2] - mesh.positions[pa + 2];
+                    const nx = aby * acz - abz * acy, ny = abz * acx - abx * acz, nz = abx * acy - aby * acx;
+                    if (nx * nx + ny * ny + nz * nz > 1e-12) continue;
+                    const sampleEdge = edgeInfo.get(edgeKey(a, b));
+                    mesh.indices.push(a, b, c);
+                    mesh.triangleColorIndices.push(mesh.triangleColorIndices[sampleEdge.tri] || 0);
+                    mesh.triLayer.push(mesh.triLayer[sampleEdge.tri] || 0);
+                    sealedContourCracks++;
+                }
+                if (sealedContourCracks) mesh = orientMeshConsistently(mesh);
+            }
             mesh.baseTopRow = baseTopRow;
             mesh.rimBotRow = rimBotRow;
             mesh.rowN = rowN;
             mesh.removedCells = removedCells;
+            mesh.patternEdgesContoured = useContourEdges;
+            mesh.sealedContourCracks = sealedContourCracks;
             mesh.validation = validateMesh(mesh);
             return mesh;
         }
@@ -3802,6 +4074,7 @@
                 controls.update();
                 const tris = mesh.indices.length / 3;
                 const styleLbl = cfg.style.charAt(0).toUpperCase() + cfg.style.slice(1);
+                const edgeNote = mesh.patternEdgesContoured ? ' | diagonal contour edges' : '';
                 const islandNote = mesh.removedCells ? ` | removed ${mesh.removedCells} disconnected cell${mesh.removedCells === 1 ? '' : 's'}` : '';
                 const ringNote = hasRing ? ` | + ring ${(ringMesh.indices.length / 3).toLocaleString()} tris` : '';
                 const validation = mesh.validation || validateMesh(mesh);
@@ -3827,7 +4100,7 @@
                         : `${compileErrors[0]} (+${compileErrors.length - 1} more)`;
                     setStatus(`Equation error: ${summary}`, 'error');
                 } else {
-                    setStatus(`${cfg.sys} | ${styleLbl} | R ${cfg.R}cm | ${tris.toLocaleString()} triangles${ringNote}${islandNote}${manifoldNote}${materialNote}${wallNote}${draftSuffix}`, warnActive ? 'warn' : '');
+                    setStatus(`${cfg.sys} | ${styleLbl} | R ${cfg.R}cm | ${tris.toLocaleString()} triangles${edgeNote}${ringNote}${islandNote}${manifoldNote}${materialNote}${wallNote}${draftSuffix}`, warnActive ? 'warn' : '');
                 }
             } catch (err) {
                 console.error(err);
@@ -4047,7 +4320,7 @@ ${trianglesXml.join('\n')}
             'baseColor', 'patternColor1', 'patternColor2', 'overlapColor',
             'resV', 'resT', 'shellSmoothPasses'
         ];
-        const DESIGN_CHECK_IDS = ['lampMode', 'basePattern', 'baseColorEnabled', 'ringBaseEnabled', 'ringColorEnabled', 'solidLiner', 'transparentFrame', 'shellSmoothEnabled', 'showWire'];
+        const DESIGN_CHECK_IDS = ['lampMode', 'basePattern', 'baseColorEnabled', 'ringBaseEnabled', 'ringColorEnabled', 'solidLiner', 'transparentFrame', 'smoothPatternEdges', 'shellSmoothEnabled', 'showWire'];
 
         function getDesignerConfig() {
             const cfg = { app: 'EquationDrivenBowls', version: 1, name: document.getElementById('designName').value.trim(), values: {}, checks: {} };
@@ -4068,6 +4341,8 @@ ${trianglesXml.join('\n')}
             if (!cfg || typeof cfg !== 'object' || Array.isArray(cfg)) throw new Error('JSON must describe a design object.');
             const values = cfg.values || {}, checks = cfg.checks || {};
             if (checks.ringColorEnabled === undefined) checks.ringColorEnabled = true;
+            // Designs saved before edge refinement existed retain the original stepped mode.
+            if (checks.smoothPatternEdges === undefined) checks.smoothPatternEdges = false;
             suppressPreviewUpdates = true;
             try {
                 // coordinate system first so the preset list matches before we restore it
@@ -4347,6 +4622,7 @@ ${trianglesXml.join('\n')}
             document.getElementById('baseColorEnabled').checked = false;
             document.getElementById('ringBaseEnabled').checked = false;
             document.getElementById('ringColorEnabled').checked = true;
+            document.getElementById('smoothPatternEdges').checked = false;
             document.getElementById('shellSmoothEnabled').checked = false;
             document.getElementById('shellSmoothPasses').value = 2;
             document.getElementById('designName').value = '';
@@ -4439,6 +4715,7 @@ ${trianglesXml.join('\n')}
                 "ringColorEnabled": true,
                 "solidLiner": false,
                 "transparentFrame": false,
+                "smoothPatternEdges": false,
                 "shellSmoothEnabled": false,
                 "showWire": false
             }
