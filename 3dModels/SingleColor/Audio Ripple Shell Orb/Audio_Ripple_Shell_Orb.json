@@ -5,15 +5,16 @@
     "baseType": "primitive",
     "preset": "Perfect Sphere",
     "equation": "R * (1 + 0.08 * sin(12 * theta) * cos(12 * phi) + 0.04 * sin(24 * theta - 10 * phi))",
-    "baseRadius": 10,
+    "baseRadius": 7.5,
     "height": 10.5
   },
   "structure": {
     "modelMode": "potplate",
-    "wall": 0.45,
-    "bottomThickness": 0.65,
+    "wall": 0.35,
+    "uniformShell": false,
+    "bottomThickness": 0.35,
     "cylDrain": 0.6,
-    "sphTopCut": 25,
+    "sphTopCut": 35,
     "sphBotFlatten": 150,
     "sphBotCut": 175
   },
@@ -21,8 +22,8 @@
     "enabled": true,
     "plateHeight": 1.8,
     "plateOpeningAngle": 25,
-    "plateDiameterExtra": 0.8,
-    "plateRadiusExtra": 0.8,
+    "plateDiameterExtra": 0.75,
+    "plateRadiusExtra": 0.75,
     "plateSphTopCut": 95,
     "plateSphBotFlatten": 250
   },
@@ -41,7 +42,8 @@
     "patternColor1": "#10b981",
     "patternColor2": "#06b6d4",
     "overlapColor": "#e11d48",
-    "depthMm": 1.5
+    "depthMm": 1.5,
+    "mode": "color"
   },
   "mesh": {
     "resV": 150,
@@ -53,6 +55,7 @@
     "type": "utility",
     "preset": "None (No Modifier)",
     "equation": "0",
+    "equationV": "",
     "strength": 0,
     "target": "base"
   },

@@ -5,13 +5,14 @@
     "baseType": "primitive",
     "preset": "Circle (Pure Base)",
     "equation": "R * (1 + 0.05 * cos(6 * theta))",
-    "baseRadius": 10,
-    "height": 18
+    "baseRadius": 7.5,
+    "height": 15
   },
   "structure": {
     "modelMode": "potplate",
-    "wall": 0.45,
-    "bottomThickness": 0.65,
+    "wall": 0.35,
+    "uniformShell": true,
+    "bottomThickness": 0.35,
     "cylDrain": 0.6,
     "sphTopCut": 25,
     "sphBotFlatten": 150,
@@ -37,11 +38,12 @@
     "equation1": "-1",
     "preset2": "None (Solid Base Color)",
     "equation2": "-1",
-    "baseColor": "#3d271d",
-    "patternColor1": "#2e7d32",
-    "patternColor2": "#8d6e63",
-    "overlapColor": "#c8e6c9",
-    "depthMm": 1.5
+    "baseColor": "#6f5034",
+    "patternColor1": "#6f5034",
+    "patternColor2": "#6f5034",
+    "overlapColor": "#6f5034",
+    "depthMm": 1.5,
+    "mode": "color"
   },
   "mesh": {
     "resV": 150,
@@ -53,6 +55,7 @@
     "type": "utility",
     "preset": "None (No Modifier)",
     "equation": "0",
+    "equationV": "",
     "strength": 0,
     "target": "base"
   },

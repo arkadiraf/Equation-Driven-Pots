@@ -1,0 +1,73 @@
+{
+  "name": "Gyroid Calyx Smooth",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Fourier Bloom",
+    "equation": "R * (0.78 + 0.18*v + 0.20*sin(pi*v) + 0.06*pow(v, 4) + 0.055*cos(7*theta + 1.4*pi*v)*pow(sin(pi*v), 1.3))",
+    "baseRadius": 10,
+    "height": 15
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.35,
+    "uniformShell": true,
+    "bottomThickness": 0.35,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": true,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 0,
+    "plateRadiusExtra": 0,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Gyroid Slice",
+    "equation": "sin(6*theta)*cos(10*pi*v) + sin(10*pi*v)*cos(3*theta + 4*pi*v) + sin(3*theta + 4*pi*v)*cos(6*theta)",
+    "intensity": 0.18
+  },
+  "patterns": {
+    "preset1": "Surface Texture Top %",
+    "equation1": "textureFill(texPosNorm, 95)",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#ffffff",
+    "patternColor1": "#ff9016",
+    "patternColor2": "#000000",
+    "overlapColor": "#ffffff",
+    "depthMm": 1.2,
+    "mode": "color"
+  },
+  "mesh": {
+    "resV": 260,
+    "resT": 260,
+    "patternResV": 260,
+    "patternResT": 260
+  },
+  "modifier": {
+    "type": "petal",
+    "preset": "Petal Migration",
+    "equation": "sin(pi*v) + 0.15*sin(5*theta)",
+    "equationV": "",
+    "strength": 0.22,
+    "target": "pattern"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}
