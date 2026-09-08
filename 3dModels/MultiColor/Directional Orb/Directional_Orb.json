@@ -1,0 +1,73 @@
+{
+  "name": "Directional Orb",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "nonlinear",
+    "preset": "Directional Bias Orb",
+    "equation": "R * (1 + 0.18 * pow(sin(phi), 2) * cos(4*theta + 0.45*sin(theta)))",
+    "baseRadius": 12.5,
+    "height": 10
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.35,
+    "uniformShell": false,
+    "bottomThickness": 0.35,
+    "cylDrain": 0.5,
+    "sphTopCut": 38,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": true,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 0.5,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "0",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "Gyroid Mask",
+    "equation1": "sin(4*theta)*cos(8*pi*v) + sin(8*pi*v)*cos(2*theta + 2*pi*v) + sin(2*theta + 2*pi*v)*cos(4*theta) - 0.2",
+    "preset2": "Double Helix Mask",
+    "equation2": "sin(24*theta - 12*phi)*sin(phi) - 0.35",
+    "baseColor": "#ec008c",
+    "patternColor1": "#00b1b7",
+    "patternColor2": "#00ae42",
+    "overlapColor": "#fec600",
+    "depthMm": 1.2,
+    "mode": "color"
+  },
+  "mesh": {
+    "resV": 160,
+    "resT": 240,
+    "patternResV": 160,
+    "patternResT": 240
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "equationV": "",
+    "strength": 0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

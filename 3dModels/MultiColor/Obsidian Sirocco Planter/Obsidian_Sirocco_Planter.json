@@ -1,0 +1,73 @@
+{
+  "name": "Obsidian Sirocco Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Fourier Bloom",
+    "equation": "R * (0.80 + 0.20*v + 0.12*sin(pi*v) + 0.055*cos(7*theta + 1.4*pi*v)*pow(sin(pi*v), 0.8) + 0.035*cos(2*theta - 0.7*pi*v)*sin(pi*v))",
+    "baseRadius": 10,
+    "height": 25
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.35,
+    "uniformShell": true,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": true,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 0.5,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "0.55*ridged(theta, v, 5, 4, 4, 17) + 0.25*cos(14*theta + 5*pi*v) + 0.12*cos(7*theta - 9*pi*v)",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "Surface Texture Top %",
+    "equation2": "textureFill(texPosNorm, 55)",
+    "baseColor": "#000000",
+    "patternColor1": "#e4bd68",
+    "patternColor2": "#847d48",
+    "overlapColor": "#ffffff",
+    "depthMm": 1.2,
+    "mode": "color"
+  },
+  "mesh": {
+    "resV": 360,
+    "resT": 360,
+    "patternResV": 180,
+    "patternResT": 280
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Twist Drift",
+    "equation": "sin(pi*v) * (0.65 + 0.35*sin(2*pi*v))",
+    "equationV": "",
+    "strength": 0.22,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

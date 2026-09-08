@@ -1,0 +1,73 @@
+{
+  "name": "Verdant Helix Calyx",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Fourier Bloom",
+    "equation": "R * (0.76 + 0.22*v + 0.15*sin(pi*v) + 0.075*cos(7*theta + 1.8*pi*v)*pow(sin(pi*v), 0.8) + 0.08*pow(v, 4))",
+    "baseRadius": 10,
+    "height": 25
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.35,
+    "uniformShell": true,
+    "bottomThickness": 0.35,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": true,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 0,
+    "plateRadiusExtra": 0,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "carved",
+    "preset": "Arc Shell Carving",
+    "equation": "0.70*cos(14*theta + 3.6*pi*v)*pow(sin(pi*v), 0.75) + 0.30*cos(7*theta - 2.4*pi*v)*sin(pi*v)",
+    "intensity": 0.09
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#3f8e43",
+    "patternColor1": "#3f8e43",
+    "patternColor2": "#3f8e43",
+    "overlapColor": "#3f8e43",
+    "depthMm": 1.2,
+    "mode": "color"
+  },
+  "mesh": {
+    "resV": 180,
+    "resT": 300,
+    "patternResV": 180,
+    "patternResT": 300
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "equationV": "",
+    "strength": 0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "name": "Aurora Crownwave Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "nonlinear",
+    "preset": "Crown Splash Compression",
+    "equation": "R * (1 + (0.05 + 0.14*exp(-pow(v - 0.88, 2) * 50)) * atan(7 * cos(8*theta + pi*v)))",
+    "baseRadius": 7.5,
+    "height": 15
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.35,
+    "uniformShell": true,
+    "bottomThickness": 0.35,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": true,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 3.5,
+    "plateRadiusExtra": 3.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "0",
+    "intensity": 0.1
+  },
+  "patterns": {
+    "preset1": "Basic Stripe Mask",
+    "equation1": "cos(8*theta + pi*v) - 0.18",
+    "preset2": "Basic Band Mask",
+    "equation2": "sin(3*pi*v + 0.45*sin(8*theta + pi*v)) - 0.48",
+    "baseColor": "#482960",
+    "patternColor1": "#00b1b7",
+    "patternColor2": "#ec008c",
+    "overlapColor": "#fec600",
+    "depthMm": 1.2,
+    "mode": "color"
+  },
+  "mesh": {
+    "resV": 220,
+    "resT": 280,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "equationV": "",
+    "strength": 0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}
