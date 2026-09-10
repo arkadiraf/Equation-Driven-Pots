@@ -35,14 +35,15 @@
   },
   "patterns": {
     "preset1": "4-Petal Mask",
-    "equation1": "asin(0.98 * sin(4theta)) * sin(piv)",
+    "equation1": "asin(0.98 * sin(4*theta)) * sin(pi*v)",
     "preset2": "Double Helix Mask",
     "equation2": "cos(5 * theta - 3 * pi * v)",
     "baseColor": "#fcfcfc",
     "patternColor1": "#2fab26",
     "patternColor2": "#2fab26",
     "overlapColor": "#fcfcfc",
-    "depthMm": 0.5
+    "depthMm": 0.5,
+    "mode": "color"
   },
   "mesh": {
     "resV": 120,
@@ -54,6 +55,7 @@
     "type": "utility",
     "preset": "None (No Modifier)",
     "equation": "0",
+    "equationV": "",
     "strength": 0,
     "target": "base"
   },

@@ -1,0 +1,73 @@
+{
+  "name": "Amber Tempest Spire",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Band-Limited Turbulence",
+    "equation": "R * (1 + 0.18*exp(-pow(v - 0.65, 2)*10) * (cos(5*theta + pi*v) + 0.7*sin(11*theta - 2*pi*v)))",
+    "baseRadius": 10,
+    "height": 30
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.4,
+    "uniformShell": true,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.6,
+    "sphTopCut": 35,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": true,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 1.5,
+    "plateRadiusExtra": 1.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "basicEffect",
+    "preset": "Basic Mid Belt",
+    "equation": "exp(-pow(v - 0.5, 2)*18) * cos(10*theta)",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "Basic Band Mask",
+    "equation1": "sin(8*pi*v)",
+    "preset2": "Equatorial Arc Belt",
+    "equation2": "asin(0.98 * sin(8*theta)) * exp(-pow(v - 0.5, 2) * 30)",
+    "baseColor": "#fafaf9",
+    "patternColor1": "#be7d0e",
+    "patternColor2": "#4e3508",
+    "overlapColor": "#fefdfb",
+    "depthMm": 1.2,
+    "mode": "color"
+  },
+  "mesh": {
+    "resV": 360,
+    "resT": 180,
+    "patternResV": 120,
+    "patternResT": 180
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "equationV": "",
+    "strength": 0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}
