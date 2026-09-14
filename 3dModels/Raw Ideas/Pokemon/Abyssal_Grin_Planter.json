@@ -1,0 +1,73 @@
+{
+  "name": "Abyssal Grin Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "nonlinear",
+    "preset": "ATan Fluting",
+    "equation": "R * (0.72 + 0.30*sin(pi*v) + 0.14*v + 0.045*atan(4*cos(5*theta + pi*v))*pow(sin(pi*v), 1.3) + 0.10*cos(7*theta - 0.8*pi*v)*pow(v, 4))",
+    "baseRadius": 8.5,
+    "height": 9
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.35,
+    "uniformShell": true,
+    "bottomThickness": 0.35,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": true,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 0.8,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "0.48*cos(9*pi*v + 2.6*sin(theta))*pow(sin(pi*v), 1.1) + 0.24*atan(5*cos(7*theta - 4*pi*v))*pow(sin(pi*v), 1.5)",
+    "intensity": 0.2
+  },
+  "patterns": {
+    "preset1": "Sunburst Medallion",
+    "equation1": "exp(-2.4*(1 - cos(theta)) - 8*pow(v - 0.38, 2)) - 0.34",
+    "preset2": "Sunburst Medallion",
+    "equation2": "max(exp(-4.6*(1 - cos(theta)) - 15*pow(v - 0.35, 2)) - 0.46, max(exp(-18*(1 - cos(theta - 0.55)) - 90*pow(v - 0.78, 2)) - 0.42, exp(-18*(1 - cos(theta + 0.55)) - 90*pow(v - 0.78, 2)) - 0.42))",
+    "baseColor": "#482960",
+    "patternColor1": "#ec008c",
+    "patternColor2": "#fec600",
+    "overlapColor": "#000000",
+    "depthMm": 1.2,
+    "mode": "color"
+  },
+  "mesh": {
+    "resV": 168,
+    "resT": 252,
+    "patternResV": 168,
+    "patternResT": 252
+  },
+  "modifier": {
+    "type": "diagonal",
+    "preset": "Braided Drift",
+    "equation": "sin(3*pi*v) + 0.20*sin(5*theta - 2*pi*v)",
+    "equationV": "",
+    "strength": 0.22,
+    "target": "texture"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

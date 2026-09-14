@@ -1,0 +1,73 @@
+{
+  "name": "Embercrest Drake Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Fourier Bloom",
+    "equation": "R * (0.72 + 0.36*sin(pi*pow(v, 0.85)) + 0.18*pow(v, 3) + 0.055*cos(4*theta - 1.2*pi*v)*pow(sin(pi*v), 1.6) + 0.085*cos(7*theta + 1.5*pi*v)*pow(v, 3))",
+    "baseRadius": 7.5,
+    "height": 13
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.35,
+    "uniformShell": true,
+    "bottomThickness": 0.35,
+    "cylDrain": 0.6,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": true,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 0.8,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "0.52*ridged(theta, v, 8, 10, 4, 23) + 0.26*cos(9*theta - 7*pi*v)*pow(sin(pi*v), 1.2) - 0.24",
+    "intensity": 0.22
+  },
+  "patterns": {
+    "preset1": "Marble Veins",
+    "equation1": "ridged(theta, v, 5, 7, 4, 19) - 0.66 + 0.14*exp(-pow(v - 0.84, 2)*22)",
+    "preset2": "Sunburst Medallion",
+    "equation2": "exp(-3.3*(1 - cos(theta)) - 10*pow(v - 0.48, 2)) - 0.40",
+    "baseColor": "#ff6a13",
+    "patternColor1": "#9d432c",
+    "patternColor2": "#ffffff",
+    "overlapColor": "#fec600",
+    "depthMm": 1.2,
+    "mode": "color"
+  },
+  "mesh": {
+    "resV": 260,
+    "resT": 240,
+    "patternResV": 160,
+    "patternResT": 240
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Twist Drift",
+    "equation": "sin(pi*v)*(0.8*v + 0.18*sin(3*theta - 2*pi*v))",
+    "equationV": "",
+    "strength": 0.22,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "wind",
+    "preset": "Wind Lean",
+    "dx": "0.35*pow(v, 1.8)",
+    "dy": "0",
+    "dz": "0.10*sin(2*pi*v)*pow(v, 1.2)",
+    "strength": 0.6,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

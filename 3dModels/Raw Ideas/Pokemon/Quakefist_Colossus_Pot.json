@@ -1,0 +1,73 @@
+{
+  "name": "Quakefist Colossus Pot",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Fourier Bloom",
+    "equation": "R * (0.76 + 0.12*v + 0.26*sin(pi*v) + 0.20*cos(4*theta - 0.3*pi*v)*pow(sin(pi*v), 1.7) + 0.045*atan(6*cos(8*theta + 1.4*pi*v))*exp(-pow(v - 0.78, 2)*20))",
+    "baseRadius": 9.5,
+    "height": 9.5
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.35,
+    "uniformShell": true,
+    "bottomThickness": 0.35,
+    "cylDrain": 0.65,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": true,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 0.9,
+    "plateRadiusExtra": 0.9,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "0.50*ridged(theta, v, 5, 7, 4, 44) - 0.25 + 0.25*cos(4*theta - 3*pi*v)*pow(sin(pi*v), 1.4)",
+    "intensity": 0.18
+  },
+  "patterns": {
+    "preset1": "4-Petal Mask",
+    "equation1": "cos(4*theta - 0.3*pi*v) - 0.12 - 4.5*pow(v - 0.62, 2)",
+    "preset2": "Marble Veins",
+    "equation2": "0.14 - abs(sin(3*theta + 5*pi*v + 1.8*fbm(theta, v, 3, 5, 4, 27)))",
+    "baseColor": "#482960",
+    "patternColor1": "#ff6a13",
+    "patternColor2": "#9d2235",
+    "overlapColor": "#e4bd68",
+    "depthMm": 1.2,
+    "mode": "color"
+  },
+  "mesh": {
+    "resV": 168,
+    "resT": 256,
+    "patternResV": 168,
+    "patternResT": 256
+  },
+  "modifier": {
+    "type": "diagonal",
+    "preset": "Braided Drift",
+    "equation": "sin(4*theta + 2*pi*v) + 0.45*sin(4*theta - 3*pi*v)",
+    "equationV": "",
+    "strength": 0.16,
+    "target": "pattern"
+  },
+  "distortion": {
+    "type": "torsion",
+    "preset": "Torsion Twist",
+    "dx": "x*cos(0.18*sin(pi*v)) - z*sin(0.18*sin(pi*v)) - x",
+    "dy": "0",
+    "dz": "x*sin(0.18*sin(pi*v)) + z*cos(0.18*sin(pi*v)) - z",
+    "strength": 0.45,
+    "region": "shoulder",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}
