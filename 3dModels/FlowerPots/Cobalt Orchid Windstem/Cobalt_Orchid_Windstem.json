@@ -1,0 +1,73 @@
+{
+  "name": "Cobalt Orchid Windstem",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Fourier Bloom",
+    "equation": "R * (0.66 + 0.11*exp(-pow(v - 0.045, 2)*78) + 0.06*sin(pi*v) + 3.90*smoothstep(0.58, 0.86, v) + 1.10*smoothstep(0.76, 0.97, v)*(1 + 0.18*cos(6*theta + 1.5*pi*v)) + 0.50*exp(-pow(v - 0.79, 2)*42))",
+    "baseRadius": 1.5,
+    "height": 30
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "uniformShell": true,
+    "bottomThickness": 0.35,
+    "cylDrain": 0.45,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": false,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 0.8,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "carved",
+    "preset": "Arc Shell Carving",
+    "equation": "0.28*cos(7*theta + 3*pi*v)*(1 - smoothstep(0.58, 0.82, v)) + 0.48*asin(0.94*sin(6*theta - 5*pi*v))*smoothstep(0.56, 0.97, v) + 0.16*cos(12*theta + 3*pi*v)*smoothstep(0.76, 0.98, v)",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "4-Petal Mask",
+    "equation1": "v - 0.60 + 0.1*cos(6*theta + 1.4*pi*v)",
+    "preset2": "Marble Veins",
+    "equation2": "0.18 - abs(sin(3*theta - 6*pi*v + 1.0*fbm(theta, v, 3, 5, 3, 52)))",
+    "baseColor": "#00ae42",
+    "patternColor1": "#0056b8",
+    "patternColor2": "#5e43b7",
+    "overlapColor": "#ffffff",
+    "depthMm": 1.2,
+    "mode": "color"
+  },
+  "mesh": {
+    "resV": 240,
+    "resT": 288,
+    "patternResV": 240,
+    "patternResT": 288
+  },
+  "modifier": {
+    "type": "diagonal",
+    "preset": "Braided Drift",
+    "equation": "sin(3*theta + 3*pi*v) + 0.42*sin(6*theta - 2*pi*v)",
+    "equationV": "",
+    "strength": 0.35,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "wind",
+    "preset": "Wind Lean",
+    "dx": "-2.60*pow(v, 1.7)",
+    "dy": "0",
+    "dz": "1.80*pow(v, 1.85) + 0.30*sin(2*pi*v)*pow(v, 1.2)",
+    "strength": 1.2,
+    "region": "lower",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

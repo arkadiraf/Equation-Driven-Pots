@@ -1,0 +1,73 @@
+{
+  "name": "Crosswind Poppy Stake",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Fourier Bloom",
+    "equation": "R * (0.64 + 0.24*exp(-pow(v - 0.06, 2)*68) + 0.06*sin(pi*v) + 2.25*smoothstep(0.65, 0.96, v)*(1 + 0.13*cos(8*theta - 1.8*pi*v) - 0.055*sin(theta)))",
+    "baseRadius": 2.5,
+    "height": 30
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "uniformShell": true,
+    "bottomThickness": 0.35,
+    "cylDrain": 0.55,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": false,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 0.8,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "0.34*cos(8*theta + 4*pi*v)*(1 - smoothstep(0.64, 0.86, v)) + 0.50*cos(8*theta - 6*pi*v)*smoothstep(0.62, 0.96, v) + 0.18*cos(16*theta + 3*pi*v)*smoothstep(0.78, 0.98, v)",
+    "intensity": 0.17
+  },
+  "patterns": {
+    "preset1": "Shoreline Split",
+    "equation1": "v - 0.67 + 0.04*cos(8*theta - 1.8*pi*v)",
+    "preset2": "Double Helix Mask",
+    "equation2": "cos(4*theta - 7*pi*v + 0.7*sin(2*pi*v)) - 0.54",
+    "baseColor": "#3f8e43",
+    "patternColor1": "#c12e1f",
+    "patternColor2": "#ff6a13",
+    "overlapColor": "#fec600",
+    "depthMm": 1.2,
+    "mode": "color"
+  },
+  "mesh": {
+    "resV": 224,
+    "resT": 272,
+    "patternResV": 224,
+    "patternResT": 272
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Crown Rotation",
+    "equation": "0.70*exp(-pow(v - 0.84, 2)*30)*sin(2*pi*v) + 0.18*sin(4*theta - 2*pi*v)",
+    "equationV": "",
+    "strength": 2,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "wind",
+    "preset": "Wind Lean",
+    "dx": "4.0*pow(v, 1.8) + 0.12*max(x, 0)*pow(v, 3)",
+    "dy": "0",
+    "dz": "0.70*sin(pi*v)*pow(v, 1.2)",
+    "strength": 0.7,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}

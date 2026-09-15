@@ -1,0 +1,73 @@
+{
+  "name": "Golden Zinnia Windstem",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Fourier Bloom",
+    "equation": "R * (0.66 + 0.09*exp(-pow(v - 0.04, 2)*82) + 0.05*sin(pi*v) + 5.10*smoothstep(0.67, 0.96, v)*(1 + 0.10*cos(12*theta - 2*pi*v) + 0.035*cos(24*theta + 2.5*pi*v)))",
+    "baseRadius": 1.5,
+    "height": 30
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "uniformShell": true,
+    "bottomThickness": 0.35,
+    "cylDrain": 0.45,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": false,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 0.8,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "interference",
+    "preset": "Moire Texture",
+    "equation": "0.28*cos(8*theta + 4*pi*v)*(1 - smoothstep(0.64, 0.84, v)) + 0.48*cos(12*theta - 7*pi*v)*smoothstep(0.64, 0.97, v) + 0.22*cos(24*theta + 3*pi*v)*smoothstep(0.78, 0.99, v)",
+    "intensity": 0.14
+  },
+  "patterns": {
+    "preset1": "Shoreline Split",
+    "equation1": "v - 0.68 + 0.035*cos(12*theta - 1.8*pi*v)",
+    "preset2": "Double Helix Mask",
+    "equation2": "cos(6*theta - 9*pi*v + 0.55*sin(2*pi*v)) - 0.56",
+    "baseColor": "#becf00",
+    "patternColor1": "#ff6a13",
+    "patternColor2": "#fec600",
+    "overlapColor": "#6f5034",
+    "depthMm": 1.2,
+    "mode": "color"
+  },
+  "mesh": {
+    "resV": 240,
+    "resT": 300,
+    "patternResV": 240,
+    "patternResT": 300
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Twist Drift",
+    "equation": "0.68*sin(pi*v) + 0.20*sin(6*theta - 3*pi*v)",
+    "equationV": "",
+    "strength": 2,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "wind",
+    "preset": "Wind Lean",
+    "dx": "2.00*pow(v, 1.65)",
+    "dy": "0",
+    "dz": "-2.40*pow(v, 1.80) + 0.25*sin(pi*v)*pow(v, 1.2)",
+    "strength": 3,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

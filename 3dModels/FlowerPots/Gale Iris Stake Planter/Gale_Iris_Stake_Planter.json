@@ -1,0 +1,73 @@
+{
+  "name": "Gale Iris Stake Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "interference",
+    "preset": "Fourier Bloom",
+    "equation": "R * (0.62 + 0.26*exp(-pow(v - 0.055, 2)*70) + 0.07*sin(pi*v) + 2.85*smoothstep(0.63, 0.92, v)*(1 + 0.16*cos(6*theta + 1.5*pi*v)) + 2.78*exp(-pow(v - 0.79, 2)*44))",
+    "baseRadius": 1.5,
+    "height": 30
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.35,
+    "uniformShell": true,
+    "bottomThickness": 0.35,
+    "cylDrain": 0.58,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": false,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 0.8,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "carved",
+    "preset": "Arc Shell Carving",
+    "equation": "0.30*cos(7*theta + 3*pi*v)*(1 - smoothstep(0.62, 0.84, v)) + 0.52*asin(0.94*sin(6*theta - 5*pi*v))*smoothstep(0.62, 0.96, v)",
+    "intensity": 0.15
+  },
+  "patterns": {
+    "preset1": "4-Petal Mask",
+    "equation1": "v - 0.64 + 0.05*cos(6*theta + 1.4*pi*v)",
+    "preset2": "Double Helix Mask",
+    "equation2": "cos(3*theta - 7*pi*v + 0.5*sin(2*pi*v)) - 0.50",
+    "baseColor": "#00ae42",
+    "patternColor1": "#0056b8",
+    "patternColor2": "#482960",
+    "overlapColor": "#ffffff",
+    "depthMm": 1.2,
+    "mode": "color"
+  },
+  "mesh": {
+    "resV": 232,
+    "resT": 276,
+    "patternResV": 232,
+    "patternResT": 276
+  },
+  "modifier": {
+    "type": "diagonal",
+    "preset": "Braided Drift",
+    "equation": "sin(3*theta + 3*pi*v) + 0.45*sin(6*theta - 2*pi*v)",
+    "equationV": "",
+    "strength": 0.5,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "wind",
+    "preset": "Wind Lean",
+    "dx": "-3.60*pow(v, 1.7)",
+    "dy": "0",
+    "dz": "1.20*pow(v, 1.9) + 0.30*sin(2*pi*v)*pow(v, 1.2)",
+    "strength": 0,
+    "region": "all",
+    "anchor": "baseAnchored",
+    "space": "xyz"
+  }
+}
