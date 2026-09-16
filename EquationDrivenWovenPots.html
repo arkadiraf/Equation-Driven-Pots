@@ -133,24 +133,6 @@
     </div>
 
     <div class="collapsible-section is-collapsed">
-        <div class="section-title" onclick="toggleSection(this)">Surface Texture</div>
-        <div class="section-body">
-            <div class="grid-inputs">
-                <div class="input-group">
-                    <label>Texture Preset</label>
-                    <select id="texPresetSelect" onchange="applyTexturePreset()"></select>
-                </div>
-            </div>
-            <div id="texDesc" class="desc-text">No surface displacement.</div>
-            <div class="input-group">
-                <label style="color: var(--highlight)">Displacement: T(&theta;, u, v)</label>
-                <textarea id="texEquation" onchange="updatePreview()">0</textarea>
-            </div>
-            <div class="input-group"><label>Texture Intensity (Multiplier)</label><input type="number" id="texIntensity" value="0.15" step="0.05" onchange="updatePreview()"></div>
-        </div>
-    </div>
-
-    <div class="collapsible-section is-collapsed">
         <div class="section-title" onclick="toggleSection(this)">Structural Geometry</div>
         <div class="section-body">
             <div id="potCuttingWrap" style="display:block;">
@@ -181,6 +163,50 @@
                 <input type="checkbox" id="extraClean" onchange="updatePreview()">
                 <label for="extraClean" style="margin-bottom:0;">Extra cleaning: true-shell cavity in overlap zones (removes thin blades, slower)</label>
             </div>
+        </div>
+    </div>
+
+    <div class="collapsible-section is-collapsed">
+        <div class="section-title" onclick="toggleSection(this)">Base Plate</div>
+        <div class="section-body">
+            <div id="plateWrap" style="display:block;">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="includePlate" checked onchange="onModelModeChange()">
+                    <label for="includePlate" style="margin-bottom:0;">Add a base plate under the pot</label>
+                </div>
+                <div class="grid-inputs">
+                    <div class="input-group"><label>Plate Clearance (cm)</label><input type="number" id="plateOffsetCm" value="1.5" step="0.1" min="0" onchange="updatePreview()"></div>
+                    <div class="input-group"><label>Plate Height (cm)</label><input type="number" id="plateHeightCm" value="1.5" step="0.1" min="0.2" onchange="updatePreview()"></div>
+                </div>
+                <div class="grid-inputs">
+                    <div class="input-group"><label>Plate Wall Thickness (cm)</label><input type="number" id="plateWallThickness" value="0.35" step="0.05" min="0.05" onchange="updatePreview()"></div>
+                    <div class="input-group"><label>Plate Base Thickness (cm)</label><input type="number" id="plateBaseThickness" value="0.35" step="0.05" min="0.05" onchange="updatePreview()"></div>
+                </div>
+                <div class="input-group"><label>Plate Opening Angle (&deg;)</label><input type="number" id="plateOpeningAngle" value="25" step="1" min="0" max="60" onchange="updatePreview()"></div>
+                <div class="desc-text">Traces the pot's own outer silhouette at the Bottom Cut plane, connects the (possibly several, self-crossing) edges with a smooth spline, then offsets that contour outward by the clearance and lofts it into a flared dish below the pot so the pot's base sits cleanly inside the rim (Mobius Curve uses a fitted ellipse instead, for a cleaner result around its hole). Pot mode only.</div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="applyPlateColoring" checked onchange="updatePreview()">
+                    <label for="applyPlateColoring" style="margin-bottom:0;">Apply the Dual Pattern Color Layer to the plate's bottom and sides too</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="collapsible-section is-collapsed">
+        <div class="section-title" onclick="toggleSection(this)">Surface Texture</div>
+        <div class="section-body">
+            <div class="grid-inputs">
+                <div class="input-group">
+                    <label>Texture Preset</label>
+                    <select id="texPresetSelect" onchange="applyTexturePreset()"></select>
+                </div>
+            </div>
+            <div id="texDesc" class="desc-text">No surface displacement.</div>
+            <div class="input-group">
+                <label style="color: var(--highlight)">Displacement: T(&theta;, u, v)</label>
+                <textarea id="texEquation" onchange="updatePreview()">0</textarea>
+            </div>
+            <div class="input-group"><label>Texture Intensity (Multiplier)</label><input type="number" id="texIntensity" value="0.15" step="0.05" onchange="updatePreview()"></div>
         </div>
     </div>
 
@@ -933,6 +959,367 @@
         return all;
     }
 
+    // ---- Base Plate ---------------------------------------------------------------------------
+    // A shallow dish the pot's bottom-cut rim sits in. Its footprint traces the pot's OWN outer
+    // silhouette at the Bottom Cut plane rather than a separate equation: a woven/braided path
+    // crosses itself, so that cross-section is typically several disjoint loops (one per strand
+    // passing through that height), not the single simple ring a body-of-revolution pot would
+    // have - see extractPlateEnvelope/sampleEnvelopeSpline for how those loops become one contour.
+    //
+    // The Mobius Curve path is a special case: its loops sit AROUND a hole rather than clustered
+    // near the centre, and a bin the outer loop's own vertices happened to skip could get "won" by
+    // a much smaller, closer strand on the far side of that hole - spiking the traced contour
+    // sharply inward right through the plate. A best-fit ELLIPSE can't spike (smooth by
+    // construction everywhere), so Mobius Curve gets extractPlateEllipse/ellipseRadiusAt instead;
+    // every other path keeps the traced-silhouette look, which hugs each path's own bumps more
+    // closely than an ellipse would.
+
+    // Angular resolution the plate's own contour/mesh is sampled and built at - independent of the
+    // pot's own Mesh Resolution, and not user-facing.
+    const PLATE_RES = 180;
+
+    // Slices the pot's OUTER wall solid (ignoring any cavity/fill - the plate only cares about the
+    // printed silhouette) at the bottom-cut height, then reduces the resulting loop(s) to one
+    // "outer shape": bin every cross-section point by angle around the loops' shared centroid and
+    // keep the farthest one per bin, so a bin a strand doesn't reach at all is simply left empty
+    // rather than guessed at. Returns null if the plane misses the solid entirely.
+    function extractPlateEnvelope(outerSolid, zLo) {
+        const cs = outerSolid.slice(zLo);
+        if (cs.isEmpty()) { cs.delete(); return null; }
+        const polys = cs.toPolygons();
+        cs.delete();
+        let sx = 0, sy = 0, n = 0;
+        for (const poly of polys) for (const p of poly) { sx += p[0]; sy += p[1]; n++; }
+        if (!n) return null;
+        const cx = sx / n, cy = sy / n;
+        const binMax = new Float64Array(PLATE_RES).fill(-Infinity);
+        for (const poly of polys) for (const p of poly) {
+            const dx = p[0] - cx, dy = p[1] - cy;
+            let theta = Math.atan2(dy, dx); if (theta < 0) theta += 2 * Math.PI;
+            const b = Math.min(PLATE_RES - 1, Math.floor(theta / (2 * Math.PI) * PLATE_RES));
+            const r = Math.hypot(dx, dy);
+            if (r > binMax[b]) binMax[b] = r;
+        }
+        const samples = [];
+        for (let b = 0; b < PLATE_RES; b++) if (isFinite(binMax[b])) samples.push({ theta: (b + 0.5) / PLATE_RES * 2 * Math.PI, r: binMax[b] });
+        return samples.length >= 3 ? { cx, cy, samples } : null;
+    }
+
+    // Pads a periodic (theta, r) sample list with its own last two / first two points shifted by
+    // -/+ 2*pi, so a plain (non-periodic) Catmull-Rom lookup below never has to special-case the
+    // wrap - every point the 4-point stencil can ask for, at any theta in [0, 2*pi), already exists
+    // in the padded array in plain ascending order.
+    function padPeriodicSamples(samples) {
+        const n = samples.length, ext = [];
+        for (let k = n - 2; k < n; k++) { const s = samples[(k + n) % n]; ext.push({ theta: s.theta - 2 * Math.PI, r: s.r }); }
+        for (let k = 0; k < n; k++) ext.push(samples[k]);
+        for (let k = 0; k < 2; k++) ext.push({ theta: samples[k].theta + 2 * Math.PI, r: samples[k].r });
+        return ext;
+    }
+
+    // Catmull-Rom through the (possibly very unevenly spaced - a strand's own loop clusters many
+    // points close together in theta, then a wide empty gap follows to the next strand) samples:
+    // this is what "connects the edges with a clean spline" - the plate's contour follows the
+    // pot's real silhouette where material is, and a smooth curve bridges every gap where it isn't.
+    function sampleEnvelopeSpline(ext, thetaOut) {
+        let i = 1;
+        while (i < ext.length - 2 && ext[i + 1].theta <= thetaOut) i++;
+        const t0 = ext[i].theta, t1 = ext[i + 1].theta;
+        const t = clampNum((thetaOut - t0) / Math.max(1e-9, t1 - t0), 0, 1);
+        const p0 = ext[i - 1].r, p1 = ext[i].r, p2 = ext[i + 1].r, p3 = ext[i + 2].r;
+        const t2 = t * t, t3 = t2 * t;
+        return 0.5 * ((2 * p1) + (p2 - p0) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (3 * p1 - p0 - 3 * p2 + p3) * t3);
+    }
+
+    // Slices the pot's OUTER wall solid (ignoring any cavity/fill - the plate only cares about the
+    // printed silhouette) at the bottom-cut height, then fits a bounding ellipse to the resulting
+    // loop(s) via PCA: the centroid and the eigenvectors/eigenvalues of the point cloud's 2x2
+    // covariance matrix give the ellipse's centre and principal-axis angle, and the largest
+    // projection onto each axis (not the statistical spread) sizes it so every cross-section point
+    // ends up ON or INSIDE the ellipse - a proper enclosing shape, not just a statistical fit.
+    // Returns null if the plane misses the solid entirely.
+    function extractPlateEllipse(outerSolid, zLo) {
+        const cs = outerSolid.slice(zLo);
+        if (cs.isEmpty()) { cs.delete(); return null; }
+        const polys = cs.toPolygons();
+        cs.delete();
+        let sx = 0, sy = 0, n = 0;
+        for (const poly of polys) for (const p of poly) { sx += p[0]; sy += p[1]; n++; }
+        if (!n) return null;
+        const cx = sx / n, cy = sy / n;
+        let cxx = 0, cyy = 0, cxy = 0;
+        for (const poly of polys) for (const p of poly) {
+            const dx = p[0] - cx, dy = p[1] - cy;
+            cxx += dx*dx; cyy += dy*dy; cxy += dx*dy;
+        }
+        cxx /= n; cyy /= n; cxy /= n;
+        // Principal-axis angle of a 2D covariance ellipse; degenerates gracefully (any phi works)
+        // when the point cloud is already circular (cxx===cyy && cxy===0).
+        const phi = 0.5 * Math.atan2(2 * cxy, cxx - cyy);
+        const cosP = Math.cos(phi), sinP = Math.sin(phi);
+        let maxU = 0, maxV = 0;
+        for (const poly of polys) for (const p of poly) {
+            const dx = p[0] - cx, dy = p[1] - cy;
+            const u = dx * cosP + dy * sinP, v = -dx * sinP + dy * cosP;
+            if (Math.abs(u) > maxU) maxU = Math.abs(u);
+            if (Math.abs(v) > maxV) maxV = Math.abs(v);
+        }
+        return { cx, cy, phi, a: Math.max(0.1, maxU), b: Math.max(0.1, maxV) };
+    }
+
+    // Polar radius of an ellipse (semi-axes a >= its own major axis at angle `phi`, b the minor)
+    // measured from its centre in a fixed GLOBAL direction theta - the standard r(theta) for a
+    // conic centred at the origin, just rotated by phi first.
+    function ellipseRadiusAt(ell, theta) {
+        const dt = theta - ell.phi;
+        const cu = Math.cos(dt) / ell.a, sv = Math.sin(dt) / ell.b;
+        return 1 / Math.sqrt(cu*cu + sv*sv);
+    }
+
+    // Builds the plate as a shelled dish (outer loft minus an inward-offset cavity loft, the same
+    // "solid then shell" idiom the rest of this file uses): a solid slab of Plate Base Thickness at
+    // the bottom, a wall of Plate Wall Thickness above it. Both the outer wall and, in lockstep, the
+    // cavity wall widen linearly from the raw contour at the plate's own floor to
+    // `contour + tan(openingAngle) * plateHeight` at its rim (z = zLo, exactly where the pot's own
+    // cut sits) - a straight flare needs only its two end rings, so the loft is a simple 2-ring
+    // prism, not a full multi-ring sweep. Returns a raw {positions, indices} mesh, or null.
+    function buildPlateMesh(cfg, outerSolid, zLo) {
+        const N = PLATE_RES;
+        const plateR = new Float64Array(N);
+        let env;
+        if (cfg.type === 'Mobius Curve') {
+            env = extractPlateEllipse(outerSolid, zLo);
+            if (!env) return null;
+            for (let j = 0; j < N; j++) plateR[j] = ellipseRadiusAt(env, (j / N) * 2 * Math.PI) + cfg.plateOffsetCm;
+        } else {
+            env = extractPlateEnvelope(outerSolid, zLo);
+            if (!env) return null;
+            const ext = padPeriodicSamples(env.samples);
+            for (let j = 0; j < N; j++) plateR[j] = sampleEnvelopeSpline(ext, (j / N) * 2 * Math.PI) + cfg.plateOffsetCm;
+        }
+        const avgR = plateR.reduce((a, b) => a + b, 0) / N;
+
+        const { Manifold, Mesh } = window.CSG;
+        const h = Math.max(0.2, cfg.plateHeightCm);
+        const baseT = Math.min(cfg.plateBaseThickness, h - 0.02);
+        const wallT = Math.min(cfg.plateWallThickness, 0.4 * avgR);
+        const flare = Math.max(0, Math.tan(cfg.plateOpeningAngleDeg * Math.PI / 180));
+        const zTop = zLo, zBot = zLo - h;
+
+        function ring(z, offset) {
+            const pts = new Float32Array(N * 3);
+            const dz = z - zBot;
+            for (let j = 0; j < N; j++) {
+                const theta = (j / N) * 2 * Math.PI;
+                const r = Math.max(0.05, plateR[j] + flare * dz + offset);
+                pts[j*3] = env.cx + r * Math.cos(theta);
+                pts[j*3+1] = env.cy + r * Math.sin(theta);
+                pts[j*3+2] = z;
+            }
+            return pts;
+        }
+        // Straight loft between two rings, capped flat at both ends - same winding convention as
+        // buildPieceManifold's own end caps (fan from a center point, `(cStart, j1, j)` at the
+        // bottom, `(cEnd, top+j, top+j1)` at the top) and side quads.
+        function loft(zA, zB, offset) {
+            const rb = ring(zA, offset), rt = ring(zB, offset);
+            const pos = new Float32Array((N * 2 + 2) * 3);
+            pos.set(rb, 0); pos.set(rt, N * 3);
+            const cBot = N * 2, cTop = N * 2 + 1;
+            pos.set([env.cx, env.cy, zA], cBot * 3);
+            pos.set([env.cx, env.cy, zB], cTop * 3);
+            const tris = [];
+            for (let j = 0; j < N; j++) {
+                const j1 = (j + 1) % N;
+                tris.push(j, N + j1, N + j,  j, j1, N + j1);
+                tris.push(cBot, j1, j);
+                tris.push(cTop, N + j, N + j1);
+            }
+            return new Manifold(new Mesh({ numProp: 3, vertProperties: pos, triVerts: Uint32Array.from(tris) }));
+        }
+
+        const solidOuter = loft(zBot, zTop, 0);
+        // The cavity's own top overshoots the rim so the subtraction opens it cleanly (same idiom
+        // buildMesh's own pot-mode cavity subtraction uses against zHi) - its floor sits exactly at
+        // the base/wall transition with no such margin needed, since that floor is a fresh disc
+        // inside solidOuter's volume, not coincident with any face of it.
+        const eps = Math.max(0.02, 0.15 * baseT);
+        const cavity = loft(zBot + baseT, zTop + eps, -wallT);
+        let plate = solidOuter.subtract(cavity);
+        solidOuter.delete(); cavity.delete();
+        if (plate.status() !== 'NoError' || plate.isEmpty()) { plate.delete(); return null; }
+        const cleaned = cleanDebris(plate, cfg.debrisPct / 100);
+        if (cleaned.solid) { plate.delete(); plate = cleaned.solid; }
+
+        // Dual Pattern Color Layer, reapplied to the plate's own outer surface (bottom disc + side
+        // wall) when the pot's own pattern masks are active - same masks/colours, own geometry (see
+        // buildPlateColorGrid/buildPlatePatternParts below), same membrane-free cutter=prism-inset
+        // CSG recipe buildPatternParts uses for the pot. Always returns an ARRAY of parts: a single
+        // [Plate] entry (state 4, base-coloured) when uncoloured or the colour layer couldn't be
+        // built, or [Plate Base, ...A/B/Overlap] when it could.
+        let parts = null;
+        if (cfg.applyPlateColoring && patternActive(cfg)) {
+            const plateDepthCm = Math.max(0, Math.min(cfg.patternDepthCm, wallT - 0.02, baseT - 0.02, 0.4 * avgR));
+            if (plateDepthCm > 1e-4) {
+                const grid = buildPlateColorGrid(cfg, env, plateR, zBot, zTop, flare, plateDepthCm);
+                const insetEps = Math.max(0.02, 0.15 * plateDepthCm);
+                const insetSolid = loft(zBot + plateDepthCm, zTop + insetEps, -plateDepthCm);
+                parts = buildPlatePatternParts(plate, insetSolid, grid);
+                insetSolid.delete();
+            }
+        }
+        if (!parts) {
+            const m = plate.getMesh();
+            parts = [{ state: 4, positions: Float32Array.from(m.vertProperties), indices: Uint32Array.from(m.triVerts) }];
+        }
+        plate.delete();
+        return parts;
+    }
+
+    // Grid for the plate's colour layer: a single OPEN profile (disc centre -> disc rim -> wall
+    // top) combined with the periodic angle, mirroring Pot Designer's periodic-theta/open-v body-
+    // of-revolution topology (the pot's own pattern grid is periodic in BOTH its dimensions, so its
+    // builders can't be reused directly here). `u` is fraction along that whole profile (0 at the
+    // disc's centre, 1 at the rim); `v` is 0 everywhere on the disc and rises 0->1 up the wall, so
+    // it reads the same "world height" way the pot's own masks use it, with no jump at the seam
+    // where the two halves meet (both read v=0 there). Reuses the pot's own compiled-expression
+    // machinery (compilePatternExpr/evalPatternMask) - it only takes numeric args, nothing
+    // pot-specific about it.
+    function buildPlateColorGrid(cfg, env, plateR, zBot, zTop, flare, depthCm) {
+        const Nt = PLATE_RES, NvDisc = 28, NvWall = 44, Nv = NvDisc + NvWall - 1;
+        const eps = 0.02;
+        const eq1 = compilePatternExpr(cfg.patternEq1), eq2 = compilePatternExpr(cfg.patternEq2);
+        const top = [], bot = [], fieldA = [], fieldB = [];
+        for (let i = 0; i < Nv; i++) {
+            const topRow = new Float64Array(Nt * 3), botRow = new Float64Array(Nt * 3);
+            const rowA = new Float64Array(Nt), rowB = new Float64Array(Nt);
+            const onDisc = i <= NvDisc - 1;
+            const u = i / (Nv - 1);
+            for (let j = 0; j < Nt; j++) {
+                const theta = (j / Nt) * 2 * Math.PI;
+                const rMax = plateR[j];
+                let x, y, z, v, nx, ny, nz;
+                if (onDisc) {
+                    const r = (i / (NvDisc - 1)) * rMax;
+                    x = env.cx + r * Math.cos(theta); y = env.cy + r * Math.sin(theta); z = zBot;
+                    v = 0; nx = 0; ny = 0; nz = -1;
+                } else {
+                    const hv = (i - (NvDisc - 1)) / (NvWall - 1);
+                    z = zBot + hv * (zTop - zBot);
+                    const r = rMax + flare * (z - zBot);
+                    x = env.cx + r * Math.cos(theta); y = env.cy + r * Math.sin(theta);
+                    v = hv; nx = Math.cos(theta); ny = Math.sin(theta); nz = 0;
+                }
+                topRow[j*3] = x + nx*eps; topRow[j*3+1] = y + ny*eps; topRow[j*3+2] = z + nz*eps;
+                const d = depthCm + eps;
+                botRow[j*3] = x - nx*d; botRow[j*3+1] = y - ny*d; botRow[j*3+2] = z - nz*d;
+                const rNow = Math.hypot(x - env.cx, y - env.cy);
+                rowA[j] = evalPatternMask(eq1, theta, u, u, v, x, y, z, rNow, rNow, 0);
+                rowB[j] = evalPatternMask(eq2, theta, u, u, v, x, y, z, rNow, rNow, 0);
+            }
+            top.push(topRow); bot.push(botRow); fieldA.push(rowA); fieldB.push(rowB);
+        }
+        return { Nt, Nv, top, bot, fieldA, fieldB };
+    }
+
+    // Stepped-edge prisms over the plate's grid - periodic in theta (j), OPEN in the profile (i):
+    // a cell's "previous" neighbour is skipped (no wall) at i=0, since every theta column
+    // coincides there (the disc's centre point) and the top/bottom fans already close the shape
+    // at that apex on their own; a cell's "next" neighbour is treated as state 0 (always a wall)
+    // past i=Nv-2, since the profile simply ends at the rim - there's no cell beyond it to compare
+    // against. Otherwise identical in structure (and wall-quad winding) to buildSteppedPatternMeshes.
+    function buildPlateSteppedMeshes(grid) {
+        const { Nt, Nv, top, bot, fieldA, fieldB } = grid;
+        const pools = { 1: { positions: [], indices: [] }, 2: { positions: [], indices: [] }, 3: { positions: [], indices: [] }, all: { positions: [], indices: [] } };
+        function push(pool, p) { const i = pool.positions.length/3; pool.positions.push(p[0], p[1], p[2]); return i; }
+        function tri(pool, a, b, c) { const ia=push(pool,a), ib=push(pool,b), ic=push(pool,c); pool.indices.push(ia,ib,ic); }
+        function quad(pool, a, b, c, d) { tri(pool,a,b,c); tri(pool,a,c,d); }
+        function pt2(rows, i, j) { const row = rows[i], o = j * 3; return [row[o], row[o+1], row[o+2]]; }
+        function state(i, j) { return (fieldA[i][j] > 0 ? 1 : 0) + (fieldB[i][j] > 0 ? 2 : 0); }
+
+        for (let i = 0; i < Nv - 1; i++) {
+            for (let j = 0; j < Nt; j++) {
+                const j1 = (j+1) % Nt, jPrev = (j-1+Nt) % Nt;
+                const s = state(i, j);
+                if (s === 0) continue;
+                const topA=pt2(top,i,j), topB=pt2(top,i,j1), topC=pt2(top,i+1,j1), topD=pt2(top,i+1,j);
+                const botA=pt2(bot,i,j), botB=pt2(bot,i,j1), botC=pt2(bot,i+1,j1), botD=pt2(bot,i+1,j);
+                const sPrevU = i > 0 ? state(i-1, j) : s;              // no wall at the apex
+                const sNextU = i < Nv - 2 ? state(i+1, j) : 0;         // always a wall at the rim
+                const sNextT = state(i, j1), sPrevT = state(i, jPrev); // theta is genuinely periodic
+                for (const pool of [pools[s], pools.all]) {
+                    const out = pool === pools.all ? (ss => ss === 0) : (ss => ss !== s);
+                    quad(pool, topA, topB, topC, topD);
+                    quad(pool, botD, botC, botB, botA);
+                    if (out(sPrevU)) quad(pool, topB, topA, botA, botB);
+                    if (out(sNextT)) quad(pool, topC, topB, botB, botC);
+                    if (out(sNextU)) quad(pool, topD, topC, botC, botD);
+                    if (out(sPrevT)) quad(pool, topA, topD, botD, botA);
+                }
+            }
+        }
+        return pools;
+    }
+
+    // Builds the plate's colour-layer inserts (states 5-7, A/B/overlap) and the recoloured plate
+    // base (state 4) from the already-finished `plate` solid - identical recipe to
+    // buildPatternParts (the pot's own version): each cutter is `prism - insetSolid` (generic
+    // position, never coincident with a face `plate` already has), a single state uses
+    // `plate.split(cutter)`, several states cut each insert from the pristine `plate` and carve
+    // the base with the merged all-states cutter. Returns null if nothing could be built.
+    function buildPlatePatternParts(plate, insetSolid, grid) {
+        const { Manifold, Mesh } = window.CSG;
+        const trash = [];
+        const keep = m => { trash.push(m); return m; };
+        const toSolid = pool => {
+            const welded = weldMesh(pool.positions, pool.indices);
+            if (!welded.indices.length) return null;
+            try {
+                const m = keep(new Manifold(new Mesh({ numProp: 3, vertProperties: Float32Array.from(welded.positions), triVerts: Uint32Array.from(welded.indices) })));
+                return m.status() === 'NoError' ? m : null;
+            } catch (e) { console.warn('Plate pattern prism rejected:', e.message); return null; }
+        };
+        const meshOf = (state, m) => { const g = m.getMesh(); return { state, positions: Float32Array.from(g.vertProperties), indices: Uint32Array.from(g.triVerts) }; };
+        try {
+            const raw = buildPlateSteppedMeshes(grid);
+            const cutters = [];
+            for (const [k, outState] of [[1, 5], [2, 6], [3, 7]]) {
+                const prism = toSolid(raw[k]);
+                if (prism) cutters.push({ state: outState, solid: keep(prism.subtract(insetSolid)) });
+            }
+            if (!cutters.length) return null;
+
+            const parts = [];
+            let base;
+            if (cutters.length === 1) {
+                const cutter = cutters[0].solid;
+                const [insert, rest] = typeof plate.split === 'function' ? plate.split(cutter) : [plate.intersect(cutter), plate.subtract(cutter)];
+                keep(insert); keep(rest);
+                if (insert.status() !== 'NoError' || insert.isEmpty()) return null;
+                parts.push(meshOf(cutters[0].state, insert));
+                base = rest;
+            } else {
+                const prismAll = toSolid(raw.all);
+                if (!prismAll) return null;
+                base = keep(plate.subtract(keep(prismAll.subtract(insetSolid))));
+                for (const c of cutters) {
+                    const insert = keep(plate.intersect(c.solid));
+                    if (insert.status() !== 'NoError' || insert.isEmpty()) continue;
+                    parts.push(meshOf(c.state, insert));
+                }
+                if (!parts.length) return null;
+            }
+            if (base.status() !== 'NoError') return null;
+            parts.unshift(meshOf(4, base));
+            return parts;
+        } catch (e) {
+            console.error('Plate pattern layer failed:', e);
+            return null;
+        } finally {
+            trash.forEach(m => m.delete());
+        }
+    }
+
     // Solid outer body → shelled by subtracting the inward-offset body → (pot) cut between the two
     // planes, cavity opened from the raised floor upward, drainage holes drilled. Every step is an
     // exact boolean, so the result is always a single watertight manifold.
@@ -968,8 +1355,9 @@
                 if (patch) inner = keep(inner.add(keep(patch)));
             }
             let result;
+            let zLo = null;
             if (cfg.mode === 'pot') {
-                const zLo = R.minZ + (cfg.bottomCutPct/100) * (R.maxZ - R.minZ);
+                zLo = R.minZ + (cfg.bottomCutPct/100) * (R.maxZ - R.minZ);
                 const zHi = R.minZ + (cfg.topCutPct/100) * (R.maxZ - R.minZ);
                 result = keep(keep(outer.trimByPlane([0,0,1], zLo)).trimByPlane([0,0,-1], -zHi));
                 if (inner) {
@@ -999,6 +1387,18 @@
                 if (scale !== 1 && patternParts) for (const part of patternParts) for (let i = 0; i < part.positions.length; i++) part.positions[i] *= scale;
             }
 
+            // Independent of the pot's own color layer - built from `outer` (the plain wall, before
+            // cavity/cut), never from `result`, so it reflects the pot's own printed silhouette
+            // regardless of hollow/fill settings. It gets its OWN dual-pattern colouring pass
+            // inside buildPlateMesh (reusing the same P1/P2 masks and 4-colour palette), so it
+            // always returns an array of one or more {state, positions, indices} parts.
+            let plateParts = null;
+            if (cfg.mode === 'pot' && cfg.includePlate && zLo !== null) {
+                try { plateParts = buildPlateMesh(cfg, outer, zLo); }
+                catch (e) { console.error('Plate build failed:', e); plateParts = null; }
+                if (scale !== 1 && plateParts) for (const part of plateParts) for (let i = 0; i < part.positions.length; i++) part.positions[i] *= scale;
+            }
+
             const mesh = result.getMesh();
             const positions = Float32Array.from(mesh.vertProperties);
             if (scale !== 1) for (let i = 0; i < positions.length; i++) positions[i] *= scale;
@@ -1009,6 +1409,7 @@
             geo.userData.debrisRemoved = R.debris;
             geo.userData.patternParts = patternParts;
             geo.userData.patternClamped = patternClamped;
+            geo.userData.plateParts = plateParts;
             return geo;
         } finally {
             trash.forEach(m => m.delete());
@@ -1690,6 +2091,13 @@
             patternColor2: document.getElementById('patternColor2')?.value || '#5f4a8b',
             overlapColor: document.getElementById('overlapColor')?.value || '#8ab04d',
             patternDepthCm: Math.max(0, parseFloat(document.getElementById('patternDepthMm')?.value || 0) / 10),
+            includePlate: document.getElementById('includePlate')?.checked ?? false,
+            applyPlateColoring: document.getElementById('applyPlateColoring')?.checked ?? true,
+            plateOffsetCm: Math.max(0, parseFloat(document.getElementById('plateOffsetCm')?.value) || 0),
+            plateHeightCm: Math.max(0.2, parseFloat(document.getElementById('plateHeightCm')?.value) || 1.5),
+            plateWallThickness: Math.max(0.02, parseFloat(document.getElementById('plateWallThickness')?.value) || 0.35),
+            plateBaseThickness: Math.max(0.02, parseFloat(document.getElementById('plateBaseThickness')?.value) || 0.35),
+            plateOpeningAngleDeg: Math.max(0, Math.min(60, parseFloat(document.getElementById('plateOpeningAngle')?.value) || 0)),
             smoothPatternEdges: document.getElementById('smoothPatternEdges')?.checked || false,
             boundaryRefine: clampNum(parseInt(document.getElementById('boundaryRefine')?.value ?? 2) || 0, 0, 3),
             patternResU: Math.max(20, parseInt(document.getElementById('patternResU')?.value) || 400),
@@ -1760,6 +2168,17 @@
         return geo;
     }
 
+    // Shared by the preview and both exporters: the plate's colour-layer parts reuse the pot's own
+    // 4-colour palette (states 4-7 = Base/Pattern A/Pattern B/Overlap on the plate, mirroring the
+    // pot's own 0-3), so "Plate" state 4 and "Base" state 0 always read the same baseColor.
+    function plateStateColor(cfg, state) {
+        return state === 5 ? cfg.patternColor1 : state === 6 ? cfg.patternColor2 : state === 7 ? cfg.overlapColor : cfg.baseColor;
+    }
+    function plateStateName(state, colored) {
+        if (!colored) return 'Plate';
+        return state === 5 ? 'Plate Pattern A' : state === 6 ? 'Plate Pattern B' : state === 7 ? 'Plate Overlap' : 'Plate Base';
+    }
+
     function runPreview() {
         previewTimer = null;
         if (!window.CSG) { setStatus('Loading geometry engine…'); return; }
@@ -1789,6 +2208,16 @@
             currentMeshes.push(mesh);
             triCount = geo.index.count / 3;
         }
+        const plateParts = geo.userData.plateParts;
+        if (plateParts) {
+            for (const part of plateParts) {
+                const pg = buildCreaseGeometry(part.positions, part.indices, PREVIEW_CREASE_DEG);
+                const mesh = new THREE.Mesh(pg, new THREE.MeshStandardMaterial({ color: new THREE.Color(plateStateColor(cfg, part.state)), side: THREE.DoubleSide, roughness: 0.4 }));
+                scene.add(mesh);
+                currentMeshes.push(mesh);
+                triCount += part.indices.length / 3;
+            }
+        }
         geo.computeBoundingBox();
         if (cfg.mode === 'pot') {
             const h = geo.boundingBox.max.z - geo.boundingBox.min.z;
@@ -1798,7 +2227,8 @@
         const debris = geo.userData.debrisRemoved ? ` · ${geo.userData.debrisRemoved} debris shells removed` : '';
         const clampNote = geo.userData.patternClamped ? ' · pattern depth clamped' : '';
         const partsNote = parts ? ` · pattern: ${parts.length} parts` : '';
-        setStatus(`3D Model · ${triCount.toLocaleString()} tris · ${Math.round(performance.now() - t0)} ms${debris}${clampNote}${partsNote}`);
+        const plateNote = cfg.includePlate ? (plateParts ? (plateParts.length > 1 ? ` · +plate (${plateParts.length} parts)` : ' · +plate') : ' · plate skipped (bottom cut missed the pot)') : '';
+        setStatus(`3D Model · ${triCount.toLocaleString()} tris · ${Math.round(performance.now() - t0)} ms${debris}${clampNote}${partsNote}${plateNote}`);
     }
 
     function onCsgReady() { if (previewPending && scene) updatePreview(); }
@@ -1885,6 +2315,7 @@
     function onModelModeChange() {
         const isPot = document.getElementById('modelMode').value === 'pot';
         document.getElementById('potCuttingWrap').style.display = isPot ? 'block' : 'none';
+        document.getElementById('plateWrap').style.display = isPot ? 'block' : 'none';
         updatePreview();
     }
 
@@ -1912,10 +2343,29 @@
         updatePreview();
     }
 
+    // Appends every plate part's triangles after `geo`'s own, each offset by the running vertex
+    // count. STL has no notion of separate bodies - several disjoint closed solids in one file
+    // (pot + plate, or pot + each of the plate's colour-layer pieces) is standard practice for a
+    // print with more than one part/colour, so no CSG union is needed here, just concatenation.
+    function appendPlateToGeometry(geo, plateParts) {
+        if (!plateParts || !plateParts.length) return { positions: geo.attributes.position.array, indices: geo.index.array };
+        let positions = geo.attributes.position.array, indices = geo.index.array;
+        for (const part of plateParts) {
+            const vOffset = positions.length / 3;
+            const nextPos = new Float32Array(positions.length + part.positions.length);
+            nextPos.set(positions, 0); nextPos.set(part.positions, positions.length);
+            const nextIdx = new Uint32Array(indices.length + part.indices.length);
+            nextIdx.set(indices, 0);
+            for (let i = 0; i < part.indices.length; i++) nextIdx[indices.length + i] = part.indices[i] + vOffset;
+            positions = nextPos; indices = nextIdx;
+        }
+        return { positions, indices };
+    }
+
     function exportSTL() {
         if (!requireCsg()) return;
         const geo = buildMesh(readCfg(), 10.0);
-        const pos = geo.attributes.position.array, idx = geo.index.array;
+        const { positions: pos, indices: idx } = appendPlateToGeometry(geo, geo.userData.plateParts);
         const buf = new ArrayBuffer(84 + (idx.length / 3) * 50);
         const view = new DataView(buf);
         view.setUint32(80, idx.length / 3, true);
@@ -2077,6 +2527,15 @@
                 extraClean: cfg.extraClean,
                 debrisThresholdPct: cfg.debrisPct
             },
+            plate: {
+                enabled: cfg.includePlate,
+                applyColoring: cfg.applyPlateColoring,
+                offsetCm: cfg.plateOffsetCm,
+                heightCm: cfg.plateHeightCm,
+                wallThickness: cfg.plateWallThickness,
+                baseThickness: cfg.plateBaseThickness,
+                openingAngleDeg: cfg.plateOpeningAngleDeg
+            },
             texture: {
                 preset: document.getElementById('texPresetSelect')?.value || 'None (Flat Surface)',
                 equation: cfg.texEq,
@@ -2150,6 +2609,7 @@
         const profile = getAIValue(config, ['profile']) || {};
         const orientation = getAIValue(config, ['orientation']) || {};
         const structure = getAIValue(config, ['structure', 'geometry']) || {};
+        const plate = getAIValue(config, ['plate', 'basePlate']) || {};
         const texture = getAIValue(config, ['texture', 'surfaceTexture']) || {};
         const patterns = getAIValue(config, ['patterns', 'colorLayer']) || {};
         const mesh = getAIValue(config, ['mesh', 'resolution']) || {};
@@ -2195,6 +2655,14 @@
             // No UI control for this (internal-only) - set the state variable readCfg() reads directly.
             const debrisVal = getAIValue(structure, ['debrisThresholdPct', 'debrisPct']);
             if (debrisVal !== undefined) debrisThresholdPct = Math.min(1, Math.max(0.01, parseFloat(debrisVal) || 0.1));
+
+            setCheckboxValue('includePlate', getAIValue(plate, ['enabled', 'include', 'includePlate']));
+            setCheckboxValue('applyPlateColoring', getAIValue(plate, ['applyColoring', 'applyPlateColoring', 'coloring']));
+            setFieldValue('plateOffsetCm', getAIValue(plate, ['offsetCm', 'clearanceCm', 'plateOffsetCm']));
+            setFieldValue('plateHeightCm', getAIValue(plate, ['heightCm', 'plateHeightCm']));
+            setFieldValue('plateWallThickness', getAIValue(plate, ['wallThickness', 'plateWallThickness']));
+            setFieldValue('plateBaseThickness', getAIValue(plate, ['baseThickness', 'plateBaseThickness']));
+            setFieldValue('plateOpeningAngle', getAIValue(plate, ['openingAngleDeg', 'plateOpeningAngleDeg', 'openingAngle']));
 
             const texPreset = getAIValue(texture, ['preset']);
             if (texPreset && setSelectValue('texPresetSelect', texPreset)) applyTexturePreset();
@@ -2356,6 +2824,21 @@ ${trianglesXml.join('\n')}
             const parts = geo.userData.patternParts || [{ state: 0, positions: geo.attributes.position.array, indices: geo.index.array }];
             const palette = [cfg.baseColor, cfg.patternColor1, cfg.patternColor2, cfg.overlapColor];
             const names = ['Base', 'Pattern A', 'Pattern B', 'Overlap'];
+            // The plate, when present, is always its own object(s) (states 4-7) - separate
+            // printable parts, same convention as Pot Designer's Pot+Plate multi-part export -
+            // never merged into the pot's own part(s) even when no pattern is active. Its own
+            // colour-layer pass (see buildPlateMesh) already reuses the pot's palette/state
+            // numbering one octave up (4=Base, 5=A, 6=B, 7=Overlap), so palette/names just extend
+            // the same arrays those indices already point into.
+            const plateParts = geo.userData.plateParts;
+            if (plateParts) {
+                const colored = plateParts.length > 1;
+                // Filled for every state 4-7 up front (not just the ones actually present) so the
+                // colorgroup array below never gets a sparse hole below the highest state used -
+                // Array.prototype.map skips holes, which would shift every colour index after one.
+                for (let s = 4; s <= 7; s++) { palette[s] = plateStateColor(cfg, s); names[s] = plateStateName(s, colored); }
+                for (const part of plateParts) parts.push(part);
+            }
             const colorGroupId = 1;
             const resources = [`
   <m:colorgroup id="${colorGroupId}">
@@ -2491,6 +2974,7 @@ ${trianglesXml.join('\n')}
         profile: { preset: "Circle", equation: "3.0" },
         orientation: { rotX: 0, rotY: 0, rotZ: 0 },
         structure: { mode: "pot", bottomCutPct: 10, topCutPct: 90, bottomThickness: 0.35, drainHoleDiameter: 1, fillPct: 22, wallThickness: 0.35, avoidSelfIntersect: false, extraClean: false, debrisThresholdPct: 0.1 },
+        plate: { enabled: true, applyColoring: true, offsetCm: 1.5, heightCm: 1.5, wallThickness: 0.35, baseThickness: 0.35, openingAngleDeg: 25 },
         texture: { preset: "None (Flat Surface)", equation: "0", intensity: 0.15 },
         patterns: { preset1: "Checkerboard", equation1: "sign(cos(6*theta)) * sign(cos(2*pi*16*u))", preset2: "None (Solid Base Color)", equation2: "-1", baseColor: "#0a2989", patternColor1: "#c12e1f", patternColor2: "#5f4a8b", overlapColor: "#8ab04d", depthMm: 1.2, smoothEdges: true, boundaryRefine: 2 },
         mesh: { sections: 400, radialRes: 48, patternResU: 400, patternResT: 48 }
