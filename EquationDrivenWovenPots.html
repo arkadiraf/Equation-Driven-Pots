@@ -72,12 +72,12 @@
                 </select>
             </div>
 
-            <textarea id="equation">3.0</textarea>
+            <textarea id="equation" onchange="updatePreview()">3.0</textarea>
 
             <div class="sub-label">Geometric Basis</div>
             <div class="grid-inputs">
-                <div class="input-group"><label>Path Diam (cm)</label><input type="number" id="diameter" value="20"></div>
-                <div class="input-group"><label>Z-Stretch</label><input type="number" id="zStretch" value="10.0" step="0.1"></div>
+                <div class="input-group"><label>Path Diam (cm)</label><input type="number" id="diameter" value="20" onchange="updatePreview()"></div>
+                <div class="input-group"><label>Z-Stretch</label><input type="number" id="zStretch" value="10.0" step="0.1" onchange="updatePreview()"></div>
             </div>
 
             <div id="dynamic-params"></div>
@@ -104,6 +104,7 @@
                     <div class="input-group"><label>Height (cm)</label><input type="number" id="potHeight" step="0.1" onchange="onHeightChange()"></div>
                     <div class="input-group"><label>Bottom Thickness (cm)</label><input type="number" id="bottomThick" value="0.35" step="0.05" min="0" onchange="updatePreview()"></div>
                 </div>
+                <div class="input-group"><label>Drain Hole Diameter (cm, 0 = none)</label><input type="number" id="drainHoleDiam" value="1" min="0" step="0.1" onchange="updatePreview()"></div>
             </div>
 
             <div class="sub-label">Fabrication Options</div>
@@ -111,6 +112,17 @@
                 <div class="input-group"><label>Fill (%)</label><input type="number" id="fillPct" value="100" min="1" max="100" step="1" onchange="onFillPctChange()"></div>
                 <div class="input-group"><label>Wall Thickness (cm)</label><input type="number" id="shellThick" value="0.35" step="0.05" onchange="onShellThickChange()"></div>
             </div>
+
+            <div class="sub-label">Self-Intersection Handling</div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="avoidIntersection" onchange="updatePreview()">
+                <label for="avoidIntersection" style="margin-bottom:0;">Reduce radius where the path crosses itself (unchecked: merge the crossing bodies)</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="extraClean" onchange="updatePreview()">
+                <label for="extraClean" style="margin-bottom:0;">Extra cleaning: true-shell cavity in overlap zones (removes thin blades, slower)</label>
+            </div>
+            <div class="input-group"><label>Debris Threshold (% of largest body, 0.01–1)</label><input type="number" id="debrisPct" value="0.1" min="0.01" max="1" step="0.01" onchange="onDebrisPctChange()"></div>
         </div>
     </div>
 
@@ -118,8 +130,8 @@
         <div class="section-title" onclick="toggleSection(this)">Mesh Resolution</div>
         <div class="section-body">
             <div class="grid-inputs">
-                <div class="input-group"><label>Path Steps</label><input type="number" id="sections" value="400"></div>
-                <div class="input-group"><label>Radial Points</label><input type="number" id="radialRes" value="48"></div>
+                <div class="input-group"><label>Path Steps</label><input type="number" id="sections" value="400" onchange="updatePreview()"></div>
+                <div class="input-group"><label>Radial Points</label><input type="number" id="radialRes" value="48" onchange="updatePreview()"></div>
             </div>
         </div>
     </div>
@@ -146,9 +158,9 @@
 
     const pathLib = {
         "Mobius Curve": { params: [], defaultRotY: 270 },
-        "Torus Knot": { params: [{id:'p',label:'p (Main)',val:2},{id:'q',label:'q (Secondary)',val:3},{id:'amp',label:'Amplitude',val:3.5}], defaultRotY: 0 },
-        "Flower Ring": { params: [{id:'n',label:'Petals (n)',val:5},{id:'amp',label:'Amplitude',val:3}], defaultRotY: 0 },
-        "Braided Loop": { params: [{id:'n1',label:'Base Freq (n1)',val:3},{id:'amp1',label:'Amp 1',val:2.5},{id:'amp2',label:'Amp 2',val:1.0}], defaultRotY: 0 }
+        "Torus Knot": { params: [{id:'p',label:'p (Main)',val:2,step:1},{id:'q',label:'q (Secondary)',val:3,step:1},{id:'amp',label:'Amplitude',val:3.5,step:0.1}], defaultRotY: 0 },
+        "Flower Ring": { params: [{id:'n',label:'Petals (n)',val:5,step:1},{id:'amp',label:'Amplitude',val:3,step:0.1}], defaultRotY: 0 },
+        "Braided Loop": { params: [{id:'n1',label:'Base Freq (n1)',val:3,step:1},{id:'amp1',label:'Amp 1',val:2.5,step:0.1},{id:'amp2',label:'Amp 2',val:1.0,step:0.1}], defaultRotY: 0 }
     };
 
     function applyPathPreset() {
@@ -156,7 +168,7 @@
         const data = pathLib[key];
         const container = document.getElementById('dynamic-params');
         container.innerHTML = data.params.map(p => `
-            <div class="input-group"><label>${p.label}</label><input type="number" id="${p.id}" value="${p.val}" step="0.1" onchange="updatePreview()"></div>
+            <div class="input-group"><label>${p.label}</label><input type="number" id="${p.id}" value="${p.val}" step="${p.step}" onchange="updatePreview()"></div>
         `).join('');
         document.getElementById('rotY').value = data.defaultRotY || 0;
         updatePreview();
@@ -190,597 +202,25 @@
         }
     }
 
-    // Builds the full closed sweep surface (outer or, with radiusAdjust, the offset inner wall) before any rotation/cutting.
-    function generateSweepSurface(cfg, radiusAdjust) {
-        const positions = [], indices = [], steps = cfg.sections, resR = cfg.radialRes;
-        const pi = Math.PI, sin = Math.sin, cos = Math.cos;
-        const maxT = (cfg.type === 'Mobius Curve') ? 4 * pi : 2 * pi;
-
-        const pts = [];
-        for (let i = 0; i <= steps; i++) pts.push(getPathPoint((i/steps)*maxT, cfg));
-
-        const profileSamples = sampleProfileR(cfg.eq);
-        const profileMaxR = Math.max(0.01, ...profileSamples);
-
-        let frms = [];
-        let tang = new THREE.Vector3().subVectors(pts[1], pts[0]).normalize();
-        let norm = new THREE.Vector3(1,0,0);
-        if (Math.abs(tang.x) > 0.9) norm.set(0,1,0);
-        let bino = new THREE.Vector3().crossVectors(tang, norm).normalize();
-        norm.crossVectors(bino, tang).normalize();
-
-        for (let i = 0; i <= steps; i++) {
-            let pNext = pts[(i+1)%(steps+1)], pPrev = pts[(i-1+steps+1)%(steps+1)];
-            let cTang = new THREE.Vector3().subVectors(pNext, pPrev).normalize();
-            let axis = new THREE.Vector3().crossVectors(tang, cTang);
-            if (axis.length() > 0.0001) {
-                let quat = new THREE.Quaternion().setFromAxisAngle(axis.normalize(), Math.acos(Math.min(Math.max(tang.dot(cTang), -1), 1)));
-                norm.applyQuaternion(quat); bino.applyQuaternion(quat);
-            }
-            tang.copy(cTang);
-            frms.push({p: pts[i], n: norm.clone(), b: bino.clone()});
-        }
-
-        let err = Math.atan2(frms[steps].n.dot(frms[0].b), frms[steps].n.dot(frms[0].n));
-
-        function pushRing(i) {
-            let corr = -(i/steps)*err;
-            let n = frms[i].n.clone().multiplyScalar(cos(corr)).add(frms[i].b.clone().multiplyScalar(sin(corr)));
-            let b = frms[i].b.clone().multiplyScalar(cos(corr)).sub(frms[i].n.clone().multiplyScalar(sin(corr)));
-            for (let j = 0; j < resR; j++) {
-                let theta = (j/resR)*2*pi, r;
-                try { r = eval(cfg.eq); } catch(e) { r = 3.0; }
-                if (radiusAdjust) r = radiusAdjust(r);
-                let v = frms[i].p.clone().add(n.clone().multiplyScalar(r * cos(theta))).add(b.clone().multiplyScalar(r * sin(theta)));
-                positions.push(v.x, v.y, v.z);
-            }
-        }
-        for (let i = 0; i < steps; i++) pushRing(i);
-
-        for (let i = 0; i < steps; i++) {
-            let nxtI = (i + 1) % steps;
-            for (let j = 0; j < resR; j++) {
-                let nxtJ = (j + 1) % resR;
-                let o1 = i*resR+j, o2 = nxtI*resR+j, o3 = nxtI*resR+nxtJ, o4 = i*resR+nxtJ;
-                indices.push(o1, o2, o3, o1, o3, o4);
-            }
-        }
-
-        // Where the tube crosses itself (small path diameter relative to the profile radius),
-        // weld the overlapping regions into one clean surface at full radius rather than shrinking
-        // the tube. Only falls back to a local radius clamp if the crossing is too irregular to
-        // cleanly pair up and stitch.
-        const ringProx = computeRingProximity(pts.slice(0, steps), steps, profileMaxR);
-        const welded = weldSelfIntersections(positions, indices, pts, steps, resR, profileMaxR, ringProx);
-        if (welded) return welded;
-        return clampToSafeRadius(cfg, radiusAdjust);
-
-        function clampToSafeRadius(cfg, radiusAdjust) {
-            const maxSafeR = ringProx.minDist.map(d => isFinite(d) ? Math.min(d * 0.45, 1e9) : Infinity);
-            const clampedPositions = [];
-            function pushClampedRing(i) {
-                let corr = -(i/steps)*err;
-                let n = frms[i].n.clone().multiplyScalar(cos(corr)).add(frms[i].b.clone().multiplyScalar(sin(corr)));
-                let b = frms[i].b.clone().multiplyScalar(cos(corr)).sub(frms[i].n.clone().multiplyScalar(sin(corr)));
-                for (let j = 0; j < resR; j++) {
-                    let theta = (j/resR)*2*pi, r;
-                    try { r = eval(cfg.eq); } catch(e) { r = 3.0; }
-                    r = Math.min(r, maxSafeR[i]);
-                    if (radiusAdjust) r = radiusAdjust(r);
-                    let v = frms[i].p.clone().add(n.clone().multiplyScalar(r * cos(theta))).add(b.clone().multiplyScalar(r * sin(theta)));
-                    clampedPositions.push(v.x, v.y, v.z);
-                }
-            }
-            for (let i = 0; i < steps; i++) pushClampedRing(i);
-            return { positions: clampedPositions, indices };
-        }
-    }
-
-    function rotatePositionsInPlace(positions, rotX, rotY, rotZ) {
-        if (!rotX && !rotY && !rotZ) return;
-        const m = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(
+    function makeRotationMatrix(rotX, rotY, rotZ) {
+        if (!rotX && !rotY && !rotZ) return null;
+        return new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(
             THREE.MathUtils.degToRad(rotX || 0), THREE.MathUtils.degToRad(rotY || 0), THREE.MathUtils.degToRad(rotZ || 0), 'XYZ'
         ));
-        const v = new THREE.Vector3();
-        for (let i = 0; i < positions.length; i += 3) {
-            v.set(positions[i], positions[i+1], positions[i+2]).applyMatrix4(m);
-            positions[i] = v.x; positions[i+1] = v.y; positions[i+2] = v.z;
-        }
     }
 
-    function getZRange(positions) {
-        let minZ = Infinity, maxZ = -Infinity;
-        for (let i = 2; i < positions.length; i += 3) { const z = positions[i]; if (z < minZ) minZ = z; if (z > maxZ) maxZ = z; }
-        return { minZ, maxZ };
-    }
-
-    // Clips a closed triangle mesh against a horizontal (XY-parallel) plane at z=planeZ, keeping
-    // the z>=planeZ side (keepAbove=true) or z<=planeZ side (keepAbove=false). Also returns the
-    // directed boundary edge segments traced on the cutting plane, for cap reconstruction.
-    function clipMeshAgainstPlane(positions, indices, planeZ, keepAbove) {
-        const EPS = 1e-6;
-        const outPos = [], outIdx = [], segments = [];
-        const remap = new Map(); // original vertex index -> new index, so untouched vertices stay shared
-        const crossingCache = new Map(); // canonical "loId_hiId" -> {point, index}, so a shared mesh
-                                          // edge produces exactly one crossing point for both adjacent triangles
-        function pushOriginal(id) {
-            if (remap.has(id)) return remap.get(id);
-            const ni = outPos.length / 3;
-            outPos.push(positions[id*3], positions[id*3+1], positions[id*3+2]);
-            remap.set(id, ni);
-            return ni;
-        }
-        function isIn(z) { return keepAbove ? (z >= planeZ - EPS) : (z <= planeZ + EPS); }
-        function crossingFor(idA, idB) {
-            const lo = Math.min(idA, idB), hi = Math.max(idA, idB);
-            const key = lo + '_' + hi;
-            if (crossingCache.has(key)) return crossingCache.get(key);
-            const p1 = [positions[lo*3], positions[lo*3+1], positions[lo*3+2]];
-            const p2 = [positions[hi*3], positions[hi*3+1], positions[hi*3+2]];
-            const dz = p2[2] - p1[2];
-            const t = Math.abs(dz) < 1e-12 ? 0 : (planeZ - p1[2]) / dz;
-            const point = [p1[0] + (p2[0]-p1[0])*t, p1[1] + (p2[1]-p1[1])*t, planeZ];
-            const entry = { point, index: outPos.length/3 };
-            outPos.push(point[0], point[1], point[2]);
-            crossingCache.set(key, entry);
-            return entry;
-        }
-        for (let t = 0; t < indices.length; t += 3) {
-            const ids = [indices[t], indices[t+1], indices[t+2]];
-            const inFlags = ids.map(id => isIn(positions[id*3+2]));
-
-            if (inFlags[0] && inFlags[1] && inFlags[2]) {
-                outIdx.push(pushOriginal(ids[0]), pushOriginal(ids[1]), pushOriginal(ids[2]));
-                continue;
-            }
-            if (!inFlags[0] && !inFlags[1] && !inFlags[2]) continue;
-
-            const polyIdx = [];
-            let entryPoint = null, exitPoint = null;
-            for (let i = 0; i < 3; i++) {
-                const currId = ids[i], nextId = ids[(i+1)%3];
-                const currIn = inFlags[i], nextIn = inFlags[(i+1)%3];
-                if (currIn) polyIdx.push(pushOriginal(currId));
-                if (currIn !== nextIn) {
-                    const c = crossingFor(currId, nextId);
-                    polyIdx.push(c.index);
-                    if (currIn && !nextIn) exitPoint = c.point; else entryPoint = c.point;
-                }
-            }
-            for (let k = 1; k + 1 < polyIdx.length; k++) outIdx.push(polyIdx[0], polyIdx[k], polyIdx[k+1]);
-            // Orient by entry/exit semantics (not raw crossing order), so the segment direction is
-            // consistent regardless of whether this triangle has 1 or 2 vertices on the "in" side —
-            // that's what lets adjacent triangles' segments chain end-to-start into closed loops.
-            if (entryPoint && exitPoint) segments.push([entryPoint, exitPoint]);
-        }
-        return { positions: outPos, indices: outIdx, segments };
-    }
-
-    // Same clipping algorithm as clipMeshAgainstPlane, generalized to cut along the zero level of
-    // an arbitrary per-vertex scalar field instead of a flat Z-plane — keeps sdf>=0, discards
-    // sdf<0, interpolating the crossing point linearly along each cut edge. Used to trim away the
-    // parts of a self-intersecting tube that dip inside another part of the same tube.
-    function clipMeshBySDF(positions, indices, sdf) {
-        const EPS = 1e-9;
-        const outPos = [], outIdx = [], segments = [];
-        const remap = new Map();
-        const crossingCache = new Map();
-        function pushOriginal(id) {
-            if (remap.has(id)) return remap.get(id);
-            const ni = outPos.length / 3;
-            outPos.push(positions[id*3], positions[id*3+1], positions[id*3+2]);
-            remap.set(id, ni);
-            return ni;
-        }
-        function isIn(id) { return sdf[id] >= -EPS; }
-        function crossingFor(idA, idB) {
-            const lo = Math.min(idA, idB), hi = Math.max(idA, idB);
-            const key = lo + '_' + hi;
-            if (crossingCache.has(key)) return crossingCache.get(key);
-            const sA = sdf[lo], sB = sdf[hi];
-            const p1 = [positions[lo*3], positions[lo*3+1], positions[lo*3+2]];
-            const p2 = [positions[hi*3], positions[hi*3+1], positions[hi*3+2]];
-            const denom = sA - sB;
-            const t = Math.abs(denom) < 1e-12 ? 0 : sA / denom;
-            const point = [p1[0]+(p2[0]-p1[0])*t, p1[1]+(p2[1]-p1[1])*t, p1[2]+(p2[2]-p1[2])*t];
-            const entry = { point, index: outPos.length/3 };
-            outPos.push(point[0], point[1], point[2]);
-            crossingCache.set(key, entry);
-            return entry;
-        }
-        for (let t = 0; t < indices.length; t += 3) {
-            const ids = [indices[t], indices[t+1], indices[t+2]];
-            const inFlags = ids.map(isIn);
-
-            if (inFlags[0] && inFlags[1] && inFlags[2]) {
-                outIdx.push(pushOriginal(ids[0]), pushOriginal(ids[1]), pushOriginal(ids[2]));
-                continue;
-            }
-            if (!inFlags[0] && !inFlags[1] && !inFlags[2]) continue;
-
-            const polyIdx = [];
-            let entryPoint = null, exitPoint = null;
-            for (let i = 0; i < 3; i++) {
-                const currId = ids[i], nextId = ids[(i+1)%3];
-                const currIn = inFlags[i], nextIn = inFlags[(i+1)%3];
-                if (currIn) polyIdx.push(pushOriginal(currId));
-                if (currIn !== nextIn) {
-                    const c = crossingFor(currId, nextId);
-                    polyIdx.push(c.index);
-                    if (currIn && !nextIn) exitPoint = c.point; else entryPoint = c.point;
-                }
-            }
-            for (let k = 1; k + 1 < polyIdx.length; k++) outIdx.push(polyIdx[0], polyIdx[k], polyIdx[k+1]);
-            if (entryPoint && exitPoint) segments.push([entryPoint, exitPoint]);
-        }
-        return { positions: outPos, indices: outIdx, segments };
-    }
-
-    function buildLoopsFromSegments(segments) {
-        const keyOf = p => p[0].toFixed(5) + ',' + p[1].toFixed(5) + ',' + p[2].toFixed(5);
-        const byStart = new Map(); // key -> array of segment indices starting there (defensive: shouldn't collide, but don't silently drop if it does)
-        segments.forEach((seg, i) => {
-            const k = keyOf(seg[0]);
-            if (!byStart.has(k)) byStart.set(k, []);
-            byStart.get(k).push(i);
-        });
-        const consumed = new Set();
-        const loops = [];
-        for (let s = 0; s < segments.length; s++) {
-            if (consumed.has(s)) continue;
-            const loop = [];
-            let curIdx = s, guard = 0;
-            const startKey = keyOf(segments[s][0]);
-            while (curIdx !== undefined && !consumed.has(curIdx) && guard < segments.length + 5) {
-                consumed.add(curIdx);
-                const cur = segments[curIdx];
-                loop.push(cur[0]);
-                const nextKey = keyOf(cur[1]);
-                if (nextKey === startKey) { curIdx = undefined; break; }
-                const candidates = byStart.get(nextKey);
-                curIdx = candidates ? candidates.find(ci => !consumed.has(ci)) : undefined;
-                guard++;
-            }
-            if (loop.length >= 3) loops.push(loop);
-        }
-        return loops;
-    }
-
-    function pointInTriangle2D(p, a, b, c) {
-        const d1 = (p[0]-b[0])*(a[1]-b[1])-(a[0]-b[0])*(p[1]-b[1]);
-        const d2 = (p[0]-c[0])*(b[1]-c[1])-(b[0]-c[0])*(p[1]-c[1]);
-        const d3 = (p[0]-a[0])*(c[1]-a[1])-(c[0]-a[0])*(p[1]-a[1]);
-        const hasNeg = (d1<0)||(d2<0)||(d3<0), hasPos = (d1>0)||(d2>0)||(d3>0);
-        return !(hasNeg && hasPos);
-    }
-
-    // Ear-clip triangulation of a (roughly) planar loop, preserving the loop's own winding
-    // direction so the resulting cap faces come out oriented consistently with the surface it came from.
-    function triangulatePolygon2D(loop) {
-        const n = loop.length;
-        if (n < 3) return [];
-        let area = 0;
-        for (let i = 0; i < n; i++) { const a = loop[i], b = loop[(i+1)%n]; area += a[0]*b[1] - b[0]*a[1]; }
-        const sign = area >= 0 ? 1 : -1;
-        let remaining = loop.map((_, i) => i);
-        const tris = [];
-        let guard = 0;
-        while (remaining.length > 3 && guard < 5000) {
-            guard++;
-            let earFound = false;
-            for (let i = 0; i < remaining.length; i++) {
-                const iPrev = remaining[(i-1+remaining.length)%remaining.length];
-                const iCurr = remaining[i];
-                const iNext = remaining[(i+1)%remaining.length];
-                const a = loop[iPrev], b = loop[iCurr], c = loop[iNext];
-                const cross = (b[0]-a[0])*(c[1]-a[1]) - (b[1]-a[1])*(c[0]-a[0]);
-                if (cross * sign <= 1e-9) continue;
-                let inside = false;
-                for (let k = 0; k < remaining.length; k++) {
-                    const idx = remaining[k];
-                    if (idx===iPrev||idx===iCurr||idx===iNext) continue;
-                    if (pointInTriangle2D(loop[idx], a, b, c)) { inside = true; break; }
-                }
-                if (inside) continue;
-                tris.push([iPrev, iCurr, iNext]);
-                remaining.splice(i, 1);
-                earFound = true;
-                break;
-            }
-            if (!earFound) break;
-        }
-        if (remaining.length === 3) tris.push([remaining[0], remaining[1], remaining[2]]);
-        return tris;
-    }
-
-    // Clips a closed surface between two horizontal planes and caps both open ends flat,
-    // so the result stays a watertight, printable solid.
-    // Clips between two horizontal planes and returns the open (uncapped) side wall plus the raw
-    // boundary loops at each cut, so the caller can decide how to close each end (flat cap, or a
-    // bridge to another surface).
-    function clipBetweenPlanes(positions, indices, zLo, zHi) {
-        const afterBottom = clipMeshAgainstPlane(positions, indices, zLo, true);
-        const bottomLoops = buildLoopsFromSegments(afterBottom.segments);
-        const afterTop = clipMeshAgainstPlane(afterBottom.positions, afterBottom.indices, zHi, false);
-        const topLoops = buildLoopsFromSegments(afterTop.segments);
-        return { positions: afterTop.positions, indices: afterTop.indices, bottomLoops, topLoops };
-    }
-
-    function appendCap(positions, indices, loop) {
-        const tris = triangulatePolygon2D(loop);
-        const base = positions.length / 3;
-        for (const p of loop) positions.push(p[0], p[1], p[2]);
-        for (const tri of tris) indices.push(base+tri[0], base+tri[1], base+tri[2]);
-    }
-
-    function appendCaps(positions, indices, loops) {
-        for (const loop of loops) appendCap(positions, indices, loop);
-    }
-
-    function clipAndCap(positions, indices, zLo, zHi) {
-        const clipped = clipBetweenPlanes(positions, indices, zLo, zHi);
-        const outPositions = clipped.positions.slice();
-        const outIndices = clipped.indices.slice();
-        appendCaps(outPositions, outIndices, clipped.bottomLoops);
-        appendCaps(outPositions, outIndices, clipped.topLoops);
-        return { positions: outPositions, indices: outIndices };
-    }
-
-    // Estimates a loop's own normal (sum of cross products of consecutive edge vectors around
-    // `center`) — lets a loop be treated as "star-shaped in its own plane" regardless of how
-    // that plane is oriented in 3D, instead of assuming it's always horizontal.
-    function estimateLoopNormal(loop, center) {
-        let nx = 0, ny = 0, nz = 0;
-        const n = loop.length;
-        for (let i = 0; i < n; i++) {
-            const a = loop[i], b = loop[(i+1)%n];
-            const ax = a[0]-center[0], ay = a[1]-center[1], az = a[2]-center[2];
-            const bx = b[0]-center[0], by = b[1]-center[1], bz = b[2]-center[2];
-            nx += ay*bz - az*by; ny += az*bx - ax*bz; nz += ax*by - ay*bx;
-        }
-        const len = Math.hypot(nx, ny, nz);
-        return len > 1e-9 ? [nx/len, ny/len, nz/len] : [0, 0, 1];
-    }
-
-    // Builds an arbitrary orthonormal (u,v) basis spanning the plane perpendicular to `normal`.
-    function buildPlaneBasis(normal) {
-        const ref = Math.abs(normal[0]) < 0.9 ? [1,0,0] : [0,1,0];
-        let ux = ref[1]*normal[2]-ref[2]*normal[1], uy = ref[2]*normal[0]-ref[0]*normal[2], uz = ref[0]*normal[1]-ref[1]*normal[0];
-        const ulen = Math.hypot(ux,uy,uz); ux/=ulen; uy/=ulen; uz/=ulen;
-        const vx = normal[1]*uz-normal[2]*uy, vy = normal[2]*ux-normal[0]*uz, vz = normal[0]*uy-normal[1]*ux;
-        return { u: [ux,uy,uz], v: [vx,vy,vz] };
-    }
-
-    // Unwraps a loop's angles (relative to `center`, measured with `angleOfFn`) into a monotonic
-    // sequence spanning one full turn, then normalizes direction to increasing angle — reversing
-    // the point order if the loop naturally runs clockwise. Returns null if the loop doesn't wind
-    // once around the center (not star-shaped enough to bridge this way).
-    function canonicalIncreasingLoop(loop, center, angleOfFn) {
-        const angleOf = angleOfFn || (p => Math.atan2(p[1]-center[1], p[0]-center[0]));
-        function unwrap(points) {
-            const n = points.length;
-            const angles = [angleOf(points[0])];
-            for (let i = 1; i < n; i++) {
-                let a = angleOf(points[i]);
-                while (a - angles[i-1] > Math.PI) a -= 2*Math.PI;
-                while (a - angles[i-1] < -Math.PI) a += 2*Math.PI;
-                angles.push(a);
-            }
-            let aClose = angleOf(points[0]);
-            while (aClose - angles[n-1] > Math.PI) aClose -= 2*Math.PI;
-            while (aClose - angles[n-1] < -Math.PI) aClose += 2*Math.PI;
-            const totalTurn = aClose - angles[0];
-            if (Math.abs(totalTurn) < Math.PI) return null;
-            return { angles, dir: totalTurn >= 0 ? 1 : -1 };
-        }
-        const first = unwrap(loop);
-        if (!first) return null;
-        if (first.dir > 0) return { points: loop, angles: first.angles };
-        const reversed = loop.slice().reverse();
-        const second = unwrap(reversed);
-        if (!second || second.dir < 0) return null;
-        return { points: reversed, angles: second.angles };
-    }
-
-    // Stitches two closed point loops (possibly different point counts, both with monotonically
-    // increasing angles around a shared center) into a ring of triangles — a "zipper" merge that
-    // uses every native point from BOTH loops exactly, so there's no resampling gap at the seam.
-    function zipperStitch(oPoints, oAngles, iPoints, iAngles) {
-        const positions = [], indices = [];
-        const outBase = 0;
-        for (const p of oPoints) positions.push(p[0], p[1], p[2]);
-        const inBase = oPoints.length;
-        for (const p of iPoints) positions.push(p[0], p[1], p[2]);
-
-        const no = oPoints.length, ni = iPoints.length;
-        let shift = 0;
-        while (iAngles[0] + shift < oAngles[0] - Math.PI) shift += 2*Math.PI;
-        while (iAngles[0] + shift > oAngles[0] + Math.PI) shift -= 2*Math.PI;
-
-        let oCount = 0, iCount = 0;
-        const totalSteps = no + ni;
-        for (let step = 0; step < totalSteps; step++) {
-            const oIdx = oCount % no, iIdx = iCount % ni;
-            let advanceA;
-            if (oCount >= no) advanceA = false;
-            else if (iCount >= ni) advanceA = true;
-            else {
-                const oNextAngle = oAngles[(oCount+1) % no] + 2*Math.PI*Math.floor((oCount+1)/no);
-                const iNextAngle = iAngles[(iCount+1) % ni] + shift + 2*Math.PI*Math.floor((iCount+1)/ni);
-                advanceA = oNextAngle <= iNextAngle;
-            }
-            if (advanceA) {
-                const oNextIdx = (oCount+1) % no;
-                indices.push(outBase+oIdx, outBase+oNextIdx, inBase+iIdx);
-                oCount++;
-            } else {
-                const iNextIdx = (iCount+1) % ni;
-                indices.push(outBase+oIdx, inBase+iNextIdx, inBase+iIdx);
-                iCount++;
-            }
-        }
-        return { positions, indices };
-    }
-
-    function centroid3D(pts) {
-        let cx = 0, cy = 0, cz = 0;
-        for (const p of pts) { cx += p[0]; cy += p[1]; cz += p[2]; }
-        const n = pts.length;
-        return [cx/n, cy/n, cz/n];
-    }
-
-    // Connects an outer boundary loop to an inner boundary loop with a stitched ring (an open
-    // annulus), instead of capping each as its own solid disc — this is what makes a cut opening
-    // read as a real rim you can see/reach into, rather than a sealed cavity. Works for a loop
-    // pair in any orientation (not just a horizontal cut), using the loop's own estimated plane.
-    function bridgeRim(positions, indices, outerLoop, innerLoop) {
-        const center = centroid3D(outerLoop);
-        const normal = estimateLoopNormal(outerLoop, center);
-        const basis = buildPlaneBasis(normal);
-        const angleOf = p => {
-            const dx = p[0]-center[0], dy = p[1]-center[1], dz = p[2]-center[2];
-            return Math.atan2(dx*basis.v[0]+dy*basis.v[1]+dz*basis.v[2], dx*basis.u[0]+dy*basis.u[1]+dz*basis.u[2]);
-        };
-        const oCanon = canonicalIncreasingLoop(outerLoop, center, angleOf);
-        const iCanon = canonicalIncreasingLoop(innerLoop, center, angleOf);
-        if (!oCanon || !iCanon) return false;
-
-        const stitched = zipperStitch(oCanon.points, oCanon.angles, iCanon.points, iCanon.angles);
-        const off = positions.length / 3;
-        for (const p of stitched.positions) positions.push(p);
-        for (const idx of stitched.indices) indices.push(idx + off);
-        return true;
-    }
-
-    // Multi-lobe shapes (a torus knot, a flower ring) can cross a single cut plane at several
-    // separate loops. Pair each outer loop with its nearest (by centroid) unused inner loop so
-    // every lobe gets its own bridged rim.
-    function pairLoopsByProximity(outerLoops, innerLoops) {
-        if (outerLoops.length !== innerLoops.length) return null;
-        function centroid(loop) {
-            let cx = 0, cy = 0;
-            for (const p of loop) { cx += p[0]; cy += p[1]; }
-            return [cx/loop.length, cy/loop.length];
-        }
-        const outerC = outerLoops.map(centroid), innerC = innerLoops.map(centroid);
-        const usedInner = new Set(), pairs = [];
-        for (let i = 0; i < outerLoops.length; i++) {
-            let best = -1, bestDist = Infinity;
-            for (let j = 0; j < innerLoops.length; j++) {
-                if (usedInner.has(j)) continue;
-                const d = Math.hypot(outerC[i][0]-innerC[j][0], outerC[i][1]-innerC[j][1]);
-                if (d < bestDist) { bestDist = d; best = j; }
-            }
-            if (best === -1) return null;
-            usedInner.add(best);
-            pairs.push([outerLoops[i], innerLoops[best]]);
-        }
-        return pairs;
-    }
-
-    // All-or-nothing: builds bridge geometry for every lobe into a scratch buffer first, so a
-    // failure partway through can't leave half-bridged, half-capped (overlapping) geometry behind.
-    function tryBridgeAllLobes(outerLoops, innerLoops) {
-        const pairs = pairLoopsByProximity(outerLoops, innerLoops);
-        if (!pairs) return null;
-        const positions = [], indices = [];
-        for (const [oLoop, iLoop] of pairs) {
-            if (!bridgeRim(positions, indices, oLoop, iLoop)) return null;
-        }
-        return { positions, indices };
-    }
-
-    // Self-intersection welding produces boundary loops in pairs (each pair is where two
-    // different, non-adjacent parts of the tube met), but unlike the outer/inner rim case they
-    // all come from ONE clip pass, so pairs must be found by mutual nearest-centroid matching
-    // rather than by matching two pre-separated lists.
-    function pairLoopsForWelding(loops) {
-        if (loops.length === 0 || loops.length % 2 !== 0) return null;
-        const centroids = loops.map(centroid3D);
-        const used = new Set(), pairs = [];
-        for (let i = 0; i < loops.length; i++) {
-            if (used.has(i)) continue;
-            let best = -1, bestDist = Infinity;
-            for (let j = 0; j < loops.length; j++) {
-                if (j === i || used.has(j)) continue;
-                const d = Math.hypot(centroids[i][0]-centroids[j][0], centroids[i][1]-centroids[j][1], centroids[i][2]-centroids[j][2]);
-                if (d < bestDist) { bestDist = d; best = j; }
-            }
-            if (best === -1) return null;
-            used.add(i); used.add(best);
-            pairs.push([loops[i], loops[best]]);
-        }
-        return pairs;
-    }
-
-    function dist3(a, b) { return Math.hypot(a[0]-b[0], a[1]-b[1], a[2]-b[2]); }
-
-    function findClosestPointPair(loopA, loopB) {
-        let best = null, bestDist = Infinity;
-        for (let i = 0; i < loopA.length; i++) {
-            for (let j = 0; j < loopB.length; j++) {
-                const d = dist3(loopA[i], loopB[j]);
-                if (d < bestDist) { bestDist = d; best = [i, j]; }
-            }
-        }
-        return best;
-    }
-
-    // Reorders a loop to start at `startIdx` (optionally walking backwards), then reparametrizes
-    // it by normalized cumulative arc length scaled to [0, 2*PI) — a stand-in for "angle" that
-    // works for a loop in any orientation, not just one lying in a known flat plane.
-    function reorderByArcLength(loop, startIdx, reverse) {
-        const n = loop.length;
-        const points = [];
-        for (let k = 0; k < n; k++) points.push(loop[reverse ? (startIdx - k + n) % n : (startIdx + k) % n]);
-        const cum = [0];
-        for (let k = 0; k < n; k++) cum.push(cum[k] + dist3(points[k], points[(k+1)%n]));
-        const total = cum[n] || 1;
-        const params = [];
-        for (let k = 0; k < n; k++) params.push((cum[k] / total) * 2 * Math.PI);
-        return { points, params };
-    }
-
-    // Welds two arbitrary closed 3D loops (from a self-intersection clip, not necessarily
-    // coplanar or similarly oriented) into a stitched ring: aligns them at their closest point
-    // pair, reparametrizes both by arc length from there, picks whichever relative direction for
-    // B keeps early points close to A's (avoiding a twisted stitch), then zippers them together.
-    function weldLoopPair(positions, indices, loopA, loopB) {
-        const seed = findClosestPointPair(loopA, loopB);
-        if (!seed) return false;
-        const [ia, ib] = seed;
-        const rA = reorderByArcLength(loopA, ia, false);
-        const rB1 = reorderByArcLength(loopB, ib, false);
-        const rB2 = reorderByArcLength(loopB, ib, true);
-        function sampleCost(rB) {
-            let cost = 0;
-            const n = Math.min(rA.points.length, rB.points.length, 8);
-            for (let k = 0; k < n; k++) {
-                const ka = Math.round(k * (rA.points.length/n)) % rA.points.length;
-                const kb = Math.round(k * (rB.points.length/n)) % rB.points.length;
-                cost += dist3(rA.points[ka], rB.points[kb]);
-            }
-            return cost;
-        }
-        const rB = sampleCost(rB1) <= sampleCost(rB2) ? rB1 : rB2;
-
-        const stitched = zipperStitch(rA.points, rA.params, rB.points, rB.params);
-        const off = positions.length / 3;
-        for (const p of stitched.positions) positions.push(p);
-        for (const idx of stitched.indices) indices.push(idx + off);
-        return true;
-    }
-
-    // For every ring in a closed sweep, finds the shortest distance to any OTHER, non-locally-
-    // adjacent ring's centerline. Used both to size a per-vertex self-intersection signed distance
-    // field (weldSelfIntersections) and, at very tight distances the weld can't resolve, as a
-    // last-resort local radius cap so the mesh never emits garbage.
+    // For every ring in the closed sweep, the shortest distance to any OTHER, non-locally-adjacent
+    // ring's centerline. Drives the optional radius pinch, and decides how short the sweep pieces
+    // handed to the CSG union must be so that no single piece contains both arms of a crossing.
     function computeRingProximity(pts, steps, profileMaxR) {
         const cumLen = [0];
         for (let i = 0; i < steps; i++) cumLen.push(cumLen[i] + pts[i].distanceTo(pts[(i+1)%steps]));
         const totalLen = cumLen[steps];
         const excludeArc = Math.max(3 * profileMaxR, totalLen * 0.02);
         const minDist = new Array(steps).fill(Infinity);
+        const touchDist = 2 * profileMaxR + 0.05;
+        let minCrossArc = Infinity; // shortest arc between two rings whose tubes touch or overlap
+        const touching = [];        // flat (i, j) pairs of rings whose tubes touch or overlap
         for (let i = 0; i < steps; i++) {
             for (let j = i+1; j < steps; j++) {
                 let d = Math.abs(cumLen[i]-cumLen[j]);
@@ -789,121 +229,511 @@
                 const dist = pts[i].distanceTo(pts[j]);
                 if (dist < minDist[i]) minDist[i] = dist;
                 if (dist < minDist[j]) minDist[j] = dist;
+                if (dist < touchDist) {
+                    touching.push(i, j);
+                    if (d < minCrossArc) minCrossArc = d;
+                }
             }
         }
-        return { minDist, excludeArc, cumLen, totalLen };
+        return { minDist, excludeArc, totalLen, minCrossArc, touching };
     }
 
-    // Welds a self-intersecting swept tube into one clean manifold surface: trims away whichever
-    // part of the tube dips inside another (non-adjacent) part of itself, then zippers the two cut
-    // edges left behind back together at full radius — instead of shrinking the tube to avoid the
-    // overlap in the first place. Returns null if the crossing is too irregular to cleanly pair up
-    // (e.g. an odd number of cut loops), so the caller can fall back to the raw geometry.
-    function weldSelfIntersections(positions, indices, pts, steps, resR, profileMaxR, ringProx) {
-        const nVerts = positions.length / 3;
-        const sdf = new Float64Array(nVerts);
-        const margin = Math.max(0.02, profileMaxR * 0.04);
-        let anyNegative = false;
+    // Samples the path and builds rotation-minimizing frames, spreading the closed-loop twist
+    // evenly along the sweep so the last ring lines up with the first.
+    function buildSweepFrames(cfg) {
+        const steps = cfg.sections, pi = Math.PI;
+        const maxT = (cfg.type === 'Mobius Curve') ? 4 * pi : 2 * pi;
+        const pts = [];
+        for (let i = 0; i <= steps; i++) pts.push(getPathPoint((i/steps)*maxT, cfg));
+
+        let tang = new THREE.Vector3().subVectors(pts[1], pts[0]).normalize();
+        let norm = new THREE.Vector3(1,0,0);
+        if (Math.abs(tang.x) > 0.9) norm.set(0,1,0);
+        let bino = new THREE.Vector3().crossVectors(tang, norm).normalize();
+        norm.crossVectors(bino, tang).normalize();
+
+        const raw = [];
+        for (let i = 0; i <= steps; i++) {
+            const pNext = pts[(i+1)%(steps+1)], pPrev = pts[(i-1+steps+1)%(steps+1)];
+            const cTang = new THREE.Vector3().subVectors(pNext, pPrev).normalize();
+            const axis = new THREE.Vector3().crossVectors(tang, cTang);
+            if (axis.length() > 0.0001) {
+                const quat = new THREE.Quaternion().setFromAxisAngle(axis.normalize(), Math.acos(Math.min(Math.max(tang.dot(cTang), -1), 1)));
+                norm.applyQuaternion(quat); bino.applyQuaternion(quat);
+            }
+            tang.copy(cTang);
+            raw.push({ p: pts[i], n: norm.clone(), b: bino.clone() });
+        }
+        const err = Math.atan2(raw[steps].n.dot(raw[0].b), raw[steps].n.dot(raw[0].n));
+        const frames = [];
         for (let i = 0; i < steps; i++) {
-            const rowMinDist = ringProx.minDist[i];
+            const corr = -(i/steps)*err, c = Math.cos(corr), s = Math.sin(corr);
+            frames.push({
+                p: raw[i].p,
+                n: raw[i].n.clone().multiplyScalar(c).add(raw[i].b.clone().multiplyScalar(s)),
+                b: raw[i].b.clone().multiplyScalar(c).sub(raw[i].n.clone().multiplyScalar(s))
+            });
+        }
+        return { frames, pts: pts.slice(0, steps), steps };
+    }
+
+    // Rotated ring outlines (flat xyz arrays) and ring centers for the outer wall — and, when
+    // hollow, the inner wall offset inward by the wall thickness — plus how the sweep has to be
+    // split into pieces for the CSG union.
+    function buildRings(cfg) {
+        const { frames, pts, steps } = buildSweepFrames(cfg);
+        const resR = cfg.radialRes;
+        const profile = sampleProfileR(cfg.eq, resR).map(r => Math.max(0.01, r));
+        const profileMaxR = Math.max(...profile);
+        const prox = computeRingProximity(pts, steps, profileMaxR);
+        const rot = makeRotationMatrix(cfg.rotX, cfg.rotY, cfg.rotZ);
+        const v = new THREE.Vector3();
+        const place = (f, r, theta, out, k) => {
+            v.copy(f.p).addScaledVector(f.n, r * Math.cos(theta)).addScaledVector(f.b, r * Math.sin(theta));
+            if (rot) v.applyMatrix4(rot);
+            out[k] = v.x; out[k+1] = v.y; out[k+2] = v.z;
+        };
+        const outer = [], inner = [], centers = [];
+        let minZ = Infinity, maxZ = -Infinity;
+        for (let i = 0; i < steps; i++) {
+            const f = frames[i];
+            // Pinch mode: cap the radius so this ring stays clear of the nearest other ring.
+            const cap = cfg.avoidSelfIntersect && isFinite(prox.minDist[i]) ? prox.minDist[i] * 0.45 : Infinity;
+            const ro = new Float64Array(resR * 3), ri = cfg.doHollow ? new Float64Array(resR * 3) : null;
             for (let j = 0; j < resR; j++) {
-                const idx = i*resR + j;
-                const val = (isFinite(rowMinDist) ? rowMinDist : 1e9) - profileMaxR - margin;
-                sdf[idx] = val;
-                if (val < 0) anyNegative = true;
+                const theta = (j / resR) * 2 * Math.PI, r = Math.max(0.01, Math.min(profile[j], cap));
+                place(f, r, theta, ro, j * 3);
+                if (ri) place(f, Math.max(0.01, r - cfg.shellThick), theta, ri, j * 3);
+                if (ro[j*3+2] < minZ) minZ = ro[j*3+2];
+                if (ro[j*3+2] > maxZ) maxZ = ro[j*3+2];
+            }
+            outer.push(ro);
+            if (ri) inner.push(ri);
+            const c = new Float64Array(3);
+            place(f, 0, 0, c, 0);
+            centers.push(c);
+        }
+        // Pieces must be shorter than the arc between any two crossing arms, so no piece ever
+        // contains both sides of a crossing; if nothing crosses, the whole loop is one piece.
+        const crosses = isFinite(prox.minCrossArc);
+        const ringsPerPiece = crosses ? Math.max(2, Math.floor(steps * (prox.minCrossArc / prox.totalLen) * 0.9)) : steps;
+        return { outer, inner, centers, steps, resR, minZ, maxZ, crosses, ringsPerPiece, touching: prox.touching, profileMaxR, debris: 0, debrisFrac: cfg.debrisPct / 100 };
+    }
+
+    // Closed solid for one run of rings a..b (indices wrap around the loop), or for the whole
+    // closed sweep when `closed`: side quads between consecutive rings, plus a fan cap at each end
+    // of a run. The end cap is a shallow cone poking into the next piece rather than a flat disc:
+    // a flat disc would coincide exactly with the neighbour's start cap, and exact booleans leave
+    // such coincident face pairs behind as zero-volume shells. Wound outward (positive volume),
+    // which is what Manifold expects.
+    function buildPieceManifold(rings, centers, a, b, steps, resR, closed) {
+        const { Manifold, Mesh } = window.CSG;
+        const nRings = closed ? steps : (b - a + 1);
+        const pos = new Float32Array((nRings * resR + (closed ? 0 : 2)) * 3);
+        for (let k = 0; k < nRings; k++) pos.set(rings[(a + k) % steps], k * resR * 3);
+        const tris = [];
+        const nSeg = closed ? steps : nRings - 1;
+        for (let k = 0; k < nSeg; k++) {
+            const r0 = k * resR, r1 = ((k + 1) % nRings) * resR;
+            for (let j = 0; j < resR; j++) {
+                const j1 = (j + 1) % resR;
+                tris.push(r0 + j, r1 + j1, r1 + j,  r0 + j, r0 + j1, r1 + j1);
             }
         }
-        if (!anyNegative) return { positions: positions.slice(), indices: indices.slice() };
-
-        const clipped = clipMeshBySDF(positions, indices, sdf);
-        const loops = buildLoopsFromSegments(clipped.segments);
-        const pairs = pairLoopsForWelding(loops);
-        if (!pairs) return null;
-
-        const outPositions = clipped.positions.slice();
-        const outIndices = clipped.indices.slice();
-        for (const [loopA, loopB] of pairs) {
-            if (!weldLoopPair(outPositions, outIndices, loopA, loopB)) return null;
+        if (!closed) {
+            const cStart = nRings * resR, cEnd = cStart + 1, last = (nRings - 1) * resR;
+            pos.set(centers[a % steps], cStart * 3);
+            const cb = centers[b % steps], cn = centers[(b + 1) % steps], ring = rings[b % steps];
+            let rMin = Infinity;
+            for (let j = 0; j < resR; j++) rMin = Math.min(rMin, Math.hypot(ring[j*3] - cb[0], ring[j*3+1] - cb[1], ring[j*3+2] - cb[2]));
+            const spacing = Math.max(1e-9, Math.hypot(cn[0] - cb[0], cn[1] - cb[1], cn[2] - cb[2]));
+            const f = Math.min(0.4, 0.5 * rMin / spacing); // keep the apex inside a pinched tube too
+            pos.set([cb[0] + f * (cn[0] - cb[0]), cb[1] + f * (cn[1] - cb[1]), cb[2] + f * (cn[2] - cb[2])], cEnd * 3);
+            for (let j = 0; j < resR; j++) {
+                const j1 = (j + 1) % resR;
+                tris.push(cStart, j1, j,  cEnd, last + j, last + j1);
+            }
         }
-        return { positions: outPositions, indices: outIndices };
+        return new Manifold(new Mesh({ numProp: 3, vertProperties: pos, triVerts: new Uint32Array(tris) }));
+    }
+
+    // Solid body of one wall: the CSG union of sweep pieces short enough that none can cross
+    // itself, so wherever the path crosses itself the tube is merged with itself exactly — the
+    // same "define the solid, then shell it" workflow as CAD, with no stitching heuristics.
+    function buildWallSolid(rings, R) {
+        const { Manifold } = window.CSG;
+        const { centers, steps, resR, crosses, ringsPerPiece } = R;
+        if (!crosses) return buildPieceManifold(rings, centers, 0, 0, steps, resR, true);
+        const pieces = [];
+        for (let a = 0; a < steps; a += ringsPerPiece) {
+            pieces.push(buildPieceManifold(rings, centers, a, Math.min(a + ringsPerPiece, steps), steps, resR, false));
+        }
+        let solid = Manifold.union(pieces);
+        pieces.forEach(p => p.delete());
+        const cleaned = cleanDebris(solid, R.debrisFrac);
+        if (cleaned.solid) { solid.delete(); solid = cleaned.solid; }
+        R.debris += cleaned.removed;
+        return solid;
+    }
+
+    // Axis-aligned boxes around every zone where the tube overlaps itself. Rings are grouped into
+    // zones through the touching pairs themselves (plus path adjacency), so the two arms of a
+    // crossing share a zone while separate crossings stay apart. Each touching pair's overlap
+    // lens lies inside the ball of radius sqrt(R² − d²/4) around the pair's midpoint, so a zone's
+    // box is the union of those balls, padded for the wall and the field band — much tighter
+    // than boxing whole tube cross-sections. Boxes that still overlap are merged.
+    function overlapBoxes(R, t, e) {
+        const { centers, touching, profileMaxR, steps } = R;
+        if (!touching.length) return [];
+        const parent = new Int32Array(steps);
+        for (let i = 0; i < steps; i++) parent[i] = i;
+        const find = i => { while (parent[i] !== i) { parent[i] = parent[parent[i]]; i = parent[i]; } return i; };
+        const isTouching = new Uint8Array(steps);
+        for (let k = 0; k < touching.length; k += 2) {
+            parent[find(touching[k])] = find(touching[k+1]);
+            isTouching[touching[k]] = 1; isTouching[touching[k+1]] = 1;
+        }
+        for (let i = 0; i < steps; i++) if (isTouching[i] && isTouching[(i+1) % steps]) parent[find(i)] = find((i+1) % steps);
+        const pad = t + 3 * e, R2 = profileMaxR * profileMaxR;
+        const byRoot = new Map();
+        for (let k = 0; k < touching.length; k += 2) {
+            const p = centers[touching[k]], q = centers[touching[k+1]];
+            const dx = p[0]-q[0], dy = p[1]-q[1], dz = p[2]-q[2];
+            const rho = Math.sqrt(Math.max(0, R2 - (dx*dx + dy*dy + dz*dz) / 4)) + pad;
+            const m = [(p[0]+q[0])/2, (p[1]+q[1])/2, (p[2]+q[2])/2];
+            const root = find(touching[k]);
+            let box = byRoot.get(root);
+            if (!box) { box = { min: [m[0]-rho, m[1]-rho, m[2]-rho], max: [m[0]+rho, m[1]+rho, m[2]+rho] }; byRoot.set(root, box); continue; }
+            for (let a = 0; a < 3; a++) { box.min[a] = Math.min(box.min[a], m[a]-rho); box.max[a] = Math.max(box.max[a], m[a]+rho); }
+        }
+        let boxes = [...byRoot.values()];
+        for (let merged = true; merged;) {
+            merged = false;
+            outer: for (let a = 0; a < boxes.length; a++) for (let b = a + 1; b < boxes.length; b++) {
+                const A = boxes[a], B = boxes[b];
+                if (A.min[0] > B.max[0] || B.min[0] > A.max[0] || A.min[1] > B.max[1] || B.min[1] > A.max[1] || A.min[2] > B.max[2] || B.min[2] > A.max[2]) continue;
+                for (let k = 0; k < 3; k++) { A.min[k] = Math.min(A.min[k], B.min[k]); A.max[k] = Math.max(A.max[k], B.max[k]); }
+                boxes.splice(b, 1); merged = true; break outer;
+            }
+        }
+        return boxes;
+    }
+
+    // Closest point on triangle (a,b,c) to p, written into `out` (Ericson, RTCD §5.1.5).
+    function closestPointOnTriangle(px, py, pz, a, b, c, out) {
+        const abx = b[0]-a[0], aby = b[1]-a[1], abz = b[2]-a[2];
+        const acx = c[0]-a[0], acy = c[1]-a[1], acz = c[2]-a[2];
+        const apx = px-a[0], apy = py-a[1], apz = pz-a[2];
+        const d1 = abx*apx + aby*apy + abz*apz, d2 = acx*apx + acy*apy + acz*apz;
+        if (d1 <= 0 && d2 <= 0) { out[0] = a[0]; out[1] = a[1]; out[2] = a[2]; return; }
+        const bpx = px-b[0], bpy = py-b[1], bpz = pz-b[2];
+        const d3 = abx*bpx + aby*bpy + abz*bpz, d4 = acx*bpx + acy*bpy + acz*bpz;
+        if (d3 >= 0 && d4 <= d3) { out[0] = b[0]; out[1] = b[1]; out[2] = b[2]; return; }
+        const vc = d1*d4 - d3*d2;
+        if (vc <= 0 && d1 >= 0 && d3 <= 0) { const v = d1/(d1-d3); out[0] = a[0]+v*abx; out[1] = a[1]+v*aby; out[2] = a[2]+v*abz; return; }
+        const cpx = px-c[0], cpy = py-c[1], cpz = pz-c[2];
+        const d5 = abx*cpx + aby*cpy + abz*cpz, d6 = acx*cpx + acy*cpy + acz*cpz;
+        if (d6 >= 0 && d5 <= d6) { out[0] = c[0]; out[1] = c[1]; out[2] = c[2]; return; }
+        const vb = d5*d2 - d1*d6;
+        if (vb <= 0 && d2 >= 0 && d6 <= 0) { const w = d2/(d2-d6); out[0] = a[0]+w*acx; out[1] = a[1]+w*acy; out[2] = a[2]+w*acz; return; }
+        const va = d3*d6 - d5*d4;
+        if (va <= 0 && (d4-d3) >= 0 && (d5-d6) >= 0) {
+            const w = (d4-d3)/((d4-d3)+(d5-d6));
+            out[0] = b[0]+w*(c[0]-b[0]); out[1] = b[1]+w*(c[1]-b[1]); out[2] = b[2]+w*(c[2]-b[2]); return;
+        }
+        const denom = 1/(va+vb+vc), v = vb*denom, w = vc*denom;
+        out[0] = a[0]+abx*v+acx*w; out[1] = a[1]+aby*v+acy*w; out[2] = a[2]+abz*v+acz*w;
+    }
+
+    // Unsigned distance from each point of a regular grid (origin `min`, spacing e, dims n*) to a
+    // triangle mesh, needed only out to `band`: exact for cells within ~1.5 cells of the surface
+    // (each triangle is rasterized into the cells around it), then propagated outward by handing
+    // nearest-surface-point candidates between neighbouring cells (two sweeps over the
+    // 26-neighbourhood). Cells beyond the band keep Infinity.
+    function distanceFieldNear(mesh, min, e, nx, ny, nz, band) {
+        const n = nx * ny * nz;
+        const dist = new Float32Array(n).fill(Infinity);
+        const near = new Float32Array(n * 3);
+        const V = mesh.vertProperties, T = mesh.triVerts;
+        const a = [0,0,0], b = [0,0,0], c = [0,0,0], q = [0,0,0];
+        const gx0 = min[0], gy0 = min[1], gz0 = min[2];
+        const gx1 = gx0 + (nx-1)*e, gy1 = gy0 + (ny-1)*e, gz1 = gz0 + (nz-1)*e;
+        const reach = 1.5 * e;
+        let seeded = false;
+        for (let t = 0; t < T.length; t += 3) {
+            const ia = T[t]*3, ib = T[t+1]*3, ic = T[t+2]*3;
+            a[0] = V[ia]; a[1] = V[ia+1]; a[2] = V[ia+2];
+            b[0] = V[ib]; b[1] = V[ib+1]; b[2] = V[ib+2];
+            c[0] = V[ic]; c[1] = V[ic+1]; c[2] = V[ic+2];
+            const bx0 = Math.min(a[0],b[0],c[0]) - reach, bx1 = Math.max(a[0],b[0],c[0]) + reach;
+            const by0 = Math.min(a[1],b[1],c[1]) - reach, by1 = Math.max(a[1],b[1],c[1]) + reach;
+            const bz0 = Math.min(a[2],b[2],c[2]) - reach, bz1 = Math.max(a[2],b[2],c[2]) + reach;
+            if (bx1 < gx0 || bx0 > gx1 || by1 < gy0 || by0 > gy1 || bz1 < gz0 || bz0 > gz1) continue;
+            const i0 = Math.max(0, Math.ceil((bx0-gx0)/e)), i1 = Math.min(nx-1, Math.floor((bx1-gx0)/e));
+            const j0 = Math.max(0, Math.ceil((by0-gy0)/e)), j1 = Math.min(ny-1, Math.floor((by1-gy0)/e));
+            const k0 = Math.max(0, Math.ceil((bz0-gz0)/e)), k1 = Math.min(nz-1, Math.floor((bz1-gz0)/e));
+            for (let k = k0; k <= k1; k++) for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
+                const px = gx0 + i*e, py = gy0 + j*e, pz = gz0 + k*e;
+                closestPointOnTriangle(px, py, pz, a, b, c, q);
+                const dx = px-q[0], dy = py-q[1], dz = pz-q[2];
+                const d = Math.sqrt(dx*dx + dy*dy + dz*dz);
+                const idx = (k*ny + j)*nx + i;
+                if (d < dist[idx]) { dist[idx] = d; near[idx*3] = q[0]; near[idx*3+1] = q[1]; near[idx*3+2] = q[2]; seeded = true; }
+            }
+        }
+        if (!seeded) return null;
+        const odx = [], ody = [], odz = [];
+        for (let dz = -1; dz <= 1; dz++) for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+            if (dz < 0 || (dz === 0 && dy < 0) || (dz === 0 && dy === 0 && dx < 0)) { odx.push(dx); ody.push(dy); odz.push(dz); }
+        }
+        const nOff = odx.length, sxy = nx * ny;
+        function sweep(forward) {
+            const s = forward ? 1 : -1;
+            for (let kk = 0; kk < nz; kk++) for (let jj = 0; jj < ny; jj++) for (let ii = 0; ii < nx; ii++) {
+                const k = forward ? kk : nz-1-kk, j = forward ? jj : ny-1-jj, i = forward ? ii : nx-1-ii;
+                const idx = k*sxy + j*nx + i;
+                const px = gx0 + i*e, py = gy0 + j*e, pz = gz0 + k*e;
+                let best = dist[idx];
+                for (let o = 0; o < nOff; o++) {
+                    const ni = i + s*odx[o], nj = j + s*ody[o], nk = k + s*odz[o];
+                    if (ni < 0 || nj < 0 || nk < 0 || ni >= nx || nj >= ny || nk >= nz) continue;
+                    const nidx = nk*sxy + nj*nx + ni;
+                    if (dist[nidx] > band) continue;
+                    const qx = near[nidx*3], qy = near[nidx*3+1], qz = near[nidx*3+2];
+                    const dx = px-qx, dy = py-qy, dz = pz-qz;
+                    const d = Math.sqrt(dx*dx + dy*dy + dz*dz);
+                    if (d < best) { best = d; dist[idx] = d; near[idx*3] = qx; near[idx*3+1] = qy; near[idx*3+2] = qz; }
+                }
+            }
+        }
+        sweep(true); sweep(false);
+        return dist;
+    }
+
+    // Signed "cavity" field on a grid: (distance to the merged outer surface − t) inside the
+    // solid, strongly negative outside it. Inside/outside comes from exact cross-sections of the
+    // solid at each grid layer, scan-filled with the even-odd rule.
+    function cavityField(mesh, outer, min, e, nx, ny, nz, t) {
+        const band = t + 3 * e;
+        const g = distanceFieldNear(mesh, min, e, nx, ny, nz, band);
+        if (!g) return null;
+        const inside = new Uint8Array(nx * ny * nz);
+        for (let k = 0; k < nz; k++) {
+            const cs = outer.slice(min[2] + k * e);
+            const polys = cs.toPolygons();
+            cs.delete();
+            const layer = k * ny * nx;
+            for (const poly of polys) {
+                for (let a = 0, b = poly.length - 1; a < poly.length; b = a++) {
+                    const xa = poly[a][0], ya = poly[a][1], xb = poly[b][0], yb = poly[b][1];
+                    if (ya === yb) continue;
+                    const jlo = Math.max(0, Math.ceil((Math.min(ya, yb) - min[1]) / e)), jhi = Math.min(ny - 1, Math.floor((Math.max(ya, yb) - min[1]) / e));
+                    for (let j = jlo; j <= jhi; j++) {
+                        const y = min[1] + j * e;
+                        if ((ya > y) === (yb > y)) continue;
+                        const x = xa + (y - ya) * (xb - xa) / (yb - ya);
+                        const row = layer + j * nx;
+                        for (let i = Math.max(0, Math.ceil((x - min[0]) / e)); i < nx; i++) inside[row + i] ^= 1;
+                    }
+                }
+            }
+        }
+        for (let idx = 0; idx < g.length; idx++) g[idx] = inside[idx] ? Math.min(g[idx], band) - t : -(t + 1);
+        return g;
+    }
+
+    // True CAD-style shell inside the self-overlap zones: there the cavity must keep the wall
+    // thickness from the *merged* outer surface, not from each arm's own tube (offsetting each arm
+    // separately leaves thin blades where two arms' cavities nearly touch). For each zone box,
+    // samples the signed cavity field and extracts its level set. Returns the union of the zone
+    // boxes (where the per-arm cavity is to be discarded) and the level-set cavity to use instead.
+    function shellFieldSpacing(t) { return Math.min(0.3, Math.max(0.1, t / 2)); }
+
+    function buildTrueCavityPatch(outer, boxes, t) {
+        const { Manifold } = window.CSG;
+        const mesh = outer.getMesh();
+        const patches = [], cubes = [];
+        for (const box of boxes) {
+            let e = shellFieldSpacing(t);
+            const size = [0,1,2].map(k => box.max[k] - box.min[k]);
+            const vol = size[0] * size[1] * size[2];
+            if (vol / (e*e*e) > 6e5) e = Math.cbrt(vol / 6e5);
+            const nx = Math.ceil(size[0]/e) + 1, ny = Math.ceil(size[1]/e) + 1, nz = Math.ceil(size[2]/e) + 1;
+            const min = box.min, max = [min[0] + (nx-1)*e, min[1] + (ny-1)*e, min[2] + (nz-1)*e];
+            // The cut-out box is a hair smaller than the level-set bounds, so the patch overlaps
+            // into the remaining per-arm cavity instead of meeting it on exactly coincident faces
+            // (which exact booleans would leave behind as zero-thickness flaps).
+            const eps = 0.1 * e;
+            cubes.push(Manifold.cube([max[0]-min[0]-2*eps, max[1]-min[1]-2*eps, max[2]-min[2]-2*eps], false).translate([min[0]+eps, min[1]+eps, min[2]+eps]));
+            const g = cavityField(mesh, outer, min, e, nx, ny, nz, t);
+            if (!g) continue;
+            const sxy = nx * ny;
+            const sample = p => {
+                let fx = (p[0]-min[0])/e, fy = (p[1]-min[1])/e, fz = (p[2]-min[2])/e;
+                fx = Math.min(nx-1.000001, Math.max(0, fx)); fy = Math.min(ny-1.000001, Math.max(0, fy)); fz = Math.min(nz-1.000001, Math.max(0, fz));
+                const i = Math.floor(fx), j = Math.floor(fy), k = Math.floor(fz), tx = fx-i, ty = fy-j, tz = fz-k;
+                const b0 = k*sxy + j*nx + i, b1 = b0 + nx, b2 = b0 + sxy, b3 = b2 + nx;
+                const c00 = g[b0]*(1-tx) + g[b0+1]*tx, c10 = g[b1]*(1-tx) + g[b1+1]*tx;
+                const c01 = g[b2]*(1-tx) + g[b2+1]*tx, c11 = g[b3]*(1-tx) + g[b3+1]*tx;
+                return (c00*(1-ty) + c10*ty)*(1-tz) + (c01*(1-ty) + c11*ty)*tz;
+            };
+            const ls = Manifold.levelSet(sample, { min, max }, e);
+            if (ls.isEmpty()) { ls.delete(); continue; }
+            patches.push(ls.simplify(0.01));
+            ls.delete();
+        }
+        const boxSolid = Manifold.union(cubes);
+        cubes.forEach(c => c.delete());
+        const patch = patches.length ? Manifold.compose(patches) : null;
+        patches.forEach(p => p.delete());
+        return { boxSolid, patch };
+    }
+
+    // Exact booleans on pieces that meet along shared rings can still leave zero-volume "shells"
+    // (a pair of coincident faces glued together). They pass every manifold check but render as
+    // floating discs, so drop each connected component whose volume is below `fraction` of the
+    // largest one. Returns the recomposed solid (null if nothing was removed) and the count.
+    function cleanDebris(solid, fraction) {
+        const { Manifold } = window.CSG;
+        const parts = solid.decompose();
+        const vols = parts.map(p => p.volume());
+        const floor = Math.max(...vols) * fraction;
+        const kept = parts.filter((p, i) => vols[i] >= floor);
+        const removed = parts.length - kept.length;
+        const result = removed > 0 ? Manifold.compose(kept) : null;
+        parts.forEach(p => p.delete());
+        return { solid: result, removed };
+    }
+
+    // Where to drill in one floor region (a set of 2D contours, possibly concave or holed): its
+    // area centroid when a full-size hole fits there, otherwise the interior point farthest from
+    // the outline. Returns [x, y, clearance] or null.
+    function pickHoleCenter(contours, holeR) {
+        let area = 0, cx = 0, cy = 0, minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        for (const c of contours) for (let i = 0; i < c.length; i++) {
+            const [x0, y0] = c[i], [x1, y1] = c[(i + 1) % c.length];
+            const cr = x0 * y1 - x1 * y0;
+            area += cr; cx += (x0 + x1) * cr; cy += (y0 + y1) * cr;
+            if (x0 < minX) minX = x0; if (x0 > maxX) maxX = x0;
+            if (y0 < minY) minY = y0; if (y0 > maxY) maxY = y0;
+        }
+        if (Math.abs(area) < 1e-9) return null;
+        cx /= 3 * area; cy /= 3 * area;
+        const inside = (x, y) => {
+            let hit = false;
+            for (const c of contours) for (let i = 0, k = c.length - 1; i < c.length; k = i++) {
+                const [xi, yi] = c[i], [xk, yk] = c[k];
+                if ((yi > y) !== (yk > y) && x < (xk - xi) * (y - yi) / (yk - yi) + xi) hit = !hit;
+            }
+            return hit;
+        };
+        const clearance = (x, y) => {
+            let best = Infinity;
+            for (const c of contours) for (let i = 0, k = c.length - 1; i < c.length; k = i++) {
+                const [x0, y0] = c[k], [x1, y1] = c[i];
+                const dx = x1 - x0, dy = y1 - y0, l2 = dx*dx + dy*dy;
+                const s = l2 > 0 ? Math.max(0, Math.min(1, ((x - x0)*dx + (y - y0)*dy) / l2)) : 0;
+                best = Math.min(best, Math.hypot(x - (x0 + s*dx), y - (y0 + s*dy)));
+            }
+            return best;
+        };
+        if (inside(cx, cy)) {
+            const d = clearance(cx, cy);
+            if (d >= holeR / 0.6) return [cx, cy, d];
+        }
+        let best = null;
+        const N = 24;
+        for (let gx = 0; gx <= N; gx++) for (let gy = 0; gy <= N; gy++) {
+            const x = minX + (maxX - minX) * (gx + 0.5) / (N + 1), y = minY + (maxY - minY) * (gy + 0.5) / (N + 1);
+            if (!inside(x, y)) continue;
+            const d = clearance(x, y);
+            if (!best || d > best[2]) best = [x, y, d];
+        }
+        return best;
+    }
+
+    // One drainage hole per separate floor region: slices the solid floor slab at mid-thickness,
+    // takes each connected region, and drills a vertical cylinder at its center. Returns the union
+    // of the cylinders to subtract, or null if nothing fits.
+    function buildDrainHoles(body, zLo, floorZ, holeDiam) {
+        const { Manifold } = window.CSG;
+        const section = body.slice((zLo + floorZ) / 2);
+        const cyls = [];
+        for (const region of section.decompose()) {
+            const spot = pickHoleCenter(region.toPolygons(), holeDiam / 2);
+            region.delete();
+            if (!spot) continue;
+            const r = Math.min(holeDiam / 2, spot[2] * 0.6);
+            if (r < 0.05) continue;
+            cyls.push(Manifold.cylinder((floorZ - zLo) + 0.2, r, r, 24, false).translate([spot[0], spot[1], zLo - 0.1]));
+        }
+        section.delete();
+        if (!cyls.length) return null;
+        const all = Manifold.union(cyls);
+        cyls.forEach(c => c.delete());
+        return all;
+    }
+
+    // Solid outer body → shelled by subtracting the inward-offset body → (pot) cut between the two
+    // planes, cavity opened from the raised floor upward, drainage holes drilled. Every step is an
+    // exact boolean, so the result is always a single watertight manifold.
+    function buildMesh(cfg, scale) {
+        if (!window.CSG) throw new Error('Geometry engine not loaded');
+        const trash = [];
+        const keep = m => { trash.push(m); return m; };
+        try {
+            const R = buildRings(cfg);
+            const outer = keep(buildWallSolid(R.outer, R));
+            let inner = cfg.doHollow ? keep(buildWallSolid(R.inner, R)) : null;
+            // Optional (slower) extra cleaning in merge mode: replace the per-arm cavity inside
+            // every self-overlap zone with the true offset of the merged outer surface, which
+            // removes the thin blades left between nearly-touching arm cavities. Pinch mode
+            // never overlaps, so there is nothing to do there.
+            const boxes = inner && cfg.extraClean && !cfg.avoidSelfIntersect ? overlapBoxes(R, cfg.shellThick, shellFieldSpacing(cfg.shellThick)) : [];
+            if (boxes.length) {
+                const { boxSolid, patch } = buildTrueCavityPatch(outer, boxes, cfg.shellThick);
+                inner = keep(inner.subtract(keep(boxSolid)));
+                if (patch) inner = keep(inner.add(keep(patch)));
+            }
+            let result;
+            if (cfg.mode === 'pot') {
+                const zLo = R.minZ + (cfg.bottomCutPct/100) * (R.maxZ - R.minZ);
+                const zHi = R.minZ + (cfg.topCutPct/100) * (R.maxZ - R.minZ);
+                result = keep(keep(outer.trimByPlane([0,0,1], zLo)).trimByPlane([0,0,-1], -zHi));
+                if (inner) {
+                    // Raise the cavity's floor by the bottom thickness, leaving a solid slab there.
+                    // The cavity extends above zHi, so subtracting it also opens the top rim.
+                    const floorZ = Math.min(zHi - 1e-4, zLo + (cfg.bottomThick || 0));
+                    result = keep(result.subtract(keep(inner.trimByPlane([0,0,1], floorZ))));
+                    if (cfg.drainHoleDiam > 0 && floorZ - zLo > 0.02) {
+                        const holes = buildDrainHoles(result, zLo, floorZ, cfg.drainHoleDiam);
+                        if (holes) result = keep(result.subtract(keep(holes)));
+                    }
+                }
+            } else {
+                result = inner ? keep(outer.subtract(inner)) : outer;
+            }
+            if (result.status() !== 'NoError') throw new Error('CSG failed: ' + result.status());
+            const cleaned = cleanDebris(result, R.debrisFrac);
+            if (cleaned.solid) result = keep(cleaned.solid);
+            R.debris += cleaned.removed;
+            const mesh = result.getMesh();
+            const positions = Float32Array.from(mesh.vertProperties);
+            if (scale !== 1) for (let i = 0; i < positions.length; i++) positions[i] *= scale;
+            const geo = new THREE.BufferGeometry();
+            geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geo.setIndex(new THREE.BufferAttribute(Uint32Array.from(mesh.triVerts), 1));
+            geo.computeVertexNormals();
+            geo.userData.debrisRemoved = R.debris;
+            return geo;
+        } finally {
+            trash.forEach(m => m.delete());
+        }
     }
 
     function getFullHeightCm(cfg) {
-        const outer = generateSweepSurface(cfg, null);
-        rotatePositionsInPlace(outer.positions, cfg.rotX, cfg.rotY, cfg.rotZ);
-        const { minZ, maxZ } = getZRange(outer.positions);
-        return maxZ - minZ;
-    }
-
-    function buildMesh(cfg, scale) {
-        const outer = generateSweepSurface(cfg, null);
-        rotatePositionsInPlace(outer.positions, cfg.rotX, cfg.rotY, cfg.rotZ);
-
-        let inner = null;
-        if (cfg.doHollow) {
-            inner = generateSweepSurface(cfg, r => Math.max(0.01, r - cfg.shellThick));
-            rotatePositionsInPlace(inner.positions, cfg.rotX, cfg.rotY, cfg.rotZ);
-            const rev = [];
-            for (let i = 0; i < inner.indices.length; i += 3) rev.push(inner.indices[i], inner.indices[i+2], inner.indices[i+1]);
-            inner.indices = rev;
-        }
-
-        if (cfg.mode === 'pot') {
-            const { minZ, maxZ } = getZRange(outer.positions);
-            const zLo = minZ + (cfg.bottomCutPct/100) * (maxZ - minZ);
-            const zHi = minZ + (cfg.topCutPct/100) * (maxZ - minZ);
-
-            if (inner) {
-                // Raise the cavity's floor by the bottom-thickness amount, leaving a solid slab
-                // between zLo and innerZLo instead of only the (thinner) wall thickness there.
-                const innerZLo = Math.min(zHi - 1e-4, zLo + (cfg.bottomThick || 0));
-                const outerClip = clipBetweenPlanes(outer.positions, outer.indices, zLo, zHi);
-                const innerClip = clipBetweenPlanes(inner.positions, inner.indices, innerZLo, zHi);
-
-                const mergedPositions = outerClip.positions.slice();
-                const mergedIndices = outerClip.indices.slice();
-                appendCaps(mergedPositions, mergedIndices, outerClip.bottomLoops);
-
-                const innerOffset = mergedPositions.length / 3;
-                for (const p of innerClip.positions) mergedPositions.push(p);
-                for (const idx of innerClip.indices) mergedIndices.push(idx + innerOffset);
-                appendCaps(mergedPositions, mergedIndices, innerClip.bottomLoops);
-
-                // Top stays open: bridge outer wall to inner wall with a thin rim instead of
-                // capping each as its own solid disc (which would seal the cavity shut).
-                const bridge = tryBridgeAllLobes(outerClip.topLoops, innerClip.topLoops);
-                if (bridge) {
-                    const bridgeOffset = mergedPositions.length / 3;
-                    for (const p of bridge.positions) mergedPositions.push(p);
-                    for (const idx of bridge.indices) mergedIndices.push(idx + bridgeOffset);
-                } else {
-                    appendCaps(mergedPositions, mergedIndices, outerClip.topLoops);
-                    appendCaps(mergedPositions, mergedIndices, innerClip.topLoops);
-                }
-
-                outer.positions = mergedPositions;
-                outer.indices = mergedIndices;
-                inner = null;
-            } else {
-                const outerClipped = clipAndCap(outer.positions, outer.indices, zLo, zHi);
-                outer.positions = outerClipped.positions; outer.indices = outerClipped.indices;
-            }
-        }
-
-        const positions = outer.positions.slice();
-        const indices = outer.indices.slice();
-        if (inner) {
-            const vOff = positions.length / 3;
-            for (const p of inner.positions) positions.push(p);
-            for (const idx of inner.indices) indices.push(idx + vOff);
-        }
-        for (let i = 0; i < positions.length; i++) positions[i] *= scale;
-
-        const geo = new THREE.BufferGeometry();
-        geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        geo.setIndex(indices);
-        geo.computeVertexNormals();
-        return geo;
+        const R = buildRings(cfg);
+        return R.maxZ - R.minZ;
     }
 
     function readCfg() {
@@ -913,8 +743,12 @@
             sections: parseInt(document.getElementById('sections').value), radialRes: parseInt(document.getElementById('radialRes').value),
             shellThick: parseFloat(document.getElementById('shellThick').value), doHollow: parseFloat(document.getElementById('fillPct').value) < 100,
             mode: document.getElementById('modelMode').value,
+            avoidSelfIntersect: document.getElementById('avoidIntersection')?.checked ?? false,
+            extraClean: document.getElementById('extraClean')?.checked ?? false,
             bottomCutPct: parseFloat(document.getElementById('bottomCutPct')?.value || 10),
             topCutPct: parseFloat(document.getElementById('topCutPct')?.value || 90),
+            drainHoleDiam: Math.max(0, parseFloat(document.getElementById('drainHoleDiam')?.value || 0)),
+            debrisPct: Math.min(1, Math.max(0.01, parseFloat(document.getElementById('debrisPct')?.value) || 0.1)),
             bottomThick: parseFloat(document.getElementById('bottomThick')?.value || 0),
             rotX: parseFloat(document.getElementById('rotX')?.value || 0),
             rotY: parseFloat(document.getElementById('rotY')?.value || 0),
@@ -926,10 +760,26 @@
         };
     }
 
+    let previewTimer = null, previewPending = false;
+    function setStatus(text) { document.getElementById('status').innerText = text; }
+
+    // Coalesces the bursts of updatePreview() calls the UI handlers make into a single CSG build,
+    // and defers it while the geometry engine is still loading.
     function updatePreview() {
-        if (currentMesh) scene.remove(currentMesh);
+        previewPending = true;
+        if (previewTimer === null) previewTimer = setTimeout(runPreview, 0);
+    }
+
+    function runPreview() {
+        previewTimer = null;
+        if (!window.CSG) { setStatus('Loading geometry engine…'); return; }
+        previewPending = false;
+        if (currentMesh) { scene.remove(currentMesh); currentMesh.geometry.dispose(); }
         const cfg = readCfg();
-        const geo = buildMesh(cfg, 1.0);
+        const t0 = performance.now();
+        let geo;
+        try { geo = buildMesh(cfg, 1.0); }
+        catch (e) { console.error(e); setStatus('Build failed: ' + e.message); return; }
         currentMesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({color: 0xbc9b70, side: THREE.DoubleSide, roughness: 0.4}));
         scene.add(currentMesh);
         if (cfg.mode === 'pot') {
@@ -937,7 +787,17 @@
             const h = geo.boundingBox.max.z - geo.boundingBox.min.z;
             document.getElementById('potHeight').value = h.toFixed(2);
         }
-        document.getElementById('status').innerText = "3D Model";
+        const debris = geo.userData.debrisRemoved ? ` · ${geo.userData.debrisRemoved} debris shells removed` : '';
+        setStatus(`3D Model · ${(geo.index.count / 3).toLocaleString()} tris · ${Math.round(performance.now() - t0)} ms${debris}`);
+    }
+
+    function onCsgReady() { if (previewPending && scene) updatePreview(); }
+    function onCsgFailed(err) { console.error(err); setStatus('Geometry engine failed to load (internet connection required)'); }
+
+    function requireCsg() {
+        if (window.CSG) return true;
+        setStatus('Geometry engine still loading — try again in a moment');
+        return false;
     }
 
     // Samples the profile equation r(theta) once; area calculations then reuse the samples
@@ -1012,6 +872,14 @@
         updatePreview();
     }
 
+    function onDebrisPctChange() {
+        let v = parseFloat(document.getElementById('debrisPct').value);
+        if (isNaN(v)) v = 0.1;
+        v = Math.min(1, Math.max(0.01, v));
+        document.getElementById('debrisPct').value = v;
+        updatePreview();
+    }
+
     function onModelModeChange() {
         const isPot = document.getElementById('modelMode').value === 'pot';
         document.getElementById('potCuttingWrap').style.display = isPot ? 'block' : 'none';
@@ -1043,6 +911,7 @@
     }
 
     function exportOBJ() {
+        if (!requireCsg()) return;
         const geo = buildMesh(readCfg(), 10.0);
         const pos = geo.attributes.position.array, idx = geo.index.array;
         let obj = "# Equation-Driven Woven Pots Export\n";
@@ -1052,6 +921,7 @@
     }
 
     function exportSTL() {
+        if (!requireCsg()) return;
         const geo = buildMesh(readCfg(), 10.0);
         const pos = geo.attributes.position.array, idx = geo.index.array;
         const buf = new ArrayBuffer(84 + (idx.length / 3) * 50);
@@ -1156,6 +1026,19 @@
         animate();
     }
     window.onload = () => { initThree(); applyPathPreset(); applyProfilePreset(); onModelModeChange(); onShellThickChange(); };
+</script>
+
+<!-- Manifold: exact mesh booleans (union / subtract / plane cuts / slicing) used for the solid → shell → cut pipeline. -->
+<script type="module">
+    import Module from 'https://cdn.jsdelivr.net/npm/manifold-3d@3.5.3/manifold.js';
+    try {
+        const wasm = await Module();
+        wasm.setup();
+        window.CSG = wasm;
+        onCsgReady();
+    } catch (e) {
+        onCsgFailed(e);
+    }
 </script>
 </body>
 </html>
