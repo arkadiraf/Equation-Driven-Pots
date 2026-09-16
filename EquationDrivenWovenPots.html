@@ -2533,7 +2533,7 @@
             }
         } else {
             const pg = buildCreaseGeometry(geo.attributes.position.array, geo.index.array, PREVIEW_CREASE_DEG);
-            const mesh = new THREE.Mesh(pg, new THREE.MeshStandardMaterial({color: 0xbc9b70, side: THREE.DoubleSide, roughness: 0.4}));
+            const mesh = new THREE.Mesh(pg, new THREE.MeshStandardMaterial({color: new THREE.Color(cfg.baseColor), side: THREE.DoubleSide, roughness: 0.4}));
             scene.add(mesh);
             currentMeshes.push(mesh);
             triCount = geo.index.count / 3;
