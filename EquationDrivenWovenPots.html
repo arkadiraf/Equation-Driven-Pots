@@ -4,30 +4,71 @@
     <meta charset="UTF-8">
     <title>Equation-Driven Woven Pots</title>
     <style>
-        :root { --bg: #f4f7f6; --panel: #ffffff; --primary: #3498db; --secondary: #2c3e50; --success: #27ae60; --highlight: #9b59b6; --danger: #e74c3c; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: var(--bg); }
-        #sidebar { width: clamp(360px, 29vw, 420px); background: var(--panel); padding: 25px; box-shadow: 2px 0 15px rgba(0,0,0,0.1); overflow-y: auto; z-index: 100; }
-        .input-group { margin-bottom: 12px; }
-        label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: #444; }
-        input, textarea, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 0.9rem; }
-        input:disabled { opacity: 0.5; cursor: not-allowed; }
-        .checkbox-group { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; background: #eaf5fc; padding: 10px; border-radius: 6px; border: 1px solid var(--primary); }
-        .checkbox-group input { width: auto; cursor: pointer; }
-        textarea { height: 60px; font-family: 'Courier New', monospace; background: #fafafa; }
-        button { width: 100%; padding: 12px; margin-top: 8px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; transition: 0.2s; }
-        .btn-preview { background: var(--secondary); }
-        .btn-obj { background: var(--primary); }
-        .btn-stl { background: var(--success); }
-        button:hover { filter: brightness(1.05); }
+        :root { --bg: #f4f7f6; --panel: #ffffff; --primary: #3498db; --secondary: #2c3e50; --success: #27ae60; --highlight: #9b59b6; --danger: #e74c3c; --export3mf: #8e44ad; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: var(--bg); overflow: hidden; }
+        #sidebar { width: clamp(360px, 29vw, 420px); background: var(--panel); padding: 16px 16px 14px; box-shadow: 2px 0 15px rgba(0,0,0,0.1); overflow-y: auto; z-index: 100; flex-shrink: 0; }
         #viewer-container { flex-grow: 1; background: #ffffff; position: relative; }
         #status { position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 8px 18px; border-radius: 20px; font-size: 11px; }
-        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .section-title { font-size: 0.75rem; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin: 18px 0 8px 0; padding-bottom: 5px; border-bottom: 1px solid #eee; cursor: pointer; user-select: none; position: relative; padding-right: 16px; }
-        .section-title::after { content: '\25BE'; position: absolute; right: 2px; top: 0; transition: transform 0.2s ease; }
-        .collapsible-section.is-collapsed .section-title::after { transform: rotate(-90deg); }
+
+        .section-title { font-size: 0.95rem; font-weight: 700; font-family: 'Segoe UI', sans-serif; color: var(--secondary); border-bottom: 1px solid #e7eaee; padding: 3px 36px 3px 0; margin-top: 8px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.35px; cursor: pointer; position: relative; user-select: none; }
+        .section-title::after { content: '\25BE'; position: absolute; right: 0; top: 50%; transform: translateY(-52%); font-size: 1.35rem; font-weight: 700; color: #7f8c8d; transition: transform 0.18s ease; line-height: 1; }
+        .collapsible-section.is-collapsed .section-title::after { transform: translateY(-52%) rotate(-90deg); }
         .collapsible-section.is-collapsed .section-body { display: none; }
+
+        .input-group { margin-bottom: 4px; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 4px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 4px; }
+        .color-row { grid-template-columns: 1fr 1fr; gap: 6px; }
+
+        label { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 2px; color: #4d5966; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        input[type="number"], input[type="text"], select, textarea { width: 100%; padding: 5px 6px; border: 1px solid #d8dee6; border-radius: 6px; box-sizing: border-box; font-size: 0.8rem; font-family: 'Segoe UI', sans-serif; background: #ffffff; }
+        input:disabled { opacity: 0.5; cursor: not-allowed; }
+        textarea { height: 60px; font-family: 'Courier New', monospace; background: #f2f4f7; line-height: 1.3; resize: vertical; }
+
         .sub-label { font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin: 10px 0 6px 0; }
+        .desc-text { font-size: 0.7rem; color: #7b8794; font-style: italic; margin-top: -1px; margin-bottom: 4px; line-height: 1.15; }
+
+        .checkbox-group { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; background: #eaf5fc; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--primary); }
+        .checkbox-group input { width: auto; cursor: pointer; }
+
+        .color-chip { height: 42px; padding: 3px; width: 100%; background: #ffffff; }
+        .color-input-row { display: flex; gap: 4px; align-items: stretch; }
+        .color-input-row .color-chip { flex: 1 1 auto; min-width: 0; }
+        .bambu-toggle { flex: 0 0 auto; width: 30px; height: 42px; padding: 0; margin: 0; border: 1px solid #d8dee6; border-radius: 6px; background: #ffffff; font-size: 1rem; line-height: 1; color: initial; }
+        .bambu-palette { display: none; grid-template-columns: repeat(6, 1fr); gap: 3px; margin: 4px 0 2px; padding: 5px; background: #f2f4f7; border: 1px solid #d8dee6; border-radius: 6px; }
+        .bambu-palette.open { display: grid; }
+        .bambu-swatch { width: 100%; aspect-ratio: 1; min-height: 16px; padding: 0; margin: 0; border: 1px solid rgba(0,0,0,0.18); border-radius: 3px; }
+        .bambu-swatch:hover { outline: 2px solid var(--primary); outline-offset: 1px; }
+
+        button { width: 100%; padding: 10px; margin-top: 6px; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; color: white; transition: opacity 0.2s; font-size: 0.86rem; }
+        button:active { opacity: 0.8; }
+        .btn-preview { background: var(--secondary); }
+        .btn-stl { background: var(--success); }
+        .btn-3mf { background: var(--export3mf); }
+        .btn-ai { background: var(--highlight); }
+        .btn-reset { background: #7f8c8d; }
+
+        .filename-control { margin-top: 8px; }
+        .filename-control input { font-weight: 600; color: var(--secondary); }
+
+        .ai-file-input { display: none; }
+
+        .ai-modal-overlay { position: fixed; inset: 0; background: rgba(44,62,80,0.45); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+        .ai-modal-overlay.is-visible { display: flex; }
+        .ai-modal { width: min(560px, calc(100vw - 40px)); max-height: calc(100vh - 40px); overflow: auto; background: #ffffff; border-radius: 12px; box-shadow: 0 18px 42px rgba(0,0,0,0.22); border: 1px solid #dde5ed; padding: 16px; }
+        .ai-modal-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+        .ai-modal-title { margin: 0; color: var(--secondary); font-size: 1rem; }
+        .ai-modal-close { width: auto; margin: 0; padding: 6px 12px; background: #7f8c8d; font-size: 0.76rem; }
+        .ai-modal-message { margin: 0 0 10px 0; padding: 10px 12px; border-radius: 8px; background: #f3f6fb; color: #4d5966; font-size: 0.78rem; line-height: 1.4; }
+        .ai-json-input { min-height: 180px; resize: vertical; font-family: 'Courier New', monospace; background: #fbfcfe; }
+        .ai-file-dropzone { margin: 0 0 10px 0; padding: 12px 14px; border: 2px dashed #c6d5e3; border-radius: 10px; background: #f8fbff; color: #4d5966; text-align: center; cursor: pointer; transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease; }
+        .ai-file-dropzone:hover, .ai-file-dropzone.is-dragover { border-color: var(--primary); background: #eef6ff; box-shadow: 0 0 0 3px rgba(52,152,219,0.08); }
+        .ai-file-dropzone-title { font-size: 0.8rem; font-weight: 700; color: var(--secondary); margin-bottom: 3px; }
+        .ai-file-dropzone-subtitle { font-size: 0.7rem; line-height: 1.3; }
+        .ai-modal-actions { display: flex; flex-direction: column; gap: 0; }
+        .ai-json-feedback { min-height: 14px; }
+
         @media (max-width: 480px) {
             #sidebar { width: 100%; padding: 16px; }
             body { flex-direction: column; height: auto; }
@@ -40,7 +81,7 @@
 <div id="sidebar">
     <h2 style="margin-top:0; color:var(--secondary)">Equation-Driven Woven Pots</h2>
 
-    <div class="collapsible-section">
+    <div class="collapsible-section is-collapsed">
         <div class="section-title" onclick="toggleSection(this)">Base Scaffold</div>
         <div class="section-body">
             <div class="input-group">
@@ -91,7 +132,25 @@
         </div>
     </div>
 
-    <div class="collapsible-section">
+    <div class="collapsible-section is-collapsed">
+        <div class="section-title" onclick="toggleSection(this)">Surface Texture</div>
+        <div class="section-body">
+            <div class="grid-inputs">
+                <div class="input-group">
+                    <label>Texture Preset</label>
+                    <select id="texPresetSelect" onchange="applyTexturePreset()"></select>
+                </div>
+            </div>
+            <div id="texDesc" class="desc-text">No surface displacement.</div>
+            <div class="input-group">
+                <label style="color: var(--highlight)">Displacement: T(&theta;, u, v)</label>
+                <textarea id="texEquation" onchange="updatePreview()">0</textarea>
+            </div>
+            <div class="input-group"><label>Texture Intensity (Multiplier)</label><input type="number" id="texIntensity" value="0.15" step="0.05" onchange="updatePreview()"></div>
+        </div>
+    </div>
+
+    <div class="collapsible-section is-collapsed">
         <div class="section-title" onclick="toggleSection(this)">Structural Geometry</div>
         <div class="section-body">
             <div id="potCuttingWrap" style="display:block;">
@@ -122,11 +181,84 @@
                 <input type="checkbox" id="extraClean" onchange="updatePreview()">
                 <label for="extraClean" style="margin-bottom:0;">Extra cleaning: true-shell cavity in overlap zones (removes thin blades, slower)</label>
             </div>
-            <div class="input-group"><label>Debris Threshold (% of largest body, 0.01–1)</label><input type="number" id="debrisPct" value="0.1" min="0.01" max="1" step="0.01" onchange="onDebrisPctChange()"></div>
         </div>
     </div>
 
-    <div class="collapsible-section">
+    <div class="collapsible-section is-collapsed">
+        <div class="section-title" onclick="toggleSection(this)">Dual Pattern Color Layer</div>
+        <div class="section-body">
+            <div class="grid-inputs">
+                <div class="input-group">
+                    <label>Pattern A Preset</label>
+                    <select id="patternPresetSelect1" onchange="applyPatternPreset(1)"></select>
+                </div>
+                <div class="input-group">
+                    <label>Pattern B Preset</label>
+                    <select id="patternPresetSelect2" onchange="applyPatternPreset(2)"></select>
+                </div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group">
+                    <label style="color: var(--highlight)">Pattern A Mask: P&#8321;(&theta;, u, v)</label>
+                    <textarea id="patternEquation1" onchange="updatePreview()">-1</textarea>
+                </div>
+                <div class="input-group">
+                    <label style="color: var(--highlight)">Pattern B Mask: P&#8322;(&theta;, u, v)</label>
+                    <textarea id="patternEquation2" onchange="updatePreview()">-1</textarea>
+                </div>
+            </div>
+            <div class="grid-inputs">
+                <div id="patternDesc1" class="desc-text">No mask applied.</div>
+                <div id="patternDesc2" class="desc-text">No mask applied.</div>
+            </div>
+            <div class="grid-inputs color-row">
+                <div class="input-group"><label>Neither / Base</label>
+                    <div class="color-input-row">
+                        <input type="color" id="baseColor" class="color-chip" value="#bc9b70" oninput="updatePreview()">
+                        <button type="button" class="bambu-toggle" onclick="toggleBambuPalette('baseColor')" title="Bambu Lab PLA colors" aria-label="Bambu Lab PLA colors">&#127912;</button>
+                    </div>
+                    <div class="bambu-palette" id="baseColor-palette"></div>
+                </div>
+                <div class="input-group"><label>Pattern A Only</label>
+                    <div class="color-input-row">
+                        <input type="color" id="patternColor1" class="color-chip" value="#ff7062" oninput="updatePreview()">
+                        <button type="button" class="bambu-toggle" onclick="toggleBambuPalette('patternColor1')" title="Bambu Lab PLA colors" aria-label="Bambu Lab PLA colors">&#127912;</button>
+                    </div>
+                    <div class="bambu-palette" id="patternColor1-palette"></div>
+                </div>
+            </div>
+            <div class="grid-inputs color-row">
+                <div class="input-group"><label>Pattern B Only</label>
+                    <div class="color-input-row">
+                        <input type="color" id="patternColor2" class="color-chip" value="#5f4a8b" oninput="updatePreview()">
+                        <button type="button" class="bambu-toggle" onclick="toggleBambuPalette('patternColor2')" title="Bambu Lab PLA colors" aria-label="Bambu Lab PLA colors">&#127912;</button>
+                    </div>
+                    <div class="bambu-palette" id="patternColor2-palette"></div>
+                </div>
+                <div class="input-group"><label>Overlap (A + B)</label>
+                    <div class="color-input-row">
+                        <input type="color" id="overlapColor" class="color-chip" value="#8ab04d" oninput="updatePreview()">
+                        <button type="button" class="bambu-toggle" onclick="toggleBambuPalette('overlapColor')" title="Bambu Lab PLA colors" aria-label="Bambu Lab PLA colors">&#127912;</button>
+                    </div>
+                    <div class="bambu-palette" id="overlapColor-palette"></div>
+                </div>
+            </div>
+            <div class="input-group"><label>Color Layer Depth (mm)</label><input type="number" id="patternDepthMm" value="1.2" step="0.1" min="0" onchange="updatePreview()"></div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="smoothPatternEdges" checked onchange="updatePreview()">
+                <label for="smoothPatternEdges" style="margin-bottom:0;">Smooth Pattern Edges (high quality)</label>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>Pattern Path Nodes (min)</label><input type="number" id="patternResU" value="400" step="10" min="20" onchange="updatePreview()"></div>
+                <div class="input-group"><label>Pattern Radial Nodes (min, &theta;)</label><input type="number" id="patternResT" value="48" step="4" min="8" onchange="updatePreview()"></div>
+            </div>
+            <div class="desc-text">The outer wall is remeshed to at least this resolution when the color layer is on, so pattern edges are never coarser than the mesh — raises Mesh Resolution below if needed, never lowers it.</div>
+            <div class="input-group"><label>Boundary Refinement (0&ndash;3)</label><input type="number" id="boundaryRefine" value="2" step="1" min="0" max="3" onchange="updatePreview()"></div>
+            <div class="desc-text">Smooth edges only: every pattern edge is solved on the mask equation itself, and the cells where two edges meet are subdivided this many times so checkerboard corners stay sharp instead of chamfered. 0 = off (fastest).</div>
+        </div>
+    </div>
+
+    <div class="collapsible-section is-collapsed">
         <div class="section-title" onclick="toggleSection(this)">Mesh Resolution</div>
         <div class="section-body">
             <div class="grid-inputs">
@@ -136,9 +268,47 @@
         </div>
     </div>
 
+    <div class="filename-control">
+        <label for="designFileName">Design File Name</label>
+        <input type="text" id="designFileName" value="" placeholder="Use path type name" oninput="updateConfiguredPotNameFromInput(this.value)">
+    </div>
     <button class="btn-preview" onclick="updatePreview()">GENERATE 3D MODEL</button>
-    <button class="btn-obj" onclick="exportOBJ()">EXPORT .OBJ</button>
     <button class="btn-stl" onclick="exportSTL()">EXPORT .STL (PRINT READY)</button>
+    <button class="btn-3mf" onclick="exportMultiColor3MF()">EXPORT .3MF (MULTI-COLOR)</button>
+    <button class="btn-ai" onclick="openDesignJsonWindow()">IMPORT / EXPORT DESIGN (JSON)</button>
+    <button class="btn-preview" onclick="downloadCurrentSettingsJson()">DOWNLOAD DESIGN .JSON</button>
+    <button class="btn-preview" onclick="triggerDesignFilePicker()">LOAD DESIGN .JSON</button>
+    <input id="designJsonFileInput" class="ai-file-input" type="file" accept=".json,.jso,application/json" onchange="handleDesignFileSelection(event)">
+</div>
+
+<div id="designJsonOverlay" class="ai-modal-overlay" onclick="handleDesignJsonOverlayClick(event)">
+    <div class="ai-modal" role="dialog" aria-modal="true" aria-labelledby="designJsonTitle">
+        <div class="ai-modal-header">
+            <h3 id="designJsonTitle" class="ai-modal-title">Import / Export Design</h3>
+            <button type="button" class="ai-modal-close" onclick="closeDesignJsonWindow()">Close</button>
+        </div>
+        <p class="ai-modal-message">
+            Describe the pot you want to any AI assistant along with a copy of an exported design JSON as a
+            reference for the field names and equation syntax, then paste the JSON it gives back below — or paste/edit
+            a design you saved earlier. Unknown or missing fields are left at their current values.
+        </p>
+        <div id="designJsonDropzone" class="ai-file-dropzone" tabindex="0" role="button"
+            aria-label="Drop a JSON or text file here or click to browse" onclick="triggerDesignJsonFilePicker()">
+            <input id="designJsonSnippetFileInput" class="ai-file-input" type="file"
+                accept=".json,.jso,.txt,application/json,text/plain" onchange="handleDesignJsonFileSelection(event)">
+            <div class="ai-file-dropzone-title">Drop a .json, .jso, or .txt file here</div>
+            <div class="ai-file-dropzone-subtitle">Or click to browse. The file contents load into the JSON field below.</div>
+        </div>
+        <div class="input-group">
+            <label for="designJsonInput">Design JSON</label>
+            <textarea id="designJsonInput" class="ai-json-input" placeholder="Paste a design JSON here, drop a file above, then click Apply JSON..."></textarea>
+        </div>
+        <div id="designJsonFeedback" class="desc-text ai-json-feedback"></div>
+        <div class="ai-modal-actions">
+            <button type="button" class="btn-ai" onclick="applyDesignJson()">Apply JSON</button>
+            <button type="button" class="btn-ai" onclick="downloadCurrentSettingsJson()">Download Current Settings</button>
+        </div>
+    </div>
 </div>
 
 <div id="viewer-container">
@@ -147,9 +317,37 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <script>
-    let scene, camera, renderer, controls, currentMesh;
+    let scene, camera, renderer, controls, currentMeshes = [];
+    // Zero-volume-shell cleanup threshold (% of the largest body a component must reach to be
+    // kept, see cleanDebris) — no UI control; adjustable only via Design JSON import.
+    let debrisThresholdPct = 0.1;
+    // Frames the camera on the very first model built after page load, then leaves the camera
+    // alone on every later rebuild so it doesn't jump back and undo the user's own pan/zoom/orbit.
+    let hasFitCamera = false;
+
+    // Positions the camera at an isometric-ish angle far enough back to frame `box` (a
+    // THREE.Box3) with a small margin, replacing the fixed (65,65,65) default that only looks
+    // right for a model around the original default's size — a much smaller or larger path
+    // diameter would otherwise render tiny or clip through the near/far planes.
+    function fitCameraToObject(box) {
+        if (!box || box.isEmpty()) return;
+        const size = new THREE.Vector3(); box.getSize(size);
+        const center = new THREE.Vector3(); box.getCenter(center);
+        const radius = size.length() / 2;
+        if (!isFinite(radius) || radius <= 0) return;
+        const fovRad = camera.fov * Math.PI / 180;
+        const distance = (radius / Math.sin(fovRad / 2)) * 1.2;
+        const dir = new THREE.Vector3(1, 1, 1).normalize();
+        camera.position.copy(center).addScaledVector(dir, distance);
+        camera.near = Math.max(0.01, distance / 100);
+        camera.far = distance * 100;
+        camera.updateProjectionMatrix();
+        controls.target.copy(center);
+        controls.update();
+    }
     let axisScene, axisCamera;
 
     function toggleSection(titleEl) {
@@ -235,7 +433,7 @@
                 }
             }
         }
-        return { minDist, excludeArc, totalLen, minCrossArc, touching };
+        return { minDist, excludeArc, totalLen, minCrossArc, touching, cumLen };
     }
 
     // Samples the path and builds rotation-minimizing frames, spreading the closed-loop twist
@@ -293,15 +491,48 @@
             if (rot) v.applyMatrix4(rot);
             out[k] = v.x; out[k+1] = v.y; out[k+2] = v.z;
         };
-        const outer = [], inner = [], centers = [];
+
+        // Surface Texture: T(theta,u,v) adds a radial displacement on top of the profile,
+        // evaluated (and re-clamped) before the point is placed, so a texture bump can never push
+        // a point past the same anti-self-intersection limit the plain profile is already held to.
+        // The cavity moves together with the outer wall under the texture (a uniform-thickness
+        // shell), so it's applied once here and reused for both `outer` and `inner`.
+        const texActive = (cfg.texEq || '0').trim() !== '0' && Math.abs(cfg.texIntensity) > 1e-9;
+        const texFn = texActive ? compilePatternExpr(cfg.texEq) : null;
+        let cMinZ = Infinity, cMaxZ = -Infinity, centerZs = null;
+        if (texFn) {
+            centerZs = new Float64Array(steps);
+            const tmpV = new THREE.Vector3();
+            for (let i = 0; i < steps; i++) {
+                tmpV.copy(frames[i].p);
+                if (rot) tmpV.applyMatrix4(rot);
+                centerZs[i] = tmpV.z;
+                if (tmpV.z < cMinZ) cMinZ = tmpV.z;
+                if (tmpV.z > cMaxZ) cMaxZ = tmpV.z;
+            }
+        }
+        const cZRange = Math.max(1e-6, cMaxZ - cMinZ);
+
+        const outer = [], inner = [], centers = [], rGrid = [];
         let minZ = Infinity, maxZ = -Infinity;
         for (let i = 0; i < steps; i++) {
             const f = frames[i];
             // Pinch mode: cap the radius so this ring stays clear of the nearest other ring.
             const cap = cfg.avoidSelfIntersect && isFinite(prox.minDist[i]) ? prox.minDist[i] * 0.45 : Infinity;
             const ro = new Float64Array(resR * 3), ri = cfg.doHollow ? new Float64Array(resR * 3) : null;
+            const rRow = new Float64Array(resR);
+            const s = i / steps, u = prox.totalLen > 0 ? prox.cumLen[i] / prox.totalLen : s;
+            const vHeight = texFn ? (centerZs[i] - cMinZ) / cZRange : 0;
             for (let j = 0; j < resR; j++) {
-                const theta = (j / resR) * 2 * Math.PI, r = Math.max(0.01, Math.min(profile[j], cap));
+                const theta = (j / resR) * 2 * Math.PI;
+                let r = Math.max(0.01, Math.min(profile[j], cap));
+                if (texFn) {
+                    v.copy(f.p).addScaledVector(f.n, r * Math.cos(theta)).addScaledVector(f.b, r * Math.sin(theta));
+                    if (rot) v.applyMatrix4(rot);
+                    const disp = evalPatternMask(texFn, theta, u, s, vHeight, v.x, v.y, v.z, 0, 0, prox.totalLen);
+                    r = Math.max(0.01, Math.min(r + disp * cfg.texIntensity, cap));
+                }
+                rRow[j] = r;
                 place(f, r, theta, ro, j * 3);
                 if (ri) place(f, Math.max(0.01, r - cfg.shellThick), theta, ri, j * 3);
                 if (ro[j*3+2] < minZ) minZ = ro[j*3+2];
@@ -309,6 +540,7 @@
             }
             outer.push(ro);
             if (ri) inner.push(ri);
+            rGrid.push(rRow);
             const c = new Float64Array(3);
             place(f, 0, 0, c, 0);
             centers.push(c);
@@ -317,7 +549,34 @@
         // contains both sides of a crossing; if nothing crosses, the whole loop is one piece.
         const crosses = isFinite(prox.minCrossArc);
         const ringsPerPiece = crosses ? Math.max(2, Math.floor(steps * (prox.minCrossArc / prox.totalLen) * 0.9)) : steps;
-        return { outer, inner, centers, steps, resR, minZ, maxZ, crosses, ringsPerPiece, touching: prox.touching, profileMaxR, debris: 0, debrisFrac: cfg.debrisPct / 100 };
+        return { outer, inner, centers, steps, resR, minZ, maxZ, crosses, ringsPerPiece, touching: prox.touching, profileMaxR, debris: 0, debrisFrac: cfg.debrisPct / 100, frames, profile, prox, rot, rGrid };
+    }
+
+    // A further ring set offset inward by `offset` from the SAME final (textured, clamped) radius
+    // as buildRings' own `outer` (reusing its rGrid/frames/rot), so it stays geometrically
+    // consistent with the mesh — including the pinch clamp and any surface texture — for any
+    // radius. Used to build the inward-offset solid the color-layer skin is carved from.
+    function buildOffsetRingSet(cfg, R, offset) {
+        const { frames, rot, steps, resR, rGrid } = R;
+        const v = new THREE.Vector3();
+        const rings = [];
+        for (let i = 0; i < steps; i++) {
+            const f = frames[i];
+            const row = new Float64Array(resR * 3);
+            for (let j = 0; j < resR; j++) {
+                const theta = (j / resR) * 2 * Math.PI;
+                const r = Math.max(0.005, rGrid[i][j] - offset);
+                v.copy(f.p).addScaledVector(f.n, r * Math.cos(theta)).addScaledVector(f.b, r * Math.sin(theta));
+                if (rot) v.applyMatrix4(rot);
+                row[j*3] = v.x; row[j*3+1] = v.y; row[j*3+2] = v.z;
+            }
+            rings.push(row);
+        }
+        return rings;
+    }
+
+    function buildInsetSolid(cfg, R, offset) {
+        return buildWallSolid(buildOffsetRingSet(cfg, R, offset), R);
     }
 
     // Closed solid for one run of rings a..b (indices wrap around the loop), or for the whole
@@ -682,6 +941,19 @@
         const trash = [];
         const keep = m => { trash.push(m); return m; };
         try {
+            // The color layer is now built directly on the outer wall's own (sections x
+            // radialRes) grid rather than a separately-resolved one (see buildPatternGrid), so
+            // its boundary can never look coarser/blockier than the surrounding mesh - but that
+            // only holds if the mesh itself has at least as much detail as the pattern needs.
+            // Remesh the whole model at the higher of the two before building anything, exactly
+            // like the mesh-resolution inputs already work: this raises detail, it never lowers
+            // it, so a pattern resolution left at or below the mesh's own is a no-op.
+            if (patternActive(cfg)) {
+                cfg = Object.assign({}, cfg, {
+                    sections: Math.max(cfg.sections, cfg.patternResU),
+                    radialRes: Math.max(cfg.radialRes, cfg.patternResT)
+                });
+            }
             const R = buildRings(cfg);
             const outer = keep(buildWallSolid(R.outer, R));
             let inner = cfg.doHollow ? keep(buildWallSolid(R.inner, R)) : null;
@@ -717,6 +989,16 @@
             const cleaned = cleanDebris(result, R.debrisFrac);
             if (cleaned.solid) result = keep(cleaned.solid);
             R.debris += cleaned.removed;
+
+            let patternParts = null, patternClamped = false;
+            if (patternActive(cfg)) {
+                const wallCap = cfg.doHollow ? Math.max(0, cfg.shellThick - 0.02) : Infinity;
+                const depthCm = Math.max(0, Math.min(cfg.patternDepthCm, wallCap, 0.45 * R.profileMaxR));
+                patternClamped = depthCm < cfg.patternDepthCm - 1e-6;
+                if (depthCm > 1e-4) patternParts = buildPatternParts(cfg, R, result, depthCm);
+                if (scale !== 1 && patternParts) for (const part of patternParts) for (let i = 0; i < part.positions.length; i++) part.positions[i] *= scale;
+            }
+
             const mesh = result.getMesh();
             const positions = Float32Array.from(mesh.vertProperties);
             if (scale !== 1) for (let i = 0; i < positions.length; i++) positions[i] *= scale;
@@ -725,6 +1007,8 @@
             geo.setIndex(new THREE.BufferAttribute(Uint32Array.from(mesh.triVerts), 1));
             geo.computeVertexNormals();
             geo.userData.debrisRemoved = R.debris;
+            geo.userData.patternParts = patternParts;
+            geo.userData.patternClamped = patternClamped;
             return geo;
         } finally {
             trash.forEach(m => m.delete());
@@ -734,6 +1018,646 @@
     function getFullHeightCm(cfg) {
         const R = buildRings(cfg);
         return R.maxZ - R.minZ;
+    }
+
+    // ---- Dual Pattern Color Layer -----------------------------------------------------------
+    // Two mask equations P1/P2 sampled on their own (theta,u) grid define four surface states
+    // (neither / A / B / both), each built as its own closed prism hugging the outer `depth`cm
+    // of the wall, then intersected with the actual printed skin so the boundary always follows
+    // the real surface (including merged crossings and the pinch clamp) and clamped/subtracted
+    // out of the base pot with exact CSG - see WOVEN_COLOR_LAYER_PLAN.md.
+
+    function clampNum(x, lo, hi) { return Math.min(hi, Math.max(lo, x)); }
+    function smoothstepFn(a, b, x) { const t = clampNum((x - a) / (b - a || 1e-12), 0, 1); return t * t * (3 - 2 * t); }
+    function modFn(a, b) { return ((a % b) + b) % b; }
+
+    const PATTERN_EXPR_ARGS = ['theta','u','s','v','x','y','z','R','r','len',
+        'pi','sin','cos','tan','asin','acos','atan','atan2','sqrt','pow','abs','min','max','exp','log',
+        'floor','ceil','round','sign','mod','hypot','smoothstep','clamp'];
+    const patternExprCache = new Map();
+    function compilePatternExpr(src) {
+        const key = (typeof src === 'string' && src.trim()) ? src : '-1';
+        if (patternExprCache.has(key)) return patternExprCache.get(key);
+        let fn;
+        try { fn = new Function(...PATTERN_EXPR_ARGS, '"use strict"; return (' + key + ');'); }
+        catch (e) { fn = () => -1; }
+        if (patternExprCache.size > 400) patternExprCache.clear();
+        patternExprCache.set(key, fn);
+        return fn;
+    }
+    function evalPatternMask(fn, theta, u, s, v, x, y, z, R, r, len) {
+        try {
+            const val = fn(theta, u, s, v, x, y, z, R, r, len,
+                Math.PI, Math.sin, Math.cos, Math.tan, Math.asin, Math.acos, Math.atan, Math.atan2,
+                Math.sqrt, Math.pow, Math.abs, Math.min, Math.max, Math.exp, Math.log,
+                Math.floor, Math.ceil, Math.round, Math.sign, modFn, Math.hypot, smoothstepFn, clampNum);
+            return (typeof val === 'number' && isFinite(val)) ? val : -1;
+        } catch (e) { return -1; }
+    }
+
+    // Displacement presets for the Surface Texture layer: T(theta,u,v) is added to the profile
+    // radius (scaled by Texture Intensity) before the pinch clamp, at every mesh node - so these
+    // ride along the tube in the same (theta = around the tube, u = along the path, v = world
+    // height) domain the Dual Pattern masks use. Adapted from EquationDrivenPotDesigner.html's
+    // texturePresets (theta/v there is a body of revolution; here theta/u follows the swept tube).
+    const texturePresets = {
+        "None (Flat Surface)": { eq: "0", desc: "No surface displacement. Keeps the tube smooth and unchanged." },
+        "Ribs Around Tube": { eq: "cos(10*theta)", desc: "Regular ribbing around the tube's circumference." },
+        "Fine Ribs": { eq: "cos(18*theta)", desc: "A finer, denser rib structure." },
+        "Bands Along Path": { eq: "sin(24*pi*u)", desc: "Horizontal contour-style bands stacked along the path." },
+        "Twisted Ribs": { eq: "cos(12*theta + 10*pi*u)", desc: "Ribbing that gradually twists as it winds along the path." },
+        "Spiral Relief": { eq: "sin(6*theta + 12*pi*u)", desc: "A spiral wrap texture winding around the tube as it follows the path." },
+        "Checker Relief": { eq: "cos(8*theta) * sin(14*pi*u)", desc: "A crossed angular/along-path texture forming checker-like relief." },
+        "Diamond Weave": { eq: "cos(8*theta + 8*pi*u) * cos(8*theta - 8*pi*u)", desc: "A crossed lattice or diamond weave effect." },
+        "Braided Lattice": { eq: "0.6*cos(8*theta + 8*pi*u) + 0.6*cos(8*theta - 8*pi*u)", desc: "Crossed diagonal strands forming a braided lattice texture." },
+        "Height Bands": { eq: "sin(16*pi*v)", desc: "Stacked horizontal band relief by world height, independent of the path shape." },
+        "Terraced Contours": { eq: "floor(6 * (0.5 + 0.5*sin(16*pi*v))) / 6", desc: "Stepped horizontal terraces by world height." },
+        "ATan Braid": { eq: "atan(8 * (sin(6*theta + 10*pi*u) + 0.6*sin(11*theta - 8*pi*u)))", desc: "Braided interference compressed for flatter ridges and sharper grooves." },
+        "Chladni Plate": { eq: "atan(4*(sin(4*theta)*sin(6*pi*u) + sin(6*theta)*sin(4*pi*u)))", desc: "Standing-wave nodal pattern, atan-sharpened into clean ridges." },
+        "Moire Texture": { eq: "sin(12*theta + 10*pi*u) + sin(13*theta - 10*pi*u)", desc: "A moire-like texture formed by nearby crossed frequencies." },
+    };
+
+    function populateTexturePresetSelect() {
+        const sel = document.getElementById('texPresetSelect');
+        if (!sel) return;
+        sel.innerHTML = Object.keys(texturePresets).map(k => `<option value="${k}">${k}</option>`).join('');
+    }
+    function applyTexturePreset() {
+        const sel = document.getElementById('texPresetSelect');
+        const eqEl = document.getElementById('texEquation');
+        const descEl = document.getElementById('texDesc');
+        const preset = texturePresets[sel.value] || texturePresets['None (Flat Surface)'];
+        eqEl.value = preset.eq;
+        descEl.innerText = preset.desc;
+        updatePreview();
+    }
+    function populateTexturePresets() {
+        populateTexturePresetSelect();
+        document.getElementById('texPresetSelect').value = 'None (Flat Surface)';
+        applyTexturePreset();
+    }
+
+    const patternPresets = {
+        "None (Solid Base Color)": { eq: "-1", desc: "No mask - this slot contributes nothing." },
+        "Half Split (θ)": { eq: "cos(theta)", desc: "Splits the tube into two long halves around its own axis." },
+        "Quarter Split (θ)": { eq: "cos(2*theta)", desc: "Splits the tube into four long quarters around its own axis." },
+        "Stripes Along Path": { eq: "cos(2*pi*8*u)", desc: "Evenly spaced bands running around the path (arc-length based, so spacing stays uniform)." },
+        "Rings (fine)": { eq: "sin(2*pi*20*u)", desc: "Finer evenly spaced rings along the path." },
+        "Height Bands": { eq: "sin(2*pi*8*v)", desc: "Horizontal bands by world height, independent of the path shape." },
+        "Height Split": { eq: "v - 0.5", desc: "Simple lower-vs-upper split by world height." },
+        "Spiral Wrap": { eq: "cos(6*theta + 2*pi*3*u)", desc: "A spiral stripe winding around the tube as it follows the path." },
+        "Tight Spiral": { eq: "cos(3*theta + 2*pi*12*u)", desc: "A tighter multi-start spiral wrap." },
+        "Checkerboard": { eq: "sign(cos(6*theta)) * sign(cos(2*pi*16*u))", desc: "A crisp checker grid of tiles around and along the tube." },
+        "Diagonal Weave": { eq: "cos(4*theta - 2*pi*6*u)", desc: "Diagonal bands crossing around and along the tube." },
+        "Double Helix": { eq: "cos(6*theta + 2*pi*10*u) * cos(6*theta - 2*pi*10*u)", desc: "Two crossed helices forming a braided mask." },
+        "Arc Belt": { eq: "asin(0.98*sin(6*theta)) * exp(-pow(v-0.5,2)*30)", desc: "An arc-shaped belt concentrated around the mid-height." },
+        "Moire Bands": { eq: "smoothstep(0.2,0.28, sin(2*pi*10*u + 6*theta) + sin(2*pi*9*u - 7*theta)) - 0.5", desc: "Interference moire bands with shifting spacing." },
+    };
+
+    function populatePatternPresetSelect(id) {
+        const sel = document.getElementById(id);
+        if (!sel) return;
+        sel.innerHTML = Object.keys(patternPresets).map(k => `<option value="${k}">${k}</option>`).join('');
+    }
+    function populatePatternPresets() {
+        populatePatternPresetSelect('patternPresetSelect1');
+        populatePatternPresetSelect('patternPresetSelect2');
+        document.getElementById('patternPresetSelect1').value = 'None (Solid Base Color)';
+        document.getElementById('patternPresetSelect2').value = 'None (Solid Base Color)';
+        applyPatternPreset(1);
+        applyPatternPreset(2);
+    }
+    function applyPatternPreset(slot) {
+        const sel = document.getElementById(`patternPresetSelect${slot}`);
+        const eqEl = document.getElementById(`patternEquation${slot}`);
+        const descEl = document.getElementById(`patternDesc${slot}`);
+        const preset = patternPresets[sel.value] || patternPresets['None (Solid Base Color)'];
+        eqEl.value = preset.eq;
+        descEl.innerText = preset.desc;
+        updatePreview();
+    }
+
+    function patternActive(cfg) {
+        return cfg.patternDepthCm > 1e-4 &&
+            ((cfg.patternEq1 || '-1').trim() !== '-1' || (cfg.patternEq2 || '-1').trim() !== '-1');
+    }
+
+    /* ---------- Bambu Lab PLA Basic color palette (see PLA_Colors.txt) ----------
+       A small on-demand swatch grid next to each of the four color pickers, so a design's
+       colors can be matched to filament that's actually printable rather than an arbitrary
+       picked hex. Ported from EquationDrivenPotDesigner.html. */
+    const BAMBU_COLORS = [
+        ['Jade White', '#FFFFFF'], ['Beige', '#F7E6DE'], ['Gold', '#E4BD68'], ['Silver', '#A6A9AA'],
+        ['Gray', '#8E9089'], ['Bronze', '#847D48'], ['Brown', '#9D432C'], ['Cocoa Brown', '#6F5034'],
+        ['Maroon Red', '#9D2235'], ['Red', '#C12E1F'], ['Magenta', '#EC008C'], ['Pink', '#F55A74'],
+        ['Hot Pink', '#F5547C'], ['Orange', '#FF6A13'], ['Pumpkin Orange', '#FF9016'],
+        ['Sunflower Yellow', '#FEC600'], ['Yellow', '#F4EE2A'], ['Bright Green', '#BECF00'],
+        ['Bambu Green', '#00AE42'], ['Mistletoe Green', '#3F8E43'], ['Turquoise', '#00B1B7'],
+        ['Cyan', '#0086D6'], ['Blue', '#0A2989'], ['Cobalt Blue', '#0056B8'], ['Purple', '#5E43B7'],
+        ['Indigo Purple', '#482960'], ['Blue Gray', '#5B6579'], ['Light Gray', '#D1D3D5'],
+        ['Dark Gray', '#545454'], ['Black', '#000000']
+    ];
+    const BAMBU_PALETTE_TARGET_IDS = ['baseColor', 'patternColor1', 'patternColor2', 'overlapColor'];
+
+    function initBambuPalettes() {
+        BAMBU_PALETTE_TARGET_IDS.forEach(id => {
+            const container = document.getElementById(id + '-palette');
+            if (!container) return;
+            BAMBU_COLORS.forEach(([name, hex]) => {
+                const swatch = document.createElement('button');
+                swatch.type = 'button';
+                swatch.className = 'bambu-swatch';
+                swatch.style.background = hex;
+                swatch.title = `${name} (${hex})`;
+                swatch.setAttribute('aria-label', name);
+                swatch.onclick = () => pickBambuColor(id, hex);
+                container.appendChild(swatch);
+            });
+        });
+    }
+
+    function toggleBambuPalette(id) {
+        const container = document.getElementById(id + '-palette');
+        if (!container) return;
+        const isOpen = container.classList.contains('open');
+        BAMBU_PALETTE_TARGET_IDS.forEach(otherId => {
+            const other = document.getElementById(otherId + '-palette');
+            if (other) other.classList.remove('open');
+        });
+        if (!isOpen) container.classList.add('open');
+    }
+
+    function pickBambuColor(id, hex) {
+        const input = document.getElementById(id);
+        if (!input) return;
+        input.value = hex;
+        const container = document.getElementById(id + '-palette');
+        if (container) container.classList.remove('open');
+        updatePreview();
+    }
+
+    function pt(rows, iu, jt) { const row = rows[iu], o = jt * 3; return [row[o], row[o+1], row[o+2]]; }
+
+    // Samples both masks directly on the outer wall's own (steps x resR) grid - reusing R's
+    // frames/rGrid/rot/profile/prox instead of resampling the path at a separate resolution, so
+    // the color layer is built from EXACTLY the nodes the visible surface is, with no separate
+    // grid that could ever look coarser or misaligned ("pixelated") next to it. rGrid already has
+    // the pinch clamp and Surface Texture baked in (see buildRings), so neither is recomputed
+    // here. `top` sits just outside each node's radius, `bot` just inside (radius - depth).
+    function buildPatternGrid(cfg, R, depthCm) {
+        const Nu = R.steps, Nt = R.resR;
+        const { frames, rot, rGrid, profile } = R;
+        const totalLen = R.prox.totalLen || 1;
+        const cumLen = R.prox.cumLen;
+        const eps = 0.02;
+
+        const top = [], bot = [], worldPt = [];
+        let minZ = Infinity, maxZ = -Infinity;
+        const v3 = new THREE.Vector3();
+        for (let iu = 0; iu < Nu; iu++) {
+            const f = frames[iu];
+            const topRow = new Float64Array(Nt*3), botRow = new Float64Array(Nt*3), midRow = new Float64Array(Nt*3);
+            for (let jt = 0; jt < Nt; jt++) {
+                const theta = (jt / Nt) * 2 * Math.PI;
+                const rClamped = rGrid[iu][jt];
+                const rTop = rClamped + eps, rBot = Math.max(0.005, rClamped - depthCm - eps);
+                v3.copy(f.p).addScaledVector(f.n, rTop*Math.cos(theta)).addScaledVector(f.b, rTop*Math.sin(theta));
+                if (rot) v3.applyMatrix4(rot);
+                topRow[jt*3]=v3.x; topRow[jt*3+1]=v3.y; topRow[jt*3+2]=v3.z;
+                if (v3.z < minZ) minZ = v3.z; if (v3.z > maxZ) maxZ = v3.z;
+                v3.copy(f.p).addScaledVector(f.n, rBot*Math.cos(theta)).addScaledVector(f.b, rBot*Math.sin(theta));
+                if (rot) v3.applyMatrix4(rot);
+                botRow[jt*3]=v3.x; botRow[jt*3+1]=v3.y; botRow[jt*3+2]=v3.z;
+                v3.copy(f.p).addScaledVector(f.n, rClamped*Math.cos(theta)).addScaledVector(f.b, rClamped*Math.sin(theta));
+                if (rot) v3.applyMatrix4(rot);
+                midRow[jt*3]=v3.x; midRow[jt*3+1]=v3.y; midRow[jt*3+2]=v3.z;
+            }
+            top.push(topRow); bot.push(botRow); worldPt.push(midRow);
+        }
+
+        const zRange = Math.max(1e-6, maxZ - minZ);
+        const eq1 = compilePatternExpr(cfg.patternEq1), eq2 = compilePatternExpr(cfg.patternEq2);
+        const fieldA = [], fieldB = [], uRow = new Float64Array(Nu), sRow = new Float64Array(Nu);
+        for (let iu = 0; iu < Nu; iu++) {
+            const rowA = new Float64Array(Nt), rowB = new Float64Array(Nt);
+            const s = iu / Nu, u = cumLen[iu] / totalLen;
+            uRow[iu] = u; sRow[iu] = s;
+            for (let jt = 0; jt < Nt; jt++) {
+                const theta = (jt / Nt) * 2 * Math.PI;
+                const x = worldPt[iu][jt*3], y = worldPt[iu][jt*3+1], z = worldPt[iu][jt*3+2];
+                const v = (z - minZ) / zRange;
+                const r = rGrid[iu][jt];
+                rowA[jt] = evalPatternMask(eq1, theta, u, s, v, x, y, z, profile[jt], r, totalLen);
+                rowB[jt] = evalPatternMask(eq2, theta, u, s, v, x, y, z, profile[jt], r, totalLen);
+            }
+            fieldA.push(rowA); fieldB.push(rowB);
+        }
+        // Everything the smooth builder needs to re-evaluate a mask at an arbitrary point of the
+        // (u, theta) domain (see buildSmoothPatternMeshes' records) travels with the grid.
+        return { Nu, Nt, top, bot, fieldA, fieldB, worldPt, uRow, sRow, profile, rGrid, eq1, eq2, minZ, zRange, totalLen };
+    }
+
+    function cellState(fieldA, fieldB, iu, jt) {
+        return (fieldA[iu][jt] > 0 ? 1 : 0) + (fieldB[iu][jt] > 0 ? 2 : 0);
+    }
+
+    // Welds a raw triangle soup into an indexed mesh (position-hash weld, same tolerance as the
+    // rest of this file's exact-geometry helpers) and drops degenerate triangles.
+    function weldMesh(positions, indices) {
+        const eps = 1e-6, invEps = 1 / eps;
+        const buckets = new Map();
+        const welded = [];
+        const remap = new Int32Array(positions.length / 3);
+        function findOrAdd(x, y, z) {
+            const qx = Math.round(x*invEps), qy = Math.round(y*invEps), qz = Math.round(z*invEps);
+            const hash = (qx * 73856093) ^ (qy * 19349663) ^ (qz * 83492791);
+            let bucket = buckets.get(hash);
+            if (bucket) { for (const c of bucket) if (c.qx === qx && c.qy === qy && c.qz === qz) return c.index; }
+            else { bucket = []; buckets.set(hash, bucket); }
+            const idx = welded.length / 3;
+            welded.push(x, y, z);
+            bucket.push({ qx, qy, qz, index: idx });
+            return idx;
+        }
+        for (let i = 0; i < positions.length; i += 3) remap[i/3] = findOrAdd(positions[i], positions[i+1], positions[i+2]);
+        const outIdx = [];
+        for (let i = 0; i < indices.length; i += 3) {
+            const a = remap[indices[i]], b = remap[indices[i+1]], c = remap[indices[i+2]];
+            if (a === b || b === c || a === c) continue;
+            outIdx.push(a, b, c);
+        }
+        return { positions: welded, indices: outIdx };
+    }
+
+    // Stepped edges: each (iu,jt) cell takes its own corner's mask state; walls are only emitted
+    // where the state changes across an edge, so a same-state region welds into one closed prism
+    // with no internal geometry. Top face wound outward, bottom face wound inward (reversed), and
+    // wall quads follow the same boundary-walk direction as the top face - the standard
+    // "extrude a closed region" convention.
+    function buildSteppedPatternMeshes(grid) {
+        const { Nu, Nt, top, bot, fieldA, fieldB } = grid;
+        // Besides one prism per state, `all` is the union of states 1-3 with walls only against
+        // state 0 - the single cutter buildPatternParts carves the base with.
+        const pools = { 1: { positions: [], indices: [] }, 2: { positions: [], indices: [] }, 3: { positions: [], indices: [] }, all: { positions: [], indices: [] } };
+        function push(pool, p) { const i = pool.positions.length/3; pool.positions.push(p[0], p[1], p[2]); return i; }
+        function tri(pool, a, b, c) { const ia=push(pool,a), ib=push(pool,b), ic=push(pool,c); pool.indices.push(ia,ib,ic); }
+        function quad(pool, a, b, c, d) { tri(pool,a,b,c); tri(pool,a,c,d); }
+
+        for (let iu = 0; iu < Nu; iu++) {
+            const iu1 = (iu+1) % Nu, iuPrev = (iu-1+Nu) % Nu;
+            for (let jt = 0; jt < Nt; jt++) {
+                const jt1 = (jt+1) % Nt, jtPrev = (jt-1+Nt) % Nt;
+                const state = cellState(fieldA, fieldB, iu, jt);
+                if (state === 0) continue;
+                const topA=pt(top,iu,jt), topB=pt(top,iu,jt1), topC=pt(top,iu1,jt1), topD=pt(top,iu1,jt);
+                const botA=pt(bot,iu,jt), botB=pt(bot,iu,jt1), botC=pt(bot,iu1,jt1), botD=pt(bot,iu1,jt);
+                const sPrevU = cellState(fieldA,fieldB,iuPrev,jt), sNextT = cellState(fieldA,fieldB,iu,jt1);
+                const sNextU = cellState(fieldA,fieldB,iu1,jt), sPrevT = cellState(fieldA,fieldB,iu,jtPrev);
+                for (const pool of [pools[state], pools.all]) {
+                    // A neighbour is outside this solid when its state differs (per-state prism)
+                    // or is 0 (merged prism).
+                    const out = pool === pools.all ? (s => s === 0) : (s => s !== state);
+                    quad(pool, topA, topB, topC, topD);
+                    quad(pool, botD, botC, botB, botA);
+                    // Wall quads: for a boundary edge P->Q walked in the same CCW/outward direction
+                    // as the top face above, the outward-facing wall is quad(Qtop,Ptop,Pbot,Qbot) -
+                    // reversed relative to the edge's own P->Q direction.
+                    if (out(sPrevU)) quad(pool, topB, topA, botA, botB);
+                    if (out(sNextT)) quad(pool, topC, topB, botB, botC);
+                    if (out(sNextU)) quad(pool, topD, topC, botC, botD);
+                    if (out(sPrevT)) quad(pool, topA, topD, botD, botA);
+                }
+            }
+        }
+        return pools;
+    }
+
+    // Snaps any near-zero field sample to its 4-neighbour average (wrapping in both directions -
+    // this grid, unlike the Pot Designer's, has no open boundary), then a deterministic tiny
+    // nudge for anything still near zero - prevents sub-weld-tolerance slivers and duplicate
+    // wall geometry from a contour crossing landing almost exactly on a grid node.
+    function nearZeroFixWrap(field, Nu, Nt) {
+        const fixed = field.map(row => row.slice());
+        const fixes = [];
+        for (let iu = 0; iu < Nu; iu++) for (let jt = 0; jt < Nt; jt++) {
+            if (Math.abs(fixed[iu][jt]) >= 1e-3) continue;
+            const iuP=(iu-1+Nu)%Nu, iuN=(iu+1)%Nu, jtP=(jt-1+Nt)%Nt, jtN=(jt+1)%Nt;
+            const avg = 0.25 * (fixed[iu][jtP] + fixed[iu][jtN] + fixed[iuP][jt] + fixed[iuN][jt]);
+            if (Math.abs(avg) >= 1e-3) fixes.push([iu, jt, avg]);
+        }
+        for (const [iu,jt,v] of fixes) fixed[iu][jt] = v;
+        for (let iu = 0; iu < Nu; iu++) for (let jt = 0; jt < Nt; jt++) {
+            if (Math.abs(fixed[iu][jt]) >= 1e-3) continue;
+            const h = Math.sin(iu*12.9898 + jt*78.233) * 43758.5453;
+            fixed[iu][jt] = ((h - Math.floor(h)) < 0.5 ? -1 : 1) * 2e-3;
+        }
+        return fixed;
+    }
+
+    function lerp3(a, b, t) { return [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, a[2]+(b[2]-a[2])*t]; }
+
+    // A "record" is one point of the (u, theta) pattern domain carrying everything a mask
+    // evaluation needs (unwrapped theta/u/s, the surface point, profile radii) next to its top/bot
+    // prism points and the two field values, so any point between two records is just a lerp of
+    // them - which is what lets clipPoly re-solve its crossings on the mask itself.
+    function lerpRec(a, b, t) {
+        return { top: lerp3(a.top, b.top, t), bot: lerp3(a.bot, b.bot, t), w: lerp3(a.w, b.w, t),
+                 th: a.th + (b.th - a.th) * t, u: a.u + (b.u - a.u) * t, s: a.s + (b.s - a.s) * t,
+                 pr: a.pr + (b.pr - a.pr) * t, rr: a.rr + (b.rr - a.rr) * t,
+                 fa: a.fa + (b.fa - a.fa) * t, fb: a.fb + (b.fb - a.fb) * t };
+    }
+
+    // Sutherland-Hodgman clip of a (triangle-derived, so still convex) polygon against
+    // `[fieldKey] >= 0` (keepPositive) or `<= 0`. Each crossing is first placed by linear
+    // interpolation and then, with `ctx`, moved to the mask's actual zero along the edge
+    // (ctx.refine): a step mask like sign() reads +-1 at both ends, so the interpolated position
+    // alone would always be the edge midpoint whatever the equation says - the stripes of the
+    // default checkerboard came out 3 to 5 cells wide instead of 4 that way. The OTHER field's
+    // value at the crossing stays the plain lerp: it has to remain linear over the triangle so the
+    // next clip meets exactly two sign changes on this polygon (sampling it on the mask can give
+    // four, and the two sides of that contour then disagree on where it runs), and it must stay
+    // exactly 0 where both ends are 0 - that vertex lies on both contours and emitState relies on
+    // the zero to attach the walls of both.
+    function clipPoly(poly, fieldKey, keepPositive, ctx) {
+        const n = poly.length;
+        if (n < 3) return [];
+        function crossing(a, b) {
+            const denom = a[fieldKey] - b[fieldKey];
+            let t = Math.abs(denom) < 1e-12 ? 0.5 : clampNum(a[fieldKey] / denom, 0, 1);
+            if (ctx) t = ctx.refine(a, b, fieldKey, t);
+            const c = lerpRec(a, b, t);
+            c[fieldKey] = 0;
+            return c;
+        }
+        const inside = q => keepPositive ? q[fieldKey] >= 0 : q[fieldKey] <= 0;
+        const out = [];
+        for (let i = 0; i < n; i++) {
+            const a = poly[i], b = poly[(i+1) % n];
+            const ain = inside(a), bin = inside(b);
+            if (ain && bin) out.push(b);
+            else if (ain && !bin) out.push(crossing(a, b));
+            else if (!ain && bin) { out.push(crossing(a, b)); out.push(b); }
+        }
+        return out;
+    }
+
+    // Smooth edges: each cell's two triangles are clipped by the fa=0 then fb=0 contours instead
+    // of taking one blocky state per cell, so the boundary between states follows the mask's zero
+    // set. Every crossing is solved on the mask itself (clipPoly), and the cells a contour passes
+    // through are subdivided first (`refineLevel`): 2-fold where one contour crosses, 2^level-fold
+    // where two contours meet (a "saddle" cell - its corner states alternate), which is where a
+    // fixed per-cell diagonal would otherwise chamfer the corner by half a cell. Subdivision is
+    // conforming: a grid edge is split the same way by both cells sharing it, and a (sub-)cell
+    // with extra vertices on an edge is fanned from its centre instead of being cut in two, so no
+    // T-junction is ever welded into a prism. State 0 needs no geometry (the base comes from the
+    // CSG subtraction); besides the three per-state pools, `all` holds the union of states 1-3
+    // with walls only against state 0 - the cutter that carves the base.
+    function buildSmoothPatternMeshes(grid, refineLevel) {
+        const { Nu, Nt, top, bot, worldPt, uRow, sRow, profile, rGrid, eq1, eq2, minZ, zRange, totalLen } = grid;
+        const fA = nearZeroFixWrap(grid.fieldA, Nu, Nt);
+        const fB = nearZeroFixWrap(grid.fieldB, Nu, Nt);
+        const TWO_PI = 2 * Math.PI, EMPTY = [];
+        const pools = { 1: { positions: [], indices: [] }, 2: { positions: [], indices: [] }, 3: { positions: [], indices: [] }, all: { positions: [], indices: [] } };
+        function push(pool, p) { const i = pool.positions.length/3; pool.positions.push(p[0], p[1], p[2]); return i; }
+        function tri(pool, a, b, c) { const ia=push(pool,a), ib=push(pool,b), ic=push(pool,c); pool.indices.push(ia,ib,ic); }
+        function fan(pool, poly, key) { for (let i = 1; i < poly.length - 1; i++) tri(pool, poly[0][key], poly[i][key], poly[i+1][key]); }
+        // Same reversed-wall convention as the stepped builder: quad(Qtop,Ptop,Pbot,Qbot).
+        function wall(pool, v1, v2) { tri(pool, v2.top, v1.top, v1.bot); tri(pool, v2.top, v1.bot, v2.bot); }
+
+        // ---- records: grid nodes, and mask evaluation anywhere between them ----
+        function nodeRec(iu, jt, thAdd, uAdd) {
+            return { top: pt(top, iu, jt), bot: pt(bot, iu, jt), w: pt(worldPt, iu, jt),
+                     th: (jt / Nt) * TWO_PI + thAdd, u: uRow[iu] + uAdd, s: sRow[iu] + uAdd,
+                     pr: profile[jt], rr: rGrid[iu][jt], fa: fA[iu][jt], fb: fB[iu][jt] };
+        }
+        // A cell that closes the loop sees its far corners at theta + 2pi / u + 1 so lerps along
+        // its edges never jump across the seam; the same shift is applied to shared edge points.
+        function shifted(rec, thAdd, uAdd) {
+            return (thAdd || uAdd) ? Object.assign({}, rec, { th: rec.th + thAdd, u: rec.u + uAdd, s: rec.s + uAdd }) : rec;
+        }
+        function evalRec(key, rec) {
+            const th = rec.th - Math.floor(rec.th / TWO_PI) * TWO_PI;
+            const u = rec.u - Math.floor(rec.u), s = rec.s - Math.floor(rec.s);
+            const z = rec.w[2];
+            return evalPatternMask(key === 'fa' ? eq1 : eq2, th, u, s, (z - minZ) / zRange, rec.w[0], rec.w[1], z, rec.pr, rec.rr, totalLen);
+        }
+        // Same guard nearZeroFixWrap gives the grid nodes: a vertex reading exactly 0 would be
+        // taken for a contour vertex by the wall detection in emitState.
+        function nudge(f, hint) { return Math.abs(f) >= 1e-3 ? f : ((f !== 0 ? f : hint) < 0 ? -1e-3 : 1e-3); }
+        function sampled(rec) { rec.fa = nudge(evalRec('fa', rec), rec.fa); rec.fb = nudge(evalRec('fb', rec), rec.fb); return rec; }
+        // Bisection of the mask along a->b, in dyadic steps so the two cells sharing an edge - which
+        // walk it in opposite directions - land on the same point and weld; the result stays a
+        // little away from either end so no sub-weld-tolerance sliver can appear.
+        function refine(a, b, key, t0) {
+            const f0 = a[key];
+            if (!(f0 * b[key] < 0)) return t0;
+            let lo = 0, hi = 1;
+            for (let i = 0; i < 14; i++) {
+                const mid = 0.5 * (lo + hi);
+                const f = evalRec(key, lerpRec(a, b, mid));
+                if (f === 0) { lo = hi = mid; break; }
+                if ((f > 0) === (f0 > 0)) lo = mid; else hi = mid;
+            }
+            return clampNum(0.5 * (lo + hi), 1 / 512, 1 - 1 / 512);
+        }
+        const ctx = { refine };
+        const stOf = r => (r.fa > 0 ? 1 : 0) + (r.fb > 0 ? 2 : 0);
+
+        // ---- emission ----
+        function emitState(poly, state) {
+            if (poly.length < 3) return;
+            const pool = pools[state], all = pools.all;
+            fan(pool, poly, 'top'); fan(all, poly, 'top');
+            const rev = poly.slice().reverse();
+            fan(pool, rev, 'bot'); fan(all, rev, 'bot');
+            const n = poly.length;
+            for (let i = 0; i < n; i++) {
+                const v1 = poly[i], v2 = poly[(i+1) % n];
+                const wallA = Math.abs(v1.fa) < 1e-9 && Math.abs(v2.fa) < 1e-9;
+                const wallB = Math.abs(v1.fb) < 1e-9 && Math.abs(v2.fb) < 1e-9;
+                if (!wallA && !wallB) continue;
+                const dx=v2.top[0]-v1.top[0], dy=v2.top[1]-v1.top[1], dz=v2.top[2]-v1.top[2];
+                if (dx*dx+dy*dy+dz*dz < 1e-14) continue;
+                wall(pool, v1, v2);
+                // In the merged solid only edges that border state 0 are walls: across an fa
+                // contour edge only fb's sign persists (state 1 -> 0, but 3 -> 2), across an fb
+                // edge only fa's (2 -> 0, but 3 -> 1).
+                if ((wallA && state === 1) || (wallB && state === 2)) wall(all, v1, v2);
+            }
+        }
+        function emitTriangle(t3) {
+            const posA = clipPoly(t3, 'fa', true, ctx);
+            const negA = clipPoly(t3, 'fa', false, ctx);
+            emitState(clipPoly(posA, 'fb', true, ctx), 3);
+            emitState(clipPoly(posA, 'fb', false, ctx), 1);
+            emitState(clipPoly(negA, 'fb', true, ctx), 2);
+        }
+        // One (sub-)cell A,B,C,D (A = its (iu,jt) corner, B along theta, C diagonal, D along u)
+        // plus whatever extra vertices its four edges carry from finer neighbours: plain -> the two
+        // triangles as before; otherwise a fan from the sampled centre, so every edge vertex is a
+        // real vertex on this side too.
+        function emitQuad(A, B, C, D, eAB, eBC, eCD, eDA) {
+            const ring = [A, ...eAB, B, ...eBC, C, ...eCD, D, ...eDA];
+            if (ring.every(r => stOf(r) === 0)) return;
+            if (ring.length === 4) { emitTriangle([A, B, C]); emitTriangle([A, C, D]); return; }
+            const X = sampled(lerpRec(lerpRec(A, B, 0.5), lerpRec(D, C, 0.5), 0.5));
+            for (let i = 0; i < ring.length; i++) emitTriangle([X, ring[i], ring[(i + 1) % ring.length]]);
+        }
+
+        // ---- subdivision bookkeeping ----
+        const L = Math.max(0, Math.min(3, Math.round(refineLevel) || 0));
+        const stateOf = (iu, jt) => (fA[iu][jt] > 0 ? 1 : 0) + (fB[iu][jt] > 0 ? 2 : 0);
+        const level = new Uint8Array(Nu * Nt);
+        if (L > 0) for (let iu = 0; iu < Nu; iu++) {
+            const iu1 = (iu + 1) % Nu;
+            for (let jt = 0; jt < Nt; jt++) {
+                const jt1 = (jt + 1) % Nt;
+                const a = stateOf(iu, jt), b = stateOf(iu, jt1), c = stateOf(iu1, jt1), d = stateOf(iu1, jt);
+                if (a === b && b === c && c === d) continue;
+                level[iu * Nt + jt] = (a === c && b === d) ? L : 1;
+            }
+        }
+        const cellLevel = (iu, jt) => level[((iu + Nu) % Nu) * Nt + ((jt + Nt) % Nt)];
+        // Grid edge H(iu,jt): node (iu,jt) -> (iu,jt+1); V(iu,jt): node (iu,jt) -> (iu+1,jt). Each is
+        // split 2^max(level of its two cells) ways; its interior points are sampled once, in the
+        // edge's own unwrapped coordinates, and shared by both cells.
+        const edgeCache = new Map();
+        function edgePoints(kind, iu, jt) {
+            const n = 1 << (kind === 'H' ? Math.max(cellLevel(iu, jt), cellLevel(iu - 1, jt)) : Math.max(cellLevel(iu, jt), cellLevel(iu, jt - 1)));
+            if (n === 1) return null;
+            const key = kind + (iu * Nt + jt);
+            let pts = edgeCache.get(key);
+            if (!pts) {
+                const a = nodeRec(iu, jt, 0, 0);
+                const b = kind === 'H' ? nodeRec(iu, (jt + 1) % Nt, jt + 1 === Nt ? TWO_PI : 0, 0)
+                                       : nodeRec((iu + 1) % Nu, jt, 0, iu + 1 === Nu ? 1 : 0);
+                pts = [];
+                for (let k = 1; k < n; k++) pts.push(sampled(lerpRec(a, b, k / n)));
+                pts.n = n;
+                edgeCache.set(key, pts);
+            }
+            return pts;
+        }
+        // Interior points of grid edge `pts` that fall strictly inside sub-range j of m along it, in
+        // edge order (`rev` for the opposite walk), shifted into the calling cell's coordinates.
+        function between(pts, m, j, rev, thAdd, uAdd) {
+            if (!pts) return EMPTY;
+            const step = pts.n / m, out = [];
+            for (let k = j * step + 1; k < (j + 1) * step; k++) out.push(shifted(pts[k - 1], thAdd, uAdd));
+            return rev ? out.reverse() : out;
+        }
+
+        for (let iu = 0; iu < Nu; iu++) {
+            const iu1 = (iu + 1) % Nu, uAdd = iu1 === 0 ? 1 : 0;
+            for (let jt = 0; jt < Nt; jt++) {
+                const jt1 = (jt + 1) % Nt, thAdd = jt1 === 0 ? TWO_PI : 0;
+                const A = nodeRec(iu, jt, 0, 0), B = nodeRec(iu, jt1, thAdd, 0), C = nodeRec(iu1, jt1, thAdd, uAdd), D = nodeRec(iu1, jt, 0, uAdd);
+                // The cell's four grid edges (null when unsplit). hBot runs A->B, vRight B->C, hTop
+                // D->C and vLeft A->D in table order; vRight/hTop live in canonical coordinates and
+                // get this cell's seam shift when used.
+                const hBot = edgePoints('H', iu, jt), vRight = edgePoints('V', iu, jt1), hTop = edgePoints('H', iu1, jt), vLeft = edgePoints('V', iu, jt);
+                const lv = level[iu * Nt + jt];
+                if (lv === 0) {
+                    emitQuad(A, B, C, D, between(hBot, 1, 0, false, 0, 0), between(vRight, 1, 0, false, thAdd, 0),
+                                         between(hTop, 1, 0, true, 0, uAdd), between(vLeft, 1, 0, true, 0, 0));
+                    continue;
+                }
+                // Sub-node records: corners are the nodes, boundary sub-nodes come from the shared
+                // edge tables, interior ones are bilinear lerps re-sampled on the masks.
+                const m = 1 << lv, rec = [];
+                for (let i = 0; i <= m; i++) {
+                    const row = [], left = lerpRec(A, D, i / m), right = lerpRec(B, C, i / m);
+                    for (let j = 0; j <= m; j++) {
+                        let r;
+                        if (i === 0 && j === 0) r = A;
+                        else if (i === 0 && j === m) r = B;
+                        else if (i === m && j === m) r = C;
+                        else if (i === m && j === 0) r = D;
+                        else if (i === 0) r = hBot[j * (hBot.n / m) - 1];
+                        else if (i === m) r = shifted(hTop[j * (hTop.n / m) - 1], 0, uAdd);
+                        else if (j === 0) r = vLeft[i * (vLeft.n / m) - 1];
+                        else if (j === m) r = shifted(vRight[i * (vRight.n / m) - 1], thAdd, 0);
+                        else r = sampled(lerpRec(left, right, j / m));
+                        row.push(r);
+                    }
+                    rec.push(row);
+                }
+                for (let i = 0; i < m; i++) for (let j = 0; j < m; j++) {
+                    emitQuad(rec[i][j], rec[i][j + 1], rec[i + 1][j + 1], rec[i + 1][j],
+                        i === 0 ? between(hBot, m, j, false, 0, 0) : EMPTY,
+                        j === m - 1 ? between(vRight, m, i, false, thAdd, 0) : EMPTY,
+                        i === m - 1 ? between(hTop, m, j, true, 0, uAdd) : EMPTY,
+                        j === 0 ? between(vLeft, m, i, true, 0, 0) : EMPTY);
+                }
+            }
+        }
+        return pools;
+    }
+
+    // Builds the color-layer inserts (states 1-3, A/B/overlap) and the recoloured base (state 0)
+    // from the current pot solid `result`. Every cut is made with a solid in generic position - a
+    // state's prism minus the inward-offset solid: its top sits a little above the surface, its
+    // bottom IS the inset surface and its walls are exact planes - so no boolean ever has to
+    // classify a face another boolean computed. (Subtracting the finished insert from the pot,
+    // whose top face is a re-triangulation of the pot's own facets, left those facets behind as
+    // zero-thickness membranes along every edge: a sawtooth in the preview, and exported with the
+    // base.) With one state present the pot is split by its cutter in a single evaluation; with
+    // several, each insert is cut from the pristine pot and the base is carved by the merged
+    // all-states cutter, so inserts only ever meet each other on exact input planes. Returns null
+    // if nothing could be built.
+    function buildPatternParts(cfg, R, result, depthCm) {
+        const { Manifold, Mesh } = window.CSG;
+        const trash = [];
+        const keep = m => { trash.push(m); return m; };
+        const toSolid = pool => {
+            const welded = weldMesh(pool.positions, pool.indices);
+            if (!welded.indices.length) return null;
+            try {
+                const m = keep(new Manifold(new Mesh({ numProp: 3, vertProperties: Float32Array.from(welded.positions), triVerts: Uint32Array.from(welded.indices) })));
+                return m.status() === 'NoError' ? m : null;
+            } catch (e) { console.warn('Pattern prism rejected:', e.message); return null; }
+        };
+        const meshOf = (state, m) => { const g = m.getMesh(); return { state, positions: Float32Array.from(g.vertProperties), indices: Uint32Array.from(g.triVerts) }; };
+        try {
+            const insetSolid = keep(buildInsetSolid(cfg, R, depthCm));
+            const grid = buildPatternGrid(cfg, R, depthCm);
+            const raw = cfg.smoothPatternEdges ? buildSmoothPatternMeshes(grid, cfg.boundaryRefine) : buildSteppedPatternMeshes(grid);
+            const cutters = [];
+            for (const k of [1, 2, 3]) {
+                const prism = toSolid(raw[k]);
+                if (prism) cutters.push({ state: k, solid: keep(prism.subtract(insetSolid)) });
+            }
+            if (!cutters.length) return null;
+
+            const parts = [];
+            let base;
+            if (cutters.length === 1) {
+                const cutter = cutters[0].solid;
+                const [insert, rest] = typeof result.split === 'function' ? result.split(cutter) : [result.intersect(cutter), result.subtract(cutter)];
+                keep(insert); keep(rest);
+                if (insert.status() !== 'NoError' || insert.isEmpty()) return null;
+                parts.push(meshOf(cutters[0].state, insert));
+                base = rest;
+            } else {
+                const prismAll = toSolid(raw.all);
+                if (!prismAll) return null;
+                base = keep(result.subtract(keep(prismAll.subtract(insetSolid))));
+                for (const c of cutters) {
+                    const insert = keep(result.intersect(c.solid));
+                    if (insert.status() !== 'NoError' || insert.isEmpty()) continue;
+                    parts.push(meshOf(c.state, insert));
+                }
+                if (!parts.length) return null;
+            }
+            if (base.status() !== 'NoError') return null;
+            parts.unshift(meshOf(0, base));
+            return parts;
+        } catch (e) {
+            console.error('Pattern layer failed:', e);
+            return null;
+        } finally {
+            trash.forEach(m => m.delete());
+        }
     }
 
     function readCfg() {
@@ -748,7 +1672,7 @@
             bottomCutPct: parseFloat(document.getElementById('bottomCutPct')?.value || 10),
             topCutPct: parseFloat(document.getElementById('topCutPct')?.value || 90),
             drainHoleDiam: Math.max(0, parseFloat(document.getElementById('drainHoleDiam')?.value || 0)),
-            debrisPct: Math.min(1, Math.max(0.01, parseFloat(document.getElementById('debrisPct')?.value) || 0.1)),
+            debrisPct: debrisThresholdPct,
             bottomThick: parseFloat(document.getElementById('bottomThick')?.value || 0),
             rotX: parseFloat(document.getElementById('rotX')?.value || 0),
             rotY: parseFloat(document.getElementById('rotY')?.value || 0),
@@ -756,7 +1680,20 @@
             p: parseFloat(document.getElementById('p')?.value || 2), q: parseFloat(document.getElementById('q')?.value || 3),
             n: parseFloat(document.getElementById('n')?.value || 5), n1: parseFloat(document.getElementById('n1')?.value || 3),
             amp: parseFloat(document.getElementById('amp')?.value || 3.5), amp1: parseFloat(document.getElementById('amp1')?.value || 2.5),
-            amp2: parseFloat(document.getElementById('amp2')?.value || 1.0)
+            amp2: parseFloat(document.getElementById('amp2')?.value || 1.0),
+            texEq: document.getElementById('texEquation')?.value || '0',
+            texIntensity: parseFloat(document.getElementById('texIntensity')?.value || 0),
+            patternEq1: document.getElementById('patternEquation1')?.value || '-1',
+            patternEq2: document.getElementById('patternEquation2')?.value || '-1',
+            baseColor: document.getElementById('baseColor')?.value || '#bc9b70',
+            patternColor1: document.getElementById('patternColor1')?.value || '#ff7062',
+            patternColor2: document.getElementById('patternColor2')?.value || '#5f4a8b',
+            overlapColor: document.getElementById('overlapColor')?.value || '#8ab04d',
+            patternDepthCm: Math.max(0, parseFloat(document.getElementById('patternDepthMm')?.value || 0) / 10),
+            smoothPatternEdges: document.getElementById('smoothPatternEdges')?.checked || false,
+            boundaryRefine: clampNum(parseInt(document.getElementById('boundaryRefine')?.value ?? 2) || 0, 0, 3),
+            patternResU: Math.max(20, parseInt(document.getElementById('patternResU')?.value) || 400),
+            patternResT: Math.max(8, parseInt(document.getElementById('patternResT')?.value) || 48)
         };
     }
 
@@ -770,25 +1707,98 @@
         if (previewTimer === null) previewTimer = setTimeout(runPreview, 0);
     }
 
+    function clearCurrentMeshes() {
+        for (const m of currentMeshes) { scene.remove(m); m.geometry.dispose(); }
+        currentMeshes = [];
+    }
+
+    // Preview shading: per-corner normals that only average the faces meeting at less than
+    // `creaseDeg`, so the 90-degree walls of the colour pockets (and the creases where merged arms
+    // meet) shade as sharp edges while the tube's own 3-8 degree facets stay smooth.
+    // computeVertexNormals() on Manifold's welded output averaged across those creases and smeared
+    // a soft band along every pattern edge whose width depended on the sliver triangles the
+    // boolean happened to leave there. Preview only - the exporters never see normals.
+    const PREVIEW_CREASE_DEG = 40;
+    function buildCreaseGeometry(positions, indices, creaseDeg) {
+        const nTri = indices.length / 3, nVert = positions.length / 3;
+        const fn = new Float32Array(nTri * 3), fu = new Float32Array(nTri * 3);   // area-weighted / unit face normals
+        for (let t = 0; t < nTri; t++) {
+            const a = indices[t*3]*3, b = indices[t*3+1]*3, c = indices[t*3+2]*3;
+            const abx = positions[b]-positions[a], aby = positions[b+1]-positions[a+1], abz = positions[b+2]-positions[a+2];
+            const acx = positions[c]-positions[a], acy = positions[c+1]-positions[a+1], acz = positions[c+2]-positions[a+2];
+            const nx = aby*acz - abz*acy, ny = abz*acx - abx*acz, nz = abx*acy - aby*acx;
+            const len = Math.hypot(nx, ny, nz) || 1;
+            fn[t*3] = nx; fn[t*3+1] = ny; fn[t*3+2] = nz;
+            fu[t*3] = nx/len; fu[t*3+1] = ny/len; fu[t*3+2] = nz/len;
+        }
+        // vertex -> incident faces, CSR layout
+        const start = new Uint32Array(nVert + 1);
+        for (let i = 0; i < indices.length; i++) start[indices[i] + 1]++;
+        for (let v = 0; v < nVert; v++) start[v + 1] += start[v];
+        const adj = new Uint32Array(indices.length), fill = start.slice(0, nVert);
+        for (let i = 0; i < indices.length; i++) adj[fill[indices[i]]++] = (i / 3) | 0;
+        const cosT = Math.cos(creaseDeg * Math.PI / 180);
+        const outPos = new Float32Array(nTri * 9), outNrm = new Float32Array(nTri * 9);
+        for (let t = 0; t < nTri; t++) {
+            const ux = fu[t*3], uy = fu[t*3+1], uz = fu[t*3+2];
+            for (let k = 0; k < 3; k++) {
+                const v = indices[t*3+k], o = (t*3+k)*3;
+                outPos[o] = positions[v*3]; outPos[o+1] = positions[v*3+1]; outPos[o+2] = positions[v*3+2];
+                let sx = 0, sy = 0, sz = 0;
+                for (let j = start[v]; j < start[v+1]; j++) {
+                    const f = adj[j];
+                    if (fu[f*3]*ux + fu[f*3+1]*uy + fu[f*3+2]*uz < cosT) continue;
+                    sx += fn[f*3]; sy += fn[f*3+1]; sz += fn[f*3+2];
+                }
+                const len = Math.hypot(sx, sy, sz) || 1;
+                outNrm[o] = sx/len; outNrm[o+1] = sy/len; outNrm[o+2] = sz/len;
+            }
+        }
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(outPos, 3));
+        geo.setAttribute('normal', new THREE.BufferAttribute(outNrm, 3));
+        return geo;
+    }
+
     function runPreview() {
         previewTimer = null;
         if (!window.CSG) { setStatus('Loading geometry engine…'); return; }
         previewPending = false;
-        if (currentMesh) { scene.remove(currentMesh); currentMesh.geometry.dispose(); }
+        clearCurrentMeshes();
         const cfg = readCfg();
         const t0 = performance.now();
         let geo;
         try { geo = buildMesh(cfg, 1.0); }
         catch (e) { console.error(e); setStatus('Build failed: ' + e.message); return; }
-        currentMesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({color: 0xbc9b70, side: THREE.DoubleSide, roughness: 0.4}));
-        scene.add(currentMesh);
+        const parts = geo.userData.patternParts;
+        let triCount;
+        if (parts) {
+            const palette = { 0: cfg.baseColor, 1: cfg.patternColor1, 2: cfg.patternColor2, 3: cfg.overlapColor };
+            triCount = 0;
+            for (const part of parts) {
+                const pg = buildCreaseGeometry(part.positions, part.indices, PREVIEW_CREASE_DEG);
+                const mesh = new THREE.Mesh(pg, new THREE.MeshStandardMaterial({ color: new THREE.Color(palette[part.state]), side: THREE.DoubleSide, roughness: 0.4 }));
+                scene.add(mesh);
+                currentMeshes.push(mesh);
+                triCount += part.indices.length / 3;
+            }
+        } else {
+            const pg = buildCreaseGeometry(geo.attributes.position.array, geo.index.array, PREVIEW_CREASE_DEG);
+            const mesh = new THREE.Mesh(pg, new THREE.MeshStandardMaterial({color: 0xbc9b70, side: THREE.DoubleSide, roughness: 0.4}));
+            scene.add(mesh);
+            currentMeshes.push(mesh);
+            triCount = geo.index.count / 3;
+        }
+        geo.computeBoundingBox();
         if (cfg.mode === 'pot') {
-            geo.computeBoundingBox();
             const h = geo.boundingBox.max.z - geo.boundingBox.min.z;
             document.getElementById('potHeight').value = h.toFixed(2);
         }
+        if (!hasFitCamera) { fitCameraToObject(geo.boundingBox); hasFitCamera = true; }
         const debris = geo.userData.debrisRemoved ? ` · ${geo.userData.debrisRemoved} debris shells removed` : '';
-        setStatus(`3D Model · ${(geo.index.count / 3).toLocaleString()} tris · ${Math.round(performance.now() - t0)} ms${debris}`);
+        const clampNote = geo.userData.patternClamped ? ' · pattern depth clamped' : '';
+        const partsNote = parts ? ` · pattern: ${parts.length} parts` : '';
+        setStatus(`3D Model · ${triCount.toLocaleString()} tris · ${Math.round(performance.now() - t0)} ms${debris}${clampNote}${partsNote}`);
     }
 
     function onCsgReady() { if (previewPending && scene) updatePreview(); }
@@ -872,14 +1882,6 @@
         updatePreview();
     }
 
-    function onDebrisPctChange() {
-        let v = parseFloat(document.getElementById('debrisPct').value);
-        if (isNaN(v)) v = 0.1;
-        v = Math.min(1, Math.max(0.01, v));
-        document.getElementById('debrisPct').value = v;
-        updatePreview();
-    }
-
     function onModelModeChange() {
         const isPot = document.getElementById('modelMode').value === 'pot';
         document.getElementById('potCuttingWrap').style.display = isPot ? 'block' : 'none';
@@ -908,16 +1910,6 @@
         if (tp - bp < 0.5) tp = Math.min(100, bp + 0.5);
         document.getElementById('topCutPct').value = tp.toFixed(1);
         updatePreview();
-    }
-
-    function exportOBJ() {
-        if (!requireCsg()) return;
-        const geo = buildMesh(readCfg(), 10.0);
-        const pos = geo.attributes.position.array, idx = geo.index.array;
-        let obj = "# Equation-Driven Woven Pots Export\n";
-        for(let i=0; i<pos.length; i+=3) obj += `v ${pos[i].toFixed(4)} ${pos[i+1].toFixed(4)} ${pos[i+2].toFixed(4)}\n`;
-        for(let i=0; i<idx.length; i+=3) obj += `f ${idx[i]+1} ${idx[i+1]+1} ${idx[i+2]+1}\n`;
-        download(obj, "equation_driven_woven_pots.obj");
     }
 
     function exportSTL() {
@@ -951,6 +1943,471 @@
         const link = document.createElement('a');
         link.href = (content instanceof Blob) ? URL.createObjectURL(content) : URL.createObjectURL(new Blob([content]));
         link.download = name; link.click();
+    }
+
+    // ---- Design JSON Import / Export --------------------------------------------------------
+    // Ported from EquationDrivenPotDesigner.html's AI-assistance JSON flow: a structured, nested
+    // config mirrors every field readCfg() reads, round-trips through JSON.stringify/parse, and
+    // is applied back through the SAME preset/onChange handlers the UI itself uses (so e.g.
+    // setting pathType regenerates the right dynamic params before they're filled in) rather than
+    // writing to internal state directly. Lookups go through getAIValue's alias list so both a
+    // hand-written and an AI-generated JSON in a slightly different shape still apply, and any
+    // field the JSON omits is left at its current value instead of being reset.
+
+    let designedPotName = '';
+    function normalizePotName(value) { return String(value || '').replace(/\s+/g, ' ').trim(); }
+    function setConfiguredPotName(value) {
+        designedPotName = normalizePotName(value);
+        const input = document.getElementById('designFileName');
+        if (input && input.value !== designedPotName) input.value = designedPotName;
+        return designedPotName;
+    }
+    function updateConfiguredPotNameFromInput(value) { return (designedPotName = normalizePotName(value)); }
+    function getConfiguredPotName() {
+        const inputName = normalizePotName(document.getElementById('designFileName')?.value);
+        if (inputName !== designedPotName) designedPotName = inputName;
+        return designedPotName;
+    }
+
+    function slugifyName(name) {
+        return String(name || 'woven_pot').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'woven_pot';
+    }
+
+    function getAIValue(source, keys) {
+        if (!source || typeof source !== 'object') return undefined;
+        for (const key of keys) {
+            if (Object.prototype.hasOwnProperty.call(source, key) && source[key] !== undefined && source[key] !== null) return source[key];
+        }
+        return undefined;
+    }
+    function setFieldValue(id, value) {
+        if (value === undefined || value === null) return false;
+        const el = document.getElementById(id);
+        if (!el) return false;
+        el.value = String(value);
+        return true;
+    }
+    function coerceBoolean(value) {
+        if (typeof value === 'boolean') return value;
+        if (typeof value === 'number') return value !== 0;
+        if (typeof value === 'string') {
+            const n = value.trim().toLowerCase();
+            if (['true','1','yes','on'].includes(n)) return true;
+            if (['false','0','no','off'].includes(n)) return false;
+        }
+        return !!value;
+    }
+    function setCheckboxValue(id, value) {
+        if (value === undefined || value === null) return false;
+        const el = document.getElementById(id);
+        if (!el) return false;
+        el.checked = coerceBoolean(value);
+        return true;
+    }
+    function setSelectValue(id, value) {
+        if (value === undefined || value === null) return false;
+        const el = document.getElementById(id);
+        if (!el) return false;
+        const normalized = String(value);
+        const match = Array.from(el.options || []).find(o => o.value === normalized || o.text === normalized);
+        if (!match) return false;
+        el.value = match.value;
+        return true;
+    }
+    function normalizeColorValue(value) {
+        if (typeof value !== 'string') return null;
+        let n = value.trim();
+        if (!n) return null;
+        if (!n.startsWith('#')) n = `#${n}`;
+        if (/^#[0-9a-fA-F]{3}$/.test(n)) n = `#${n[1]}${n[1]}${n[2]}${n[2]}${n[3]}${n[3]}`;
+        return /^#[0-9a-fA-F]{6}$/.test(n) ? n : null;
+    }
+    function setColorFieldValue(id, value) {
+        const normalized = normalizeColorValue(value);
+        return normalized ? setFieldValue(id, normalized) : false;
+    }
+
+    function setDesignJsonFeedback(text, kind) {
+        const el = document.getElementById('designJsonFeedback');
+        if (!el) return;
+        el.innerText = text || '';
+        el.style.color = kind === 'error' ? 'var(--danger)' : (kind === 'success' ? 'var(--success)' : '');
+    }
+
+    function openDesignJsonWindow() {
+        const overlay = document.getElementById('designJsonOverlay');
+        if (!overlay) return;
+        overlay.classList.add('is-visible');
+        initDesignJsonDropzone();
+        document.getElementById('designJsonInput')?.focus();
+    }
+    function closeDesignJsonWindow() {
+        document.getElementById('designJsonOverlay')?.classList.remove('is-visible');
+    }
+    function handleDesignJsonOverlayClick(event) {
+        if (event.target && event.target.id === 'designJsonOverlay') closeDesignJsonWindow();
+    }
+
+    // Full current design state, grouped to mirror the sidebar's own sections. Every field here
+    // is read straight from readCfg()/the DOM, so it always matches what the last render used.
+    function getCurrentWovenPotConfig() {
+        const cfg = readCfg();
+        return {
+            name: getConfiguredPotName() || cfg.type,
+            path: {
+                type: cfg.type,
+                diameter: cfg.diameter,
+                zStretch: cfg.zStretch,
+                params: { p: cfg.p, q: cfg.q, n: cfg.n, n1: cfg.n1, amp: cfg.amp, amp1: cfg.amp1, amp2: cfg.amp2 }
+            },
+            profile: {
+                preset: document.getElementById('profileSelect')?.value || 'Circle',
+                equation: cfg.eq
+            },
+            orientation: { rotX: cfg.rotX, rotY: cfg.rotY, rotZ: cfg.rotZ },
+            structure: {
+                mode: cfg.mode,
+                bottomCutPct: cfg.bottomCutPct,
+                topCutPct: cfg.topCutPct,
+                bottomThickness: cfg.bottomThick,
+                drainHoleDiameter: cfg.drainHoleDiam,
+                fillPct: parseFloat(document.getElementById('fillPct')?.value) || 100,
+                wallThickness: cfg.shellThick,
+                avoidSelfIntersect: cfg.avoidSelfIntersect,
+                extraClean: cfg.extraClean,
+                debrisThresholdPct: cfg.debrisPct
+            },
+            texture: {
+                preset: document.getElementById('texPresetSelect')?.value || 'None (Flat Surface)',
+                equation: cfg.texEq,
+                intensity: cfg.texIntensity
+            },
+            patterns: {
+                preset1: document.getElementById('patternPresetSelect1')?.value || 'None (Solid Base Color)',
+                equation1: cfg.patternEq1,
+                preset2: document.getElementById('patternPresetSelect2')?.value || 'None (Solid Base Color)',
+                equation2: cfg.patternEq2,
+                baseColor: cfg.baseColor,
+                patternColor1: cfg.patternColor1,
+                patternColor2: cfg.patternColor2,
+                overlapColor: cfg.overlapColor,
+                depthMm: parseFloat(document.getElementById('patternDepthMm')?.value) || 0,
+                smoothEdges: cfg.smoothPatternEdges,
+                boundaryRefine: cfg.boundaryRefine
+            },
+            mesh: {
+                sections: cfg.sections,
+                radialRes: cfg.radialRes,
+                patternResU: cfg.patternResU,
+                patternResT: cfg.patternResT
+            }
+        };
+    }
+
+    function downloadCurrentSettingsJson() {
+        try {
+            const currentConfig = getCurrentWovenPotConfig();
+            const jsonText = JSON.stringify(currentConfig, null, 2);
+            const input = document.getElementById('designJsonInput');
+            if (input) input.value = jsonText;
+            const fileName = `${slugifyName(currentConfig.name)}.json`;
+            download(new Blob([jsonText], { type: 'application/json;charset=utf-8' }), fileName);
+            setDesignJsonFeedback(`Current settings loaded into the JSON field and downloaded as ${fileName}.`, 'success');
+            setStatus(`Design JSON downloaded · ${fileName}`);
+        } catch (e) {
+            console.error('Design JSON download failed:', e);
+            setDesignJsonFeedback(`Could not download the current settings: ${e.message}`, 'error');
+            setStatus('Design JSON could not be downloaded.');
+        }
+    }
+
+    function normalizeDesignConfig(rawConfig) {
+        if (!rawConfig || typeof rawConfig !== 'object' || Array.isArray(rawConfig)) {
+            throw new Error('The JSON must describe an object.');
+        }
+        return rawConfig.wovenPotConfig || rawConfig.config || rawConfig.potConfig || rawConfig;
+    }
+
+    // Applies a parsed design config back onto the form via the SAME handlers the UI uses (e.g.
+    // applyPathPreset() to regenerate p/q/amp-style dynamic params before they're filled in), so
+    // the result is identical to a user picking the same options by hand. Fields the JSON omits
+    // are left untouched; updatePreview()'s own coalescing means the many handler calls below
+    // still only trigger one rebuild.
+    function applyDesignJson() {
+        const input = document.getElementById('designJsonInput');
+        if (!input) return;
+
+        let parsed;
+        try { parsed = JSON.parse(input.value); }
+        catch (e) { setDesignJsonFeedback(`Invalid JSON: ${e.message}`, 'error'); setStatus('Design JSON could not be parsed.'); return; }
+
+        let config;
+        try { config = normalizeDesignConfig(parsed); }
+        catch (e) { setDesignJsonFeedback(e.message, 'error'); setStatus('Design JSON is missing a valid configuration object.'); return; }
+
+        const path = getAIValue(config, ['path']) || {};
+        const params = getAIValue(path, ['params']) || {};
+        const profile = getAIValue(config, ['profile']) || {};
+        const orientation = getAIValue(config, ['orientation']) || {};
+        const structure = getAIValue(config, ['structure', 'geometry']) || {};
+        const texture = getAIValue(config, ['texture', 'surfaceTexture']) || {};
+        const patterns = getAIValue(config, ['patterns', 'colorLayer']) || {};
+        const mesh = getAIValue(config, ['mesh', 'resolution']) || {};
+
+        try {
+            const pathType = getAIValue(path, ['type', 'pathType']);
+            if (pathType && setSelectValue('pathType', pathType)) applyPathPreset();
+            setFieldValue('diameter', getAIValue(path, ['diameter']));
+            setFieldValue('zStretch', getAIValue(path, ['zStretch']));
+            setFieldValue('p', getAIValue(params, ['p']));
+            setFieldValue('q', getAIValue(params, ['q']));
+            setFieldValue('n', getAIValue(params, ['n']));
+            setFieldValue('n1', getAIValue(params, ['n1']));
+            setFieldValue('amp', getAIValue(params, ['amp']));
+            setFieldValue('amp1', getAIValue(params, ['amp1']));
+            setFieldValue('amp2', getAIValue(params, ['amp2']));
+
+            const profilePreset = getAIValue(profile, ['preset']);
+            if (profilePreset && setSelectValue('profileSelect', profilePreset)) applyProfilePreset();
+            setFieldValue('equation', getAIValue(profile, ['equation', 'eq']));
+
+            setFieldValue('rotX', getAIValue(orientation, ['rotX']));
+            setFieldValue('rotY', getAIValue(orientation, ['rotY']));
+            setFieldValue('rotZ', getAIValue(orientation, ['rotZ']));
+
+            const mode = getAIValue(structure, ['mode', 'modelMode']);
+            if (mode && setSelectValue('modelMode', mode)) onModelModeChange();
+            setFieldValue('bottomCutPct', getAIValue(structure, ['bottomCutPct']));
+            setFieldValue('topCutPct', getAIValue(structure, ['topCutPct']));
+            setFieldValue('bottomThick', getAIValue(structure, ['bottomThickness', 'bottomThick']));
+            setFieldValue('drainHoleDiam', getAIValue(structure, ['drainHoleDiameter', 'drainHoleDiam']));
+            // Wall thickness and Fill % are two views of the same value; prefer whichever the
+            // JSON actually provides (wall thickness first, since geometry uses it directly) and
+            // let that field's own handler re-derive the other one, same as the UI does.
+            const wallThickness = getAIValue(structure, ['wallThickness', 'shellThick']);
+            if (wallThickness !== undefined) { setFieldValue('shellThick', wallThickness); onShellThickChange(); }
+            else {
+                const fillPct = getAIValue(structure, ['fillPct']);
+                if (fillPct !== undefined) { setFieldValue('fillPct', fillPct); onFillPctChange(); }
+            }
+            setCheckboxValue('avoidIntersection', getAIValue(structure, ['avoidSelfIntersect']));
+            setCheckboxValue('extraClean', getAIValue(structure, ['extraClean']));
+            // No UI control for this (internal-only) - set the state variable readCfg() reads directly.
+            const debrisVal = getAIValue(structure, ['debrisThresholdPct', 'debrisPct']);
+            if (debrisVal !== undefined) debrisThresholdPct = Math.min(1, Math.max(0.01, parseFloat(debrisVal) || 0.1));
+
+            const texPreset = getAIValue(texture, ['preset']);
+            if (texPreset && setSelectValue('texPresetSelect', texPreset)) applyTexturePreset();
+            setFieldValue('texEquation', getAIValue(texture, ['equation', 'eq']));
+            setFieldValue('texIntensity', getAIValue(texture, ['intensity']));
+
+            const preset1 = getAIValue(patterns, ['preset1', 'presetA']);
+            if (preset1 && setSelectValue('patternPresetSelect1', preset1)) applyPatternPreset(1);
+            setFieldValue('patternEquation1', getAIValue(patterns, ['equation1', 'equationA']));
+            const preset2 = getAIValue(patterns, ['preset2', 'presetB']);
+            if (preset2 && setSelectValue('patternPresetSelect2', preset2)) applyPatternPreset(2);
+            setFieldValue('patternEquation2', getAIValue(patterns, ['equation2', 'equationB']));
+            setColorFieldValue('baseColor', getAIValue(patterns, ['baseColor']));
+            setColorFieldValue('patternColor1', getAIValue(patterns, ['patternColor1', 'colorA']));
+            setColorFieldValue('patternColor2', getAIValue(patterns, ['patternColor2', 'colorB']));
+            setColorFieldValue('overlapColor', getAIValue(patterns, ['overlapColor']));
+            setFieldValue('patternDepthMm', getAIValue(patterns, ['depthMm']));
+            setCheckboxValue('smoothPatternEdges', getAIValue(patterns, ['smoothEdges', 'smoothPatternEdges']));
+            setFieldValue('boundaryRefine', getAIValue(patterns, ['boundaryRefine', 'boundaryRefinement', 'refineLevel']));
+
+            setFieldValue('sections', getAIValue(mesh, ['sections', 'pathSteps']));
+            setFieldValue('radialRes', getAIValue(mesh, ['radialRes', 'radialPoints']));
+            setFieldValue('patternResU', getAIValue(mesh, ['patternResU']));
+            setFieldValue('patternResT', getAIValue(mesh, ['patternResT']));
+
+            const name = getAIValue(config, ['name', 'title']);
+            if (name) setConfiguredPotName(name);
+        } catch (e) {
+            setDesignJsonFeedback(`Could not apply JSON: ${e.message}`, 'error');
+            setStatus('Design JSON could not be applied.');
+            return;
+        }
+
+        updatePreview();
+        const configName = getConfiguredPotName() || getAIValue(config, ['name', 'title']) || 'Design JSON';
+        setDesignJsonFeedback(`Applied ${configName}. The form fields and equations have been updated.`, 'success');
+        setStatus(`Design JSON applied · ${configName}`);
+        closeDesignJsonWindow();
+    }
+
+    // Direct "pick a file, apply immediately" path (outside the modal) - unlike the dropzone
+    // below, this skips the review step and calls applyDesignJson() as soon as the file is read.
+    function triggerDesignFilePicker() {
+        document.getElementById('designJsonFileInput')?.click();
+    }
+    function readDesignJsonFile(file) {
+        if (!file) return;
+        const fileName = String(file.name || 'design.json');
+        if (!/\.(json|jso)$/i.test(fileName)) { setStatus('Only .json or .jso design files can be loaded.'); return; }
+        const reader = new FileReader();
+        reader.onload = () => {
+            const input = document.getElementById('designJsonInput');
+            const picker = document.getElementById('designJsonFileInput');
+            if (input) input.value = String(reader.result || '').trim();
+            if (picker) picker.value = '';
+            applyDesignJson();
+        };
+        reader.onerror = () => setStatus(`Could not read ${fileName}. Please try again.`);
+        reader.readAsText(file);
+    }
+    function handleDesignFileSelection(event) {
+        const files = event?.target?.files;
+        if (files && files[0]) readDesignJsonFile(files[0]);
+    }
+
+    // Modal dropzone/file-picker path: loads text into the textarea for review, does not apply
+    // until the user clicks Apply JSON.
+    function triggerDesignJsonFilePicker() {
+        document.getElementById('designJsonSnippetFileInput')?.click();
+    }
+    function loadDesignJsonText(rawText, sourceLabel) {
+        const input = document.getElementById('designJsonInput');
+        if (!input) return;
+        const textValue = String(rawText || '').trim();
+        input.value = textValue;
+        if (!textValue) { setDesignJsonFeedback(`The selected ${sourceLabel} is empty.`, 'error'); return; }
+        try {
+            JSON.parse(textValue);
+            setDesignJsonFeedback(`${sourceLabel} loaded. Click Apply JSON to populate the designer.`, 'success');
+        } catch (e) {
+            setDesignJsonFeedback(`${sourceLabel} loaded, but it is not valid JSON yet: ${e.message}`, 'error');
+        }
+    }
+    function readDesignJsonSnippetFile(file) {
+        if (!file) return;
+        const fileName = String(file.name || 'file');
+        if (!/\.(json|jso|txt)$/i.test(fileName)) { setDesignJsonFeedback('Only .json, .jso, or .txt files are supported here.', 'error'); return; }
+        const reader = new FileReader();
+        reader.onload = () => {
+            loadDesignJsonText(reader.result, `File "${fileName}"`);
+            const picker = document.getElementById('designJsonSnippetFileInput');
+            if (picker) picker.value = '';
+        };
+        reader.onerror = () => setDesignJsonFeedback(`Could not read ${fileName}. Please try again.`, 'error');
+        reader.readAsText(file);
+    }
+    function handleDesignJsonFileSelection(event) {
+        const files = event?.target?.files;
+        if (files && files[0]) readDesignJsonSnippetFile(files[0]);
+    }
+    function setDesignJsonDropzoneState(isDragOver) {
+        document.getElementById('designJsonDropzone')?.classList.toggle('is-dragover', !!isDragOver);
+    }
+    function handleDesignJsonDrop(event) {
+        event.preventDefault();
+        setDesignJsonDropzoneState(false);
+        const files = event?.dataTransfer?.files;
+        if (files && files[0]) readDesignJsonSnippetFile(files[0]);
+    }
+    function initDesignJsonDropzone() {
+        const dz = document.getElementById('designJsonDropzone');
+        if (!dz || dz.dataset.dropInit === '1') return;
+        ['dragenter', 'dragover'].forEach(evt => dz.addEventListener(evt, e => { e.preventDefault(); setDesignJsonDropzoneState(true); }));
+        ['dragleave', 'dragend'].forEach(evt => dz.addEventListener(evt, () => setDesignJsonDropzoneState(false)));
+        dz.addEventListener('drop', handleDesignJsonDrop);
+        dz.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); triggerDesignJsonFilePicker(); } });
+        dz.dataset.dropInit = '1';
+    }
+
+    function colorGroupColorXml(hex) {
+        const raw = String(hex || '#FFFFFF').trim();
+        const body = raw.startsWith('#') ? raw.slice(1) : raw;
+        const normalized = /^[0-9a-fA-F]{6}$/.test(body) ? `#${body.toUpperCase()}` : '#FFFFFF';
+        return `<m:color color="${normalized}" />`;
+    }
+
+    function meshTo3mfObjectXml(objectId, name, positions, indices, colorGroupId, colorIndex) {
+        const verticesXml = [];
+        for (let i = 0; i < positions.length; i += 3) {
+            verticesXml.push(`      <vertex x="${positions[i].toFixed(6)}" y="${positions[i+1].toFixed(6)}" z="${positions[i+2].toFixed(6)}" />`);
+        }
+        const trianglesXml = [];
+        const propAttrs = ` pid="${colorGroupId}" p1="${colorIndex}" p2="${colorIndex}" p3="${colorIndex}"`;
+        for (let i = 0; i < indices.length; i += 3) {
+            trianglesXml.push(`      <triangle v1="${indices[i]}" v2="${indices[i+1]}" v3="${indices[i+2]}"${propAttrs} />`);
+        }
+        return `
+  <object id="${objectId}" type="model" name="${name}">
+    <mesh>
+      <vertices>
+${verticesXml.join('\n')}
+      </vertices>
+      <triangles>
+${trianglesXml.join('\n')}
+      </triangles>
+    </mesh>
+  </object>`;
+    }
+
+    // Multi-color 3MF export: one object per active surface state (base/A/B/overlap), assembled
+    // as components under a single build item, matching how slicers with AMS/MMU support expect
+    // a colour-grouped multi-part model. Falls back to a single "Base" object when no pattern is
+    // active, so this button always produces a valid (if single-colour) 3MF.
+    async function exportMultiColor3MF() {
+        if (!requireCsg()) return;
+        try {
+            const cfg = readCfg();
+            const geo = buildMesh(cfg, 10.0);
+            const parts = geo.userData.patternParts || [{ state: 0, positions: geo.attributes.position.array, indices: geo.index.array }];
+            const palette = [cfg.baseColor, cfg.patternColor1, cfg.patternColor2, cfg.overlapColor];
+            const names = ['Base', 'Pattern A', 'Pattern B', 'Overlap'];
+            const colorGroupId = 1;
+            const resources = [`
+  <m:colorgroup id="${colorGroupId}">
+    ${palette.map(colorGroupColorXml).join('\n    ')}
+  </m:colorgroup>`];
+            let nextId = 2;
+            const componentIds = [];
+            for (const part of parts) {
+                resources.push(meshTo3mfObjectXml(nextId, names[part.state], part.positions, part.indices, colorGroupId, part.state));
+                componentIds.push(nextId);
+                nextId++;
+            }
+            const assemblyId = nextId;
+            resources.push(`
+  <object id="${assemblyId}" type="model" name="Woven Pot">
+    <components>
+      ${componentIds.map(id => `<component objectid="${id}" />`).join('')}
+    </components>
+  </object>`);
+            const modelXml = `<?xml version="1.0" encoding="UTF-8"?>
+<model unit="millimeter" xml:lang="en-US"
+       xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"
+       xmlns:m="http://schemas.microsoft.com/3dmanufacturing/material/2015/02"
+       requiredextensions="m">
+  <resources>
+    ${resources.join('')}
+  </resources>
+  <build>
+    <item objectid="${assemblyId}" />
+  </build>
+</model>`;
+            const contentTypesXml = `<?xml version="1.0" encoding="UTF-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml" />
+  <Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml" />
+  <Override PartName="/3D/3dmodel.model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml" />
+</Types>`;
+            const relsXml = `<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Target="/3D/3dmodel.model" Id="rel0" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel" />
+</Relationships>`;
+            const zip = new JSZip();
+            zip.file('[Content_Types].xml', contentTypesXml);
+            zip.folder('_rels').file('.rels', relsXml);
+            zip.folder('3D').file('3dmodel.model', modelXml);
+            const blob = await zip.generateAsync({ type: 'blob', mimeType: 'model/3mf' });
+            download(blob, "equation_driven_woven_pots_multicolor.3mf");
+            setStatus(`3MF exported (multi-color) · ${parts.length} part${parts.length === 1 ? '' : 's'}`);
+        } catch (e) {
+            console.error(e);
+            setStatus('3MF export failed: ' + e.message);
+        }
     }
 
     function makeAxisLabel(text, color) {
@@ -1025,7 +2482,27 @@
         }
         animate();
     }
-    window.onload = () => { initThree(); applyPathPreset(); applyProfilePreset(); onModelModeChange(); onShellThickChange(); };
+    // The design that loads by default (from torus_knot.json, set 2026-09-16) - applied through
+    // the same Design JSON import path a manual paste uses (see applyDesignJson), so it's
+    // guaranteed to match re-importing that file exactly rather than hand-duplicating field values.
+    const DEFAULT_DESIGN_CONFIG = {
+        name: "Torus Knot",
+        path: { type: "Torus Knot", diameter: 5, zStretch: 5, params: { p: 2, q: 3, n: 5, n1: 3, amp: 3.5, amp1: 2.5, amp2: 1 } },
+        profile: { preset: "Circle", equation: "3.0" },
+        orientation: { rotX: 0, rotY: 0, rotZ: 0 },
+        structure: { mode: "pot", bottomCutPct: 10, topCutPct: 90, bottomThickness: 0.35, drainHoleDiameter: 1, fillPct: 22, wallThickness: 0.35, avoidSelfIntersect: false, extraClean: false, debrisThresholdPct: 0.1 },
+        texture: { preset: "None (Flat Surface)", equation: "0", intensity: 0.15 },
+        patterns: { preset1: "Checkerboard", equation1: "sign(cos(6*theta)) * sign(cos(2*pi*16*u))", preset2: "None (Solid Base Color)", equation2: "-1", baseColor: "#0a2989", patternColor1: "#c12e1f", patternColor2: "#5f4a8b", overlapColor: "#8ab04d", depthMm: 1.2, smoothEdges: true, boundaryRefine: 2 },
+        mesh: { sections: 400, radialRes: 48, patternResU: 400, patternResT: 48 }
+    };
+
+    window.onload = () => {
+        initThree(); applyPathPreset(); applyProfilePreset(); onModelModeChange(); onShellThickChange();
+        populateTexturePresets(); populatePatternPresets(); initBambuPalettes();
+        document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeDesignJsonWindow(); });
+        document.getElementById('designJsonInput').value = JSON.stringify(DEFAULT_DESIGN_CONFIG);
+        applyDesignJson();
+    };
 </script>
 
 <!-- Manifold: exact mesh booleans (union / subtract / plane cuts / slicing) used for the solid → shell → cut pipeline. -->
