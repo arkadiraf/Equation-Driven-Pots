@@ -692,7 +692,7 @@
         </div>
 
         <div class="grid-inputs" id="wallThicknessControls">
-            <div class="input-group"><label>Wall Thick (cm)</label><input type="number" id="wall" value="0.35"
+            <div class="input-group" id="wallThickGroup"><label>Wall Thick (cm)</label><input type="number" id="wall" value="0.35"
                     step="0.05" oninput="updatePreview()"></div>
             <div class="input-group"><label>Bottom Thickness (cm)</label><input type="number" id="bottomThickness"
                     value="0.35" step="0.1" min="0.1" oninput="updatePreview()"></div>
@@ -711,8 +711,31 @@
                         id="sphTopCut" value="35" step="1" min="0" max="180" oninput="updatePreview()"></div>
                 <div class="input-group" title="Flat bed start"><label>Bot Flat (°)</label><input type="number"
                         id="sphBotFlatten" value="150" step="1" min="90" max="360" oninput="updatePreview()"></div>
-                <div class="input-group" title="Mesh hole end"><label>Bot Cut (°)</label><input type="number"
+                <div class="input-group" id="sphBotCutGroup" title="Mesh hole end"><label>Bot Cut (°)</label><input type="number"
                         id="sphBotCut" value="175" step="1" min="91" max="360" oninput="updatePreview()"></div>
+            </div>
+        </div>
+
+        <div id="vaseInsertSettings" class="pot-settings">
+            <div class="desc-text">Carves a hole for a real glass vase insert and previews it in clear glass.</div>
+            <div class="grid-inputs">
+                <div class="input-group" title="Real vase's base (bottom) outer diameter"><label>Vase Base Dia (cm)</label><input
+                        type="number" id="vaseBaseDiameter" value="3" step="0.1" min="0" oninput="updatePreview()"></div>
+                <div class="input-group" title="Real vase's top (mouth) outer diameter"><label>Vase Top Dia (cm)</label><input
+                        type="number" id="vaseTopDiameter" value="4" step="0.1" min="0" oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group" title="Real vase's height"><label>Vase Height (cm)</label><input type="number"
+                        id="vaseHeight" value="8" step="0.5" min="0.1" oninput="updatePreview()"></div>
+                <div class="input-group" title="Clearance added to the hole so the real vase slides in"><label>Insert Offset
+                        (mm)</label><input type="number" id="vaseInsertOffsetMm" value="1" step="0.1" min="0"
+                        oninput="updatePreview()"></div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group" title="Preview-only glass wall thickness for the simulated insert"><label>Vase Glass
+                        Wall (mm)</label><input type="number" id="vaseWallMm" value="1" step="0.1" min="0.1"
+                        oninput="updatePreview()"></div>
+                <div></div>
             </div>
         </div>
 
@@ -2297,6 +2320,9 @@
                 if (sys === 'cylindrical') document.getElementById('cylindricalPotSettings').classList.add('active');
                 if (sys === 'spherical') document.getElementById('sphericalPotSettings').classList.add('active');
             }
+            if (mode === 'vase' && sys === 'spherical') {
+                document.getElementById('sphericalPotSettings').classList.add('active');
+            }
             if (mode === 'plate' || mode === 'potplate') {
                 document.getElementById('plateSettings').classList.add('active');
             }
@@ -2313,9 +2339,23 @@
             if (shellSmoothControls) {
                 shellSmoothControls.style.display = sys === 'cylindrical' ? 'grid' : 'none';
             }
+            // Vase mode has no drain hole or wall-thickness offset (the insert cavity below
+            // replaces both), but Bottom Thickness still sets where the insert hole starts.
             const wallThicknessControls = document.getElementById('wallThicknessControls');
             if (wallThicknessControls) {
-                wallThicknessControls.style.display = mode === 'vase' ? 'none' : 'grid';
+                wallThicknessControls.style.display = 'grid';
+            }
+            const wallThickGroup = document.getElementById('wallThickGroup');
+            if (wallThickGroup) {
+                wallThickGroup.style.display = mode === 'vase' ? 'none' : '';
+            }
+            const sphBotCutGroup = document.getElementById('sphBotCutGroup');
+            if (sphBotCutGroup) {
+                sphBotCutGroup.style.display = mode === 'vase' ? 'none' : '';
+            }
+            const vaseInsertSettings = document.getElementById('vaseInsertSettings');
+            if (vaseInsertSettings) {
+                vaseInsertSettings.classList.toggle('active', mode === 'vase');
             }
         }
 
@@ -3444,6 +3484,11 @@
                 isPlate: modelMode === 'plate',
                 isVase: modelMode === 'vase',
                 includePlate: modelMode === 'potplate',
+                vaseBaseDiameter: Math.max(0, getFieldNumberValue('vaseBaseDiameter', 3)),
+                vaseTopDiameter: Math.max(0, getFieldNumberValue('vaseTopDiameter', 4)),
+                vaseHeight: Math.max(0.1, getFieldNumberValue('vaseHeight', 8)),
+                vaseInsertOffsetCm: Math.max(0, getFieldNumberValue('vaseInsertOffsetMm', 1) / 10),
+                vaseWallCm: Math.max(0.01, getFieldNumberValue('vaseWallMm', 1) / 10),
                 plateHeight: isSphericalPlate ? 1.5 : (parseFloat(document.getElementById('plateHeight')?.value) || 1.5),
                 plateOpeningAngleDeg: isSphericalPlate ? 0 : (parseFloat(document.getElementById('plateOpeningAngle')?.value) || 0),
                 plateOpeningAngleRad: isSphericalPlate ? 0 : ((parseFloat(document.getElementById('plateOpeningAngle')?.value) || 0) * (Math.PI / 180)),
@@ -3483,12 +3528,25 @@
         // Inverse of the v<->phi relationship buildSphericalShell uses (v = (phi-phiEnd)/
         // (phiStart-phiEnd)), so a vertical-warp modifier can move the sample to a new v and
         // still land at the phi (or, for cylindrical, z = v*h) the rest of the pipeline expects.
+        // Bottom edge of the spherical phi sweep. Pot honors sphBotCut (a near-pole value is
+        // treated as a solid pole closure). Vase has no Bot Cut control of its own and always
+        // wants a punctured-free bottom, so it stops a fixed 5 degrees short of the true pole
+        // instead: going all the way to phi=pi would shrink the flattened bottom ring's
+        // horizontal radius to zero, collapsing the whole ring - and, with an insert hole, its
+        // cavity edge too - onto one coincident point (degenerate, near-zero-area geometry).
+        function sphericalPhiEnd(cfg, isSolidBottom) {
+            if (isSolidBottom) return Math.PI;
+            if (cfg.isPot) return Math.min(cfg.sphBotCut, Math.PI - 0.001);
+            if (cfg.isVase) return Math.min(Math.PI * (175 / 180), Math.PI - 0.001);
+            return Math.PI - 0.001;
+        }
+
         function recomputeVerticalCoord(cfg, newV) {
             const v = clamp(newV, 0, 1);
             if (cfg.sys === 'spherical') {
                 const isSolidBottom = cfg.isPot && cfg.sphBotCut >= Math.PI - 0.005;
-                const phiEnd = isSolidBottom ? Math.PI : (cfg.isPot ? Math.min(cfg.sphBotCut, Math.PI - 0.001) : Math.PI - 0.001);
-                const phiStart = cfg.isPot ? Math.min(Math.max(cfg.sphTopCut, 0.001), phiEnd - 0.001) : 0.001;
+                const phiEnd = sphericalPhiEnd(cfg, isSolidBottom);
+                const phiStart = (cfg.isPot || cfg.isVase) ? Math.min(Math.max(cfg.sphTopCut, 0.001), phiEnd - 0.001) : 0.001;
                 return { z: 0, phi: phiEnd + (phiStart - phiEnd) * v, v };
             }
             return { z: v * (cfg.h || 0), phi: 0, v };
@@ -4932,13 +4990,37 @@ ${trianglesXml.join('\n')}
             return shellCfg.sys === 'cylindrical' ? buildCylindricalShell(shellCfg) : buildSphericalShell(shellCfg);
         }
 
+        // Vase-insert cavity profile, shared by both shell builders (buildCylindricalShell /
+        // buildSphericalShell) and both STL ring builders (generateCylindrical /
+        // generateSpherical). Solid below the bottom-thickness floor; above it, a frustum
+        // tapering from the vase's own base radius to its top radius (each padded by the
+        // clearance offset) over vaseHeight, then held at the top radius so the cavity stays
+        // open up to the object's own top even if the object is taller than the vase.
+        function vaseHoleRadiusAtHeight(cfg, heightFromBottom) {
+            const offset = Math.max(0, cfg.vaseInsertOffsetCm || 0);
+            const baseR = Math.max(0, (cfg.vaseBaseDiameter || 0) / 2) + offset;
+            const topR = Math.max(0, (cfg.vaseTopDiameter || 0) / 2) + offset;
+            const holeStart = Math.max(0, cfg.bottomThickness || 0);
+            const vaseHeight = Math.max(0.001, cfg.vaseHeight || 0);
+            if (heightFromBottom <= holeStart + 1e-6) return 0;
+            const t = Math.min(1, (heightFromBottom - holeStart) / vaseHeight);
+            return baseR + (topR - baseR) * t;
+        }
+
         function buildCylindricalShell(cfg) {
             const outer = [], inner = [], cellMaskA = [], cellMaskB = [], surfaceEligible = [];
-            const actualBase = cfg.isPot ? Math.max(0, Math.min(cfg.h, cfg.cylBase)) : 0;
+            const actualBase = (cfg.isPot || cfg.isVase) ? Math.max(0, Math.min(cfg.h, cfg.cylBase)) : 0;
 
             const rawZNodes = [];
             for (let iv = 0; iv <= cfg.resV; iv++) rawZNodes.push(cfg.h * (iv / cfg.resV));
-            if (cfg.isPot && actualBase > 1e-8 && actualBase < cfg.h - 1e-8) rawZNodes.push(actualBase);
+            if ((cfg.isPot || cfg.isVase) && actualBase > 1e-8 && actualBase < cfg.h - 1e-8) rawZNodes.push(actualBase);
+            if (cfg.isVase) {
+                // A second seam at the vase insert's own top gives a crisp edge where the
+                // tapered cavity stops widening and (if the object is taller than the vase)
+                // continues straight up at a constant radius to the object's own top.
+                const holeTop = (cfg.bottomThickness || 0) + Math.max(0, cfg.vaseHeight || 0);
+                if (holeTop > 1e-8 && holeTop < cfg.h - 1e-8) rawZNodes.push(holeTop);
+            }
             rawZNodes.sort((a, b) => a - b);
 
             const zNodes = [];
@@ -4987,8 +5069,9 @@ ${trianglesXml.join('\n')}
                 : null;
 
             // Phase 5: Build inner profile grid ({r,z}) for all shell modes.
-            // Vase mode collapses the inner surface onto the central axis (r=0) at
-            // every height, turning the shell into a solid body with no cavity.
+            // Vase mode collapses the inner surface onto the central axis (r=0) below the
+            // insert hole (a solid floor), and onto the vase-insert cavity profile above it -
+            // see vaseHoleRadiusAtHeight.
             const innerRowsGrid = [];
             for (let iv = 0; iv <= shellResV; iv++) {
                 const zO = zNodes[iv];
@@ -4999,7 +5082,7 @@ ${trianglesXml.join('\n')}
                     const theta = (2 * Math.PI * it) / cfg.resT;
                     let rIn, innerZ;
                     if (cfg.isVase) {
-                        rIn = 0;
+                        rIn = vaseHoleRadiusAtHeight(cfg, zO);
                         innerZ = zO;
                     } else if (uniformInnerRows) {
                         rIn = uniformInnerRows[iv][it].r;
@@ -5067,7 +5150,7 @@ ${trianglesXml.join('\n')}
                 // split) is consistent. A z-node is inserted exactly at actualBase, so
                 // every cell is wholly inside or wholly above the base (no straddle).
                 const cellTopZ = zNodes[iv + 1];
-                const inSolidBase = cfg.isPot && actualBase > 1e-8 && cellTopZ <= actualBase + 1e-6;
+                const inSolidBase = (cfg.isPot || cfg.isVase) && actualBase > 1e-8 && cellTopZ <= actualBase + 1e-6;
                 for (let it = 0; it < cfg.resT; it++) {
                     const f = cellFields[iv][it];
                     const allowPattern = !inSolidBase;
@@ -5093,7 +5176,7 @@ ${trianglesXml.join('\n')}
                 // iv<=1 mirrors buildOccupancies' unconditional forceCoreBottomRow (belt-and-
                 // braces: cell iv=0 is always core for cylindrical pots, even when actualBase
                 // is ~0) on top of the real base-height suppression below.
-                const forceCore = cfg.isPot && (iv <= 1 || zV <= actualBase + 1e-6);
+                const forceCore = (cfg.isPot || cfg.isVase) && (iv <= 1 || zV <= actualBase + 1e-6);
                 const rowA = [], rowB = [];
                 for (let it = 0; it < cfg.resT; it++) {
                     if (forceCore) { rowA.push(-1); rowB.push(-1); continue; }
@@ -5119,8 +5202,8 @@ ${trianglesXml.join('\n')}
             // closure. Clamping it to PI-epsilon leaves a tiny open center ring in
             // multipart spherical plates.
             const isSolidBottom = cfg.isPot && cfg.sphBotCut >= Math.PI - 0.005;
-            const phiEnd = isSolidBottom ? Math.PI : (cfg.isPot ? Math.min(cfg.sphBotCut, Math.PI - 0.001) : Math.PI - 0.001);
-            const phiStart = cfg.isPot ? Math.min(Math.max(cfg.sphTopCut, 0.001), phiEnd - 0.001) : 0.001;
+            const phiEnd = sphericalPhiEnd(cfg, isSolidBottom);
+            const phiStart = (cfg.isPot || cfg.isVase) ? Math.min(Math.max(cfg.sphTopCut, 0.001), phiEnd - 0.001) : 0.001;
             const flatBottomY = cfg.R * Math.cos(cfg.sphBotFlatten);
             const innerBottomY = flatBottomY + Math.max(0.05, cfg.bottomThickness || cfg.w || 0.1);
 
@@ -5135,22 +5218,41 @@ ${trianglesXml.join('\n')}
                     const texDisp = evalFieldWithModifier(cfg.texEq, cfg, theta, 0, phi, v, 0, true, 'texture');
 
                     const rOut = Math.max(0.1, rBaseOuter + (texDisp * cfg.texInt));
-                    const rIn = cfg.isVase ? 0 : Math.max(0.08, rBaseOuter - cfg.w);
 
                     let oX = rOut * Math.sin(phi) * Math.cos(theta);
                     let oZ = rOut * Math.sin(phi) * Math.sin(theta);
                     let oY = rOut * Math.cos(phi);
 
-                    let iX = rIn * Math.sin(phi) * Math.cos(theta);
-                    let iZ = rIn * Math.sin(phi) * Math.sin(theta);
-                    let iY = rIn * Math.cos(phi);
+                    // Vase mode's cavity is a fixed frustum keyed to world height (not the
+                    // outer profile's phi-based radius), so its point is placed directly from
+                    // (theta, height) rather than derived from an inner radius at this phi -
+                    // see vaseHoleRadiusAtHeight.
+                    let iX, iY, iZ;
+                    if (cfg.isVase) {
+                        const nomY = cfg.R * Math.cos(phi);
+                        const holeR = vaseHoleRadiusAtHeight(cfg, nomY - flatBottomY);
+                        iX = holeR * Math.cos(theta);
+                        iZ = holeR * Math.sin(theta);
+                        iY = nomY;
+                    } else {
+                        const rIn = Math.max(0.08, rBaseOuter - cfg.w);
+                        iX = rIn * Math.sin(phi) * Math.cos(theta);
+                        iZ = rIn * Math.sin(phi) * Math.sin(theta);
+                        iY = rIn * Math.cos(phi);
+                    }
 
-                    if (cfg.isPot) {
+                    if (cfg.isPot || cfg.isVase) {
                         if (phi >= cfg.sphBotFlatten || oY < flatBottomY) {
                             oY = flatBottomY;
                         }
+                    }
+                    if (cfg.isPot) {
                         if (iY < innerBottomY) {
                             iY = innerBottomY;
+                        }
+                    } else if (cfg.isVase) {
+                        if (iY < flatBottomY) {
+                            iY = flatBottomY;
                         }
                     }
 
@@ -5199,11 +5301,20 @@ ${trianglesXml.join('\n')}
                 const rowA = [];
                 const rowB = [];
                 const rowEligible = [];
+                // A vase's solid floor collapses every theta's inner point onto the same axis
+                // point, which - combined with the flat-bottom band also pinning every theta's
+                // outer point onto one shared plane - makes the theta-facing wall between two
+                // rows there a degenerate (zero-area) sliver. A pattern boundary can only land
+                // there if patterns are allowed to enter the solid floor at all, so keep them
+                // out of it entirely (mirrors buildCylindricalShell's inSolidBase).
+                const phiMid = cellFields[iv][0] ? cellFields[iv][0].phiMid : 0;
+                const inVaseSolidFloor = cfg.isVase && vaseHoleRadiusAtHeight(cfg, cfg.R * Math.cos(phiMid) - flatBottomY) <= 1e-9;
                 for (let it = 0; it < cfg.resT; it++) {
                     const f = cellFields[iv][it];
-                    rowEligible.push(true);
-                    rowA.push(evaluatePatternValue(cfg.patternEq1, cfg, f.thetaMid, 0, f.phiMid, f.vMid, f.outerRadius, f.baseFormRadius, f.texRaw, stats) > 0);
-                    rowB.push(evaluatePatternValue(cfg.patternEq2, cfg, f.thetaMid, 0, f.phiMid, f.vMid, f.outerRadius, f.baseFormRadius, f.texRaw, stats) > 0);
+                    const allowPattern = !inVaseSolidFloor;
+                    rowEligible.push(allowPattern);
+                    rowA.push(allowPattern && evaluatePatternValue(cfg.patternEq1, cfg, f.thetaMid, 0, f.phiMid, f.vMid, f.outerRadius, f.baseFormRadius, f.texRaw, stats) > 0);
+                    rowB.push(allowPattern && evaluatePatternValue(cfg.patternEq2, cfg, f.thetaMid, 0, f.phiMid, f.vMid, f.outerRadius, f.baseFormRadius, f.texRaw, stats) > 0);
                 }
                 cellMaskA.push(rowA);
                 cellMaskB.push(rowB);
@@ -5211,15 +5322,18 @@ ${trianglesXml.join('\n')}
             }
 
             // Vertex-sampled continuous mask fields for optional smooth (marching-triangle)
-            // pattern-edge contouring - see the matching block in buildCylindricalShell. No
-            // base/pole forcing here: spherical shells have no inSolidBase-style eligibility
-            // gate today (rowEligible is unconditionally true above), so this mirrors that.
+            // pattern-edge contouring - see the matching block in buildCylindricalShell.
+            // Non-vase spherical shells have no inSolidBase-style eligibility gate today
+            // (pot's rowEligible is unconditionally true above); vase's solid floor is forced
+            // out of the pattern for the same degenerate-wall reason as the cell mask above.
             const fieldA = [], fieldB = [];
             for (let iv = 0; iv <= cfg.resV; iv++) {
                 const phi = phiStart + (phiEnd - phiStart) * (iv / cfg.resV);
                 const v = (phi - phiEnd) / (phiStart - phiEnd);
+                const forceCore = cfg.isVase && vaseHoleRadiusAtHeight(cfg, cfg.R * Math.cos(phi) - flatBottomY) <= 1e-9;
                 const rowA = [], rowB = [];
                 for (let it = 0; it < cfg.resT; it++) {
+                    if (forceCore) { rowA.push(-1); rowB.push(-1); continue; }
                     const theta = (2 * Math.PI * it) / cfg.resT;
                     const texRaw = evalFieldWithModifier(cfg.texEq, cfg, theta, 0, phi, v, 0, true, 'texture');
                     const rBaseOuter = evalFieldWithModifier(cfg.eq, cfg, theta, 0, phi, v, cfg.R, false, 'base');
@@ -6445,6 +6559,68 @@ ${trianglesXml.join('\n')}
             scene.remove(obj);
         }
 
+        // Preview-only visualization of the real glass vase sitting in the insert cavity
+        // (see vaseHoleRadiusAtHeight for the matching hole cut into the printed body). Not
+        // part of any exported mesh - just a transparent stand-in so the fit can be judged
+        // before printing. Local space: y=0 is the vase's own base, y=vaseHeight its rim;
+        // the caller positions it at y=bottomThickness to match where the cavity starts.
+        function buildVaseInsertPreviewGroup(cfg) {
+            const baseR = Math.max(0, (cfg.vaseBaseDiameter || 0) / 2);
+            const topR = Math.max(0, (cfg.vaseTopDiameter || 0) / 2);
+            const vaseHeight = Math.max(0, cfg.vaseHeight || 0);
+            if (vaseHeight <= 1e-6 || (baseR <= 1e-6 && topR <= 1e-6)) return null;
+
+            const wall = Math.max(0.01, Math.min(cfg.vaseWallCm || 0.1, Math.max(baseR, topR) * 0.9));
+            const innerBaseR = Math.max(0, baseR - wall);
+            const innerTopR = Math.max(0, topR - wall);
+            const radialSegments = 64;
+
+            const glassMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0x8fe3f5,
+                emissive: 0x2a6f82,
+                emissiveIntensity: 0.12,
+                transparent: true,
+                opacity: 0.38,
+                roughness: 0.05,
+                metalness: 0,
+                transmission: 0.75,
+                thickness: wall * 4,
+                ior: 1.45,
+                side: THREE.DoubleSide,
+                depthWrite: false
+            });
+            // Rim and floor are the glass's own cross-section (cut edges), so they read as
+            // more solid than the thin walls - a touch more opaque keeps them legible against
+            // the printed cavity behind them.
+            const edgeMaterial = glassMaterial.clone();
+            edgeMaterial.opacity = 0.55;
+            edgeMaterial.transmission = 0.4;
+
+            const group = new THREE.Group();
+            const addMesh = (geom, material) => group.add(new THREE.Mesh(geom, material || glassMaterial));
+
+            const outerGeom = new THREE.CylinderGeometry(topR, baseR, vaseHeight, radialSegments, 1, true);
+            outerGeom.translate(0, vaseHeight / 2, 0);
+            addMesh(outerGeom);
+
+            if (innerBaseR > 1e-4 || innerTopR > 1e-4) {
+                const innerGeom = new THREE.CylinderGeometry(innerTopR, innerBaseR, vaseHeight, radialSegments, 1, true);
+                innerGeom.translate(0, vaseHeight / 2, 0);
+                addMesh(innerGeom);
+            }
+
+            const floorGeom = new THREE.RingGeometry(innerBaseR, baseR, radialSegments);
+            floorGeom.rotateX(-Math.PI / 2);
+            addMesh(floorGeom, edgeMaterial);
+
+            const rimGeom = new THREE.RingGeometry(innerTopR, topR, radialSegments);
+            rimGeom.rotateX(-Math.PI / 2);
+            rimGeom.translate(0, vaseHeight, 0);
+            addMesh(rimGeom, edgeMaterial);
+
+            return group;
+        }
+
         // Interactive resolution cap used only during rapid, continuous editing (see
         // updatePreview below). Phase 0's compiled equations already remove most of the
         // per-sample cost, but mesh building itself (welding, occupancy grids, orientation)
@@ -6535,6 +6711,14 @@ ${trianglesXml.join('\n')}
                             });
                             surfaceMat.dispose();
                         });
+
+                        if (cfg.isVase) {
+                            const vaseInsert = buildVaseInsertPreviewGroup(cfg);
+                            if (vaseInsert) {
+                                vaseInsert.position.y = cfg.bottomThickness || 0;
+                                group.add(vaseInsert);
+                            }
+                        }
 
                         if (cfg.includePlate) {
                             const plateParts = memoizedMeshBuild(buildPlateMultipartMeshes, cfg);
@@ -6726,9 +6910,10 @@ ${trianglesXml.join('\n')}
                 ? buildUniformCylindricalInnerRows(outerRows, cfg, actualBase)
                 : null;
 
-            // Phase 5: Build inner profile grid ({r,z}) for all shell modes.
-            // Vase mode collapses the inner surface onto the central axis (r=0) at
-            // every height, turning the shell into a solid body with no cavity.
+            // Phase 5: Build inner profile grid ({r,z}) for all shell modes. Vase mode uses
+            // the vase-insert cavity profile (solid below the floor, a frustum hole above it -
+            // see vaseHoleRadiusAtHeight). actualBase is 0 for vase, so zI above is already
+            // the absolute height.
             const innerRowsGrid = [];
             for (let iv = 0; iv <= cfg.resV; iv++) {
                 const zI = actualBase + (cfg.h - actualBase) * (iv / cfg.resV);
@@ -6738,7 +6923,7 @@ ${trianglesXml.join('\n')}
                     const theta = (2 * Math.PI * it) / cfg.resT;
                     let rIn, innerZ;
                     if (cfg.isVase) {
-                        rIn = 0;
+                        rIn = vaseHoleRadiusAtHeight(cfg, zI);
                         innerZ = zI;
                     } else if (uniformInnerRows) {
                         rIn = uniformInnerRows[iv][it].r;
@@ -6824,11 +7009,10 @@ ${trianglesXml.join('\n')}
 
                 for (let iv = 0; iv < cfg.resV; iv++) {
                     indices.push(oRings[iv][it], oRings[iv + 1][it], oRings[iv + 1][it1], oRings[iv][it], oRings[iv + 1][it1], oRings[iv][it1]);
-                    // Vase's inner rings are all collapsed onto the axis (zero radius), so this
-                    // "inner wall" would only be zero-area triangles along a line — skip it.
-                    if (!cfg.isVase) {
-                        indices.push(iRings[iv][it], iRings[iv][it1], iRings[iv + 1][it1], iRings[iv][it], iRings[iv + 1][it1], iRings[iv + 1][it]);
-                    }
+                    // Below the vase insert's floor both inner rings collapse onto the axis, so
+                    // this "inner wall" is harmless zero-area triangles there; above the floor
+                    // it is the real cavity wall around the insert.
+                    indices.push(iRings[iv][it], iRings[iv][it1], iRings[iv + 1][it1], iRings[iv][it], iRings[iv + 1][it1], iRings[iv + 1][it]);
                 }
                 indices.push(oRings[cfg.resV][it], iRings[cfg.resV][it], iRings[cfg.resV][it1], oRings[cfg.resV][it], iRings[cfg.resV][it1], oRings[cfg.resV][it1]);
 
@@ -6860,8 +7044,8 @@ ${trianglesXml.join('\n')}
             const isSolidBottom = cfg.isPot && cfg.sphBotCut >= Math.PI - 0.005;
 
             // If it's a solid bottom, go all the way to PI. Otherwise, clamp to avoid singularities.
-            const phiEnd = isSolidBottom ? Math.PI : (cfg.isPot ? Math.min(cfg.sphBotCut, Math.PI - 0.001) : Math.PI - 0.001);
-            const phiStart = cfg.isPot ? Math.min(Math.max(cfg.sphTopCut, 0.001), phiEnd - 0.001) : 0.001;
+            const phiEnd = sphericalPhiEnd(cfg, isSolidBottom);
+            const phiStart = (cfg.isPot || cfg.isVase) ? Math.min(Math.max(cfg.sphTopCut, 0.001), phiEnd - 0.001) : 0.001;
 
             const flatBottomY = cfg.R * Math.cos(cfg.sphBotFlatten);
             const innerBottomY = flatBottomY + Math.max(0.05, cfg.bottomThickness || cfg.w || 0.1);
@@ -6878,19 +7062,32 @@ ${trianglesXml.join('\n')}
                     const texDisp = evalFieldWithModifier(cfg.texEq, cfg, theta, 0, phi, v, 0, true, 'texture');
 
                     const rOut = rBaseOuter + (texDisp * cfg.texInt);
-                    const rIn = cfg.isVase ? 0 : Math.max(0.1, rBaseOuter - cfg.w);
 
                     let oX = rOut * Math.sin(phi) * Math.cos(theta);
                     let oZ = rOut * Math.sin(phi) * Math.sin(theta);
                     let oY = rOut * Math.cos(phi);
 
-                    let iX = rIn * Math.sin(phi) * Math.cos(theta);
-                    let iZ = rIn * Math.sin(phi) * Math.sin(theta);
-                    let iY = rIn * Math.cos(phi);
+                    let iX, iY, iZ;
+                    if (cfg.isVase) {
+                        const nomY = cfg.R * Math.cos(phi);
+                        const holeR = vaseHoleRadiusAtHeight(cfg, nomY - flatBottomY);
+                        iX = holeR * Math.cos(theta);
+                        iZ = holeR * Math.sin(theta);
+                        iY = nomY;
+                    } else {
+                        const rIn = Math.max(0.1, rBaseOuter - cfg.w);
+                        iX = rIn * Math.sin(phi) * Math.cos(theta);
+                        iZ = rIn * Math.sin(phi) * Math.sin(theta);
+                        iY = rIn * Math.cos(phi);
+                    }
 
-                    if (cfg.isPot) {
+                    if (cfg.isPot || cfg.isVase) {
                         if (phi >= cfg.sphBotFlatten || oY < flatBottomY) oY = flatBottomY;
+                    }
+                    if (cfg.isPot) {
                         if (iY < innerBottomY) iY = innerBottomY;
+                    } else if (cfg.isVase) {
+                        if (iY < flatBottomY) iY = flatBottomY;
                     }
 
                     const outerColor = shouldApplyColor ? chooseColor(cfg, theta, 0, phi, v) : baseColorRGB;
@@ -6931,11 +7128,10 @@ ${trianglesXml.join('\n')}
                 const it1 = (it + 1) % cfg.resT;
                 for (let iv = 0; iv < cfg.resV; iv++) {
                     indices.push(oIdx[iv][it], oIdx[iv + 1][it], oIdx[iv + 1][it1], oIdx[iv][it], oIdx[iv + 1][it1], oIdx[iv][it1]);
-                    // Vase's inner rings all collapse onto the sphere's center point, so this
-                    // "inner wall" would only be zero-area triangles — skip it.
-                    if (!cfg.isVase) {
-                        indices.push(iIdx[iv][it], iIdx[iv][it1], iIdx[iv + 1][it1], iIdx[iv][it], iIdx[iv + 1][it1], iIdx[iv + 1][it]);
-                    }
+                    // Below the vase insert's floor both inner rings collapse onto the axis, so
+                    // this "inner wall" is harmless zero-area triangles there; above the floor
+                    // it is the real cavity wall around the insert.
+                    indices.push(iIdx[iv][it], iIdx[iv][it1], iIdx[iv + 1][it1], iIdx[iv][it], iIdx[iv + 1][it1], iIdx[iv + 1][it]);
                 }
                 // Top rim bezel
                 indices.push(oIdx[0][it], oIdx[0][it1], iIdx[0][it1], oIdx[0][it], iIdx[0][it1], iIdx[0][it]);
@@ -6958,13 +7154,14 @@ ${trianglesXml.join('\n')}
         // Cutout mode removes material through the occupancy-grid pipeline
         // (buildMultipartMeshes), which the simpler ring-based generateCylindrical/
         // generateSpherical used for single-part STL export has no concept of - it would
-        // silently export a solid, unperforated shape. Route cutout-mode pot exports through
-        // the same multipart core mesh the preview and 3MF export already use instead. Color
-        // mode is unaffected: its outer silhouette is identical either way, so the existing
-        // ring-based path (and its wantColors:false STL-doesn't-carry-color optimization)
-        // stays exactly as before.
+        // silently export a solid, unperforated shape. Route cutout-mode pot/vase exports
+        // through the same multipart core mesh the preview and 3MF export already use instead
+        // (vase now has a real insert-cavity wall for a cutout to remove material from, same
+        // as a pot's wall). Color mode is unaffected: its outer silhouette is identical either
+        // way, so the existing ring-based path (and its wantColors:false STL-doesn't-carry-
+        // color optimization) stays exactly as before.
         function buildPrimaryMeshDataForExport(cfg) {
-            if (cfg.isPot && cfg.patternMode === 'cutout' && supportsMultipart(cfg)) {
+            if ((cfg.isPot || cfg.isVase) && cfg.patternMode === 'cutout' && supportsMultipart(cfg)) {
                 const parts = memoizedMeshBuild(buildMultipartMeshes, cfg);
                 return { vertices: parts.coreMesh.positions, indices: parts.coreMesh.indices };
             }
