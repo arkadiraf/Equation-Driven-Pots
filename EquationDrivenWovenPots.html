@@ -1164,7 +1164,7 @@
                 const grid = buildPlateColorGrid(cfg, env, plateR, zBot, zTop, flare, plateDepthCm);
                 const insetEps = Math.max(0.02, 0.15 * plateDepthCm);
                 const insetSolid = loft(zBot + plateDepthCm, zTop + insetEps, -plateDepthCm);
-                parts = buildPlatePatternParts(plate, insetSolid, grid);
+                parts = buildPlatePatternParts(plate, insetSolid, grid, bothPatternsActive(cfg));
                 insetSolid.delete();
             }
         }
@@ -1228,14 +1228,19 @@
     // at that apex on their own; a cell's "next" neighbour is treated as state 0 (always a wall)
     // past i=Nv-2, since the profile simply ends at the rim - there's no cell beyond it to compare
     // against. Otherwise identical in structure (and wall-quad winding) to buildSteppedPatternMeshes.
-    function buildPlateSteppedMeshes(grid) {
+    function buildPlateSteppedMeshes(grid, noNeither) {
         const { Nt, Nv, top, bot, fieldA, fieldB } = grid;
         const pools = { 1: { positions: [], indices: [] }, 2: { positions: [], indices: [] }, 3: { positions: [], indices: [] }, all: { positions: [], indices: [] } };
         function push(pool, p) { const i = pool.positions.length/3; pool.positions.push(p[0], p[1], p[2]); return i; }
         function tri(pool, a, b, c) { const ia=push(pool,a), ib=push(pool,b), ic=push(pool,c); pool.indices.push(ia,ib,ic); }
         function quad(pool, a, b, c, d) { tri(pool,a,b,c); tri(pool,a,c,d); }
         function pt2(rows, i, j) { const row = rows[i], o = j * 3; return [row[o], row[o+1], row[o+2]]; }
-        function state(i, j) { return (fieldA[i][j] > 0 ? 1 : 0) + (fieldB[i][j] > 0 ? 2 : 0); }
+        // Same no-neither reassignment as cellState above: A absorbs "neither" too when both
+        // masks are active.
+        function state(i, j) {
+            if (noNeither) return fieldB[i][j] > 0 ? (fieldA[i][j] > 0 ? 3 : 2) : 1;
+            return (fieldA[i][j] > 0 ? 1 : 0) + (fieldB[i][j] > 0 ? 2 : 0);
+        }
 
         for (let i = 0; i < Nv - 1; i++) {
             for (let j = 0; j < Nt; j++) {
@@ -1267,7 +1272,7 @@
     // position, never coincident with a face `plate` already has), a single state uses
     // `plate.split(cutter)`, several states cut each insert from the pristine `plate` and carve
     // the base with the merged all-states cutter. Returns null if nothing could be built.
-    function buildPlatePatternParts(plate, insetSolid, grid) {
+    function buildPlatePatternParts(plate, insetSolid, grid, noNeither) {
         const { Manifold, Mesh } = window.CSG;
         const trash = [];
         const keep = m => { trash.push(m); return m; };
@@ -1281,7 +1286,7 @@
         };
         const meshOf = (state, m) => { const g = m.getMesh(); return { state, positions: Float32Array.from(g.vertProperties), indices: Uint32Array.from(g.triVerts) }; };
         try {
-            const raw = buildPlateSteppedMeshes(grid);
+            const raw = buildPlateSteppedMeshes(grid, noNeither);
             const cutters = [];
             for (const [k, outState] of [[1, 5], [2, 6], [3, 7]]) {
                 const prism = toSolid(raw[k]);
@@ -1837,8 +1842,20 @@
         return { Nu, Nt, top, bot, fieldA, fieldB, worldPt, uRow, sRow, profile, rGrid, eq1, eq2, minZ, zRange, totalLen };
     }
 
-    function cellState(fieldA, fieldB, iu, jt) {
+    // Normally a corner's state is a straight (A>0)+(B>0) sum, and "neither" (0) is a real,
+    // visible state - the Base color. In no-neither mode (see bothPatternsActive), Pattern A
+    // silently absorbs whatever would have been "neither" too: every corner that isn't clearly B
+    // (or Overlap) just reads as A, so the Base color never appears anywhere the mask reaches.
+    function cellState(fieldA, fieldB, iu, jt, noNeither) {
+        if (noNeither) return fieldB[iu][jt] > 0 ? (fieldA[iu][jt] > 0 ? 3 : 2) : 1;
         return (fieldA[iu][jt] > 0 ? 1 : 0) + (fieldB[iu][jt] > 0 ? 2 : 0);
+    }
+
+    // True once BOTH mask slots hold a real equation (neither is left at "-1"/None): that's the
+    // trigger for "no-neither" mode (see cellState) - with only one mask active, "neither" still
+    // legitimately means "this pattern doesn't reach here" and should keep showing Base.
+    function bothPatternsActive(cfg) {
+        return (cfg.patternEq1 || '-1').trim() !== '-1' && (cfg.patternEq2 || '-1').trim() !== '-1';
     }
 
     // Welds a raw triangle soup into an indexed mesh (position-hash weld, same tolerance as the
@@ -1874,7 +1891,7 @@
     // with no internal geometry. Top face wound outward, bottom face wound inward (reversed), and
     // wall quads follow the same boundary-walk direction as the top face - the standard
     // "extrude a closed region" convention.
-    function buildSteppedPatternMeshes(grid) {
+    function buildSteppedPatternMeshes(grid, noNeither) {
         const { Nu, Nt, top, bot, fieldA, fieldB } = grid;
         // Besides one prism per state, `all` is the union of states 1-3 with walls only against
         // state 0 - the single cutter buildPatternParts carves the base with.
@@ -1887,12 +1904,12 @@
             const iu1 = (iu+1) % Nu, iuPrev = (iu-1+Nu) % Nu;
             for (let jt = 0; jt < Nt; jt++) {
                 const jt1 = (jt+1) % Nt, jtPrev = (jt-1+Nt) % Nt;
-                const state = cellState(fieldA, fieldB, iu, jt);
+                const state = cellState(fieldA, fieldB, iu, jt, noNeither);
                 if (state === 0) continue;
                 const topA=pt(top,iu,jt), topB=pt(top,iu,jt1), topC=pt(top,iu1,jt1), topD=pt(top,iu1,jt);
                 const botA=pt(bot,iu,jt), botB=pt(bot,iu,jt1), botC=pt(bot,iu1,jt1), botD=pt(bot,iu1,jt);
-                const sPrevU = cellState(fieldA,fieldB,iuPrev,jt), sNextT = cellState(fieldA,fieldB,iu,jt1);
-                const sNextU = cellState(fieldA,fieldB,iu1,jt), sPrevT = cellState(fieldA,fieldB,iu,jtPrev);
+                const sPrevU = cellState(fieldA,fieldB,iuPrev,jt,noNeither), sNextT = cellState(fieldA,fieldB,iu,jt1,noNeither);
+                const sNextU = cellState(fieldA,fieldB,iu1,jt,noNeither), sPrevT = cellState(fieldA,fieldB,iu,jtPrev,noNeither);
                 for (const pool of [pools[state], pools.all]) {
                     // A neighbour is outside this solid when its state differs (per-state prism)
                     // or is 0 (merged prism).
@@ -1991,8 +2008,11 @@
     // with extra vertices on an edge is fanned from its centre instead of being cut in two, so no
     // T-junction is ever welded into a prism. State 0 needs no geometry (the base comes from the
     // CSG subtraction); besides the three per-state pools, `all` holds the union of states 1-3
-    // with walls only against state 0 - the cutter that carves the base.
-    function buildSmoothPatternMeshes(grid, refineLevel) {
+    // with walls only against state 0 - the cutter that carves the base. When `noNeither` is set
+    // (see bothPatternsActive), state 0 never gets emitted at all - state 1 (A) absorbs it, same
+    // reassignment as cellState's no-neither branch, just carried out geometrically here instead
+    // of numerically (see emitState/emitTriangle for how the fa=0 edge stops being a real wall).
+    function buildSmoothPatternMeshes(grid, refineLevel, noNeither) {
         const { Nu, Nt, top, bot, worldPt, uRow, sRow, profile, rGrid, eq1, eq2, minZ, zRange, totalLen } = grid;
         const fA = nearZeroFixWrap(grid.fieldA, Nu, Nt);
         const fB = nearZeroFixWrap(grid.fieldB, Nu, Nt);
@@ -2055,14 +2075,20 @@
                 const v1 = poly[i], v2 = poly[(i+1) % n];
                 const wallA = Math.abs(v1.fa) < 1e-9 && Math.abs(v2.fa) < 1e-9;
                 const wallB = Math.abs(v1.fb) < 1e-9 && Math.abs(v2.fb) < 1e-9;
+                // No-neither mode: state 1's fa=0 edge no longer separates two different states
+                // (both sides are now "A"), so it isn't a wall at all any more - only its fb=0
+                // edge (still the real boundary against state 2) stays a wall.
+                if (noNeither && state === 1 && wallA && !wallB) continue;
                 if (!wallA && !wallB) continue;
                 const dx=v2.top[0]-v1.top[0], dy=v2.top[1]-v1.top[1], dz=v2.top[2]-v1.top[2];
                 if (dx*dx+dy*dy+dz*dz < 1e-14) continue;
                 wall(pool, v1, v2);
                 // In the merged solid only edges that border state 0 are walls: across an fa
                 // contour edge only fb's sign persists (state 1 -> 0, but 3 -> 2), across an fb
-                // edge only fa's (2 -> 0, but 3 -> 1).
-                if ((wallA && state === 1) || (wallB && state === 2)) wall(all, v1, v2);
+                // edge only fa's (2 -> 0, but 3 -> 1). No-neither mode has no state 0 anywhere, so
+                // `all` never gets a wall at all - it becomes the whole closed skin, no boundary
+                // curve left to close (same reasoning as the stepped builder's "all" pool).
+                if (!noNeither && ((wallA && state === 1) || (wallB && state === 2))) wall(all, v1, v2);
             }
         }
         function emitTriangle(t3) {
@@ -2071,6 +2097,8 @@
             emitState(clipPoly(posA, 'fb', true, ctx), 3);
             emitState(clipPoly(posA, 'fb', false, ctx), 1);
             emitState(clipPoly(negA, 'fb', true, ctx), 2);
+            // The old "neither" corner (fa<=0 && fb<=0) becomes part of A too.
+            if (noNeither) emitState(clipPoly(negA, 'fb', false, ctx), 1);
         }
         // One (sub-)cell A,B,C,D (A = its (iu,jt) corner, B along theta, C diagonal, D along u)
         // plus whatever extra vertices its four edges carry from finer neighbours: plain -> the two
@@ -2201,7 +2229,8 @@
         try {
             const insetSolid = keep(buildInsetSolid(cfg, R, depthCm));
             const grid = buildPatternGrid(cfg, R, depthCm);
-            const raw = cfg.smoothPatternEdges ? buildSmoothPatternMeshes(grid, cfg.boundaryRefine) : buildSteppedPatternMeshes(grid);
+            const noNeither = bothPatternsActive(cfg);
+            const raw = cfg.smoothPatternEdges ? buildSmoothPatternMeshes(grid, cfg.boundaryRefine, noNeither) : buildSteppedPatternMeshes(grid, noNeither);
             const cutters = [];
             for (const k of [1, 2, 3]) {
                 const prism = toSolid(raw[k]);
