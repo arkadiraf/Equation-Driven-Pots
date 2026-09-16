@@ -1433,8 +1433,8 @@
     function modFn(a, b) { return ((a % b) + b) % b; }
 
     const PATTERN_EXPR_ARGS = ['theta','u','s','v','x','y','z','R','r','len',
-        'pi','sin','cos','tan','asin','acos','atan','atan2','sqrt','pow','abs','min','max','exp','log',
-        'floor','ceil','round','sign','mod','hypot','smoothstep','clamp'];
+        'pi','sin','cos','tan','asin','acos','atan','atan2','sinh','cosh','tanh','sqrt','pow','abs','min','max','exp','log',
+        'floor','ceil','round','sign','mod','hypot','smoothstep','clamp','cnoise','fbm','ridged','worley','phyllo'];
     const patternExprCache = new Map();
     function compilePatternExpr(src) {
         const key = (typeof src === 'string' && src.trim()) ? src : '-1';
@@ -1450,10 +1450,172 @@
         try {
             const val = fn(theta, u, s, v, x, y, z, R, r, len,
                 Math.PI, Math.sin, Math.cos, Math.tan, Math.asin, Math.acos, Math.atan, Math.atan2,
-                Math.sqrt, Math.pow, Math.abs, Math.min, Math.max, Math.exp, Math.log,
-                Math.floor, Math.ceil, Math.round, Math.sign, modFn, Math.hypot, smoothstepFn, clampNum);
+                Math.sinh, Math.cosh, Math.tanh, Math.sqrt, Math.pow, Math.abs, Math.min, Math.max, Math.exp, Math.log,
+                Math.floor, Math.ceil, Math.round, Math.sign, modFn, Math.hypot, smoothstepFn, clampNum,
+                cnoise, fbm, ridged, worley, phyllo);
             return (typeof val === 'number' && isFinite(val)) ? val : -1;
         } catch (e) { return -1; }
+    }
+
+    // ---- Procedural noise (pattern/texture equation scope helpers) --------------------------
+    // Ported from EquationDrivenPotDesigner.html's identical module: seam-free in theta by
+    // construction (each helper samples a 3D noise/hash field at a point embedded on a cylinder,
+    // so theta=0 and theta=2*pi land on the exact same (x,y) with no explicit wraparound
+    // handling needed) and deterministic for a given seed, so the same design always reproduces
+    // byte-identical geometry. Pot Designer's own theta/v domain is identical in meaning to this
+    // file's (theta = around the tube, v = normalized world height), so every call site below is
+    // a literal, unmodified port - only the Math.* prefixes are added, since this file has no
+    // bare sin/cos/... aliases at top-level scope the way Pot Designer does.
+    function mulberry32(seed) {
+        let a = seed >>> 0;
+        return function () {
+            a = (a + 0x6D2B79F5) | 0;
+            let t = Math.imul(a ^ (a >>> 15), 1 | a);
+            t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+    }
+
+    // Classic 3D simplex noise (Gustavson-style). Permutation tables are built once per seed
+    // from a seeded PRNG and cached, since rebuilding a 256-entry shuffled table on every one of
+    // the tens of thousands of per-build samples would defeat the point.
+    const SIMPLEX_F3 = 1 / 3, SIMPLEX_G3 = 1 / 6;
+    const SIMPLEX_GRAD3 = [
+        [1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
+        [1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
+        [0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]
+    ];
+    const simplexPermCache = new Map();
+    function getSimplexPerm(seed) {
+        const key = Math.floor(seed) || 0;
+        const cached = simplexPermCache.get(key);
+        if (cached) return cached;
+        const rand = mulberry32((key * 2654435761) ^ 0x9E3779B9);
+        const p = new Uint8Array(256);
+        for (let i = 0; i < 256; i++) p[i] = i;
+        for (let i = 255; i > 0; i--) {
+            const j = Math.floor(rand() * (i + 1));
+            const tmp = p[i]; p[i] = p[j]; p[j] = tmp;
+        }
+        const perm = new Uint8Array(512), permMod12 = new Uint8Array(512);
+        for (let i = 0; i < 512; i++) { perm[i] = p[i & 255]; permMod12[i] = perm[i] % 12; }
+        const table = { perm, permMod12 };
+        if (simplexPermCache.size > 64) simplexPermCache.clear();
+        simplexPermCache.set(key, table);
+        return table;
+    }
+    function rawSimplex3(x, y, z, seed) {
+        const { perm, permMod12 } = getSimplexPerm(seed);
+        const s = (x + y + z) * SIMPLEX_F3;
+        const i = Math.floor(x + s), j = Math.floor(y + s), k = Math.floor(z + s);
+        const t = (i + j + k) * SIMPLEX_G3;
+        const x0 = x - (i - t), y0 = y - (j - t), z0 = z - (k - t);
+        let i1, j1, k1, i2, j2, k2;
+        if (x0 >= y0) {
+            if (y0 >= z0) { i1 = 1; j1 = 0; k1 = 0; i2 = 1; j2 = 1; k2 = 0; }
+            else if (x0 >= z0) { i1 = 1; j1 = 0; k1 = 0; i2 = 1; j2 = 0; k2 = 1; }
+            else { i1 = 0; j1 = 0; k1 = 1; i2 = 1; j2 = 0; k2 = 1; }
+        } else {
+            if (y0 < z0) { i1 = 0; j1 = 0; k1 = 1; i2 = 0; j2 = 1; k2 = 1; }
+            else if (x0 < z0) { i1 = 0; j1 = 1; k1 = 0; i2 = 0; j2 = 1; k2 = 1; }
+            else { i1 = 0; j1 = 1; k1 = 0; i2 = 1; j2 = 1; k2 = 0; }
+        }
+        const x1 = x0 - i1 + SIMPLEX_G3, y1 = y0 - j1 + SIMPLEX_G3, z1 = z0 - k1 + SIMPLEX_G3;
+        const x2 = x0 - i2 + 2 * SIMPLEX_G3, y2 = y0 - j2 + 2 * SIMPLEX_G3, z2 = z0 - k2 + 2 * SIMPLEX_G3;
+        const x3 = x0 - 1 + 3 * SIMPLEX_G3, y3 = y0 - 1 + 3 * SIMPLEX_G3, z3 = z0 - 1 + 3 * SIMPLEX_G3;
+        const ii = i & 255, jj = j & 255, kk = k & 255;
+        let n0 = 0, n1 = 0, n2 = 0, n3 = 0;
+        let t0 = 0.6 - x0*x0 - y0*y0 - z0*z0;
+        if (t0 >= 0) { const g = SIMPLEX_GRAD3[permMod12[ii + perm[jj + perm[kk]]]]; t0 *= t0; n0 = t0*t0*(g[0]*x0 + g[1]*y0 + g[2]*z0); }
+        let t1 = 0.6 - x1*x1 - y1*y1 - z1*z1;
+        if (t1 >= 0) { const g = SIMPLEX_GRAD3[permMod12[ii+i1 + perm[jj+j1 + perm[kk+k1]]]]; t1 *= t1; n1 = t1*t1*(g[0]*x1 + g[1]*y1 + g[2]*z1); }
+        let t2 = 0.6 - x2*x2 - y2*y2 - z2*z2;
+        if (t2 >= 0) { const g = SIMPLEX_GRAD3[permMod12[ii+i2 + perm[jj+j2 + perm[kk+k2]]]]; t2 *= t2; n2 = t2*t2*(g[0]*x2 + g[1]*y2 + g[2]*z2); }
+        let t3 = 0.6 - x3*x3 - y3*y3 - z3*z3;
+        if (t3 >= 0) { const g = SIMPLEX_GRAD3[permMod12[ii+1 + perm[jj+1 + perm[kk+1]]]]; t3 *= t3; n3 = t3*t3*(g[0]*x3 + g[1]*y3 + g[2]*z3); }
+        return 32 * (n0 + n1 + n2 + n3);
+    }
+
+    // cnoise(theta, v, st, sv, seed): seeded 3D simplex noise sampled on a cylinder of radius st
+    // and height scale sv. Range roughly [-1, 1].
+    function cnoise(theta, v, st, sv, seed) {
+        const radius = st || 1;
+        return rawSimplex3(radius * Math.cos(theta), radius * Math.sin(theta), (sv || 1) * v, Math.floor(seed) || 0);
+    }
+    // fbm(theta, v, st, sv, octaves, seed): standard fractal Brownian motion - amplitude halves
+    // and frequency doubles each octave (capped at 8 to bound per-call cost).
+    function fbm(theta, v, st, sv, octaves, seed) {
+        const n = Math.max(1, Math.min(8, Math.floor(octaves) || 1));
+        const baseSeed = Math.floor(seed) || 0;
+        let amplitude = 0.5, frequency = 1, sum = 0, norm = 0;
+        for (let o = 0; o < n; o++) {
+            sum += amplitude * cnoise(theta, v, st * frequency, sv * frequency, baseSeed + o * 101);
+            norm += amplitude; amplitude *= 0.5; frequency *= 2;
+        }
+        return norm > 0 ? sum / norm : 0;
+    }
+    // ridged(theta, v, st, sv, octaves, seed): ridged multifractal (1 - |fbm octave|, summed) -
+    // produces sharp ridges along each octave's zero crossings. Range [0, 1].
+    function ridged(theta, v, st, sv, octaves, seed) {
+        const n = Math.max(1, Math.min(8, Math.floor(octaves) || 1));
+        const baseSeed = Math.floor(seed) || 0;
+        let amplitude = 0.5, frequency = 1, sum = 0, norm = 0;
+        for (let o = 0; o < n; o++) {
+            const sample = cnoise(theta, v, st * frequency, sv * frequency, baseSeed + o * 101);
+            sum += amplitude * (1 - Math.abs(sample)); norm += amplitude; amplitude *= 0.5; frequency *= 2;
+        }
+        return norm > 0 ? sum / norm : 0;
+    }
+    // Deterministic hash -> [0,1), used to jitter Worley cell feature points.
+    function worleyHashComponent(ix, iy, iz, seed, salt) {
+        let h = (ix * 374761393 + iy * 668265263 + iz * 2147483647 + seed * 3266489917 + salt * 2246822519) | 0;
+        h = Math.imul(h ^ (h >>> 13), 1274126177);
+        h = (h ^ (h >>> 16)) >>> 0;
+        return h / 4294967296;
+    }
+    function worley3(x, y, z, seed) {
+        const ix = Math.floor(x), iy = Math.floor(y), iz = Math.floor(z);
+        let minDist2 = Infinity;
+        for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) for (let dz = -1; dz <= 1; dz++) {
+            const cx = ix+dx, cy = iy+dy, cz = iz+dz;
+            const fx = cx + worleyHashComponent(cx,cy,cz,seed,1), fy = cy + worleyHashComponent(cx,cy,cz,seed,2), fz = cz + worleyHashComponent(cx,cy,cz,seed,3);
+            const ddx = fx-x, ddy = fy-y, ddz = fz-z;
+            const dist2 = ddx*ddx + ddy*ddy + ddz*ddz;
+            if (dist2 < minDist2) minDist2 = dist2;
+        }
+        return Math.sqrt(minDist2);
+    }
+    // worley(theta, v, st, sv, seed): cellular F1 distance noise on the same cylinder embedding
+    // as cnoise. Normalized to roughly [0, 1]. Good for crackle/leather/hammered surfaces.
+    function worley(theta, v, st, sv, seed) {
+        const radius = st || 1;
+        const d = worley3(radius * Math.cos(theta), radius * Math.sin(theta), (sv || 1) * v, Math.floor(seed) || 0);
+        return Math.min(1, d / 1.2);
+    }
+    // phyllo(theta, v, n, size): golden-angle phyllotaxis bump field. n seeds are laid out at
+    // theta_k = k*goldenAngle, v_k = k/(n-1); returns the strongest Gaussian bump among the seeds
+    // near the query's v-band (checked in a small window, not all n).
+    const PHYLLO_GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
+    function phyllo(theta, v, n, size) {
+        const count = Math.max(1, Math.min(2000, Math.floor(n) || 1));
+        const bumpSize = Math.max(1e-4, size || 0.05);
+        const invSize2 = 1 / (bumpSize * bumpSize);
+        const vClamped = clampNum(v, 0, 1);
+        const centerK = Math.round(vClamped * (count - 1));
+        const halfWindow = 10;
+        let best = 0;
+        const loK = Math.max(0, centerK - halfWindow), hiK = Math.min(count - 1, centerK + halfWindow);
+        for (let k = loK; k <= hiK; k++) {
+            const vk = count > 1 ? k / (count - 1) : 0;
+            const thetaK = modFn(k * PHYLLO_GOLDEN_ANGLE, 2 * Math.PI);
+            const dThetaRaw = modFn(theta - thetaK + Math.PI, 2 * Math.PI) - Math.PI;
+            const dThetaFrac = dThetaRaw / (2 * Math.PI);
+            const dv = vClamped - vk;
+            const dist2 = dThetaFrac*dThetaFrac + dv*dv;
+            const bump = Math.exp(-dist2 * invSize2);
+            if (bump > best) best = bump;
+        }
+        return best;
     }
 
     // Displacement presets for the Surface Texture layer: T(theta,u,v) is added to the profile
@@ -1513,6 +1675,23 @@
         "Double Helix": { eq: "cos(6*theta + 2*pi*10*u) * cos(6*theta - 2*pi*10*u)", desc: "Two crossed helices forming a braided mask." },
         "Arc Belt": { eq: "asin(0.98*sin(6*theta)) * exp(-pow(v-0.5,2)*30)", desc: "An arc-shaped belt concentrated around the mid-height." },
         "Moire Bands": { eq: "smoothstep(0.2,0.28, sin(2*pi*10*u + 6*theta) + sin(2*pi*9*u - 7*theta)) - 0.5", desc: "Interference moire bands with shifting spacing." },
+
+        // Ported from EquationDrivenPotDesigner.html's "interference"/"noise"/"exotic" preset
+        // groups - its theta/v domain means the same thing there (theta = around, v = world
+        // height) as it does here, so every equation below is a byte-identical copy.
+        "Chladni Windows": { eq: "sin(3*theta)*sin(5*pi*v) + sin(5*theta)*sin(3*pi*v)", desc: "Classic Chladni nodal-line interference, used as a two-color split across the tube." },
+        "Gyroid Mask": { eq: "sin(4*theta)*cos(8*pi*v) + sin(8*pi*v)*cos(2*theta + 2*pi*v) + sin(2*theta + 2*pi*v)*cos(4*theta) - 0.2", desc: "Gyroid-derived mask producing organic, interlocking color regions around the tube." },
+        "Noise Islands": { eq: "cnoise(theta, v, 3, 4, 11) - 0.15", desc: "Seeded simplex noise thresholded into irregular organic color islands scattered around the tube." },
+        "Marble Veins": { eq: "0.12 - abs(sin(3*theta + 1.5*pi*v + 3.5*fbm(theta, v, 3, 4, 4, 9)))", desc: "Thin winding veins where a noise-warped wave crosses zero - classic marble figuring. Raise 0.12 for thicker veins." },
+        "Voronoi Pebbles": { eq: "0.34 - worley(theta, v, 7, 8, 3)", desc: "Rounded organic spots centered on each Worley cell - a pebble or animal-spot scatter that never repeats around the tube." },
+        "Leopard Rosettes": { eq: "(worley(theta, v, 8, 9, 12) - 0.22) * (0.38 - worley(theta, v, 8, 9, 12))", desc: "Ring-shaped rosettes: the product selects only a distance band around each cell center, turning every Worley cell into a hollow ring." },
+        "Crackle Mortar": { eq: "worley(theta, v, 6, 7, 4) - 0.42", desc: "The complement of the pebble mask - selects the web of boundaries between cells for a cracked-glaze or giraffe-hide look." },
+        "Lightning Filaments": { eq: "ridged(theta, v, 4, 6, 4, 6) - 0.85", desc: "Selects only the sharpest crests of ridged multifractal noise, leaving branching filament networks. Lower 0.85 toward 0.75 for denser branching." },
+        "Phyllotaxis Dot Grid": { eq: "phyllo(theta, v, 320, 0.03) - 0.45", desc: "A sunflower-seed lattice of dots placed by the golden angle - evenly spaced yet never aligning into straight rows." },
+        "Shoreline Split": { eq: "tanh(3.5*(v - 0.52 + 0.16*cnoise(theta, v, 3, 3, 8)))", desc: "A two-tone horizontal split whose boundary wanders like a coastline instead of a straight line." },
+        "Gothic Arcade": { eq: "0.82 - 0.3*(cosh(4.2*(mod(theta, pi/4) - pi/8)) - 1) - v", desc: "A band whose top edge is a chain of true catenary arches (cosh is the exact hanging-chain curve), wrapped around the tube like a colonnade." },
+        "Sunburst Medallion": { eq: "exp(-(pow(theta - pi, 2) + 8*pow(v - 0.55, 2)) * 1.6) * (0.35 + sin(7*atan2(v - 0.55, 0.4*(theta - pi)))) - 0.12", desc: "A pinwheel of rays radiating from a point at theta=pi, built with atan2 and confined by a Gaussian window so the opposite side stays clean." },
+        "Halo Ring": { eq: "0.12 - abs(hypot(theta - pi, 3*(v - 0.6)) - 0.9)", desc: "A single elliptical ring emblem centered at theta=pi - hypot measures distance from that point, and the mask keeps only a thin annulus of it." },
     };
 
     function populatePatternPresetSelect(id) {
