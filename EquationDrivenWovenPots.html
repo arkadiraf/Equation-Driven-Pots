@@ -9,6 +9,9 @@
         #sidebar { width: clamp(360px, 29vw, 420px); background: var(--panel); padding: 16px 16px 14px; box-shadow: 2px 0 15px rgba(0,0,0,0.1); overflow-y: auto; z-index: 100; flex-shrink: 0; }
         #viewer-container { flex-grow: 1; background: #ffffff; position: relative; }
         #status { position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 8px 18px; border-radius: 20px; font-size: 11px; }
+        #viewerControls { position: absolute; top: 18px; right: 20px; z-index: 150; display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.9); padding: 8px 14px; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.18); font-size: 12px; }
+        #viewerControls input[type="checkbox"] { width: auto; height: 15px; margin: 0; cursor: pointer; }
+        #viewerControls label { margin: 0; font-weight: 600; color: #34495e; white-space: nowrap; cursor: pointer; }
 
         .section-title { font-size: 0.95rem; font-weight: 700; font-family: 'Segoe UI', sans-serif; color: var(--secondary); border-bottom: 1px solid #e7eaee; padding: 3px 36px 3px 0; margin-top: 8px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.35px; cursor: pointer; position: relative; user-select: none; }
         .section-title::after { content: '\25BE'; position: absolute; right: 0; top: 50%; transform: translateY(-52%); font-size: 1.35rem; font-weight: 700; color: #7f8c8d; transition: transform 0.18s ease; line-height: 1; }
@@ -162,6 +165,28 @@
             <div class="checkbox-group">
                 <input type="checkbox" id="extraClean" onchange="updatePreview()">
                 <label for="extraClean" style="margin-bottom:0;">Extra cleaning: true-shell cavity in overlap zones (removes thin blades, slower)</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="collapsible-section is-collapsed">
+        <div class="section-title" onclick="toggleSection(this)">Vase Insert</div>
+        <div class="section-body">
+            <div id="vaseInsertWrap" style="display:block;">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="vaseInsertEnabled" onchange="updatePreview()">
+                    <label for="vaseInsertEnabled" style="margin-bottom:0;">Cut a cavity for a real glass vase insert, rising from the floor</label>
+                </div>
+                <div class="grid-inputs">
+                    <div class="input-group"><label>Vase Base Dia (cm)</label><input type="number" id="vaseBaseDiameter" value="3" step="0.1" min="0" onchange="updatePreview()"></div>
+                    <div class="input-group"><label>Vase Top Dia (cm)</label><input type="number" id="vaseTopDiameter" value="4" step="0.1" min="0" onchange="updatePreview()"></div>
+                </div>
+                <div class="grid-inputs">
+                    <div class="input-group"><label>Vase Height (cm)</label><input type="number" id="vaseHeight" value="8" step="0.5" min="0.1" onchange="updatePreview()"></div>
+                    <div class="input-group"><label>Insert Offset (mm)</label><input type="number" id="vaseInsertOffsetMm" value="1" step="0.1" min="0" onchange="updatePreview()"></div>
+                </div>
+                <div class="input-group"><label>Vase Glass Wall (mm, preview only)</label><input type="number" id="vaseWallMm" value="1" step="0.1" min="0.1" onchange="updatePreview()"></div>
+                <div class="desc-text">Cavity starts at Bottom Thickness above the floor, tapers from the base to the top diameter (plus the insert offset) over the vase's height, then continues straight up through the rim. Braided/knotted paths often have no material at the very centre, so on many designs the glass will show through the gaps rather than sit inside solid walls - that's expected, not a bug. Pot mode only.</div>
             </div>
         </div>
     </div>
@@ -338,6 +363,10 @@
 </div>
 
 <div id="viewer-container">
+    <div id="viewerControls">
+        <input type="checkbox" id="crossSectionPreview" onchange="onCrossSectionToggle()">
+        <label for="crossSectionPreview">Cross Section Preview</label>
+    </div>
     <div id="status">System Online</div>
 </div>
 
@@ -347,6 +376,9 @@
 
 <script>
     let scene, camera, renderer, controls, currentMeshes = [];
+    // Cuts everything on the +X side away so the hollow interior (vase cavity, wall thickness,
+    // strand crossings) is visible; toggled on/off by the Cross Section Preview checkbox.
+    const crossSectionPlane = new THREE.Plane(new THREE.Vector3(1, 0, 0), 0);
     // Zero-volume-shell cleanup threshold (% of the largest body a component must reach to be
     // kept, see cleanDebris) — no UI control; adjustable only via Design JSON import.
     let debrisThresholdPct = 0.1;
@@ -1325,6 +1357,30 @@
         }
     }
 
+    // A frustum (tapered baseR->topR over vaseHeight) starting at floorZ for a real glass vase
+    // insert, continued as a plain cylinder at topR up past the pot's own top cut so subtracting
+    // it also opens the rim - the same "taper then hold" cavity profile the Equation-Driven Pot
+    // Designer uses, built here as solid CSG pieces (this project's wall is a swept tube, not a
+    // plain radial profile, so there's no single per-vertex radius to clamp against a cavity).
+    // Small paddings avoid the zero-volume coincident-face shells exact booleans leave behind
+    // when two faces land exactly flush (same idiom as buildDrainHoles' cylinder padding).
+    function buildVaseInsertCavity(cfg, floorZ, zHi) {
+        const { Manifold } = window.CSG;
+        const offset = Math.max(0, cfg.vaseInsertOffsetCm || 0);
+        const baseR = Math.max(0.02, (cfg.vaseBaseDiameter || 0) / 2 + offset);
+        const topR = Math.max(0.02, (cfg.vaseTopDiameter || 0) / 2 + offset);
+        const vaseHeight = Math.max(0.02, cfg.vaseHeight || 0);
+        const segments = 48, pad = 0.05;
+        const pieces = [Manifold.cylinder(vaseHeight + pad, baseR, topR, segments, false).translate([0, 0, floorZ - pad])];
+        const tunnelTop = floorZ + vaseHeight;
+        const tunnelH = (zHi + 2) - tunnelTop;
+        if (tunnelH > 0.01) pieces.push(Manifold.cylinder(tunnelH, topR, topR, segments, false).translate([0, 0, tunnelTop]));
+        if (pieces.length === 1) return pieces[0];
+        const cavity = Manifold.union(pieces);
+        pieces.forEach(p => p.delete());
+        return cavity;
+    }
+
     // Solid outer body → shelled by subtracting the inward-offset body → (pot) cut between the two
     // planes, cavity opened from the raised floor upward, drainage holes drilled. Every step is an
     // exact boolean, so the result is always a single watertight manifold.
@@ -1361,6 +1417,7 @@
             }
             let result;
             let zLo = null;
+            let vaseFloorZ = null;
             if (cfg.mode === 'pot') {
                 zLo = R.minZ + (cfg.bottomCutPct/100) * (R.maxZ - R.minZ);
                 const zHi = R.minZ + (cfg.topCutPct/100) * (R.maxZ - R.minZ);
@@ -1374,6 +1431,11 @@
                         const holes = buildDrainHoles(result, zLo, floorZ, cfg.drainHoleDiam);
                         if (holes) result = keep(result.subtract(keep(holes)));
                     }
+                }
+                if (cfg.vaseInsertEnabled && cfg.vaseHeight > 0 && (cfg.vaseBaseDiameter > 0 || cfg.vaseTopDiameter > 0)) {
+                    vaseFloorZ = zLo + (cfg.bottomThick || 0);
+                    const cavity = buildVaseInsertCavity(cfg, vaseFloorZ, zHi);
+                    if (cavity) result = keep(result.subtract(keep(cavity)));
                 }
             } else {
                 result = inner ? keep(outer.subtract(inner)) : outer;
@@ -1415,6 +1477,7 @@
             geo.userData.patternParts = patternParts;
             geo.userData.patternClamped = patternClamped;
             geo.userData.plateParts = plateParts;
+            geo.userData.vaseFloorZ = vaseFloorZ !== null ? vaseFloorZ * scale : null;
             return geo;
         } finally {
             trash.forEach(m => m.delete());
@@ -2309,7 +2372,13 @@
             smoothPatternEdges: document.getElementById('smoothPatternEdges')?.checked || false,
             boundaryRefine: clampNum(parseInt(document.getElementById('boundaryRefine')?.value ?? 2) || 0, 0, 3),
             patternResU: Math.max(20, parseInt(document.getElementById('patternResU')?.value) || 400),
-            patternResT: Math.max(8, parseInt(document.getElementById('patternResT')?.value) || 48)
+            patternResT: Math.max(8, parseInt(document.getElementById('patternResT')?.value) || 48),
+            vaseInsertEnabled: document.getElementById('vaseInsertEnabled')?.checked ?? false,
+            vaseBaseDiameter: Math.max(0, parseFloat(document.getElementById('vaseBaseDiameter')?.value) || 0),
+            vaseTopDiameter: Math.max(0, parseFloat(document.getElementById('vaseTopDiameter')?.value) || 0),
+            vaseHeight: Math.max(0.02, parseFloat(document.getElementById('vaseHeight')?.value) || 0.02),
+            vaseInsertOffsetCm: Math.max(0, (parseFloat(document.getElementById('vaseInsertOffsetMm')?.value) || 0) / 10),
+            vaseWallCm: Math.max(0.01, (parseFloat(document.getElementById('vaseWallMm')?.value) || 0) / 10)
         };
     }
 
@@ -2324,7 +2393,7 @@
     }
 
     function clearCurrentMeshes() {
-        for (const m of currentMeshes) { scene.remove(m); m.geometry.dispose(); }
+        for (const m of currentMeshes) { scene.remove(m); m.geometry.dispose(); if (m.material) m.material.dispose(); }
         currentMeshes = [];
     }
 
@@ -2387,6 +2456,59 @@
         return state === 5 ? 'Plate Pattern A' : state === 6 ? 'Plate Pattern B' : state === 7 ? 'Plate Overlap' : 'Plate Base';
     }
 
+    // Preview-only visualization of the real glass vase sitting in the insert cavity (see
+    // buildVaseInsertCavity for the matching cavity subtracted from the printed body). Not part
+    // of any exported mesh, just a transparent stand-in so the fit can be judged before printing.
+    // This project is Z-up, so the cylinders/rings (built along Y by default) are rotated onto Z.
+    function buildVaseInsertPreviewMeshes(cfg, floorZ) {
+        const baseR = Math.max(0, (cfg.vaseBaseDiameter || 0) / 2);
+        const topR = Math.max(0, (cfg.vaseTopDiameter || 0) / 2);
+        const vaseHeight = Math.max(0, cfg.vaseHeight || 0);
+        if (vaseHeight <= 1e-6 || (baseR <= 1e-6 && topR <= 1e-6)) return [];
+
+        const wall = Math.max(0.01, Math.min(cfg.vaseWallCm || 0.1, Math.max(baseR, topR) * 0.9));
+        const innerBaseR = Math.max(0, baseR - wall);
+        const innerTopR = Math.max(0, topR - wall);
+        const radialSegments = 64;
+
+        const glassMaterial = new THREE.MeshPhysicalMaterial({
+            color: 0x8fe3f5, emissive: 0x2a6f82, emissiveIntensity: 0.12,
+            transparent: true, opacity: 0.38, roughness: 0.05, metalness: 0,
+            transmission: 0.75, thickness: wall * 4, ior: 1.45,
+            side: THREE.DoubleSide, depthWrite: false
+        });
+        const edgeMaterial = glassMaterial.clone();
+        edgeMaterial.opacity = 0.55;
+        edgeMaterial.transmission = 0.4;
+
+        const meshes = [];
+        const addMesh = (geom, material) => { meshes.push(new THREE.Mesh(geom, material || glassMaterial)); };
+
+        const outerGeom = new THREE.CylinderGeometry(topR, baseR, vaseHeight, radialSegments, 1, true);
+        outerGeom.rotateX(Math.PI / 2);
+        outerGeom.translate(0, 0, floorZ + vaseHeight / 2);
+        addMesh(outerGeom);
+
+        if (innerBaseR > 1e-4 || innerTopR > 1e-4) {
+            const innerGeom = new THREE.CylinderGeometry(innerTopR, innerBaseR, vaseHeight, radialSegments, 1, true);
+            innerGeom.rotateX(Math.PI / 2);
+            innerGeom.translate(0, 0, floorZ + vaseHeight / 2);
+            addMesh(innerGeom);
+        }
+
+        // Ring geometry already lies flat in the XY plane (Z-up default), so the floor/rim discs
+        // need only a Z translation, unlike the cylinders above.
+        const floorGeom = new THREE.RingGeometry(innerBaseR, baseR, radialSegments);
+        floorGeom.translate(0, 0, floorZ);
+        addMesh(floorGeom, edgeMaterial);
+
+        const rimGeom = new THREE.RingGeometry(innerTopR, topR, radialSegments);
+        rimGeom.translate(0, 0, floorZ + vaseHeight);
+        addMesh(rimGeom, edgeMaterial);
+
+        return meshes;
+    }
+
     function runPreview() {
         previewTimer = null;
         if (!window.CSG) { setStatus('Loading geometry engine…'); return; }
@@ -2424,6 +2546,12 @@
                 scene.add(mesh);
                 currentMeshes.push(mesh);
                 triCount += part.indices.length / 3;
+            }
+        }
+        if (cfg.vaseInsertEnabled && geo.userData.vaseFloorZ !== null) {
+            for (const m of buildVaseInsertPreviewMeshes(cfg, geo.userData.vaseFloorZ)) {
+                scene.add(m);
+                currentMeshes.push(m);
             }
         }
         geo.computeBoundingBox();
@@ -2524,6 +2652,7 @@
         const isPot = document.getElementById('modelMode').value === 'pot';
         document.getElementById('potCuttingWrap').style.display = isPot ? 'block' : 'none';
         document.getElementById('plateWrap').style.display = isPot ? 'block' : 'none';
+        document.getElementById('vaseInsertWrap').style.display = isPot ? 'block' : 'none';
         updatePreview();
     }
 
@@ -2744,6 +2873,14 @@
                 baseThickness: cfg.plateBaseThickness,
                 openingAngleDeg: cfg.plateOpeningAngleDeg
             },
+            vase: {
+                enabled: cfg.vaseInsertEnabled,
+                baseDiameter: cfg.vaseBaseDiameter,
+                topDiameter: cfg.vaseTopDiameter,
+                height: cfg.vaseHeight,
+                insertOffsetMm: parseFloat(document.getElementById('vaseInsertOffsetMm')?.value) || 0,
+                wallMm: parseFloat(document.getElementById('vaseWallMm')?.value) || 0
+            },
             texture: {
                 preset: document.getElementById('texPresetSelect')?.value || 'None (Flat Surface)',
                 equation: cfg.texEq,
@@ -2818,6 +2955,7 @@
         const orientation = getAIValue(config, ['orientation']) || {};
         const structure = getAIValue(config, ['structure', 'geometry']) || {};
         const plate = getAIValue(config, ['plate', 'basePlate']) || {};
+        const vase = getAIValue(config, ['vase', 'vaseInsert']) || getAIValue(structure, ['vase']) || {};
         const texture = getAIValue(config, ['texture', 'surfaceTexture']) || {};
         const patterns = getAIValue(config, ['patterns', 'colorLayer']) || {};
         const mesh = getAIValue(config, ['mesh', 'resolution']) || {};
@@ -2871,6 +3009,13 @@
             setFieldValue('plateWallThickness', getAIValue(plate, ['wallThickness', 'plateWallThickness']));
             setFieldValue('plateBaseThickness', getAIValue(plate, ['baseThickness', 'plateBaseThickness']));
             setFieldValue('plateOpeningAngle', getAIValue(plate, ['openingAngleDeg', 'plateOpeningAngleDeg', 'openingAngle']));
+
+            setCheckboxValue('vaseInsertEnabled', getAIValue(vase, ['enabled', 'include', 'includeVase']));
+            setFieldValue('vaseBaseDiameter', getAIValue(vase, ['baseDiameter', 'vaseBaseDiameter']));
+            setFieldValue('vaseTopDiameter', getAIValue(vase, ['topDiameter', 'vaseTopDiameter']));
+            setFieldValue('vaseHeight', getAIValue(vase, ['height', 'vaseHeight']));
+            setFieldValue('vaseInsertOffsetMm', getAIValue(vase, ['insertOffsetMm', 'offsetMm', 'vaseInsertOffsetMm']));
+            setFieldValue('vaseWallMm', getAIValue(vase, ['wallMm', 'glassWallMm', 'vaseWallMm']));
 
             const texPreset = getAIValue(texture, ['preset']);
             if (texPreset && setSelectValue('texPresetSelect', texPreset)) applyTexturePreset();
@@ -3136,7 +3281,12 @@ ${trianglesXml.join('\n')}
         renderer.setScissorTest(true);
         renderer.clearDepth();
         renderer.autoClearColor = false;
+        // The gizmo lives in its own tiny scene, not the model's world space, so the cross-
+        // section plane (defined at the model's X=0) has no business clipping it too.
+        const activeClipping = renderer.clippingPlanes;
+        renderer.clippingPlanes = [];
         renderer.render(axisScene, axisCamera);
+        renderer.clippingPlanes = activeClipping;
         renderer.autoClearColor = true;
         renderer.setScissorTest(false);
     }
@@ -3149,6 +3299,7 @@ ${trianglesXml.join('\n')}
         camera.position.set(65, 65, 65);
         renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.localClippingEnabled = true;
         container.appendChild(renderer.domElement);
         controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.minPolarAngle = 0;
@@ -3173,6 +3324,11 @@ ${trianglesXml.join('\n')}
         }
         animate();
     }
+
+    function onCrossSectionToggle() {
+        const enabled = !!document.getElementById('crossSectionPreview')?.checked;
+        renderer.clippingPlanes = enabled ? [crossSectionPlane] : [];
+    }
     // The design that loads by default (from torus_knot.json, set 2026-09-16) - applied through
     // the same Design JSON import path a manual paste uses (see applyDesignJson), so it's
     // guaranteed to match re-importing that file exactly rather than hand-duplicating field values.
@@ -3183,6 +3339,7 @@ ${trianglesXml.join('\n')}
         orientation: { rotX: 0, rotY: 0, rotZ: 0 },
         structure: { mode: "pot", bottomCutPct: 10, topCutPct: 90, bottomThickness: 0.35, drainHoleDiameter: 1, fillPct: 22, wallThickness: 0.35, avoidSelfIntersect: false, extraClean: false, debrisThresholdPct: 0.1 },
         plate: { enabled: true, applyColoring: true, offsetCm: 1.5, heightCm: 1.5, wallThickness: 0.35, baseThickness: 0.35, openingAngleDeg: 25 },
+        vase: { enabled: false, baseDiameter: 3, topDiameter: 4, height: 8, insertOffsetMm: 1, wallMm: 1 },
         texture: { preset: "None (Flat Surface)", equation: "0", intensity: 0.15 },
         patterns: { preset1: "Checkerboard", equation1: "sign(cos(6*theta)) * sign(cos(2*pi*16*u))", preset2: "None (Solid Base Color)", equation2: "-1", baseColor: "#0a2989", patternColor1: "#c12e1f", patternColor2: "#5f4a8b", overlapColor: "#8ab04d", depthMm: 1.2, smoothEdges: true, boundaryRefine: 2 },
         mesh: { sections: 400, radialRes: 48, patternResU: 400, patternResT: 48 }

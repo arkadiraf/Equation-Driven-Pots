@@ -2558,6 +2558,14 @@
                     plateSphTopCut: getFieldNumberValue('plateSphTopCut', 95),
                     plateSphBotFlatten: getFieldNumberValue('plateSphBotFlatten', 250)
                 },
+                vase: {
+                    enabled: modelMode === 'vase',
+                    baseDiameter: getFieldNumberValue('vaseBaseDiameter', 3),
+                    topDiameter: getFieldNumberValue('vaseTopDiameter', 4),
+                    height: getFieldNumberValue('vaseHeight', 8),
+                    insertOffsetMm: getFieldNumberValue('vaseInsertOffsetMm', 1),
+                    wallMm: getFieldNumberValue('vaseWallMm', 1)
+                },
                 texture: {
                     type: getFieldStringValue('texTypeSelect', 'utility'),
                     preset: selectedOptionText('texPresetSelect', 'None (Flat Surface)'),
@@ -2896,6 +2904,7 @@
             const base = getAIValue(config, ['base']) || {};
             const structure = getAIValue(config, ['structure', 'geometry']) || {};
             const plate = getAIValue(config, ['plate', 'optionalPlate', 'tray']) || getAIValue(structure, ['plate']) || {};
+            const vase = getAIValue(config, ['vase', 'vaseInsert']) || getAIValue(structure, ['vase']) || {};
             const texture = getAIValue(config, ['texture', 'surfaceTexture']) || {};
             const patterns = getAIValue(config, ['patterns', 'colorLayer']) || {};
             const mesh = getAIValue(config, ['mesh', 'resolution']) || {};
@@ -2924,13 +2933,19 @@
                     || getAIValue(plate, ['modelMode', 'mode'])
                     || getAIValue(config, ['modelMode', 'buildMode']);
                 const includePlate = getAIValue(plate, ['enabled', 'include', 'includePlate', 'usePlate']);
-                const modelMode = explicitModelMode || (typeof includePlate === 'boolean' ? (includePlate ? 'potplate' : 'pot') : undefined);
+                const includeVase = getAIValue(vase, ['enabled', 'include', 'includeVase']);
+                const modelMode = explicitModelMode
+                    || (typeof includePlate === 'boolean' ? (includePlate ? 'potplate' : 'pot') : undefined)
+                    || (includeVase === true ? 'vase' : undefined);
+
+                // switchSystem() resets the whole form for the target coordinate system -
+                // including forcing modelMode back to potplate - so the requested mode has to be
+                // (re-)applied after it runs, not before, or it's silently discarded.
+                switchSystem();
                 if (modelMode) {
                     populateModelModeOptions(modelMode);
                     setSelectValue('modelMode', modelMode);
                 }
-
-                switchSystem();
                 onBuildModeChange();
 
                 const baseType = getAIValue(base, ['baseType', 'type']);
@@ -2966,6 +2981,12 @@
                 setFieldValue('plateRadiusExtra', getAIValue(plate, ['diameterExtra', 'plateDiameterExtra', 'radiusExtra', 'plateRadiusExtra']) ?? getAIValue(structure, ['plateDiameterExtra', 'plateRadiusExtra']));
                 setFieldValue('plateSphTopCut', getAIValue(plate, ['sphTopCut', 'plateSphTopCut', 'topCut']) ?? getAIValue(structure, ['plateSphTopCut', 'plateTopCut']));
                 setFieldValue('plateSphBotFlatten', getAIValue(plate, ['sphBotFlatten', 'plateSphBotFlatten', 'botFlat', 'bottomFlat']) ?? getAIValue(structure, ['plateSphBotFlatten', 'plateBotFlat', 'plateBottomFlat']));
+
+                setFieldValue('vaseBaseDiameter', getAIValue(vase, ['baseDiameter', 'vaseBaseDiameter']));
+                setFieldValue('vaseTopDiameter', getAIValue(vase, ['topDiameter', 'vaseTopDiameter']));
+                setFieldValue('vaseHeight', getAIValue(vase, ['height', 'vaseHeight']));
+                setFieldValue('vaseInsertOffsetMm', getAIValue(vase, ['insertOffsetMm', 'offsetMm', 'vaseInsertOffsetMm']));
+                setFieldValue('vaseWallMm', getAIValue(vase, ['wallMm', 'glassWallMm', 'vaseWallMm']));
 
                 const textureType = getAIValue(texture, ['type', 'textureType']);
                 if (textureType) setSelectValue('texTypeSelect', textureType);
@@ -3231,6 +3252,14 @@
                     "plateRadiusExtra": 0.5,
                     "plateSphTopCut": 95,
                     "plateSphBotFlatten": 250
+                },
+                "vase": {
+                    "enabled": false,
+                    "baseDiameter": 3,
+                    "topDiameter": 4,
+                    "height": 8,
+                    "insertOffsetMm": 1,
+                    "wallMm": 1
                 },
                 "texture": {
                     "type": "utility",

@@ -34,6 +34,7 @@ Examples of clear object types:
 - pot with plate
 - plate only
 - object-inspired form such as traffic cone planter or shell-like vase
+- solid vase with a glass insert cavity (a sculptural solid body hollowed out to hold a real glass vase liner)
 
 If the user already clearly described the object, skip the question and generate the file immediately.
 
@@ -107,8 +108,33 @@ This defines the main silhouette.
 Think of it as the vessel body before texture and color logic.
 
 LAYER 2: STRUCTURE
-This turns the field into a pot, plate, or pot+plate.
-This includes wall thickness, base thickness, and plate settings.
+This turns the field into a mesh, pot, plate, pot+plate, or vase.
+This includes wall thickness, base thickness, plate settings, and (for vase) the glass vase
+insert cavity.
+
+VASE MODE (structure.modelMode = "vase"):
+Vase mode makes the body a solid, closed form (it has no wall-thickness cavity of its own) that
+is then hollowed out for a real, physical glass vase to be inserted into it after printing - a
+sculptural solid holder built around a functional glass liner, rather than a thin-walled printed
+vessel.
+- structure.bottomThickness still applies in vase mode: it is the solid floor thickness below
+  the insert cavity, measured up from the very base.
+- structure.sphTopCut and structure.sphBotFlatten (spherical mode only) apply to vase the same
+  way they do to pot: sphTopCut opens the top of the solid body so the cavity is reachable, and
+  sphBotFlatten flattens the bottom so the piece can stand upright. Always give these two
+  believable non-zero/non-default-closed values when modelMode is "vase" in spherical mode - a
+  fully closed body (sphTopCut near 0) would seal the insert cavity inside solid material with
+  no way to reach it.
+- structure.wall and structure.cylDrain (cylindrical) are ignored in vase mode - still output
+  their neutral/default values, but they have no visual or geometric effect.
+- structure.sphBotCut is also ignored in vase mode - still output a valid value like 175.
+The top-level "vase" JSON section (see the schema) defines the real glass vase being inserted:
+baseDiameter/topDiameter/height describe its own physical shape, insertOffsetMm is the printed
+manufacturing clearance added around it (1mm is a sensible default unless the user asks for a
+tighter or looser fit), and wallMm only controls a clear-glass preview render of the inserted
+vase in the app - it has no effect on the printed/exported geometry. Set vase.enabled to true
+only when structure.modelMode is "vase"; otherwise leave it false while still outputting the
+full section with reasonable numbers (see FINAL DECISION RULES).
 
 LAYER 3: TEXTURE
 This adds external displacement on top of the base silhouette.
@@ -797,6 +823,7 @@ structure.modelMode must be one of:
 - "pot"
 - "plate"
 - "potplate"
+- "vase"
 
 structure.modelMode "plate" and "potplate" work with both "cylindrical" and "spherical" coordinate systems.
 Choose the coordinate system based on the body form of the object, not based on whether a plate is present.
@@ -852,6 +879,26 @@ In spherical plate mode (coordSystem = "spherical", modelMode = "plate" or "potp
 
 Always output the full plate section with all parameters regardless of mode.
 
+VASE PARAMETER RULES:
+
+Only meaningful when structure.modelMode is "vase" (works with both coordSystem values):
+- vase.enabled: boolean, true only when structure.modelMode is "vase"
+- vase.baseDiameter: cm, >= 0 (outer diameter of the real glass vase's base)
+- vase.topDiameter: cm, >= 0 (outer diameter of the real glass vase's mouth/rim)
+- vase.height: cm, > 0 (height of the real glass vase)
+- vase.insertOffsetMm: mm, >= 0 (printed clearance around the vase so it slides in; default 1)
+- vase.wallMm: mm, > 0 (preview-only glass wall thickness for the clear-vase render; default 1)
+
+The cavity this produces starts at structure.bottomThickness above the base, tapers from
+(vase.baseDiameter/2 + insertOffsetMm) to (vase.topDiameter/2 + insertOffsetMm) over vase.height,
+then continues straight up through the body's own opening - so vase.height does not need to
+match the full body height; a shorter vase just leaves a plain cylindrical channel above it up
+to the rim.
+
+Always output the full vase section with all parameters regardless of mode, the same as the
+plate section. When modelMode is not "vase", set vase.enabled to false and still give the other
+fields reasonable numbers (the defaults above are fine).
+
 IMPORTANT MODIFIER RULE
 - Do not output any "modifiedCoordinate" field.
 - modifier.equation remaps theta sampling; the optional modifier.equationV remaps v sampling.
@@ -887,6 +934,14 @@ IMPORTANT MODIFIER RULE
     "plateRadiusExtra": 0.5,
     "plateSphTopCut": 95,
     "plateSphBotFlatten": 250
+  },
+  "vase": {
+    "enabled": false,
+    "baseDiameter": 3,
+    "topDiameter": 4,
+    "height": 8,
+    "insertOffsetMm": 1,
+    "wallMm": 1
   },
   "texture": {
     "type": "utility",
@@ -947,6 +1002,13 @@ IMPORTANT MODIFIER RULE
 - In cylindrical plate mode, the plate is controlled by plateHeight and plateOpeningAngle.
 - In spherical plate mode, the plate is controlled by plateSphTopCut and plateSphBotFlatten.
 - Always output the full plate section with all parameters regardless of mode.
+- Both cylindrical and spherical coordinate systems support modelMode "vase" (a solid body
+  hollowed for a real glass vase insert - see LAYER 2 and VASE PARAMETER RULES).
+- Always output the full vase section with all parameters regardless of mode; set vase.enabled
+  to true only when structure.modelMode is "vase".
+- When structure.modelMode is "vase" in spherical mode, give sphTopCut/sphBotFlatten an open,
+  non-default-closed value so the insert cavity is actually reachable, not sealed inside solid
+  material.
 - If a field is inactive, keep its preset neutral and still output its neutral equation.
 - If a field is active, choose the nearest valid preset but write your own custom equation.
 - Set patterns.smoothPatternEdges to true only when a pattern mask is active (preset1 or
