@@ -6372,12 +6372,67 @@ ${trianglesXml.join('\n')}
             };
         }
 
-        function meshToThreeGeometry(mesh) {
+        // Preview shading: per-corner normals that only average the faces meeting at less than
+        // `creaseDeg`, instead of plain computeVertexNormals() averaging across every shared
+        // vertex. Every color patch's top face meets its recessed pocket wall at a sharp ~90
+        // degree crease (same construction as the core's own steps/pockets); smoothing across
+        // that crease drags each wall's normal toward its neighbouring top face and back, which
+        // paints a fine light/dark ripple along every pattern boundary that reads as "pixelation" -
+        // confirmed by forcing flatShading: true on the same geometry, which shows the identical,
+        // clean boundary curve with no ripple. This is preview-only: meshToThreeGeometry is never
+        // used by the STL/3MF exporters (they read mesh.positions/indices directly), which is why
+        // the ripple never appears in a slicer - a slicer recomputes flat per-facet normals from
+        // the raw triangles, the same thing flatShading does here.
+        const PREVIEW_CREASE_DEG = 40;
+        function buildCreaseGeometry(positionsIn, indicesIn, creaseDeg) {
+            const positions = positionsIn instanceof Float32Array ? positionsIn : Float32Array.from(positionsIn);
+            const indices = (indicesIn instanceof Uint32Array || indicesIn instanceof Uint16Array) ? indicesIn : Uint32Array.from(indicesIn);
             const geometry = new THREE.BufferGeometry();
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(mesh.positions, 3));
-            geometry.setIndex(mesh.indices);
-            geometry.computeVertexNormals();
+            const nTri = (indices.length / 3) | 0, nVert = (positions.length / 3) | 0;
+            if (!nTri || !nVert) {
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(0), 3));
+                return geometry;
+            }
+            const fn = new Float32Array(nTri * 3), fu = new Float32Array(nTri * 3); // area-weighted / unit face normals
+            for (let t = 0; t < nTri; t++) {
+                const a = indices[t*3]*3, b = indices[t*3+1]*3, c = indices[t*3+2]*3;
+                const abx = positions[b]-positions[a], aby = positions[b+1]-positions[a+1], abz = positions[b+2]-positions[a+2];
+                const acx = positions[c]-positions[a], acy = positions[c+1]-positions[a+1], acz = positions[c+2]-positions[a+2];
+                const nx = aby*acz - abz*acy, ny = abz*acx - abx*acz, nz = abx*acy - aby*acx;
+                const len = Math.hypot(nx, ny, nz) || 1;
+                fn[t*3] = nx; fn[t*3+1] = ny; fn[t*3+2] = nz;
+                fu[t*3] = nx/len; fu[t*3+1] = ny/len; fu[t*3+2] = nz/len;
+            }
+            // vertex -> incident faces, CSR layout
+            const start = new Uint32Array(nVert + 1);
+            for (let i = 0; i < indices.length; i++) start[indices[i] + 1]++;
+            for (let v = 0; v < nVert; v++) start[v + 1] += start[v];
+            const adj = new Uint32Array(indices.length), fill = start.slice(0, nVert);
+            for (let i = 0; i < indices.length; i++) adj[fill[indices[i]]++] = (i / 3) | 0;
+            const cosT = Math.cos(creaseDeg * Math.PI / 180);
+            const outPos = new Float32Array(nTri * 9), outNrm = new Float32Array(nTri * 9);
+            for (let t = 0; t < nTri; t++) {
+                const ux = fu[t*3], uy = fu[t*3+1], uz = fu[t*3+2];
+                for (let k = 0; k < 3; k++) {
+                    const v = indices[t*3+k], o = (t*3+k)*3;
+                    outPos[o] = positions[v*3]; outPos[o+1] = positions[v*3+1]; outPos[o+2] = positions[v*3+2];
+                    let sx = 0, sy = 0, sz = 0;
+                    for (let j = start[v]; j < start[v+1]; j++) {
+                        const f = adj[j];
+                        if (fu[f*3]*ux + fu[f*3+1]*uy + fu[f*3+2]*uz < cosT) continue;
+                        sx += fn[f*3]; sy += fn[f*3+1]; sz += fn[f*3+2];
+                    }
+                    const len = Math.hypot(sx, sy, sz) || 1;
+                    outNrm[o] = sx/len; outNrm[o+1] = sy/len; outNrm[o+2] = sz/len;
+                }
+            }
+            geometry.setAttribute('position', new THREE.BufferAttribute(outPos, 3));
+            geometry.setAttribute('normal', new THREE.BufferAttribute(outNrm, 3));
             return geometry;
+        }
+
+        function meshToThreeGeometry(mesh) {
+            return buildCreaseGeometry(mesh.positions, mesh.indices, PREVIEW_CREASE_DEG);
         }
 
         function disposeObject(obj) {
