@@ -509,21 +509,38 @@
                 return `coil turns are ${(rise / strandDia).toFixed(1)}x too far apart to fuse into a wall — raise Turns per Wall to ${Math.ceil(Math.PI * Math.abs(cfg.zStretch) / strandDia)}+ or thicken the profile`;
             }
         },
+        // Both of the paths below drive their angle straight from t. That is worth stating
+        // plainly, because it decides whether they can weave at all: with theta(t) = t strictly
+        // increasing, two different t values always sit at two different azimuths, so the curve
+        // CANNOT cross itself - the only way either one used to produce a crossing was the radius
+        // passing through zero and flipping the strand to the far side of the axis, which is an
+        // accident of large amplitudes rather than a weave.
+        //
+        // `weave` adds an angular wobble, theta = t + weave*sin(n*t), the same mechanism the
+        // Looping Rosette uses. Once weave*n > 1 the angle is no longer monotone, the strand
+        // doubles back on itself, and the petals interlace properly. At weave = 0 the expression
+        // is bit-for-bit the old one (t + 0 is exactly t), so designs saved before this rebuild
+        // unchanged - which also means these paths still ship flat, and `warn` says so rather
+        // than letting someone conclude the tool cannot weave them.
         "Flower Ring": {
-            params: [{id:'n',label:'Petals (n)',val:5,step:1},{id:'amp',label:'Amplitude',val:3,step:0.1}],
+            params: [{id:'n',label:'Petals (n)',val:5,step:1},{id:'amp',label:'Amplitude',val:3,step:0.1},
+                     {id:'weave',label:'Weave (0 = flat ring)',val:0,step:0.05}],
             defaultRotY: 0,
-            x: "(rx + amp*cos(n*t)) * cos(t)",
-            y: "(rx + amp*cos(n*t)) * sin(t)",
+            x: "(rx + amp*cos(n*t)) * cos(t + weave*sin(n*t))",
+            y: "(rx + amp*cos(n*t)) * sin(t + weave*sin(n*t))",
             z: "zA * sin(n*t)",
-            period: 2 * Math.PI
+            period: 2 * Math.PI,
+            warn: p => weaveAdvisory(p.weave, p.n, 'Petals (n)')
         },
         "Braided Loop": {
-            params: [{id:'n1',label:'Base Freq (n1)',val:3,step:1},{id:'amp1',label:'Amp 1',val:2.5,step:0.1},{id:'amp2',label:'Amp 2',val:1.0,step:0.1}],
+            params: [{id:'n1',label:'Base Freq (n1)',val:3,step:1},{id:'amp1',label:'Amp 1',val:2.5,step:0.1},{id:'amp2',label:'Amp 2',val:1.0,step:0.1},
+                     {id:'weave',label:'Weave (0 = flat ring)',val:0,step:0.05}],
             defaultRotY: 0,
-            x: "(rx + amp1*cos(n1*t) + amp2*cos((n1+3)*t)) * cos(t)",
-            y: "(rx + amp1*cos(n1*t) + amp2*cos((n1+3)*t)) * sin(t)",
+            x: "(rx + amp1*cos(n1*t) + amp2*cos((n1+3)*t)) * cos(t + weave*sin(n1*t))",
+            y: "(rx + amp1*cos(n1*t) + amp2*cos((n1+3)*t)) * sin(t + weave*sin(n1*t))",
             z: "zA*sin(n1*t) + amp2*sin((n1+3)*t)",
-            period: 2 * Math.PI
+            period: 2 * Math.PI,
+            warn: p => weaveAdvisory(p.weave, p.n1, 'Base Freq (n1)')
         },
         "Mobius Curve": {
             params: [{id:'halfTwists',label:'Half-Twists (odd)',val:1,step:2}],
@@ -553,6 +570,16 @@
             period: c => Math.max(0.05, c.tSpan || 2) * Math.PI
         }
     };
+
+    // Shared by the two angle-driven ring paths: theta = t + weave*sin(freq*t) only stops being
+    // monotone - and the strands only start interlacing - once weave*freq exceeds 1, so quote the
+    // threshold for the frequency actually in use instead of leaving it to be found by trial.
+    function weaveAdvisory(weave, freq, freqLabel) {
+        const f = Math.abs(freq);
+        if (!isFinite(f) || f < 1) return null;
+        if (Math.abs(weave) * f > 1) return null;
+        return `strands do not cross at Weave ${(+weave || 0).toFixed(2)} — this is a flat ring until Weave exceeds ${(1 / f).toFixed(2)} (1 / ${freqLabel})`;
+    }
 
     // Greatest common divisor of two winding numbers, used to shrink a path's period to one
     // traversal. Non-integer (or zero) inputs never close the curve at all, so they fall back to
@@ -1800,12 +1827,19 @@
             if (cleaned.solid) result = keep(cleaned.solid);
             R.debris += cleaned.removed;
 
-            let patternParts = null, patternClamped = false;
+            let patternParts = null, patternClamped = false, patternNote = null, patternDroppedMaskB = null;
             if (patternActive(cfg)) {
                 const wallCap = cfg.doHollow ? Math.max(0, cfg.shellThick - 0.02) : Infinity;
                 const depthCm = Math.max(0, Math.min(cfg.patternDepthCm, wallCap, 0.45 * R.profileMaxR));
                 patternClamped = depthCm < cfg.patternDepthCm - 1e-6;
-                if (depthCm > 1e-4) patternParts = buildPatternParts(cfg, R, result, depthCm);
+                if (depthCm > 1e-4) {
+                    const attempt = buildPatternPartsOrFallback(cfg, R, result, depthCm);
+                    patternParts = attempt.parts;
+                    patternNote = attempt.reason;
+                    patternDroppedMaskB = attempt.droppedMaskB || null;
+                } else {
+                    patternNote = 'pattern depth collapsed to zero against the wall thickness';
+                }
                 if (scale !== 1 && patternParts) for (const part of patternParts) for (let i = 0; i < part.positions.length; i++) part.positions[i] *= scale;
             }
 
@@ -1831,6 +1865,8 @@
             geo.userData.debrisRemoved = R.debris;
             geo.userData.patternParts = patternParts;
             geo.userData.patternClamped = patternClamped;
+            geo.userData.patternNote = patternNote;
+            geo.userData.patternDroppedMaskB = patternDroppedMaskB;
             geo.userData.plateParts = plateParts;
             geo.userData.vaseFloorZ = vaseFloorZ !== null ? vaseFloorZ * scale : null;
             return geo;
@@ -2393,14 +2429,44 @@
     // four, and the two sides of that contour then disagree on where it runs), and it must stay
     // exactly 0 where both ends are 0 - that vertex lies on both contours and emitState relies on
     // the zero to attach the walls of both.
+    // Total order on an edge's two endpoints, by the world position of their top vertex. Two
+    // polygons that share an edge always walk it in OPPOSITE directions, so without pinning the
+    // direction down the crossing on that edge is computed twice, from two different ends, and the
+    // two answers are not the same point:
+    //
+    //   - refine() bisects along a->b and returns t0 unchanged when there is no sign change, and
+    //     t0 itself comes from a[key]/(a[key]-b[key]), which is direction-dependent;
+    //   - even when the bisection does land on complementary dyadic parameters, lerpRec(a,b,t)
+    //     evaluates a + (b-a)*t while lerpRec(b,a,1-t) evaluates b + (a-b)*(1-t) - the same point
+    //     algebraically, different floating-point results.
+    //
+    // The gap is far below the weld tolerance for two cells sharing a GRID edge (both endpoints
+    // are grid nodes, so the lerp is short and well-conditioned) which is why this stayed hidden.
+    // It is not below it along a CONTOUR edge, where both endpoints are themselves interpolated
+    // and the root solver runs on a much longer, more skewed segment - and a contour edge is
+    // walked from both sides exactly once: when both masks are active, state 1 covers fb<0 on BOTH
+    // sides of the fa contour and is emitted as two separate pieces that have to weld along it.
+    // They did not, leaving thousands of open edges in the state-1 prism and in the merged
+    // all-masks prism built from it - which is why every two-mask design with Smooth Edges on was
+    // rejected as "Not manifold" and silently fell back to a single mask.
+    function edgeFirst(a, b) {
+        const p = a.top, q = b.top;
+        if (p[0] !== q[0]) return p[0] < q[0];
+        if (p[1] !== q[1]) return p[1] < q[1];
+        return p[2] <= q[2];
+    }
+
     function clipPoly(poly, fieldKey, keepPositive, ctx) {
         const n = poly.length;
         if (n < 3) return [];
         function crossing(a, b) {
-            const denom = a[fieldKey] - b[fieldKey];
-            let t = Math.abs(denom) < 1e-12 ? 0.5 : clampNum(a[fieldKey] / denom, 0, 1);
-            if (ctx) t = ctx.refine(a, b, fieldKey, t);
-            const c = lerpRec(a, b, t);
+            // Always solve the edge in the same direction, whichever way this polygon walks it.
+            const aFirst = edgeFirst(a, b);
+            const p = aFirst ? a : b, q = aFirst ? b : a;
+            const denom = p[fieldKey] - q[fieldKey];
+            let t = Math.abs(denom) < 1e-12 ? 0.5 : clampNum(p[fieldKey] / denom, 0, 1);
+            if (ctx) t = ctx.refine(p, q, fieldKey, t);
+            const c = lerpRec(p, q, t);
             c[fieldKey] = 0;
             return c;
         }
@@ -2524,7 +2590,13 @@
         // real vertex on this side too.
         function emitQuad(A, B, C, D, eAB, eBC, eCD, eDA) {
             const ring = [A, ...eAB, B, ...eBC, C, ...eCD, D, ...eDA];
-            if (ring.every(r => stOf(r) === 0)) return;
+            // A cell that is state 0 throughout contributes nothing - the base comes from the CSG
+            // subtraction. But `stOf` is the raw four-state reading, and in no-neither mode state 0
+            // does not exist: that fa<0 & fb<0 corner has been folded into state 1, so skipping the
+            // cell punches a one-cell hole in state 1's top and bottom surfaces. Thousands of them
+            // left the state-1 prism - and the merged all-masks prism built from it - open, which
+            // is what made every two-mask design with Smooth Edges on fail as "Not manifold".
+            if (!noNeither && ring.every(r => stOf(r) === 0)) return;
             if (ring.length === 4) { emitTriangle([A, B, C]); emitTriangle([A, C, D]); return; }
             const X = sampled(lerpRec(lerpRec(A, B, 0.5), lerpRec(D, C, 0.5), 0.5));
             for (let i = 0; i < ring.length; i++) emitTriangle([X, ring[i], ring[(i + 1) % ring.length]]);
@@ -2631,30 +2703,44 @@
     // several, each insert is cut from the pristine pot and the base is carved by the merged
     // all-states cutter, so inserts only ever meet each other on exact input planes. Returns null
     // if nothing could be built.
+    // Returns { parts, reason }. Every way this can give up now names itself: a colour layer that
+    // quietly does not appear is indistinguishable from one the user configured wrong, and the
+    // status line only ever said "pattern: N parts" when it worked - on failure it said nothing at
+    // all and the pot came out in the base colour with no explanation. `parts` is null exactly
+    // when `reason` is set.
     function buildPatternParts(cfg, R, result, depthCm) {
         const { Manifold, Mesh } = window.CSG;
         const trash = [];
         const keep = m => { trash.push(m); return m; };
-        const toSolid = pool => {
+        // Keeps the FIRST reason, not the last: the three states are tried in order, and when all
+        // of them come back empty the useful thing to say is that mask A covers nothing - not that
+        // the A+B overlap does, which is merely a consequence.
+        let failure = null;
+        const fail = reason => { if (failure === null) failure = reason; return null; };
+        const toSolid = (pool, what) => {
             const welded = weldMesh(pool.positions, pool.indices);
-            if (!welded.indices.length) return null;
+            if (!welded.indices.length) return fail(`${what} covers none of the surface`);
             try {
                 const m = keep(new Manifold(new Mesh({ numProp: 3, vertProperties: Float32Array.from(welded.positions), triVerts: Uint32Array.from(welded.indices) })));
-                return m.status() === 'NoError' ? m : null;
-            } catch (e) { console.warn('Pattern prism rejected:', e.message); return null; }
+                return m.status() === 'NoError' ? m : fail(`${what} region is not manifold (${m.status()})`);
+            } catch (e) { return fail(`${what} region was rejected: ${e.message}`); }
         };
         const meshOf = (state, m) => { const g = m.getMesh(); return { state, positions: Float32Array.from(g.vertProperties), indices: Uint32Array.from(g.triVerts) }; };
+        const STATE_NAME = { 1: 'mask A', 2: 'mask B', 3: 'the A+B overlap' };
         try {
             const insetSolid = keep(buildInsetSolid(cfg, R, depthCm));
             const grid = buildPatternGrid(cfg, R, depthCm);
             const noNeither = bothPatternsActive(cfg);
             const raw = cfg.smoothPatternEdges ? buildSmoothPatternMeshes(grid, cfg.boundaryRefine, noNeither) : buildSteppedPatternMeshes(grid, noNeither);
             const cutters = [];
+            // A state that simply is not present in this design is not a failure, so the
+            // per-state reason is only interesting if NOTHING usable comes out below.
             for (const k of [1, 2, 3]) {
-                const prism = toSolid(raw[k]);
+                const prism = toSolid(raw[k], STATE_NAME[k]);
                 if (prism) cutters.push({ state: k, solid: keep(prism.subtract(insetSolid)) });
             }
-            if (!cutters.length) return null;
+            if (!cutters.length) return { parts: null, reason: failure || 'no mask region produced a usable solid' };
+            failure = null;
 
             const parts = [];
             let base;
@@ -2662,29 +2748,47 @@
                 const cutter = cutters[0].solid;
                 const [insert, rest] = typeof result.split === 'function' ? result.split(cutter) : [result.intersect(cutter), result.subtract(cutter)];
                 keep(insert); keep(rest);
-                if (insert.status() !== 'NoError' || insert.isEmpty()) return null;
+                if (insert.status() !== 'NoError' || insert.isEmpty()) {
+                    return { parts: null, reason: insert.isEmpty()
+                        ? `${STATE_NAME[cutters[0].state]} does not reach the printed surface anywhere`
+                        : `splitting the pot by ${STATE_NAME[cutters[0].state]} failed (${insert.status()})` };
+                }
                 parts.push(meshOf(cutters[0].state, insert));
                 base = rest;
             } else {
-                const prismAll = toSolid(raw.all);
-                if (!prismAll) return null;
+                const prismAll = toSolid(raw.all, 'the merged all-masks');
+                if (!prismAll) return { parts: null, reason: failure };
                 base = keep(result.subtract(keep(prismAll.subtract(insetSolid))));
                 for (const c of cutters) {
                     const insert = keep(result.intersect(c.solid));
                     if (insert.status() !== 'NoError' || insert.isEmpty()) continue;
                     parts.push(meshOf(c.state, insert));
                 }
-                if (!parts.length) return null;
+                if (!parts.length) return { parts: null, reason: 'no mask region reaches the printed surface' };
             }
-            if (base.status() !== 'NoError') return null;
+            if (base.status() !== 'NoError') return { parts: null, reason: `the base body came out invalid (${base.status()})` };
             parts.unshift(meshOf(0, base));
-            return parts;
+            return { parts, reason: null };
         } catch (e) {
             console.error('Pattern layer failed:', e);
-            return null;
+            return { parts: null, reason: e.message };
         } finally {
             trash.forEach(m => m.delete());
         }
+    }
+
+    // Two masks put four colour states on one wall, and the booleans that separate them are much
+    // more fragile than a single mask's: the all-states cutter has to be manifold, and every
+    // insert has to meet its neighbours on exact planes. When that fails, mask A on its own
+    // almost always still builds - so build it, rather than dropping the whole colour layer and
+    // handing back a plain pot. The caller reports which of the two happened.
+    function buildPatternPartsOrFallback(cfg, R, result, depthCm) {
+        const first = buildPatternParts(cfg, R, result, depthCm);
+        if (first.parts || !bothPatternsActive(cfg)) return first;
+        const soloCfg = Object.assign({}, cfg, { patternEq2: '-1' });
+        const solo = buildPatternParts(soloCfg, R, result, depthCm);
+        if (!solo.parts) return { parts: null, reason: first.reason };
+        return { parts: solo.parts, reason: null, droppedMaskB: first.reason };
     }
 
     // The active path's own parameters, read by the ids pathLib declares for it, each falling back
@@ -2936,7 +3040,11 @@
         if (!hasFitCamera) { fitCameraToObject(geo.boundingBox); hasFitCamera = true; }
         const debris = geo.userData.debrisRemoved ? ` · ${geo.userData.debrisRemoved} debris shells removed` : '';
         const clampNote = geo.userData.patternClamped ? ' · pattern depth clamped' : '';
-        const partsNote = parts ? ` · pattern: ${parts.length} parts` : '';
+        // A colour layer that did not build is reported, not swallowed - and so is one that only
+        // built because mask B was dropped, since that pot is printable but not the design asked for.
+        const partsNote = parts
+            ? ` · pattern: ${parts.length} parts${geo.userData.patternDroppedMaskB ? ` · mask B dropped (${geo.userData.patternDroppedMaskB})` : ''}`
+            : (geo.userData.patternNote ? ` · pattern layer skipped (${geo.userData.patternNote})` : '');
         const plateNote = cfg.includePlate ? (plateParts ? (plateParts.length > 1 ? ` · +plate (${plateParts.length} parts)` : ' · +plate') : ' · plate skipped (bottom cut missed the pot)') : '';
         setStatus(`3D Model · ${triCount.toLocaleString()} tris · ${Math.round(performance.now() - t0)} ms${debris}${clampNote}${partsNote}${plateNote}${getPathNote(cfg)}`);
     }
