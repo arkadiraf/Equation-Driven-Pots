@@ -50,6 +50,7 @@
         .btn-stl { background: var(--success); }
         .btn-3mf { background: var(--export3mf); }
         .btn-ai { background: var(--highlight); }
+        .btn-snapshot { background: #16897b; }
         .btn-reset { background: #7f8c8d; }
 
         .filename-control { margin-top: 8px; }
@@ -99,9 +100,12 @@
                 <label>Topology Path</label>
                 <select id="pathType" onchange="applyPathPreset()">
                     <option value="Torus Knot" selected>Torus Knot</option>
+                    <option value="Spherical Knot">Spherical Knot</option>
+                    <option value="Coiled Basket">Coiled Basket</option>
                     <option value="Flower Ring">Flower Ring</option>
                     <option value="Braided Loop">Braided Loop</option>
                     <option value="Mobius Curve">Mobius Curve</option>
+                    <option value="Custom Path">Custom Path</option>
                 </select>
             </div>
 
@@ -125,6 +129,14 @@
             </div>
 
             <div id="dynamic-params"></div>
+
+            <div id="customPathWrap" style="display:none;">
+                <div class="sub-label">Custom Path x(t), y(t), z(t)</div>
+                <textarea id="pathX" onchange="updatePreview()"></textarea>
+                <textarea id="pathY" onchange="updatePreview()"></textarea>
+                <textarea id="pathZ" onchange="updatePreview()"></textarea>
+                <div class="desc-text">Three expressions in t, swept over t = 0 .. tSpan*pi. In scope: rx (half of Path Diam), zA (Z-Stretch), the a/b/c knobs above, pi, the usual math functions, and tri(angle, shape) / tric(angle, shape) - a sine and a cosine at shape=0 that sharpen into triangle waves as shape approaches 1. The curve must close: every expression has to return to its t=0 value at t = tSpan*pi, or the sweep will be forced shut with a kink.</div>
+            </div>
 
             <div class="sub-label">Orientation</div>
             <div class="grid-3">
@@ -207,8 +219,12 @@
                     <div class="input-group"><label>Plate Wall Thickness (cm)</label><input type="number" id="plateWallThickness" value="0.35" step="0.05" min="0.05" onchange="updatePreview()"></div>
                     <div class="input-group"><label>Plate Base Thickness (cm)</label><input type="number" id="plateBaseThickness" value="0.35" step="0.05" min="0.05" onchange="updatePreview()"></div>
                 </div>
-                <div class="input-group"><label>Plate Opening Angle (&deg;)</label><input type="number" id="plateOpeningAngle" value="25" step="1" min="0" max="60" onchange="updatePreview()"></div>
+                <div class="grid-inputs">
+                    <div class="input-group"><label>Plate Opening Angle (&deg;)</label><input type="number" id="plateOpeningAngle" value="25" step="1" min="0" max="60" onchange="updatePreview()"></div>
+                    <div class="input-group"><label>Contour Smoothing (&deg;)</label><input type="number" id="plateSmoothDeg" value="10" step="1" min="0" max="45" onchange="updatePreview()"></div>
+                </div>
                 <div class="desc-text">Traces the pot's own outer silhouette at the Bottom Cut plane, connects the (possibly several, self-crossing) edges with a smooth spline, then offsets that contour outward by the clearance and lofts it into a flared dish below the pot so the pot's base sits cleanly inside the rim (Mobius Curve uses a fitted ellipse instead, for a cleaner result around its hole). Pot mode only.</div>
+                <div class="desc-text">Contour Smoothing is the angular width below which a dip in that traced contour is treated as an artefact of the cross-section rather than as the pot's shape: notches narrower than it are filled back out to the surrounding radius, and the result is blurred by the same width. Rounding a peak this way would pull the rim inward, so the clearance above is spent covering that first and the plate is only widened by whatever is left over - the rim never sits inside the silhouette it traced, whatever this is set to. Raising it softens detail; 0 gives the raw trace.</div>
                 <div class="checkbox-group">
                     <input type="checkbox" id="applyPlateColoring" checked onchange="updatePreview()">
                     <label for="applyPlateColoring" style="margin-bottom:0;">Apply the Dual Pattern Color Layer to the plate's bottom and sides too</label>
@@ -326,6 +342,7 @@
     <button class="btn-preview" onclick="updatePreview()">GENERATE 3D MODEL</button>
     <button class="btn-stl" onclick="exportSTL()">EXPORT .STL (PRINT READY)</button>
     <button class="btn-3mf" onclick="exportMultiColor3MF()">EXPORT .3MF (MULTI-COLOR)</button>
+    <button class="btn-snapshot" onclick="downloadViewportImage()">SAVE VIEW AS .PNG</button>
     <button class="btn-ai" onclick="openDesignJsonWindow()">IMPORT / EXPORT DESIGN (JSON)</button>
     <button class="btn-preview" onclick="downloadCurrentSettingsJson()">DOWNLOAD DESIGN .JSON</button>
     <button class="btn-preview" onclick="triggerDesignFilePicker()">LOAD DESIGN .JSON</button>
@@ -412,12 +429,182 @@
         titleEl.parentElement.classList.toggle('is-collapsed');
     }
 
+    // ---- Topology paths ---------------------------------------------------------------------
+    // Every path is DATA, not code: three expressions in t (compiled the same way the profile,
+    // texture and colour-mask equations are), the parameters they may use, the t-span the sweep
+    // runs over, and how the base plate should trace this shape. Adding a path means adding a row
+    // here - nothing downstream names a path type, so readCfg / the Design JSON / the plate all
+    // pick the new one up for free. "Custom Path" is the same machinery with the three
+    // expressions taken from the UI instead of from this table.
+    //
+    // In expression scope: `t`, `rx` (half of Path Diam), `zA` (Z-Stretch), this path's own
+    // parameters by id, `pi`, the usual Math functions, and `tri` (see triWave).
+    //
+    // `period` is what t spans for ONE traversal of the closed curve. Getting it wrong is not
+    // cosmetic: too large and the curve retraces itself, handing the CSG union a pile of exactly
+    // coincident tubes (the old hardcoded 2*pi did this for any Torus Knot with gcd(p,q) > 1, and
+    // the hardcoded 4*pi did it for even Mobius half-twists), too small and the sweep is forced
+    // shut across a gap. It can be a constant or a function of the parameter values.
     const pathLib = {
-        "Mobius Curve": { params: [], defaultRotY: 270 },
-        "Torus Knot": { params: [{id:'p',label:'p (Main)',val:2,step:1},{id:'q',label:'q (Secondary)',val:3,step:1},{id:'amp',label:'Amplitude',val:3.5,step:0.1}], defaultRotY: 0 },
-        "Flower Ring": { params: [{id:'n',label:'Petals (n)',val:5,step:1},{id:'amp',label:'Amplitude',val:3,step:0.1}], defaultRotY: 0 },
-        "Braided Loop": { params: [{id:'n1',label:'Base Freq (n1)',val:3,step:1},{id:'amp1',label:'Amp 1',val:2.5,step:0.1},{id:'amp2',label:'Amp 2',val:1.0,step:0.1}], defaultRotY: 0 }
+        "Torus Knot": {
+            params: [{id:'p',label:'p (Main)',val:2,step:1},{id:'q',label:'q (Secondary)',val:3,step:1},{id:'amp',label:'Amplitude',val:3.5,step:0.1},
+                     {id:'phase',label:'Phase (rad)',val:0,step:0.1},{id:'wave',label:'Cane Shape (0-1)',val:0,step:0.05}],
+            defaultRotY: 0,
+            // At phase = 0, wave = 0 this is BIT-for-bit the original rx + amp*cos(q*t) /
+            // zA*sin(q*t) pair, because tric/tri fall through to Math.cos/Math.sin themselves
+            // rather than reaching them via an identity - writing the radial term as
+            // tri(q*t + pi/2, ...) instead would be the same curve to 6e-15, which is enough to
+            // flip a handful of near-degenerate CSG decisions and change the triangle count of
+            // designs saved before this change.
+            //
+            // `phase` unlocks the radial and vertical waves from the 90 degrees they used to be
+            // frozen at, which is what decides whether the crossings sit at the rim, the belly or
+            // the base; `wave` straightens the sine into a cane.
+            x: "(rx + amp*tric(q*t + phase, wave)) * cos(p*t)",
+            y: "(rx + amp*tric(q*t + phase, wave)) * sin(p*t)",
+            z: "zA * tri(q*t, wave)",
+            period: c => 2 * Math.PI / turnsGcd(c.p, c.q)
+        },
+        "Spherical Knot": {
+            // `amp` defaults to the Torus Knot's 3.5 for the same reason that path uses it: with
+            // p = 2 the two strands crossing at a given azimuth sit at rx*cos(lat) +/- amp, so
+            // 2*amp has to clear the strand's own diameter (6cm at the stock 3.0 profile) or the
+            // over/under disappears into one merged lump.
+            params: [{id:'p',label:'p (Main)',val:2,step:1},{id:'q',label:'q (Secondary)',val:3,step:1},{id:'reach',label:'Polar Reach (rad)',val:1.25,step:0.05},
+                     {id:'amp',label:'Weave Offset',val:3.5,step:0.1}],
+            defaultRotY: 0,
+            // The torus knot mapped onto a sphere instead of a cylinder: latitude swings +/-
+            // `reach` q times while the strand circles p times, and the radius follows cos(lat),
+            // so the silhouette is an egg whose rim closes by itself rather than a tube cut flat.
+            // The amp*cos(q*t) ripple is positive while the strand climbs and negative while it
+            // falls, so ascending strands ride outside descending ones - that is the over/under.
+            // Reach near pi/2 pulls the strands into a near-solid cap at each pole.
+            x: "(rx*cos(reach*sin(q*t)) + amp*cos(q*t)) * cos(p*t)",
+            y: "(rx*cos(reach*sin(q*t)) + amp*cos(q*t)) * sin(p*t)",
+            z: "zA * sin(reach*sin(q*t))",
+            period: c => 2 * Math.PI / turnsGcd(c.p, c.q)
+        },
+        "Coiled Basket": {
+            params: [{id:'k',label:'Turns per Wall',val:8,step:1},{id:'amp',label:'Wall Gap',val:2,step:0.1},
+                     {id:'weave',label:'Weave Depth',val:0.6,step:0.1},{id:'m',label:'Weave Freq',val:5,step:1}],
+            defaultRotY: 0,
+            // One closed strand that spirals UP the outside wall, turns over at the rim and
+            // spirals back DOWN the inside - a genuine double wall, the way a coiled basket is
+            // actually built. amp*sin(t) is what puts it outside on the way up and inside on the
+            // way down; the two walls meet at the base (t = 0) and the rim (t = pi).
+            //
+            // It only prints as a vessel if consecutive turns FUSE: the rise per turn peaks at
+            // about pi*zA/k, so k has to be large enough that this stays under the strand's
+            // diameter, or the result is a spring with gaps rather than a wall. `warn` below says
+            // so in the status line rather than overriding the number the user just typed - an
+            // open coil is a legitimate thing to want, it just isn't a planter.
+            x: "(rx + amp*sin(t) + weave*cos(m*t)) * cos(k*t)",
+            y: "(rx + amp*sin(t) + weave*cos(m*t)) * sin(k*t)",
+            z: "zA * (1 - cos(t)) / 2",
+            period: 2 * Math.PI,
+            warn: (p, cfg, strandDia) => {
+                const k = Math.max(1, Math.abs(Math.round(p.k)));
+                const rise = Math.PI * Math.abs(cfg.zStretch) / k;   // peak rise per turn, at the belly
+                if (rise <= strandDia || strandDia <= 0) return null;
+                return `coil turns are ${(rise / strandDia).toFixed(1)}x too far apart to fuse into a wall — raise Turns per Wall to ${Math.ceil(Math.PI * Math.abs(cfg.zStretch) / strandDia)}+ or thicken the profile`;
+            }
+        },
+        "Flower Ring": {
+            params: [{id:'n',label:'Petals (n)',val:5,step:1},{id:'amp',label:'Amplitude',val:3,step:0.1}],
+            defaultRotY: 0,
+            x: "(rx + amp*cos(n*t)) * cos(t)",
+            y: "(rx + amp*cos(n*t)) * sin(t)",
+            z: "zA * sin(n*t)",
+            period: 2 * Math.PI
+        },
+        "Braided Loop": {
+            params: [{id:'n1',label:'Base Freq (n1)',val:3,step:1},{id:'amp1',label:'Amp 1',val:2.5,step:0.1},{id:'amp2',label:'Amp 2',val:1.0,step:0.1}],
+            defaultRotY: 0,
+            x: "(rx + amp1*cos(n1*t) + amp2*cos((n1+3)*t)) * cos(t)",
+            y: "(rx + amp1*cos(n1*t) + amp2*cos((n1+3)*t)) * sin(t)",
+            z: "zA*sin(n1*t) + amp2*sin((n1+3)*t)",
+            period: 2 * Math.PI
+        },
+        "Mobius Curve": {
+            params: [{id:'halfTwists',label:'Half-Twists (odd)',val:1,step:2}],
+            defaultRotY: 270,
+            // The edge of a band given `halfTwists` half-twists. Only an ODD number of them
+            // leaves that edge as a SINGLE closed curve that winds twice around the axis (t up to
+            // 4*pi); an even number splits it into two separate loops, each closing at 2*pi, and
+            // the sweep can only ever follow one of them - hence the period below.
+            x: "(rx + zA*cos(halfTwists*t/2)) * cos(t)",
+            y: "(rx + zA*cos(halfTwists*t/2)) * sin(t)",
+            z: "zA * sin(halfTwists*t/2)",
+            period: c => (Math.abs(Math.round(c.halfTwists)) % 2 === 1 ? 4 : 2) * Math.PI,
+            plateMode: 'ellipse'
+        },
+        "Custom Path": {
+            params: [{id:'a',label:'a',val:6,step:1},{id:'b',label:'b',val:0.28,step:0.02},{id:'c',label:'c',val:2.5,step:0.1},
+                     {id:'tSpan',label:'t Span (x pi)',val:2,step:1}],
+            defaultRotY: 0,
+            custom: true,
+            // Ships as a "looping rosette": the angle itself wobbles (t + b*sin(a*t)) instead of
+            // advancing steadily, so once b*a > 1 the strand doubles back and each petal closes
+            // into an eyelet. It is the one crossing mechanism none of the built-in paths use -
+            // they all cross either by winding (p > 1) or by the radius passing through zero.
+            x: "(rx + c*cos(a*t)) * cos(t + b*sin(a*t))",
+            y: "(rx + c*cos(a*t)) * sin(t + b*sin(a*t))",
+            z: "zA * sin(a*t)",
+            period: c => Math.max(0.05, c.tSpan || 2) * Math.PI
+        }
     };
+
+    // Greatest common divisor of two winding numbers, used to shrink a path's period to one
+    // traversal. Non-integer (or zero) inputs never close the curve at all, so they fall back to
+    // 1 and keep the full period rather than inventing a shorter one.
+    function turnsGcd(a, b) {
+        if (!isFinite(a) || !isFinite(b)) return 1;
+        if (Math.abs(a - Math.round(a)) > 1e-9 || Math.abs(b - Math.round(b)) > 1e-9) return 1;
+        let x = Math.abs(Math.round(a)), y = Math.abs(Math.round(b));
+        if (!x || !y) return 1;
+        while (y) { const r = x % y; x = y; y = r; }
+        return x || 1;
+    }
+
+    // A sine that sharpens into a triangle wave: shape 0 is exactly Math.sin, shape -> 1 is a
+    // near-perfect triangle, and the output stays in [-1, 1] throughout. Straight-sided strands
+    // cross at a constant angle, which reads as woven cane rather than as a stack of sine waves.
+    // `tric` is the same wave a quarter-period earlier - the cosine of the pair - written as its
+    // own function rather than as tri(a + pi/2, shape) so that shape 0 returns Math.cos(a) with
+    // no arithmetic in front of it.
+    function triWave(a, shape) {
+        if (!(shape > 0)) return Math.sin(a);
+        const s = clampNum(shape, 0, 0.999);
+        return Math.asin(s * Math.sin(a)) / Math.asin(s);
+    }
+    function triWaveCos(a, shape) {
+        if (!(shape > 0)) return Math.cos(a);
+        const s = clampNum(shape, 0, 0.999);
+        return Math.asin(s * Math.cos(a)) / Math.asin(s);
+    }
+
+    const PATH_MATH_ARGS = ['pi','sin','cos','tan','asin','acos','atan','atan2','sinh','cosh','tanh','sqrt','pow','abs','min','max','exp','log',
+        'floor','ceil','round','sign','mod','hypot','smoothstep','clamp','tri','tric'];
+    const PATH_MATH_VALS = [Math.PI, Math.sin, Math.cos, Math.tan, Math.asin, Math.acos, Math.atan, Math.atan2,
+        Math.sinh, Math.cosh, Math.tanh, Math.sqrt, Math.pow, Math.abs, Math.min, Math.max, Math.exp, Math.log,
+        Math.floor, Math.ceil, Math.round, Math.sign, modFn, Math.hypot, smoothstepFn, clampNum, triWave, triWaveCos];
+    const pathExprCache = new Map();
+
+    // Mirrors compilePatternExpr, but the argument list depends on which path is active (each one
+    // brings its own parameter names into scope), so the cache key carries those names too. A
+    // broken expression compiles to a constant 0 instead of throwing, which collapses that
+    // coordinate to the axis - visibly wrong in the preview, rather than a blank canvas.
+    function compilePathExpr(src, paramIds) {
+        const body = (typeof src === 'string' && src.trim()) ? src : '0';
+        const key = paramIds.join(',') + '|' + body;
+        if (pathExprCache.has(key)) return pathExprCache.get(key);
+        let fn;
+        try { fn = new Function('t', 'rx', 'zA', ...paramIds, ...PATH_MATH_ARGS, '"use strict"; return (' + body + ');'); }
+        catch (e) { fn = () => 0; }
+        if (pathExprCache.size > 200) pathExprCache.clear();
+        pathExprCache.set(key, fn);
+        return fn;
+    }
 
     function applyPathPreset() {
         const key = document.getElementById('pathType').value;
@@ -426,6 +613,16 @@
         container.innerHTML = data.params.map(p => `
             <div class="input-group"><label>${p.label}</label><input type="number" id="${p.id}" value="${p.val}" step="${p.step}" onchange="updatePreview()"></div>
         `).join('');
+        const wrap = document.getElementById('customPathWrap');
+        wrap.style.display = data.custom ? 'block' : 'none';
+        if (data.custom) {
+            // Seeded only when empty, so switching away from Custom Path and back does not throw
+            // away what was typed there.
+            for (const [id, src] of [['pathX', data.x], ['pathY', data.y], ['pathZ', data.z]]) {
+                const el = document.getElementById(id);
+                if (el && !el.value.trim()) el.value = src;
+            }
+        }
         document.getElementById('rotY').value = data.defaultRotY || 0;
         updatePreview();
     }
@@ -443,19 +640,44 @@
         updatePreview();
     }
 
-    function getPathPoint(t, cfg) {
-        const rx = cfg.diameter * 0.5, zA = cfg.zStretch, pi = Math.PI, sin = Math.sin, cos = Math.cos;
-        if (cfg.type === 'Mobius Curve') {
-            let phi = 0.5 * t;
-            return new THREE.Vector3((rx + zA * cos(phi)) * cos(t), (rx + zA * cos(phi)) * sin(t), zA * sin(phi));
-        } else if (cfg.type === 'Torus Knot') {
-            return new THREE.Vector3((rx + cfg.amp * cos(cfg.q * t)) * cos(cfg.p * t), (rx + cfg.amp * cos(cfg.q * t)) * sin(cfg.p * t), zA * sin(cfg.q * t));
-        } else if (cfg.type === 'Flower Ring') {
-            return new THREE.Vector3((rx + cfg.amp * cos(cfg.n * t)) * cos(t), (rx + cfg.amp * cos(cfg.n * t)) * sin(t), zA * sin(cfg.n * t));
-        } else if (cfg.type === 'Braided Loop') {
-            let n2 = cfg.n1 + 3, rad = rx + cfg.amp1 * cos(cfg.n1 * t) + cfg.amp2 * cos(n2 * t);
-            return new THREE.Vector3(rad * cos(t), rad * sin(t), zA * sin(cfg.n1 * t) + cfg.amp2 * sin(n2 * t));
-        }
+    // Compiles the active path's three expressions once and returns a sampler, so a rebuild pays
+    // for the compile once rather than per step. `cfg.pathExpr` is only set when the path is
+    // "Custom Path" (readCfg reads the three textareas); everything else comes from pathLib.
+    function makePathSampler(cfg) {
+        const entry = pathLib[cfg.type] || pathLib["Torus Knot"];
+        const src = cfg.pathExpr || entry;
+        const ids = entry.params.map(p => p.id);
+        const vals = ids.map(id => { const v = cfg.params ? cfg.params[id] : undefined; return isFinite(v) ? v : 0; });
+        const fx = compilePathExpr(src.x, ids), fy = compilePathExpr(src.y, ids), fz = compilePathExpr(src.z, ids);
+        const rx = cfg.diameter * 0.5, zA = cfg.zStretch;
+        const head = [0, rx, zA, ...vals, ...PATH_MATH_VALS];
+        const call = (fn, t) => {
+            head[0] = t;
+            let v;
+            try { v = fn(...head); } catch (e) { v = 0; }
+            return (typeof v === 'number' && isFinite(v)) ? v : 0;
+        };
+        return t => new THREE.Vector3(call(fx, t), call(fy, t), call(fz, t));
+    }
+
+    // Optional per-path advisory appended to the status line - for conditions that make a design
+    // print badly but are perfectly valid geometry, so refusing to build them (or quietly
+    // "fixing" the parameter the user just typed) would be the wrong call.
+    function getPathNote(cfg) {
+        const entry = pathLib[cfg.type];
+        if (!entry || typeof entry.warn !== 'function') return '';
+        const rs = sampleProfileR(cfg.eq, 64).map(r => Math.max(0.01, r));
+        const strandDia = 2 * rs.reduce((a, b) => a + b, 0) / rs.length;
+        const msg = entry.warn(cfg.params || {}, cfg, strandDia);
+        return msg ? ' · ' + msg : '';
+    }
+
+    // How far t runs for exactly one traversal of the closed curve - see the pathLib header for
+    // why a wrong answer here is a geometry bug rather than a cosmetic one.
+    function getPathPeriod(cfg) {
+        const entry = pathLib[cfg.type] || pathLib["Torus Knot"];
+        const per = (typeof entry.period === 'function') ? entry.period(cfg.params || {}) : entry.period;
+        return (isFinite(per) && per > 1e-6) ? per : 2 * Math.PI;
     }
 
     function makeRotationMatrix(rotX, rotY, rotZ) {
@@ -497,10 +719,11 @@
     // Samples the path and builds rotation-minimizing frames, spreading the closed-loop twist
     // evenly along the sweep so the last ring lines up with the first.
     function buildSweepFrames(cfg) {
-        const steps = cfg.sections, pi = Math.PI;
-        const maxT = (cfg.type === 'Mobius Curve') ? 4 * pi : 2 * pi;
+        const steps = cfg.sections;
+        const maxT = getPathPeriod(cfg);
+        const samplePath = makePathSampler(cfg);
         const pts = [];
-        for (let i = 0; i <= steps; i++) pts.push(getPathPoint((i/steps)*maxT, cfg));
+        for (let i = 0; i <= steps; i++) pts.push(samplePath((i/steps)*maxT));
 
         let tang = new THREE.Vector3().subVectors(pts[1], pts[0]).normalize();
         let norm = new THREE.Vector3(1,0,0);
@@ -998,13 +1221,13 @@
     // passing through that height), not the single simple ring a body-of-revolution pot would
     // have - see extractPlateEnvelope/sampleEnvelopeSpline for how those loops become one contour.
     //
-    // The Mobius Curve path is a special case: its loops sit AROUND a hole rather than clustered
-    // near the centre, and a bin the outer loop's own vertices happened to skip could get "won" by
-    // a much smaller, closer strand on the far side of that hole - spiking the traced contour
-    // sharply inward right through the plate. A best-fit ELLIPSE can't spike (smooth by
-    // construction everywhere), so Mobius Curve gets extractPlateEllipse/ellipseRadiusAt instead;
-    // every other path keeps the traced-silhouette look, which hugs each path's own bumps more
-    // closely than an ellipse would.
+    // Paths whose loops sit AROUND a hole rather than clustered near the centre are a special case
+    // (Mobius Curve is the one in the library): a bin the outer loop's own vertices happened to
+    // skip could get "won" by a much smaller, closer strand on the far side of that hole - spiking
+    // the traced contour sharply inward right through the plate. A best-fit ELLIPSE can't spike
+    // (smooth by construction everywhere), so those paths declare `plateMode: 'ellipse'` in
+    // pathLib and get extractPlateEllipse/ellipseRadiusAt instead; every other path keeps the
+    // traced-silhouette look, which hugs each path's own bumps more closely than an ellipse would.
 
     // Angular resolution the plate's own contour/mesh is sampled and built at - independent of the
     // pot's own Mesh Resolution, and not user-facing.
@@ -1012,29 +1235,122 @@
 
     // Slices the pot's OUTER wall solid (ignoring any cavity/fill - the plate only cares about the
     // printed silhouette) at the bottom-cut height, then reduces the resulting loop(s) to one
-    // "outer shape": bin every cross-section point by angle around the loops' shared centroid and
-    // keep the farthest one per bin, so a bin a strand doesn't reach at all is simply left empty
-    // rather than guessed at. Returns null if the plane misses the solid entirely.
+    // "outer shape": the farthest material found in each angular bin around the loops' shared
+    // centre.
+    //
+    // The cross-section is walked EDGE by edge, not vertex by vertex, and that distinction is the
+    // whole ball game. Manifold's slice() only puts a vertex where a triangle crosses the plane,
+    // which on a typical pot is ~100 points for 180 bins - its edges routinely span 5-18 degrees
+    // apiece. Binning only the vertices therefore left most bins empty even though material runs
+    // straight through them, and an empty outer-wall bin gets "won" by whatever else is at that
+    // angle: on any double-walled shape (a Coiled Basket, the far side of a Mobius hole) that is
+    // the INNER wall, so the traced contour collapsed inward by centimetres and jumped back out
+    // one bin later. Walking the edges at half-bin steps fills every bin the material actually
+    // spans, which is what stops the contour flipping between walls.
+    //
+    // Each bin also remembers the true angle of its farthest point rather than reporting the bin's
+    // centre, so the spline downstream is not fed up to +/- half a bin of made-up angular jitter.
     function extractPlateEnvelope(outerSolid, zLo) {
         const cs = outerSolid.slice(zLo);
         if (cs.isEmpty()) { cs.delete(); return null; }
         const polys = cs.toPolygons();
         cs.delete();
-        let sx = 0, sy = 0, n = 0;
-        for (const poly of polys) for (const p of poly) { sx += p[0]; sy += p[1]; n++; }
-        if (!n) return null;
-        const cx = sx / n, cy = sy / n;
-        const binMax = new Float64Array(PLATE_RES).fill(-Infinity);
-        for (const poly of polys) for (const p of poly) {
-            const dx = p[0] - cx, dy = p[1] - cy;
-            let theta = Math.atan2(dy, dx); if (theta < 0) theta += 2 * Math.PI;
-            const b = Math.min(PLATE_RES - 1, Math.floor(theta / (2 * Math.PI) * PLATE_RES));
-            const r = Math.hypot(dx, dy);
-            if (r > binMax[b]) binMax[b] = r;
+
+        // Edge-LENGTH-weighted centroid: a plain per-vertex mean follows the tessellation (a
+        // finely-triangulated region drags the centre towards itself), and the centre is what every
+        // radius below is measured from, so that bias shows up in the contour.
+        let sx = 0, sy = 0, wsum = 0, verts = 0;
+        for (const poly of polys) {
+            for (let i = 0; i < poly.length; i++) {
+                const a = poly[i], b = poly[(i + 1) % poly.length];
+                const w = Math.hypot(b[0] - a[0], b[1] - a[1]);
+                sx += (a[0] + b[0]) * 0.5 * w; sy += (a[1] + b[1]) * 0.5 * w; wsum += w;
+                verts++;
+            }
         }
+        if (!verts) return null;
+        let cx, cy;
+        if (wsum > 1e-9) { cx = sx / wsum; cy = sy / wsum; }
+        else {
+            let px = 0, py = 0, n = 0;
+            for (const poly of polys) for (const p of poly) { px += p[0]; py += p[1]; n++; }
+            cx = px / n; cy = py / n;
+        }
+
+        const binMax = new Float64Array(PLATE_RES).fill(-Infinity);
+        const binTheta = new Float64Array(PLATE_RES);
+        const twoPi = 2 * Math.PI, binStep = twoPi / PLATE_RES;
+        const deposit = (x, y) => {
+            const dx = x - cx, dy = y - cy;
+            const r = Math.hypot(dx, dy);
+            let theta = Math.atan2(dy, dx); if (theta < 0) theta += twoPi;
+            const b = Math.min(PLATE_RES - 1, Math.floor(theta / twoPi * PLATE_RES));
+            if (r > binMax[b]) { binMax[b] = r; binTheta[b] = theta; }
+        };
+        for (const poly of polys) {
+            for (let i = 0; i < poly.length; i++) {
+                const a = poly[i], b = poly[(i + 1) % poly.length];
+                // Steps are chosen from the edge's ANGULAR span so that no bin it crosses is
+                // skipped; the interpolation itself stays Cartesian, so a sample always lands on
+                // the real edge rather than on an arc approximating it.
+                let t1 = Math.atan2(a[1] - cy, a[0] - cx), t2 = Math.atan2(b[1] - cy, b[0] - cx);
+                let dt = t2 - t1;
+                while (dt > Math.PI) dt -= twoPi;
+                while (dt < -Math.PI) dt += twoPi;
+                const steps = Math.min(512, Math.max(1, Math.ceil(Math.abs(dt) / (binStep * 0.5))));
+                for (let s = 0; s < steps; s++) {
+                    const f = s / steps;
+                    deposit(a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f);
+                }
+            }
+        }
+
         const samples = [];
-        for (let b = 0; b < PLATE_RES; b++) if (isFinite(binMax[b])) samples.push({ theta: (b + 0.5) / PLATE_RES * 2 * Math.PI, r: binMax[b] });
+        for (let b = 0; b < PLATE_RES; b++) if (isFinite(binMax[b])) samples.push({ theta: binTheta[b], r: binMax[b] });
+        samples.sort((p, q) => p.theta - q.theta);
         return samples.length >= 3 ? { cx, cy, samples } : null;
+    }
+
+    // Periodic morphological CLOSING (dilate then erode) of a radius profile, by a window of
+    // `halfWidth` bins. Closing removes notches NARROWER than the window while leaving everything
+    // wider untouched - which is exactly the asymmetry wanted here: a one-or-two-bin dip inward is
+    // always an artefact of what the slice happened to contain, whereas a broad concavity is the
+    // pot's real shape and the plate should follow it. A plain blur cannot tell those apart and
+    // would round off both.
+    function closeRadiusProfile(r, halfWidth) {
+        const n = r.length;
+        if (halfWidth < 1) return r;
+        const dil = new Float64Array(n), out = new Float64Array(n);
+        for (let i = 0; i < n; i++) {
+            let m = -Infinity;
+            for (let k = -halfWidth; k <= halfWidth; k++) { const v = r[(i + k + n * 2) % n]; if (v > m) m = v; }
+            dil[i] = m;
+        }
+        for (let i = 0; i < n; i++) {
+            let m = Infinity;
+            for (let k = -halfWidth; k <= halfWidth; k++) { const v = dil[(i + k + n * 2) % n]; if (v < m) m = v; }
+            out[i] = m;
+        }
+        return out;
+    }
+
+    // Periodic binomial (repeated box) smoothing - takes the stair-steps off the traced contour
+    // without the ringing a wider single-pass kernel would add. Three passes of a box filter is a
+    // near-Gaussian, and staying periodic means theta = 0 needs no special case.
+    function smoothRadiusProfile(r, halfWidth) {
+        const n = r.length;
+        if (halfWidth < 1) return r;
+        let cur = r;
+        for (let pass = 0; pass < 3; pass++) {
+            const next = new Float64Array(n);
+            for (let i = 0; i < n; i++) {
+                let sum = 0;
+                for (let k = -halfWidth; k <= halfWidth; k++) sum += cur[(i + k + n * 2) % n];
+                next[i] = sum / (2 * halfWidth + 1);
+            }
+            cur = next;
+        }
+        return cur;
     }
 
     // Pads a periodic (theta, r) sample list with its own last two / first two points shifted by
@@ -1053,14 +1369,24 @@
     // points close together in theta, then a wide empty gap follows to the next strand) samples:
     // this is what "connects the edges with a clean spline" - the plate's contour follows the
     // pot's real silhouette where material is, and a smooth curve bridges every gap where it isn't.
+    //
+    // NON-uniform: the end tangents are divided by the real angular span the neighbouring knots
+    // cover, instead of being treated as if every knot were one step apart. With spacing this
+    // uneven the uniform form gives a dense cluster's tangent to a wide gap and vice versa, which
+    // both overshoots (measured at nearly 5mm of radius on a coiled design - the spline leaving
+    // the range of its own input data) and kinks the contour at every cluster/gap boundary.
     function sampleEnvelopeSpline(ext, thetaOut) {
         let i = 1;
         while (i < ext.length - 2 && ext[i + 1].theta <= thetaOut) i++;
-        const t0 = ext[i].theta, t1 = ext[i + 1].theta;
-        const t = clampNum((thetaOut - t0) / Math.max(1e-9, t1 - t0), 0, 1);
+        const t0 = ext[i - 1].theta, t1 = ext[i].theta, t2 = ext[i + 1].theta, t3 = ext[i + 2].theta;
         const p0 = ext[i - 1].r, p1 = ext[i].r, p2 = ext[i + 1].r, p3 = ext[i + 2].r;
-        const t2 = t * t, t3 = t2 * t;
-        return 0.5 * ((2 * p1) + (p2 - p0) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (3 * p1 - p0 - 3 * p2 + p3) * t3);
+        const h = Math.max(1e-9, t2 - t1);
+        const s = clampNum((thetaOut - t1) / h, 0, 1);
+        // Tangents in units of "radius per radian", then scaled back into the [0,1] parameter.
+        const m1 = (p2 - p0) / Math.max(1e-9, t2 - t0) * h;
+        const m2 = (p3 - p1) / Math.max(1e-9, t3 - t1) * h;
+        const s2 = s * s, s3 = s2 * s;
+        return (2*s3 - 3*s2 + 1) * p1 + (s3 - 2*s2 + s) * m1 + (-2*s3 + 3*s2) * p2 + (s3 - s2) * m2;
     }
 
     // Slices the pot's OUTER wall solid (ignoring any cavity/fill - the plate only cares about the
@@ -1119,15 +1445,44 @@
         const N = PLATE_RES;
         const plateR = new Float64Array(N);
         let env;
-        if (cfg.type === 'Mobius Curve') {
+        if (cfg.plateMode === 'ellipse') {
             env = extractPlateEllipse(outerSolid, zLo);
             if (!env) return null;
             for (let j = 0; j < N; j++) plateR[j] = ellipseRadiusAt(env, (j / N) * 2 * Math.PI) + cfg.plateOffsetCm;
         } else {
             env = extractPlateEnvelope(outerSolid, zLo);
             if (!env) return null;
+            // Trace, then clean up, in that order: the spline bridges the angles where there is
+            // genuinely no material, the closing removes the narrow inward notches left by
+            // whatever the slice happened to contain there, and the blur takes off the remaining
+            // stair-steps. Clearance is added last so it is never itself smoothed away.
             const ext = padPeriodicSamples(env.samples);
-            for (let j = 0; j < N; j++) plateR[j] = sampleEnvelopeSpline(ext, (j / N) * 2 * Math.PI) + cfg.plateOffsetCm;
+            const traced = new Float64Array(N);
+            for (let j = 0; j < N; j++) traced[j] = sampleEnvelopeSpline(ext, (j / N) * 2 * Math.PI);
+
+            // Both passes use a (2*halfWidth + 1)-bin window, so the half-width is set from the
+            // requested angular WIDTH minus the centre bin - otherwise a "10 degrees" setting
+            // would quietly act over 14.
+            const binDeg = 360 / N;
+            const halfWidth = Math.max(0, Math.round((clampNum(cfg.plateSmoothDeg, 0, 45) / binDeg - 1) / 2));
+            const smoothed = smoothRadiusProfile(closeRadiusProfile(traced, halfWidth), halfWidth);
+
+            // The closing can only ever push the contour outward, but the blur rounds genuine
+            // peaks inward - on a five-lobed pot that is several millimetres off each petal tip -
+            // and a rim that ends up INSIDE the footprint it was traced from is the one failure
+            // this dish must not have.
+            //
+            // Clearance is already a ring of empty space the user asked for outside the pot, so
+            // spend that first and only widen the plate by whatever the blur ate beyond it. On
+            // ordinary shapes the deficit is 2-7mm against a 15mm clearance and nothing is added
+            // at all; it only bites on a silhouette with a genuine cliff in it (strands converging
+            // toward a pole, say), and then by the few millimetres actually needed rather than by
+            // the whole deficit. Either way the final contour is >= the traced one at every angle,
+            // and a uniform radial offset costs none of the smoothness just gained.
+            let deficit = 0;
+            for (let j = 0; j < N; j++) deficit = Math.max(deficit, traced[j] - smoothed[j]);
+            const topUp = Math.max(0, deficit - cfg.plateOffsetCm);
+            for (let j = 0; j < N; j++) plateR[j] = smoothed[j] + topUp + cfg.plateOffsetCm;
         }
         const avgR = plateR.reduce((a, b) => a + b, 0) / N;
 
@@ -2332,9 +2687,31 @@
         }
     }
 
+    // The active path's own parameters, read by the ids pathLib declares for it, each falling back
+    // to that row's default when the field is missing (a Design JSON applied before applyPathPreset
+    // has rebuilt the inputs, say). Nothing here names a specific path.
+    function readPathParams(type) {
+        const entry = pathLib[type] || pathLib["Torus Knot"];
+        const params = {};
+        for (const p of entry.params) {
+            const raw = parseFloat(document.getElementById(p.id)?.value);
+            params[p.id] = isFinite(raw) ? raw : p.val;
+        }
+        return params;
+    }
+
     function readCfg() {
+        const type = document.getElementById('pathType').value;
+        const entry = pathLib[type] || pathLib["Torus Knot"];
+        const params = readPathParams(type);
         return {
-            type: document.getElementById('pathType').value, eq: document.getElementById('equation').value,
+            type, params, plateMode: entry.plateMode || 'silhouette',
+            pathExpr: entry.custom ? {
+                x: document.getElementById('pathX')?.value || entry.x,
+                y: document.getElementById('pathY')?.value || entry.y,
+                z: document.getElementById('pathZ')?.value || entry.z
+            } : null,
+            eq: document.getElementById('equation').value,
             diameter: parseFloat(document.getElementById('diameter').value), zStretch: parseFloat(document.getElementById('zStretch').value),
             sections: parseInt(document.getElementById('sections').value), radialRes: parseInt(document.getElementById('radialRes').value),
             shellThick: parseFloat(document.getElementById('shellThick').value), doHollow: parseFloat(document.getElementById('fillPct').value) < 100,
@@ -2349,10 +2726,6 @@
             rotX: parseFloat(document.getElementById('rotX')?.value || 0),
             rotY: parseFloat(document.getElementById('rotY')?.value || 0),
             rotZ: parseFloat(document.getElementById('rotZ')?.value || 0),
-            p: parseFloat(document.getElementById('p')?.value || 2), q: parseFloat(document.getElementById('q')?.value || 3),
-            n: parseFloat(document.getElementById('n')?.value || 5), n1: parseFloat(document.getElementById('n1')?.value || 3),
-            amp: parseFloat(document.getElementById('amp')?.value || 3.5), amp1: parseFloat(document.getElementById('amp1')?.value || 2.5),
-            amp2: parseFloat(document.getElementById('amp2')?.value || 1.0),
             texEq: document.getElementById('texEquation')?.value || '0',
             texIntensity: parseFloat(document.getElementById('texIntensity')?.value || 0),
             patternEq1: document.getElementById('patternEquation1')?.value || '-1',
@@ -2369,6 +2742,7 @@
             plateWallThickness: Math.max(0.02, parseFloat(document.getElementById('plateWallThickness')?.value) || 0.35),
             plateBaseThickness: Math.max(0.02, parseFloat(document.getElementById('plateBaseThickness')?.value) || 0.35),
             plateOpeningAngleDeg: Math.max(0, Math.min(60, parseFloat(document.getElementById('plateOpeningAngle')?.value) || 0)),
+            plateSmoothDeg: clampNum(parseFloat(document.getElementById('plateSmoothDeg')?.value ?? 10) || 0, 0, 45),
             smoothPatternEdges: document.getElementById('smoothPatternEdges')?.checked || false,
             boundaryRefine: clampNum(parseInt(document.getElementById('boundaryRefine')?.value ?? 2) || 0, 0, 3),
             patternResU: Math.max(20, parseInt(document.getElementById('patternResU')?.value) || 400),
@@ -2564,7 +2938,7 @@
         const clampNote = geo.userData.patternClamped ? ' · pattern depth clamped' : '';
         const partsNote = parts ? ` · pattern: ${parts.length} parts` : '';
         const plateNote = cfg.includePlate ? (plateParts ? (plateParts.length > 1 ? ` · +plate (${plateParts.length} parts)` : ' · +plate') : ' · plate skipped (bottom cut missed the pot)') : '';
-        setStatus(`3D Model · ${triCount.toLocaleString()} tris · ${Math.round(performance.now() - t0)} ms${debris}${clampNote}${partsNote}${plateNote}`);
+        setStatus(`3D Model · ${triCount.toLocaleString()} tris · ${Math.round(performance.now() - t0)} ms${debris}${clampNote}${partsNote}${plateNote}${getPathNote(cfg)}`);
     }
 
     function onCsgReady() { if (previewPending && scene) updatePreview(); }
@@ -2732,6 +3106,52 @@
         link.download = name; link.click();
     }
 
+    // Saves exactly the view on screen - same camera, same framing, same colours - as a PNG at
+    // SNAPSHOT_SCALE times the viewport's pixel size, so it is usable as a product shot rather
+    // than a screenshot of a panel.
+    //
+    // Two things about this have to stay synchronous. The renderer is created without
+    // `preserveDrawingBuffer`, so the colour buffer is only readable between a draw and the next
+    // frame's clear - and animate() re-renders on every rAF, resetting the viewport to the
+    // container's own size and drawing the axis gizmo on top. Resizing, rendering, reading the
+    // pixels and restoring the size in ONE uninterrupted block means the next frame finds
+    // everything exactly as it was, and the saved image has no gizmo in the corner.
+    const SNAPSHOT_SCALE = 2;
+    function downloadViewportImage() {
+        if (!renderer || !currentMeshes.length) {
+            setStatus('Nothing to save yet - generate a model first');
+            return;
+        }
+        const container = document.getElementById('viewer-container');
+        const vw = container.clientWidth, vh = container.clientHeight;
+        // WebGL will not allocate a drawing buffer past the driver's limit; fall back toward 1x
+        // rather than handing back a silently truncated or blank image.
+        const gl = renderer.getContext();
+        const maxDim = gl.getParameter(gl.MAX_RENDERBUFFER_SIZE) || 4096;
+        let scale = SNAPSHOT_SCALE;
+        while (scale > 1 && (vw * scale > maxDim || vh * scale > maxDim)) scale -= 0.5;
+        const w = Math.round(vw * scale), h = Math.round(vh * scale);
+        let url;
+        try {
+            renderer.setSize(w, h, false);          // false: leave the element's CSS size alone
+            renderer.setViewport(0, 0, w, h);
+            renderer.setScissorTest(false);
+            renderer.render(scene, camera);         // camera aspect is unchanged, so framing is too
+            url = renderer.domElement.toDataURL('image/png');
+        } finally {
+            renderer.setSize(vw, vh, false);        // restore before the next frame, even on failure
+            renderer.setViewport(0, 0, vw, vh);
+        }
+        // toDataURL -> Blob keeps the download off a multi-megabyte data: URL, which some browsers
+        // refuse to navigate to.
+        const bin = atob(url.split(',')[1]);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        const name = `${slugifyName(getConfiguredPotName() || readCfg().type)}.png`;
+        download(new Blob([bytes], { type: 'image/png' }), name);
+        setStatus(`View saved · ${name} · ${w}x${h}`);
+    }
+
     // ---- Design JSON Import / Export --------------------------------------------------------
     // Ported from EquationDrivenPotDesigner.html's AI-assistance JSON flow: a structured, nested
     // config mirrors every field readCfg() reads, round-trips through JSON.stringify/parse, and
@@ -2845,7 +3265,11 @@
                 type: cfg.type,
                 diameter: cfg.diameter,
                 zStretch: cfg.zStretch,
-                params: { p: cfg.p, q: cfg.q, n: cfg.n, n1: cfg.n1, amp: cfg.amp, amp1: cfg.amp1, amp2: cfg.amp2 }
+                // Only the active path's own parameters, whatever they happen to be named - and,
+                // for Custom Path, the three expressions, without which the design would reload
+                // as whichever curve the textareas last held.
+                params: { ...cfg.params },
+                ...(cfg.pathExpr ? { custom: { ...cfg.pathExpr } } : {})
             },
             profile: {
                 preset: document.getElementById('profileSelect')?.value || 'Circle',
@@ -2871,7 +3295,8 @@
                 heightCm: cfg.plateHeightCm,
                 wallThickness: cfg.plateWallThickness,
                 baseThickness: cfg.plateBaseThickness,
-                openingAngleDeg: cfg.plateOpeningAngleDeg
+                openingAngleDeg: cfg.plateOpeningAngleDeg,
+                smoothingDeg: cfg.plateSmoothDeg
             },
             vase: {
                 enabled: cfg.vaseInsertEnabled,
@@ -2965,13 +3390,18 @@
             if (pathType && setSelectValue('pathType', pathType)) applyPathPreset();
             setFieldValue('diameter', getAIValue(path, ['diameter']));
             setFieldValue('zStretch', getAIValue(path, ['zStretch']));
-            setFieldValue('p', getAIValue(params, ['p']));
-            setFieldValue('q', getAIValue(params, ['q']));
-            setFieldValue('n', getAIValue(params, ['n']));
-            setFieldValue('n1', getAIValue(params, ['n1']));
-            setFieldValue('amp', getAIValue(params, ['amp']));
-            setFieldValue('amp1', getAIValue(params, ['amp1']));
-            setFieldValue('amp2', getAIValue(params, ['amp2']));
+            // Whatever the file happens to carry: applyPathPreset above has already rebuilt the
+            // inputs with this path's defaults, so a key with no matching field is simply skipped
+            // (older files list every path's parameters at once) and a parameter the file omits
+            // keeps its default - which is what lets new parameters be added to an existing path
+            // without invalidating designs saved before they existed.
+            const customPath = getAIValue(path, ['custom', 'expressions', 'equations']);
+            if (customPath && typeof customPath === 'object') {
+                setFieldValue('pathX', getAIValue(customPath, ['x']));
+                setFieldValue('pathY', getAIValue(customPath, ['y']));
+                setFieldValue('pathZ', getAIValue(customPath, ['z']));
+            }
+            for (const [id, value] of Object.entries(params || {})) setFieldValue(id, value);
 
             const profilePreset = getAIValue(profile, ['preset']);
             if (profilePreset && setSelectValue('profileSelect', profilePreset)) applyProfilePreset();
@@ -3008,6 +3438,7 @@
             setFieldValue('plateHeightCm', getAIValue(plate, ['heightCm', 'plateHeightCm']));
             setFieldValue('plateWallThickness', getAIValue(plate, ['wallThickness', 'plateWallThickness']));
             setFieldValue('plateBaseThickness', getAIValue(plate, ['baseThickness', 'plateBaseThickness']));
+            setFieldValue('plateSmoothDeg', getAIValue(plate, ['smoothingDeg', 'plateSmoothDeg', 'contourSmoothingDeg']));
             setFieldValue('plateOpeningAngle', getAIValue(plate, ['openingAngleDeg', 'plateOpeningAngleDeg', 'openingAngle']));
 
             setCheckboxValue('vaseInsertEnabled', getAIValue(vase, ['enabled', 'include', 'includeVase']));
@@ -3338,7 +3769,7 @@ ${trianglesXml.join('\n')}
         profile: { preset: "Circle", equation: "3.0" },
         orientation: { rotX: 0, rotY: 0, rotZ: 0 },
         structure: { mode: "pot", bottomCutPct: 10, topCutPct: 90, bottomThickness: 0.35, drainHoleDiameter: 1, fillPct: 22, wallThickness: 0.35, avoidSelfIntersect: false, extraClean: false, debrisThresholdPct: 0.1 },
-        plate: { enabled: true, applyColoring: true, offsetCm: 1.5, heightCm: 1.5, wallThickness: 0.35, baseThickness: 0.35, openingAngleDeg: 25 },
+        plate: { enabled: true, applyColoring: true, offsetCm: 1.5, heightCm: 1.5, wallThickness: 0.35, baseThickness: 0.35, openingAngleDeg: 25, smoothingDeg: 10 },
         vase: { enabled: false, baseDiameter: 3, topDiameter: 4, height: 8, insertOffsetMm: 1, wallMm: 1 },
         texture: { preset: "None (Flat Surface)", equation: "0", intensity: 0.15 },
         patterns: { preset1: "Checkerboard", equation1: "sign(cos(6*theta)) * sign(cos(2*pi*16*u))", preset2: "None (Solid Base Color)", equation2: "-1", baseColor: "#0a2989", patternColor1: "#c12e1f", patternColor2: "#5f4a8b", overlapColor: "#8ab04d", depthMm: 1.2, smoothEdges: true, boundaryRefine: 2 },

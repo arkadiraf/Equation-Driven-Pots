@@ -272,6 +272,10 @@
             background: var(--export3mf);
         }
 
+        .btn-snapshot {
+            background: #16897b;
+        }
+
         .btn-reset {
             background: #7f8c8d;
         }
@@ -1094,6 +1098,7 @@
             onchange="handleDesignFileSelection(event)">
         <button class="btn-3mf" onclick="exportMultiPart3MF()">DOWNLOAD MULTI-PART .3MF</button>
         <button class="btn-stl" onclick="exportSTL()">DOWNLOAD .STL</button>
+        <button class="btn-snapshot" onclick="downloadViewportImage()">SAVE VIEW AS .PNG</button>
         <button class="btn-reset" onclick="resetParameters()">RESET PARAMETERS</button>
         <div class="desc-text"></div>
     </div>
@@ -4920,6 +4925,70 @@ ${trianglesXml.join('\n')}
             link.download = filename;
             link.click();
             setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+        }
+
+        // Saves the view on screen - same camera, same framing, same colours - as a PNG at
+        // SNAPSHOT_SCALE times the viewport's CSS size, so it is usable as a product shot rather
+        // than a screenshot of a panel. The ground grid is left out: like the axis gizmo it is a
+        // modelling aid rather than part of the design (drop the hidden/restore pair below to keep
+        // it in the image).
+        //
+        // This has to stay synchronous. The renderer is created without `preserveDrawingBuffer`,
+        // so the colour buffer is only readable between a draw and the next frame's clear, and
+        // animate() re-renders on every rAF. Resizing, rendering, reading the pixels and restoring
+        // in ONE uninterrupted block means the next frame finds everything exactly as it was.
+        const SNAPSHOT_SCALE = 2;
+        function downloadViewportImage() {
+            if (!renderer || !currentObject) {
+                setStatus('Nothing to save yet - generate a model first', 'warn');
+                return;
+            }
+            // A rapid parameter change puts a DRAFT mesh on screen and schedules the full-res one
+            // for FULL_RES_SETTLE_MS later. Saving in that window would quietly hand back the
+            // draft, so promote the pending pass now and photograph the real thing.
+            if (fullResTimeout) {
+                clearTimeout(fullResTimeout);
+                fullResTimeout = null;
+                try { renderConfigToScene(getConfig(), false); }
+                catch (e) { console.error('Full-resolution pass before snapshot failed:', e); }
+            }
+
+            const container = document.getElementById('viewer-container');
+            const vw = container.clientWidth, vh = container.clientHeight;
+
+            // This renderer runs at the display's own devicePixelRatio, so the snapshot is driven
+            // by the pixel ratio rather than by setSize: asking for a plain 2x WIDTH here would
+            // fight that and, on a HiDPI screen, come out no sharper than what is already drawn.
+            const prevRatio = renderer.getPixelRatio();
+            const gl = renderer.getContext();
+            const maxDim = gl.getParameter(gl.MAX_RENDERBUFFER_SIZE) || 4096;
+            let ratio = Math.max(SNAPSHOT_SCALE, prevRatio);
+            while (ratio > 1 && (vw * ratio > maxDim || vh * ratio > maxDim)) ratio -= 0.5;
+
+            const grid = scene.children.find(o => o.type === 'GridHelper');
+            const gridWasVisible = grid ? grid.visible : false;
+            let url;
+            try {
+                if (grid) grid.visible = false;
+                renderer.setPixelRatio(ratio);
+                renderer.setSize(vw, vh, false);   // false: leave the element's CSS size alone
+                renderer.render(scene, camera);    // camera aspect is unchanged, so framing is too
+                url = renderer.domElement.toDataURL('image/png');
+            } finally {
+                if (grid) grid.visible = gridWasVisible;
+                renderer.setPixelRatio(prevRatio); // restore before the next frame, even on failure
+                renderer.setSize(vw, vh, false);
+            }
+
+            // toDataURL -> Blob keeps the download off a multi-megabyte data: URL, which some
+            // browsers refuse to navigate to.
+            const bin = atob(url.split(',')[1]);
+            const bytes = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+            const stem = slugifyName(getConfiguredPotName() || selectedOptionText('presetSelect', 'Pot'));
+            const name = `${stem}.png`;
+            downloadBlob(new Blob([bytes], { type: 'image/png' }), name);
+            setStatus(`View saved | ${name} | ${Math.round(vw * ratio)}x${Math.round(vh * ratio)}`, '');
         }
 
         function meshDataToStlBlob(meshData) {

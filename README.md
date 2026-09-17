@@ -20,7 +20,7 @@ This all-in-one GUI brings the current browser workflow together in a single int
 - surface texture controls
 - dual color-mask pattern logic
 - plate and pot+plate generation
-- STL and multi-part 3MF export
+- STL and multi-part 3MF export, plus a **Save View as .PNG** button that writes the viewport exactly as framed on screen at twice its pixel size, without the ground grid
 - two experimental math tools:
   - **Field Modifier**
   - **Field Distortion**
@@ -47,7 +47,7 @@ It's linked from the main site as an extension of the Pot Designer, with its own
 
 ## Equation Driven Woven Pots (extension project)
 
-**Equation Driven Woven Pots** is a second extension project, purpose-built for swept-tube paths that cross themselves - torus knots, braided loops, Mobius curves, and flower rings - which the cylindrical/spherical body-of-revolution engine behind the Pot Designer and Bowls can't represent:
+**Equation Driven Woven Pots** is a second extension project, purpose-built for swept-tube paths that cross themselves - torus knots, spherical knots, coiled baskets, braided loops, Mobius curves, and flower rings - which the cylindrical/spherical body-of-revolution engine behind the Pot Designer and Bowls can't represent:
 
 [Equation Driven Woven Pots](https://arkadiraf.github.io/Equation-Driven-Pots/EquationDrivenWovenPots.html)
 
@@ -55,11 +55,12 @@ It's linked from the main site as an extension of the Pot Designer, with its own
 
 Rather than sampling a radius from a single field, it sweeps a profile along the chosen path and builds the wall as an exact CSG solid (via the Manifold WASM library): wherever the path crosses itself, the overlapping tube pieces are unioned into one true solid instead of being stitched together with mesh-clipping heuristics, then that solid is shelled and cut exactly the way a real CAD "solid → shell → cut" workflow would:
 
+- **Equation-driven topology paths**, defined the same way every other input in these tools is: each path is three expressions in `t` - x(t), y(t), z(t) - plus the parameters they expose, the t-span of one traversal, and how the base plate should trace it. The library ships torus knots (with adjustable wave phase and a sine-to-triangle cane shape), spherical knots that converge toward their poles into an egg silhouette, coiled baskets that spiral up the outside wall and back down the inside as one closed strand, braided loops, flower rings, and Mobius band edges with any odd number of half-twists - and a **Custom Path** option that takes x(t), y(t), z(t) straight from the sidebar
 - **Self-intersection handling** with two modes - merge the crossing bodies into one solid (default), or reduce the radius so the path pinches clear of itself
 - **Dual Pattern Color Layer** shared with the Pot Designer's two-mask, four-state system, extended with root-refined smooth edges (boundaries solved on the mask equation itself, not linearly interpolated) and adaptive corner subdivision for print-precise pattern boundaries
-- **Base Plate**, a shelled dish generated from the pot's own bottom-cut silhouette rather than a separate equation - traced and splined for most paths, or fit with a smooth ellipse for topologies (like the Mobius curve) whose cross-section loops surround a hole - that can carry the same dual-mask coloring on its own bottom and sides
+- **Base Plate**, a shelled dish generated from the pot's own bottom-cut silhouette rather than a separate equation - traced and splined for most paths, or fit with a smooth ellipse for topologies (like the Mobius curve) whose cross-section loops surround a hole - that can carry the same dual-mask coloring on its own bottom and sides. The silhouette is walked edge by edge rather than vertex by vertex, so a double-walled shape can't have its contour collapse onto an inner wall between sparse cross-section vertices, and a **Contour Smoothing** control sets the angular width below which a dip is treated as an artefact and filled back out - spending the plate's own clearance to cover what the smoothing rounds off, so the rim never ends up inside the silhouette it traced
 - Surface Texture displacement, self-intersection-safe by construction (re-clamped against the same pinch limit the base profile uses)
-- STL and multi-part 3MF export, including the base plate and every pattern-color part as separate objects
+- STL and multi-part 3MF export, including the base plate and every pattern-color part as separate objects, plus a **Save View as .PNG** button that writes the viewport exactly as framed on screen at twice its pixel size, without the axis gizmo
 - Design JSON import/export for saving and re-loading a full configuration
 
 It's linked from the main site as a second extension of the Pot Designer.
@@ -243,7 +244,7 @@ The current all-in-one browser GUI.
 - dual-mask color logic
 - structural pot / plate / pot+plate generation
 - experimental field modifier and field distortion layers
-- STL and multi-part 3MF export
+- STL and multi-part 3MF export, plus a **Save View as .PNG** button that writes the viewport exactly as framed on screen at twice its pixel size, without the ground grid
 
 ### [Equation Driven Bowls](./JavaScript/EquationDrivenBowls.html)
 
@@ -263,10 +264,10 @@ An extension project built on the Pot Designer's equation-driven engine, focused
 An extension project built on an exact-CSG (Manifold WASM) engine, focused on swept-tube paths that cross themselves.
 
 **Purpose**
-- torus knot, braided loop, Mobius curve, and flower ring path topologies, swept and shelled as true CSG solids
+- torus knot, spherical knot, coiled basket, braided loop, Mobius curve, and flower ring path topologies, swept and shelled as true CSG solids - each one defined as x(t)/y(t)/z(t) expressions rather than hardcoded, with a Custom Path option that exposes those three expressions directly
 - merge or pinch handling for self-intersections, resolved with real booleans rather than mesh-clipping
 - the same dual-mask color logic as the Pot Designer, with root-refined smooth edges and adaptive corner subdivision
-- an optional Base Plate traced (or, for the Mobius curve, ellipse-fitted) from the pot's own bottom-cut silhouette, with its own dual-mask coloring
+- an optional Base Plate traced (or, for the Mobius curve, ellipse-fitted) from the pot's own bottom-cut silhouette, with its own dual-mask coloring, edge-walked tracing and a Contour Smoothing control that cannot pull the rim inside the traced footprint
 - self-intersection-safe surface texture displacement
 - STL and multi-part 3MF export, and design JSON import/export
 
@@ -331,7 +332,7 @@ The browser side of the project has gradually expanded in layers:
 7. field distortion
 8. structural plate and pot+plate generation in the unified GUI
 9. Equation Driven Bowls, an extension project applying that same engine to open bowls, lamp shades, and ring-stand structures
-10. Equation Driven Woven Pots, a second extension project applying exact CSG solid-shell-cut booleans to self-crossing swept-tube topologies (torus knots, braided loops, Mobius curves), with a matching base-plate and dual-color pattern system
+10. Equation Driven Woven Pots, a second extension project applying exact CSG solid-shell-cut booleans to self-crossing swept-tube topologies (torus knots, spherical knots, coiled baskets, braided loops, Mobius curves, and user-supplied x(t)/y(t)/z(t) paths), with a matching base-plate and dual-color pattern system
 
 That progression matters because the project is still fundamentally math-based. Even as the forms become more complex, the workflow remains centered on sampled mathematical fields rather than manual sculpting.
 
