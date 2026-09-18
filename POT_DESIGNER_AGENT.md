@@ -122,6 +122,13 @@ A weaker collar thickens the wall but brings back inner overhang (below). Widen 
 
 ### Overhang — check both surfaces
 
+**Printer tolerance (user, 2026-09-18):** on the user's Bambu Lab setup, faces up to **60° from
+vertical print safely without supports**, and overhangs **supported at both sides (bridges)** are
+fine. The acceptance metric is therefore the share of surface past **60°** (§7); the 45° figures
+below are kept as history and as a quality indicator, not as a pass/fail limit. The 45° work in
+this section still pays off where it is cheap (smoother downward faces), but do not give up a form
+to reach 0 % at 45°.
+
 A pot has two printed faces, and they fail in different places:
 
 - **Inner surface:** the inside of a sphere's closing top faces down. With a plain sphere the
@@ -131,7 +138,8 @@ A pot has two printed faces, and they fail in different places:
   135° and `sphBotFlatten` is past 45°. Measured on an early Caldera body: flatten 142° → **1.3 %**
   from the silhouette alone; flatten **135° → 0 %**, and the footprint widens from 9.5 to 10.9 cm.
 
-Use `n.y < −cos 45°` on area-weighted triangles; orient outer normals away from the sphere centre
+Use `n.y < −sin 60° ≈ −0.866` (the pass/fail test) and `n.y < −sin 45° ≈ −0.707` (reported) on
+area-weighted triangles; orient outer normals away from the sphere centre
 and inner normals toward it; skip cells whose four corners are all on the clamped bed plane.
 
 **Locate before you fix.** Bin the offending triangles by (phi, theta), not by phi alone. On
@@ -439,8 +447,9 @@ across it. Gate both ends with `u·r` and `(π/2 − u)·r`, taper the width wit
 |---|---|---|
 | True minimum wall | **≥ 3.5 mm** | Measured, not radial (§3). The collection's spherical pots use 3.5–5 mm radial walls |
 | Texture minimum | **≥ 0** | Otherwise the wall shrinks (§1) |
-| Outer surface past 45° | **< 1 %**, 0 % preferred | Flatten ≤ 135° and a long relief fade usually reach 0 |
-| Inner surface past 45° | **< 1 %** | Driven by the top cut; a collar fixes it |
+| Outer surface past 60° | **< 0.5 %**, 0 % preferred | The printer's unsupported limit is 60° (§3). Bridged spans (supported at both ends) are acceptable even past it |
+| Inner surface past 60° | **< 0.5 %** | Driven by the top cut; a collar fixes it |
+| Outer / inner past 45° | report only | Quality indicator, not a limit. Flatten ≤ 135° and a long relief fade usually reach 0 |
 | Boundary / non-manifold edges | **0 / 0** on every body, **pot and saucer** | Read the validations directly, as in the vase guide §7 |
 | Four colour states | each **> 2 %** | |
 | Mask layout | no edge where A and B switch together | Put an A-only (or B-only) strip between base and overlap (§5.5) |
@@ -572,6 +581,7 @@ function trueWall(G, K = 7) {
 }
 
 // Area fraction past 45°; outward = true for the outer surface, false for the cavity.
+// For the 60° pass/fail figure, compare against -Math.sin(Math.PI / 3) (≈ −0.866) instead of -Math.SQRT1_2.
 // Grid coordinates are pre-shift, so the sphere centre is the origin.
 function overhang45(G, grid, outward) {
   let tot = 0, bad = 0;

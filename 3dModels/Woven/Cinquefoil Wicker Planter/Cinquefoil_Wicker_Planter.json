@@ -1,0 +1,79 @@
+{
+  "name": "Cinquefoil Wicker Planter",
+  "path": {
+    "type": "Torus Knot",
+    "diameter": 5.1,
+    "zStretch": 5.1,
+    "params": {
+      "p": 2,
+      "q": 5,
+      "amp": 4,
+      "phase": 0,
+      "wave": 0,
+      "taper": -0.12
+    }
+  },
+  "profile": {
+    "preset": "Circle",
+    "equation": "2.6"
+  },
+  "orientation": {
+    "rotX": 0,
+    "rotY": 0,
+    "rotZ": 0
+  },
+  "structure": {
+    "mode": "pot",
+    "bottomCutPct": 10,
+    "topCutPct": 90,
+    "bottomThickness": 0.45,
+    "drainHoleDiameter": 1,
+    "fillPct": 25.1,
+    "wallThickness": 0.35,
+    "avoidSelfIntersect": false,
+    "extraClean": false,
+    "debrisThresholdPct": 0.1
+  },
+  "plate": {
+    "enabled": true,
+    "applyColoring": false,
+    "offsetCm": 1.5,
+    "heightCm": 1.5,
+    "wallThickness": 0.35,
+    "baseThickness": 0.35,
+    "openingAngleDeg": 25,
+    "smoothingDeg": 10
+  },
+  "vase": {
+    "enabled": false,
+    "baseDiameter": 3,
+    "topDiameter": 4,
+    "height": 8,
+    "insertOffsetMm": 1,
+    "wallMm": 1
+  },
+  "texture": {
+    "preset": "None (Flat Surface)",
+    "equation": "max(0, max(((cos(10*theta + 180*pi*u) + 0.4)/1.4)*(1 + 0.25*(cos(10*theta) + cos(180*pi*u))), ((cos(10*theta - 180*pi*u) + 0.4)/1.4)*(1 - 0.25*(cos(10*theta) + cos(180*pi*u)))))*smoothstep(-5.71, -5.31, z)*(1 - smoothstep(5.01, 5.41, z))",
+    "intensity": 0.11
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "((cos(10*theta + 180*pi*u) + 0.4)/1.4)*(1 + 0.25*(cos(10*theta) + cos(180*pi*u))) - ((cos(10*theta - 180*pi*u) + 0.4)/1.4)*(1 - 0.25*(cos(10*theta) + cos(180*pi*u)))",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "min(max(cos(10*theta + 180*pi*u), cos(10*theta - 180*pi*u)) + 0.4, 7*min(z + 5.71, 5.41 - z))",
+    "baseColor": "#5e43b7",
+    "patternColor1": "#0a2989",
+    "patternColor2": "#ff9016",
+    "overlapColor": "#00b1b7",
+    "depthMm": 1.2,
+    "smoothEdges": true,
+    "boundaryRefine": 2
+  },
+  "mesh": {
+    "sections": 1500,
+    "radialRes": 140,
+    "patternResU": 1500,
+    "patternResT": 140
+  }
+}

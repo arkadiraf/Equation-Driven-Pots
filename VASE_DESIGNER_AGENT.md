@@ -100,7 +100,11 @@ parameter-space samples directly — in spherical mode the outer surface height 
 ### Measuring overhang
 
 Bin the **world-space** outer boundary by (height row, world-angle) and take `d(radius)/d(height)`
-between consecutive rows. Slope > 1 is past 45°.
+between consecutive rows. Slope > 1 is past 45°; slope > √3 ≈ 1.73 is past 60°.
+
+**Printer tolerance (user, 2026-09-18):** the user's Bambu Lab setup prints faces up to **60°**
+without supports, and overhangs supported at both sides (bridges) are fine. Judge designs by the
+share past 60° (§6); the 45° percentages quoted in this guide are history and a quality indicator.
 
 Two traps, both of which produced garbage before I caught them:
 - **Exclude the flat-bottom clamp.** Clamped points share one height, so the slope divides by
@@ -209,8 +213,8 @@ Measure all of these before packaging. Report them.
 |---|---|---|
 | Minimum wall around the bore | **≥ 6 mm**, ideally 8 mm | Below 5 mm is fragile in a solid body |
 | Cavity roundness after distortion | **0.0000 mm** deviation | Measure with `applyDistortionPoint` |
-| Surface past 45° overhang | **< 1 %**, 0 % preferred | Below ~2 % prints with minor roughness |
-| Surface past 60° overhang | **< 0.5 %** | |
+| Surface past 60° overhang | **< 0.5 %**, 0 % preferred | The user's printer handles up to 60° unsupported; bridged spans (supported at both ends) are acceptable even past it |
+| Surface past 45° overhang | report only | Quality indicator, not a limit (it was < 1 % before the 60° tolerance was confirmed) |
 | Boundary edges `B` | **0** on every body | See §7 — the UI lies about this |
 | Non-manifold edges `N` | **0** | |
 | All four colour states | each **> 2 %** | See §8 |
