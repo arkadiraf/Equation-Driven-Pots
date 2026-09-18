@@ -235,9 +235,7 @@ the first layers.
 - Ship the default (coloured) saucer, because it matches the JSON on reload. Add a `_Plate_Plain`
   file when the pot's motifs look odd on the saucer (a belly or tail copied onto the rim of the
   dish).
-- The two plate-size readouts disagree slightly: the preview status (`buildPlateMultipartMeshes`)
-  said 15.36 cm and the export status (`generatePlate`) said 15.64 cm. Quote the 3MF bounding box
-  instead.
+
 
 ### 5.4 Generated expressions and negative thresholds
 

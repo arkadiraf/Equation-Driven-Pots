@@ -4116,15 +4116,18 @@
             };
         }
 
-        function expandMeshDataDiameter(meshData, diameterExtra) {
+        // Pushes every vertex out from a vertical axis by diameterExtra/2. The axis defaults to the
+        // mesh's own bounding-box centre; pass `center` ({centerX, centerZ}) when several meshes
+        // must stay registered to one another.
+        function expandMeshDataDiameter(meshData, diameterExtra, center = null) {
             const radiusOffset = Math.max(0, finiteNumber(diameterExtra, 0)) * 0.5;
             if (radiusOffset <= 1e-8) return meshData;
 
             const vertices = meshData.vertices.slice();
-            const bounds = computeMeshDataBounds(vertices);
+            const { centerX, centerZ } = center || computeMeshDataBounds(vertices);
             for (let i = 0; i < vertices.length; i += 3) {
-                const dx = vertices[i] - bounds.centerX;
-                const dz = vertices[i + 2] - bounds.centerZ;
+                const dx = vertices[i] - centerX;
+                const dz = vertices[i + 2] - centerZ;
                 const len = Math.sqrt(dx * dx + dz * dz);
 
                 // If the point is essentially at the center (the pole), don't expand it.
@@ -4715,9 +4718,9 @@ ${trianglesXml.join('\n')}
             return components;
         }
 
-        function expandMeshPositions(mesh, diameterExtra) {
+        function expandMeshPositions(mesh, diameterExtra, center = null) {
             if (!diameterExtra || diameterExtra <= 1e-8) return mesh;
-            const expanded = expandMeshDataDiameter({ vertices: mesh.positions }, diameterExtra);
+            const expanded = expandMeshDataDiameter({ vertices: mesh.positions }, diameterExtra, center);
             return Object.assign({}, mesh, { positions: expanded.vertices });
         }
 
@@ -4792,10 +4795,16 @@ ${trianglesXml.join('\n')}
             const plateCfg = buildSphericalPlateGenerationConfig(cfg);
             const parts = buildMultipartMeshes(plateCfg);
             const diameterExtra = getPlateDiameterExtra(cfg);
-            const coreMesh = expandMeshPositions(parts.coreMesh, diameterExtra);
+            // Every part is pushed out from the same axis, the core's, since the core spans the
+            // whole saucer. Expanding each color part about its own bounding-box centre shifted
+            // any part covering only one side (a half-disc from a split mask, a one-sided motif)
+            // by up to diameterExtra/2, so neighbouring color bodies overlapped along one
+            // boundary and pulled apart along another.
+            const axis = computeMeshDataBounds(parts.coreMesh.positions);
+            const coreMesh = expandMeshPositions(parts.coreMesh, diameterExtra, axis);
             const stateToColorIndex = { 1: 1, 2: 2, 3: 3 };
             const surfaceGroups = parts.surfaceGroups.map(g => {
-                const mesh = expandMeshPositions(g.mergedMesh, diameterExtra);
+                const mesh = expandMeshPositions(g.mergedMesh, diameterExtra, axis);
                 return { colorIndex: stateToColorIndex[g.state] || 1, name: g.name, mesh, validation: validateMesh(mesh) };
             });
             const expBounds = computeMeshDataBounds(coreMesh.positions);
