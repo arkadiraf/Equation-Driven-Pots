@@ -1,0 +1,82 @@
+{
+  "name": "Red Cap Overalls Planter",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "nonlinear",
+    "preset": "Crown Splash",
+    "equation": "R * (1 - 0.04*pow(sin(phi),2) + 0.22*exp(-pow(phi - 0.6, 2)*12) + 0.14*exp(-pow((abs((mod(theta + 1.5708, 3.14159) - 1.5708)) - 0.32)/0.22, 2))*smoothstep(1.95, 2.45, phi))",
+    "baseRadius": 8,
+    "height": 13
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.48,
+    "uniformShell": false,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 40,
+    "sphBotFlatten": 135,
+    "sphBotCut": 176
+  },
+  "plate": {
+    "enabled": true,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateDiameterExtra": 0.5,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "vase": {
+    "enabled": false,
+    "baseDiameter": 3,
+    "topDiameter": 4,
+    "height": 8,
+    "insertOffsetMm": 1,
+    "wallMm": 1
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "max((0.75*(1 - smoothstep(0.87, 0.93, phi)) + 0.3*exp(-pow((phi - 0.87)/0.025, 2))), 0.45*smoothstep(-1.5, 1.5, max(max((phi - 1.33)*80, min((phi - 1.14)*80, (4.6 - abs(((mod(theta + 1.5708, 3.14159) - 1.5708)*8*sin(phi))))*10)), min((phi - 0.9)*80, (0.55 - abs(abs(((mod(theta + 1.5708, 3.14159) - 1.5708)*8*sin(phi))) - 3.1))*10))) + 0.7*(1 - smoothstep(0.1, 0.9, min(hypot(abs(((mod(theta + 1.5708, 3.14159) - 1.5708)*8*sin(phi))) - 3.1, (phi - 1.28)*8), hypot(((mod(theta, 3.14159) - 1.5708)*8*sin(phi)), (phi - 1.5)*8)))))",
+    "intensity": 0.4
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "min(((baseFormRadius*cos(phi) - R*-0.70711) - 1.8 - 0.8*exp(-pow((abs((mod(theta + 1.5708, 3.14159) - 1.5708)) - 0.32)/0.22, 2)))*10, (min(hypot(abs(((mod(theta + 1.5708, 3.14159) - 1.5708)*8*sin(phi))) - 3.1, (phi - 1.28)*8), hypot(((mod(theta, 3.14159) - 1.5708)*8*sin(phi)), (phi - 1.5)*8)) - 0.95)*10)",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "max(-(max(max((phi - 1.33)*80, min((phi - 1.14)*80, (4.6 - abs(((mod(theta + 1.5708, 3.14159) - 1.5708)*8*sin(phi))))*10)), min((phi - 0.9)*80, (0.55 - abs(abs(((mod(theta + 1.5708, 3.14159) - 1.5708)*8*sin(phi))) - 3.1))*10))), (0.8 - min(hypot(abs(((mod(theta + 1.5708, 3.14159) - 1.5708)*8*sin(phi))) - 3.1, (phi - 1.28)*8), hypot(((mod(theta, 3.14159) - 1.5708)*8*sin(phi)), (phi - 1.5)*8)))*10)",
+    "baseColor": "#6f5034",
+    "patternColor1": "#0056b8",
+    "patternColor2": "#fec600",
+    "overlapColor": "#c12e1f",
+    "depthMm": 1.4,
+    "mode": "color",
+    "smoothPatternEdges": true
+  },
+  "mesh": {
+    "resV": 260,
+    "resT": 400,
+    "patternResV": 260,
+    "patternResT": 400
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "equationV": "",
+    "strength": 0,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

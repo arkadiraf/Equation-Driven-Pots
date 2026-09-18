@@ -1,0 +1,82 @@
+{
+  "name": "Verdant Spiral Bloom",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 + 0.13*sin(pi*pow(v,0.8)) + 0.16*pow(v,3.6) + 0.17*pow(max(0, cos(6*theta + 3.4*pi*v)), 2.2)*smoothstep(0.03, 0.30, v))",
+    "baseRadius": 5.45,
+    "height": 17.5
+  },
+  "structure": {
+    "modelMode": "vase",
+    "wall": 0.35,
+    "uniformShell": true,
+    "bottomThickness": 0.8,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": false,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateDiameterExtra": 0.5,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "vase": {
+    "enabled": true,
+    "baseDiameter": 9.6,
+    "topDiameter": 9.6,
+    "height": 17,
+    "insertOffsetMm": 1,
+    "wallMm": 1
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "0.55*atan(2.6*cos(12*theta + 6.8*pi*v))/1.2 + 0.30*cos(24*theta - 4.0*pi*v)*sin(pi*v) + 0.12*ridged(theta, v, 5, 7, 3, 7)",
+    "intensity": 0.26
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "0.30 - abs(sin(3*theta + 1.7*pi*v + 0.35*cnoise(theta, v, 2, 3, 11)))",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "min(cos(12*theta + 14*pi*v + 0.40*cnoise(theta, v, 2, 3, 5)), cos(12*theta + 9*pi*v + 0.40*cnoise(theta, v, 2, 3, 5))) + 0.02 - 0.42*abs(sin(3*theta + 1.7*pi*v + 0.35*cnoise(theta, v, 2, 3, 11)))",
+    "baseColor": "#482960",
+    "patternColor1": "#00AE42",
+    "patternColor2": "#EC008C",
+    "overlapColor": "#FEC600",
+    "depthMm": 1.2,
+    "mode": "color",
+    "smoothPatternEdges": true
+  },
+  "mesh": {
+    "resV": 200,
+    "resT": 288,
+    "patternResV": 200,
+    "patternResT": 288
+  },
+  "modifier": {
+    "type": "basicEffect",
+    "preset": "Basic Twist",
+    "equation": "pow(v, 1.3)",
+    "equationV": "",
+    "strength": 0.9,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

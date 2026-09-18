@@ -1,0 +1,71 @@
+{
+  "name": "Fourfold Titan Planter",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "folded",
+    "preset": "Folded Mod Panels",
+    "equation": "R * (0.68 + 0.14*v + 0.28*sin(pi*v) + 0.16*cos(4*theta - 0.4*pi*v)*exp(-pow(v - 0.65, 2)*14) + 0.040*atan(5*cos(8*theta + 1.2*pi*v))*pow(v, 3))",
+    "baseRadius": 8.0,
+    "height": 12.0
+  },
+  "structure": {
+    "modelMode": "pot",
+    "wall": 0.40,
+    "bottomThickness": 0.60,
+    "cylDrain": 0.60,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 25,
+    "plateRadiusExtra": 0.8,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "texture": {
+    "type": "nonlinear",
+    "preset": "Saturated Flutes",
+    "equation": "0.35*atan(6*cos(4*theta - 3*pi*v))*pow(sin(pi*v), 1.5) + 0.22*cos(12*theta + 2*pi*v)*exp(-pow(v - 0.82, 2)*26)",
+    "intensity": 0.18
+  },
+  "patterns": {
+    "mode": "color",
+    "smoothPatternEdges": true,
+    "preset1": "4-Petal Mask",
+    "equation1": "cos(4*theta - 0.4*pi*v) - 0.15 - 5*pow(v - 0.68, 2)",
+    "preset2": "Basic Band Mask",
+    "equation2": "0.105 - abs(v - 0.36 + 0.025*cos(4*theta))",
+    "baseColor": "#545454",
+    "patternColor1": "#FF6A13",
+    "patternColor2": "#D1D3D5",
+    "overlapColor": "#E4BD68",
+    "depthMm": 1.2
+  },
+  "mesh": {
+    "resV": 168,
+    "resT": 256,
+    "patternResV": 168,
+    "patternResT": 256
+  },
+  "modifier": {
+    "type": "fold",
+    "preset": "Petal Migration",
+    "equation": "sin(pi*v)*(0.40*v + 0.35*sin(4*theta))",
+    "equationV": "",
+    "strength": 0.15,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0.0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

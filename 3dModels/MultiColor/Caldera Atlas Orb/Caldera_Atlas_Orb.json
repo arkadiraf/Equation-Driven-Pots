@@ -1,0 +1,82 @@
+{
+  "name": "Caldera Atlas Orb",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "nonlinear",
+    "preset": "Crown Splash",
+    "equation": "R * (1 - 0.08*pow(sin(phi),2) + 0.22*exp(-pow(phi - 0.60, 2)*12))",
+    "baseRadius": 8,
+    "height": 13
+  },
+  "structure": {
+    "modelMode": "potplate",
+    "wall": 0.48,
+    "uniformShell": false,
+    "bottomThickness": 0.5,
+    "cylDrain": 0.5,
+    "sphTopCut": 38,
+    "sphBotFlatten": 135,
+    "sphBotCut": 176
+  },
+  "plate": {
+    "enabled": true,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateDiameterExtra": 0.5,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "vase": {
+    "enabled": false,
+    "baseDiameter": 3,
+    "topDiameter": 4,
+    "height": 8,
+    "insertOffsetMm": 1,
+    "wallMm": 1
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "0.5*(0.4*(1 + tanh(2.5*((sin(15*sin(phi)*cos(theta))*cos(10*cos(phi)) + sin(10*cos(phi))*cos(15*sin(phi)*sin(theta)) + sin(15*sin(phi)*sin(theta))*cos(15*sin(phi)*cos(theta)) + 0.5*fbm(theta, v, 1.6, 2.8, 4, 11)) + 0.58))) + 0.35*(1 + tanh(2.5*((sin(15*sin(phi)*cos(theta))*cos(10*cos(phi)) + sin(10*cos(phi))*cos(15*sin(phi)*sin(theta)) + sin(15*sin(phi)*sin(theta))*cos(15*sin(phi)*cos(theta)) + 0.5*fbm(theta, v, 1.6, 2.8, 4, 11)) - 0.31))) + 0.25*(1 + tanh(2.5*((sin(15*sin(phi)*cos(theta))*cos(10*cos(phi)) + sin(10*cos(phi))*cos(15*sin(phi)*sin(theta)) + sin(15*sin(phi)*sin(theta))*cos(15*sin(phi)*cos(theta)) + 0.5*fbm(theta, v, 1.6, 2.8, 4, 11)) - 1.09)))) * smoothstep(0.305, 0.5, v) * (1 - smoothstep(0.925, 0.95, v))",
+    "intensity": 0.4
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "min(min(min((sin(15*sin(phi)*cos(theta))*cos(10*cos(phi)) + sin(10*cos(phi))*cos(15*sin(phi)*sin(theta)) + sin(15*sin(phi)*sin(theta))*cos(15*sin(phi)*cos(theta)) + 0.5*fbm(theta, v, 1.6, 2.8, 4, 11)) + 0.58, 1.09 - (sin(15*sin(phi)*cos(theta))*cos(10*cos(phi)) + sin(10*cos(phi))*cos(15*sin(phi)*sin(theta)) + sin(15*sin(phi)*sin(theta))*cos(15*sin(phi)*cos(theta)) + 0.5*fbm(theta, v, 1.6, 2.8, 4, 11))), 60*(v - 0.305)), 60*(0.945 - v))",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "min(min((sin(15*sin(phi)*cos(theta))*cos(10*cos(phi)) + sin(10*cos(phi))*cos(15*sin(phi)*sin(theta)) + sin(15*sin(phi)*sin(theta))*cos(15*sin(phi)*cos(theta)) + 0.5*fbm(theta, v, 1.6, 2.8, 4, 11)) - 0.31, 60*(v - 0.305)), 60*(0.945 - v))",
+    "baseColor": "#000000",
+    "patternColor1": "#c12e1f",
+    "patternColor2": "#8e9089",
+    "overlapColor": "#847d48",
+    "depthMm": 1.4,
+    "mode": "color",
+    "smoothPatternEdges": true
+  },
+  "mesh": {
+    "resV": 260,
+    "resT": 400,
+    "patternResV": 260,
+    "patternResT": 400
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "equationV": "",
+    "strength": 0,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

@@ -2587,7 +2587,8 @@
                     patternColor2: getFieldStringValue('patternColor2', '#5f4a8b'),
                     overlapColor: getFieldStringValue('overlapColor', '#8ab04d'),
                     depthMm: getFieldNumberValue('patternDepthMm', 1.2),
-                    mode: getFieldStringValue('patternMode', 'color')
+                    mode: getFieldStringValue('patternMode', 'color'),
+                    smoothPatternEdges: !!document.getElementById('smoothPatternEdges')?.checked
                 },
                 mesh: {
                     resV: getFieldNumberValue('resV', 120),

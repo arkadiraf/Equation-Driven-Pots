@@ -1,0 +1,82 @@
+{
+  "name": "Archipelago Contour Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 + 0.07*pow(1-v,2.2) + 0.05*sin(pi*v) - 0.14*pow(v,1.8) + 0.18*pow(v,9))",
+    "baseRadius": 6.4,
+    "height": 18.5
+  },
+  "structure": {
+    "modelMode": "vase",
+    "wall": 0.4,
+    "uniformShell": false,
+    "bottomThickness": 1.3,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": false,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateDiameterExtra": 0.5,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "vase": {
+    "enabled": true,
+    "baseDiameter": 9.6,
+    "topDiameter": 9.6,
+    "height": 17,
+    "insertOffsetMm": 1,
+    "wallMm": 1
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "(0.68*tanh(3.0*(fbm(theta, v, 1.2, 2.2, 4, 17) - 0.12)) + 0.38*(fbm(theta, v, 1.2, 2.2, 4, 17))) * smoothstep(0.02, 0.18, v)",
+    "intensity": 0.46
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "(fbm(theta, v, 1.2, 2.2, 4, 17)) - 0.12",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "cos(30*(fbm(theta, v, 1.2, 2.2, 4, 17))) - 0.65",
+    "baseColor": "#0056b8",
+    "patternColor1": "#f7e6de",
+    "patternColor2": "#00b1b7",
+    "overlapColor": "#9d432c",
+    "depthMm": 1.5,
+    "mode": "color",
+    "smoothPatternEdges": true
+  },
+  "mesh": {
+    "resV": 280,
+    "resT": 380,
+    "patternResV": 280,
+    "patternResT": 380
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Gentle Torsion",
+    "equation": "pow(v, 1.2)",
+    "equationV": "",
+    "strength": 0.35,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

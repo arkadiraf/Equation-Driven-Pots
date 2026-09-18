@@ -1,0 +1,82 @@
+{
+  "name": "Gyroid Ember Column",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 + 0.20*pow(abs(cos(2*theta)),2)) * (1 + 0.10*pow(1-v,2.5) - 0.10*sin(pi*v) + 0.12*pow(v,3.2))",
+    "baseRadius": 5.6,
+    "height": 17
+  },
+  "structure": {
+    "modelMode": "vase",
+    "wall": 0.4,
+    "uniformShell": false,
+    "bottomThickness": 1.4,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": false,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateDiameterExtra": 0.5,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "vase": {
+    "enabled": true,
+    "baseDiameter": 8,
+    "topDiameter": 8,
+    "height": 13,
+    "insertOffsetMm": 1,
+    "wallMm": 1
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "tanh(1.6*(sin(10*cos(theta))*cos(10*sin(theta)) + sin(10*sin(theta))*cos(13*v) + sin(13*v)*cos(10*cos(theta)))) * smoothstep(0.02, 0.22, v)",
+    "intensity": 0.34
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "sin(10*cos(theta))*cos(10*sin(theta)) + sin(10*sin(theta))*cos(13*v) + sin(13*v)*cos(10*cos(theta))",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "0.45 - abs(sin(10*cos(theta))*cos(10*sin(theta)) + sin(10*sin(theta))*cos(13*v) + sin(13*v)*cos(10*cos(theta)))",
+    "baseColor": "#000000",
+    "patternColor1": "#e4bd68",
+    "patternColor2": "#9d2235",
+    "overlapColor": "#ff9016",
+    "depthMm": 1.5,
+    "mode": "color",
+    "smoothPatternEdges": true
+  },
+  "mesh": {
+    "resV": 260,
+    "resT": 360,
+    "patternResV": 260,
+    "patternResT": 360
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Gentle Torsion",
+    "equation": "pow(v, 1.2)",
+    "equationV": "",
+    "strength": 0.95,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}

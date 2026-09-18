@@ -1,0 +1,82 @@
+{
+  "name": "Gyroid Magma Flare",
+  "base": {
+    "coordSystem": "spherical",
+    "baseType": "nonlinear",
+    "preset": "Crown Splash",
+    "equation": "R * (1 - 0.26*pow(sin(phi),2) + 0.60*exp(-pow(phi - 0.5236, 2)*18) + 0.10*max(0, cos(3*theta))*pow(sin(phi),1.4))",
+    "baseRadius": 7.6,
+    "height": 13
+  },
+  "structure": {
+    "modelMode": "vase",
+    "wall": 0.45,
+    "uniformShell": false,
+    "bottomThickness": 2.2,
+    "cylDrain": 0.5,
+    "sphTopCut": 30,
+    "sphBotFlatten": 136,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": false,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateDiameterExtra": 0.5,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250
+  },
+  "vase": {
+    "enabled": true,
+    "baseDiameter": 8,
+    "topDiameter": 8,
+    "height": 13,
+    "insertOffsetMm": 1,
+    "wallMm": 1
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "tanh(1.6*(sin(15*sin(phi)*cos(theta))*cos(9*cos(phi)) + sin(9*cos(phi))*cos(15*sin(phi)*sin(theta)) + sin(15*sin(phi)*sin(theta))*cos(15*sin(phi)*cos(theta)))) * smoothstep(0.02, 0.30, v)",
+    "intensity": 0.34
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "sin(15*sin(phi)*cos(theta))*cos(9*cos(phi)) + sin(9*cos(phi))*cos(15*sin(phi)*sin(theta)) + sin(15*sin(phi)*sin(theta))*cos(15*sin(phi)*cos(theta))",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "0.45 - abs(sin(15*sin(phi)*cos(theta))*cos(9*cos(phi)) + sin(9*cos(phi))*cos(15*sin(phi)*sin(theta)) + sin(15*sin(phi)*sin(theta))*cos(15*sin(phi)*cos(theta)))",
+    "baseColor": "#0a2989",
+    "patternColor1": "#00b1b7",
+    "patternColor2": "#ff6a13",
+    "overlapColor": "#fec600",
+    "depthMm": 1.5,
+    "mode": "color",
+    "smoothPatternEdges": true
+  },
+  "mesh": {
+    "resV": 260,
+    "resT": 360,
+    "patternResV": 260,
+    "patternResT": 360
+  },
+  "modifier": {
+    "type": "twist",
+    "preset": "Gentle Torsion",
+    "equation": "pow(v, 1.15)",
+    "equationV": "",
+    "strength": 0.9,
+    "target": "all"
+  },
+  "distortion": {
+    "type": "torsion",
+    "preset": "Torsion Twist",
+    "dx": "x*cos(0.70*sin(pi*v)) - z*sin(0.70*sin(pi*v)) - x",
+    "dy": "0",
+    "dz": "x*sin(0.70*sin(pi*v)) + z*cos(0.70*sin(pi*v)) - z",
+    "strength": 1,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}
