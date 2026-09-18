@@ -1,0 +1,82 @@
+{
+  "name": "Xeno Claw Pod Vase",
+  "path": {
+    "type": "Custom Path",
+    "diameter": 10.6,
+    "zStretch": 6.57,
+    "params": {
+      "a": 0.08,
+      "b": 0.55,
+      "c": 30,
+      "tSpan": 2
+    },
+    "custom": {
+      "x": "(rx + b*cos(7*t)*sin(pi*sin(7*t)) + 1.6*pow(cos(7*t), 2) - rx*pow(max(0, -sin(7*t)), c) + 2.4*pow(max(0, sin(7*t)), 8))*cos(3*t + a*sin(21*t))",
+      "y": "(rx + b*cos(7*t)*sin(pi*sin(7*t)) + 1.6*pow(cos(7*t), 2) - rx*pow(max(0, -sin(7*t)), c) + 2.4*pow(max(0, sin(7*t)), 8))*sin(3*t + a*sin(21*t))",
+      "z": "zA*(sin(7*t) + 0.0637*pow(max(0, -sin(7*t)), c)) + 2.2*pow(max(0, sin(7*t)), 8)"
+    }
+  },
+  "profile": {
+    "preset": "Circle",
+    "equation": "0.6"
+  },
+  "orientation": {
+    "rotX": 0,
+    "rotY": 0,
+    "rotZ": 0
+  },
+  "structure": {
+    "mode": "pot",
+    "bottomCutPct": 2.952,
+    "topCutPct": 100,
+    "bottomThickness": 0.86,
+    "drainHoleDiameter": 0,
+    "fillPct": 100,
+    "wallThickness": 0.8,
+    "avoidSelfIntersect": false,
+    "extraClean": false,
+    "debrisThresholdPct": 0.1
+  },
+  "plate": {
+    "enabled": false,
+    "applyColoring": false,
+    "offsetCm": 1.5,
+    "heightCm": 1.5,
+    "wallThickness": 0.35,
+    "baseThickness": 0.35,
+    "openingAngleDeg": 25,
+    "smoothingDeg": 10
+  },
+  "vase": {
+    "enabled": true,
+    "baseDiameter": 8,
+    "topDiameter": 8,
+    "height": 13,
+    "insertOffsetMm": 1,
+    "wallMm": 1
+  },
+  "texture": {
+    "preset": "None (Flat Surface)",
+    "equation": "((0.5 - 0.5*cos(922*pi*u))*(1 - smoothstep(-0.5, 0.5, 2.7 - abs(mod(theta/pi + 54*u + 0.5, 1) - 0.5)*18.85)) + 1.4*smoothstep(-0.5, 0.5, 2.7 - abs(mod(theta/pi + 54*u + 0.5, 1) - 0.5)*18.85))*smoothstep(-6.282, -5.782, z)",
+    "intensity": 0.05
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "max(1.5 - abs(mod(theta/pi + 54*u + 0.5, 1) - 0.5)*18.85, 10*(z - 8.17) + 0.8)",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "min(max(2.7 - abs(mod(theta/pi + 54*u + 0.5, 1) - 0.5)*18.85, 10*(z - 8.17)), 10*(z + 6.082))",
+    "baseColor": "#847d48",
+    "patternColor1": "#847d48",
+    "patternColor2": "#000000",
+    "overlapColor": "#becf00",
+    "depthMm": 1.2,
+    "smoothEdges": true,
+    "boundaryRefine": 0
+  },
+  "mesh": {
+    "sections": 3300,
+    "radialRes": 24,
+    "patternResU": 3300,
+    "patternResT": 24
+  }
+}
