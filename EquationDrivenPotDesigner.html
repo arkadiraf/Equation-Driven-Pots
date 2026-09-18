@@ -2284,6 +2284,7 @@
             document.getElementById('plateHeight').value = '1.5';
             document.getElementById('plateOpeningAngle').value = '25';
             document.getElementById('plateRadiusExtra').value = '0.5';
+            document.getElementById('applyPlateColoring').checked = true;
             if (document.getElementById('innerSmoothPasses')) document.getElementById('innerSmoothPasses').value = '2';
             if (document.getElementById('innerSmoothEnabled')) document.getElementById('innerSmoothEnabled').checked = false;
             document.getElementById('plateSphTopCut').value = '95';
@@ -2586,7 +2587,8 @@
                     plateDiameterExtra: getFieldNumberValue('plateRadiusExtra', 0.35),
                     plateRadiusExtra: getFieldNumberValue('plateRadiusExtra', 0.5),
                     plateSphTopCut: getFieldNumberValue('plateSphTopCut', 95),
-                    plateSphBotFlatten: getFieldNumberValue('plateSphBotFlatten', 250)
+                    plateSphBotFlatten: getFieldNumberValue('plateSphBotFlatten', 250),
+                    applyColoring: !!document.getElementById('applyPlateColoring')?.checked
                 },
                 vase: {
                     enabled: modelMode === 'vase',
@@ -3012,6 +3014,9 @@
                 setFieldValue('plateRadiusExtra', getAIValue(plate, ['diameterExtra', 'plateDiameterExtra', 'radiusExtra', 'plateRadiusExtra']) ?? getAIValue(structure, ['plateDiameterExtra', 'plateRadiusExtra']));
                 setFieldValue('plateSphTopCut', getAIValue(plate, ['sphTopCut', 'plateSphTopCut', 'topCut']) ?? getAIValue(structure, ['plateSphTopCut', 'plateTopCut']));
                 setFieldValue('plateSphBotFlatten', getAIValue(plate, ['sphBotFlatten', 'plateSphBotFlatten', 'botFlat', 'bottomFlat']) ?? getAIValue(structure, ['plateSphBotFlatten', 'plateBotFlat', 'plateBottomFlat']));
+                // Absent in designs saved before the key existed: resetParameters() above leaves the
+                // box ticked, which is how those saucers were exported.
+                setCheckboxValue('applyPlateColoring', getAIValue(plate, ['applyColoring', 'applyPlateColoring', 'colored']));
 
                 setFieldValue('vaseBaseDiameter', getAIValue(vase, ['baseDiameter', 'vaseBaseDiameter']));
                 setFieldValue('vaseTopDiameter', getAIValue(vase, ['topDiameter', 'vaseTopDiameter']));
@@ -4155,7 +4160,10 @@
                 sphBotCut: botCutDeg * (Math.PI / 180),
                 plateSphTopCut: topCutDeg,
                 plateSphBotFlatten: bottomFlatDeg,
-                cylDrain: 0
+                cylDrain: 0,
+                // Apply Plate Coloring off: both masks read "no pattern", so the saucer comes out
+                // as one base-colour body (and, in cutout mode, with no holes).
+                ...(cfg.applyPlateColoring === false ? { patternEq1: '-1', patternEq2: '-1' } : {})
             });
         }
 
@@ -4791,24 +4799,40 @@ ${trianglesXml.join('\n')}
                      minWallCm: sample.minWallCm };
         }
 
+        // Bounds of several meshes taken together (same fields as computeMeshDataBounds).
+        function computeMeshesBounds(meshes) {
+            const all = meshes.filter(m => m.positions.length).map(m => computeMeshDataBounds(m.positions));
+            if (!all.length) return computeMeshDataBounds([]);
+            const minX = Math.min(...all.map(b => b.minX)), maxX = Math.max(...all.map(b => b.maxX));
+            const minY = Math.min(...all.map(b => b.minY)), maxY = Math.max(...all.map(b => b.maxY));
+            const minZ = Math.min(...all.map(b => b.minZ)), maxZ = Math.max(...all.map(b => b.maxZ));
+            return {
+                minX, maxX, minY, maxY, minZ, maxZ,
+                width: maxX - minX, height: maxY - minY, depth: maxZ - minZ,
+                centerX: (minX + maxX) * 0.5, centerZ: (minZ + maxZ) * 0.5,
+                nominalDiameter: Math.max(maxX - minX, maxZ - minZ)
+            };
+        }
+
         function buildSphericalPlateMultipartMeshes(cfg) {
             const plateCfg = buildSphericalPlateGenerationConfig(cfg);
             const parts = buildMultipartMeshes(plateCfg);
             const diameterExtra = getPlateDiameterExtra(cfg);
-            // Every part is pushed out from the same axis, the core's, since the core spans the
-            // whole saucer. Expanding each color part about its own bounding-box centre shifted
-            // any part covering only one side (a half-disc from a split mask, a one-sided motif)
-            // by up to diameterExtra/2, so neighbouring color bodies overlapped along one
-            // boundary and pulled apart along another.
-            const axis = computeMeshDataBounds(parts.coreMesh.positions);
-            const coreMesh = expandMeshPositions(parts.coreMesh, diameterExtra, axis);
+            // Every part is pushed out from the same axis: the centre of the whole saucer (all
+            // parts together, as generateSphericalPlate uses for the single-body saucer).
+            // Expanding each color part about its own bounding-box centre shifted any part
+            // covering only one side (a half-disc from a split mask, a one-sided motif) by up to
+            // diameterExtra/2, so neighbouring color bodies overlapped along one boundary and
+            // pulled apart along another. The sizes are measured on all parts too: the core
+            // alone is pocketed wherever color sits on the rim, so it reads narrower.
+            const rawBounds = computeMeshesBounds([parts.coreMesh, ...parts.surfaceGroups.map(g => g.mergedMesh)]);
+            const coreMesh = expandMeshPositions(parts.coreMesh, diameterExtra, rawBounds);
             const stateToColorIndex = { 1: 1, 2: 2, 3: 3 };
             const surfaceGroups = parts.surfaceGroups.map(g => {
-                const mesh = expandMeshPositions(g.mergedMesh, diameterExtra, axis);
+                const mesh = expandMeshPositions(g.mergedMesh, diameterExtra, rawBounds);
                 return { colorIndex: stateToColorIndex[g.state] || 1, name: g.name, mesh, validation: validateMesh(mesh) };
             });
-            const expBounds = computeMeshDataBounds(coreMesh.positions);
-            const rawBounds = computeMeshDataBounds(parts.coreMesh.positions);
+            const expBounds = computeMeshesBounds([coreMesh, ...surfaceGroups.map(g => g.mesh)]);
             return { coreMesh, coreValidation: validateMesh(coreMesh), surfaceGroups, plateOuterDiameter: Math.max(1.0, expBounds.nominalDiameter), plateHostDiameter: Math.max(1.0, rawBounds.nominalDiameter), plateHeight: Math.max(0.1, expBounds.height), minWallCm: parts.minWallCm };
         }
 

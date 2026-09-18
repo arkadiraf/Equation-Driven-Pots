@@ -276,6 +276,9 @@ Spherical plate parameters (used when coordSystem is "spherical"):
 - plateRadiusExtra: extra radius beyond the host body in cm (e.g. 0.5)
 - plateHeight and plateOpeningAngle are ignored in spherical plate mode
 
+Both plate types:
+- applyColoring: true for a plate colored like the pot, false for a plate in baseColor only (see PLATE COLORING)
+
 When to use spherical plate:
 - When the main body is spherical and the plate should share its rounded form language
 - When a saucer or dish shape with a curved underside fits the object
@@ -787,12 +790,13 @@ The plate (when modelMode is "plate" or "potplate") can display in two ways:
 - Colored plate: the plate inherits the full pattern color logic (baseColor, patternColor1, patternColor2, overlapColor)
 - Single color plate: the plate uses only the baseColor regardless of the active pattern masks
 
-This is a UI toggle (Apply Plate Coloring checkbox) that is not set by the JSON.
-By default it is enabled (colored plate).
+Set it with "applyColoring" in the "plate" object (the Apply Plate Coloring checkbox):
+- "applyColoring": true   -> colored plate (the default, also used when the key is omitted)
+- "applyColoring": false  -> single color plate in baseColor
 
-When recommending a design:
-- If the plate is decorative or part of a display piece, colored plates are appropriate
-- If the plate is purely functional and should be visually neutral, mention that the user can uncheck "Apply Plate Coloring" to reduce it to a single flat base color
+When choosing:
+- If the plate is decorative or part of a display piece, use a colored plate
+- If the plate is purely functional and should be visually neutral, or the pot's motifs would look odd copied onto the dish, set "applyColoring": false
 
 ==================================================
 12. PRINTABILITY RULES
@@ -877,6 +881,9 @@ In spherical plate mode (coordSystem = "spherical", modelMode = "plate" or "potp
 - plateRadiusExtra: cm, >= 0
 - plateHeight and plateOpeningAngle are still output in the JSON but are ignored by the app in spherical mode
 
+In both plate modes:
+- applyColoring: boolean, default true (false = single color plate in baseColor)
+
 Always output the full plate section with all parameters regardless of mode.
 
 VASE PARAMETER RULES:
@@ -933,7 +940,8 @@ IMPORTANT MODIFIER RULE
     "plateOpeningAngle": 25,
     "plateRadiusExtra": 0.5,
     "plateSphTopCut": 95,
-    "plateSphBotFlatten": 250
+    "plateSphBotFlatten": 250,
+    "applyColoring": true
   },
   "vase": {
     "enabled": false,

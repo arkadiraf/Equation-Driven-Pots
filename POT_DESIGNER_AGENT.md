@@ -223,18 +223,14 @@ the first layers.
 
 - There is no clean equation-level fix. For a given phi the pot's `v` and the saucer's `v` differ,
   and no linear gate in (phi, v) passes the pot's lower body while blocking the saucer floor. A
-  non-linear discriminator can be built, but it breaks as soon as anyone changes a cut angle.
-- **The Apply Plate Coloring checkbox does nothing for spherical saucers.** `applyPlateColoring`
-  (L3493) is read only on the cylindrical plate path (L4312, L4404, L4434) and by
-  `generateSpherical`'s vertex colours (L7183). `buildSphericalPlateMultipartMeshes` never checks it.
-  Verified on Wildfire Drake: the saucer 3MF exported with the box unticked was byte-identical
-  (same model hash) to the coloured one. The checkbox is also not stored in the JSON.
-- **Workaround for a plain saucer:** load the design, set both pattern equations to `-1`, and call
-  `exportPlateAssembly3MF(getConfig(), { filenameStem: '<Name>_Plate_Plain' })`. The saucer comes
-  out as one base-colour body with the identical bounding box, B:0 N:0.
-- Ship the default (coloured) saucer, because it matches the JSON on reload. Add a `_Plate_Plain`
-  file when the pot's motifs look odd on the saucer (a belly or tail copied onto the rim of the
-  dish).
+  non-linear discriminator can be built, but it breaks as soon as anyone changes a cut angle. To
+  keep colour off the saucer, turn saucer colouring off instead.
+- **Choosing and shipping.** Set `plate.applyColoring: false` when the pot's motifs look odd on
+  the saucer (a belly or tail copied onto the rim of the dish), or when colour on the first layers
+  is unwanted. The JSON then reproduces the plain saucer on reload. To ship both variants, export
+  once as the JSON says, then flip the box and call
+  `exportPlateAssembly3MF(getConfig(), { filenameStem: '<Name>_Plate_Plain' })` (or `_Plate` for
+  the coloured one).
 
 
 ### 5.4 Generated expressions and negative thresholds
