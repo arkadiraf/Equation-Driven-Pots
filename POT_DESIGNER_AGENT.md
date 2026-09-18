@@ -8,7 +8,8 @@ which remains the source of truth for the JSON schema, preset names and equation
 headless harness, the "verify with the app's own functions" approach, the gyroid recipes and the
 seam rules in the vase guide all apply unchanged — read that first. This file covers only what is
 different for a pot, and the traps found while building **Caldera Atlas Orb**, **Ironclad Tortoise
-Planter** and **Red Cap Overalls Planter** (spherical pots + saucers, 2026-09-18).
+Planter**, **Red Cap Overalls Planter** and **Wildfire Drake Planter** (spherical pots + saucers,
+2026-09-18).
 
 Scope: the spherical pot + spherical saucer path was exercised end to end. Notes on the
 cylindrical path are from reading the code only and are marked as such.
@@ -223,11 +224,17 @@ the first layers.
 - There is no clean equation-level fix. For a given phi the pot's `v` and the saucer's `v` differ,
   and no linear gate in (phi, v) passes the pot's lower body while blocking the saucer floor. A
   non-linear discriminator can be built, but it breaks as soon as anyone changes a cut angle.
-- The real switch is the **Apply Plate Coloring** checkbox (`applyPlateColoring`, L3493). It is
-  **not stored in the JSON** and defaults to on. Unticked, the saucer exports in the base colour
-  only.
-- Ship the default (coloured) saucer so the files match the JSON on reload, and tell the user
-  about the toggle.
+- **The Apply Plate Coloring checkbox does nothing for spherical saucers.** `applyPlateColoring`
+  (L3493) is read only on the cylindrical plate path (L4312, L4404, L4434) and by
+  `generateSpherical`'s vertex colours (L7183). `buildSphericalPlateMultipartMeshes` never checks it.
+  Verified on Wildfire Drake: the saucer 3MF exported with the box unticked was byte-identical
+  (same model hash) to the coloured one. The checkbox is also not stored in the JSON.
+- **Workaround for a plain saucer:** load the design, set both pattern equations to `-1`, and call
+  `exportPlateAssembly3MF(getConfig(), { filenameStem: '<Name>_Plate_Plain' })`. The saucer comes
+  out as one base-colour body with the identical bounding box, B:0 N:0.
+- Ship the default (coloured) saucer, because it matches the JSON on reload. Add a `_Plate_Plain`
+  file when the pot's motifs look odd on the saucer (a belly or tail copied onto the rim of the
+  dish).
 - The two plate-size readouts disagree slightly: the preview status (`buildPlateMultipartMeshes`)
   said 15.36 cm and the export status (`generatePlate`) said 15.64 cm. Quote the 3MF bounding box
   instead.
@@ -268,6 +275,19 @@ touch in the design, then assign states:
   brown 00, blue A, red overlap, yellow B.
 - Put the colour you want on the bed and on the soil side of the pot in the base state. The core
   body is the base colour, so it forms the inside wall and the first layers.
+- When the design's contacts already form the square, no strip is needed. Wildfire Drake:
+  orange–cream (belly, claws), cream–yellow (diamonds), yellow–red (flame cores), red–orange
+  (flame edges) gave orange 00, cream A, yellow overlap, red B.
+
+**Verify it numerically, not by eye.** Sample both masks on a ~0.3 mm (theta, phi) grid, label each
+sample 0–3, and for every sample of state 3 (or 1) find the nearest sample of state 0 (or 2)
+within a ±10-cell window. The result is the **narrowest separating strip in millimetres** for each
+forbidden pair. Aim for ≥ 1.5 mm, which is more than one mesh cell at 260 × 400.
+
+- Wildfire Drake's first flames had open edges; after the redesign the narrowest red strip
+  between a yellow core and the orange body measured 3.97 mm.
+- Adding the tail flame brought it to 2.61 mm, still clean.
+- A 700 × 1400 check takes ~2 s.
 
 ### 5.6 The very top and bottom rows are forced to the base colour
 
@@ -397,6 +417,26 @@ Frames, ports and bosses are all ranges of `D`. Round bosses use `hypot(hx ∓ a
 up: `min(a − ty, (ty + a)·k − |tx − xc|)`. Offset `q` by `pi/4` to centre them on the legs
 instead of between them.
 
+Diamonds (gems) use the same idea: `1 − |dx|/a − |dy|/b` is ≥ 0 inside a rhombus. Its positive
+part doubles as a gentle four-facet pyramid for the relief. A hollow (outlined) gem is
+`min(outer, −inner)`, with the inner rhombus shrunk by the ring width.
+
+**Flames.** Measure height above a wavy base line, `up = (φ_base(θ) − φ)·R`.
+
+- Tongue profile: a triangle wave raised to a power, `pow(1 − 2|fract(N·θ'/2π) − 0.5|, p)`. That
+  gives pointed, concave tongues. A cosine lobe gives rounded blobs that read as waves.
+- Flicker: `θ' = θ + c·up + w·sin(k·up + 2θ)` bends the tongues into S-shapes.
+- Outer flame: `up < h0 + T·s`. Core: `h0c + Tc·s^q` with `h0c < h0 − margin`, `Tc ≤ T`, `q > 1`.
+  Then the core stays at least `margin` below the outer edge vertically, and narrower sideways.
+- These are *vertical*-distance fields. On a steep tongue flank they change several millimetres
+  per cell sideways, so a relief step of `smoothstep(−1, 1, F)` becomes a sub-cell cliff and
+  aliases. Ramp the relief over ~10 mm of `F` (`clamp(F/10, 0, 1)`) instead.
+
+**Curved bands (a tail).** An arc of radius `r` centred at `(r, 0)` in local cm coordinates:
+`u = atan2(−ty, r − tx)` runs 0 → π/2 along it, and `|hypot(tx − r, ty) − r|` is the distance
+across it. Gate both ends with `u·r` and `(π/2 − u)·r`, taper the width with `u`, and a
+`min(band, w − band)` strip gives a coloured outline of width `w` just inside the edge.
+
 ---
 
 ## 7. Acceptance thresholds for pots
@@ -410,6 +450,7 @@ instead of between them.
 | Boundary / non-manifold edges | **0 / 0** on every body, **pot and saucer** | Read the validations directly, as in the vase guide §7 |
 | Four colour states | each **> 2 %** | |
 | Mask layout | no edge where A and B switch together | Put an A-only (or B-only) strip between base and overlap (§5.5) |
+| Narrowest separating strip | **≥ 1.5 mm** for both forbidden pairs | Numerical strip check (§5.5) |
 | Pot pattern bodies `zmin` | **> 0** | First layers print single-colour |
 | Drain | present | `sphBotCut` < 179.7° |
 | Round trip | identical `3D/3dmodel.model` hash for **pot and saucer** | |
@@ -423,6 +464,7 @@ instead of between them.
 | Caldera Atlas Orb | `#000000` Black (valleys) | `#C12E1F` Red (lowlands) | `#847D48` Bronze (highlands) | `#8E9089` Gray (peaks) |
 | Ironclad Tortoise Planter | `#545454` Dark Gray (shell, rim, sole) | `#C12E1F` Red (seams, outlines, muzzles) | `#FFFFFF` Jade White (band, frames, triangles) | `#0086D6` Cyan (lower body) |
 | Red Cap Overalls Planter | `#6F5034` Cocoa Brown (shoes, button rims, interior) | `#0056B8` Cobalt Blue (overalls) | `#C12E1F` Red (cap, shirt) | `#FEC600` Sunflower Yellow (button faces) |
+| Wildfire Drake Planter | `#FF9016` Pumpkin Orange (body, interior) | `#F7E6DE` Beige (belly, claws) | `#FEC600` Sunflower Yellow (flame cores, gems) | `#C12E1F` Red (flames, tail outline) |
 
 For Caldera the columns are in height order (§6 recipe). Also check the vase guide's table so the family
 stays varied.
@@ -433,18 +475,20 @@ stays varied.
 
 Existing folders contain `<Name>.3mf`, `<Name>.json`, `<Name>.jpg` and `<Name>Thumbnail.jpg`. The
 **jpgs are photos of printed pieces** (3000 × 4000 and 800 × 600), and those `.3mf` files are
-**Bambu Studio projects the user re-saved** (pot and saucer on two build plates, with slicer
-metadata). Neither can be produced from the app, so deliver:
+**Bambu Studio projects** (pot and saucer on two build plates). The app's **Download Bambu Lab .3MF**
+button (`exportBambuStudio3MF()`) writes that project directly. It is a single `<Name>.3mf` with
+filament slots already assigned and no plate thumbnails. The photos cannot come from the app, so
+deliver:
 
 ```
 3dModels/MultiColor/<Design Name With Spaces>/
-    Design_Name.3mf          (renamed from *_Pot_multipart.3mf)
-    Design_Name_Plate.3mf    (the saucer, exactly as exported)
+    Design_Name.3mf          (from exportBambuStudio3MF, printer as the user asks)
     Design_Name.json         (from downloadCurrentSettingsJson)
     Design_Name.png          (render: front + back side by side)
 ```
 
-Tell the user the image is a render, so a photo can replace it later.
+Tell the user the image is a render, so a photo can replace it later. Re-saving the project in
+Bambu Studio adds plate thumbnails.
 
 ---
 
@@ -458,6 +502,8 @@ Tell the user the image is a render, so a photo can replace it later.
 
 | Red Cap Overalls Planter | sph | 8 | 40° / 135° / 176° | 16.3 × 13.1 cm | 11.5 cm | 11.3 cm | 4.25 mm (4.8) | 0 % above 1 mm (0.21 % raw) / 0 % | 1.65 L | 502 g / 180 g |
 
+| Wildfire Drake Planter | sph | 8 | 40° / 135° / 176° | 16.5 × 12.9 cm | 11.5 cm | 11.1 cm | 4.04 mm (4.8) | 0.18 % above 1 mm, 0 % past 60° / 0 % | 1.67 L | 406 g / 160 g |
+
 Caldera: mesh 260 × 400, pattern depth 1.4 mm, saucer 15.4 × 2.1 cm (spherical plate at 95° /
 250°, +0.5 cm). Coverage 38 / 25 / 23 / 14 %. The pot 3MF is 93 MB and the saucer 88 MB.
 
@@ -468,6 +514,10 @@ the saucer 71 MB.
 Red Cap Overalls: same settings; saucer 16.2 × 2.1 cm. Coverage: blue 48 %, red 35 %, brown 16 %,
 yellow 2.1 % (six buttons). The saucer comes out brown and blue, with 10 % of its underside
 coloured. The pot 3MF is 78 MB and the saucer 60 MB.
+
+Wildfire Drake: same settings. Coverage: orange 71 %, red 15 %, cream 9 %, yellow 5 %. The pot's
+colour bodies start 8 mm above the bed. The 0.18 % overhang sits on the claws, below 2 cm. The pot
+3MF is 64 MB, the saucer 54 MB, and a plain `_Plate_Plain` saucer 46 MB (§5.3).
 
 Baseline of other spherical pots in `MultiColor` (read from six of their JSONs): R 5–12.5, radial
 wall 0.35–0.5 cm, bottom 0.35–0.85 cm, top cut 25–38°, flatten 150–155°, bottom cut 173–178°,

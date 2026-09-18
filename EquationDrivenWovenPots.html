@@ -52,6 +52,8 @@
         .btn-ai { background: var(--highlight); }
         .btn-snapshot { background: #16897b; }
         .btn-reset { background: #7f8c8d; }
+        .btn-bambu { background: #00ae42; }
+        .bambu-export-options { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 6px; }
 
         .filename-control { margin-top: 8px; }
         .filename-control input { font-weight: 600; color: var(--secondary); }
@@ -348,6 +350,24 @@
     <button class="btn-preview" onclick="downloadCurrentSettingsJson()">DOWNLOAD DESIGN .JSON</button>
     <button class="btn-preview" onclick="triggerDesignFilePicker()">LOAD DESIGN .JSON</button>
     <input id="designJsonFileInput" class="ai-file-input" type="file" accept=".json,.jso,application/json" onchange="handleDesignFileSelection(event)">
+    <button class="btn-bambu" onclick="exportBambuStudio3MF()">DOWNLOAD BAMBU LAB .3MF</button>
+    <div class="bambu-export-options">
+        <div class="input-group">
+            <label for="bambuPrinter">Printer</label>
+            <select id="bambuPrinter"></select>
+        </div>
+        <div class="input-group">
+            <label for="bambuFilamentColors">Filament Colors</label>
+            <select id="bambuFilamentColors">
+                <option value="pla">PLA Basic</option>
+                <option value="exact">Exact design</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="bambuSparseInfill">Sparse Infill (%)</label>
+            <input type="number" id="bambuSparseInfill" value="35" min="0" max="100" step="1">
+        </div>
+    </div>
 </div>
 
 <div id="designJsonOverlay" class="ai-modal-overlay" onclick="handleDesignJsonOverlayClick(event)">
@@ -391,6 +411,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="bambu-export.js"></script>
 
 <script>
     let scene, camera, renderer, controls, currentMeshes = [];
@@ -3814,6 +3835,49 @@ ${trianglesXml.join('\n')}
         }
     }
 
+    // Bambu Studio project (engine: bambu-export.js). The pot's color parts (states 0-3) form one
+    // object and the plate's (states 4-7) another, each on its own build plate.
+    async function exportBambuStudio3MF() {
+        if (typeof BambuExport === 'undefined') {
+            setStatus('Bambu export unavailable: bambu-export.js did not load.');
+            return;
+        }
+        if (!requireCsg()) return;
+        try {
+            const cfg = readCfg();
+            const options = BambuExport.readOptions();
+            setStatus('Building Bambu Studio project...');
+            await BambuExport.nextFrame();
+
+            const geo = buildMesh(cfg, 10.0);
+            const potParts = geo.userData.patternParts || [{ state: 0, positions: geo.attributes.position.array, indices: geo.index.array }];
+            const plateParts = geo.userData.plateParts || [];
+            const stateNames = ['Base', 'Pattern A', 'Pattern B', 'Overlap'];
+            const palette = [cfg.baseColor, cfg.patternColor1, cfg.patternColor2, cfg.overlapColor];
+            const toPart = part => ({
+                name: stateNames[part.state % 4],
+                color: palette[part.state % 4],
+                positions: part.positions,
+                indices: part.indices
+            });
+            const designName = getConfiguredPotName();
+            const toObject = (kind, parts) => ({ kind, name: designName ? `${designName} ${kind}` : kind, parts: parts.map(toPart) });
+            const objects = [toObject(cfg.mode === 'pot' ? 'Pot' : 'Object', potParts)];
+            if (plateParts.length) objects.push(toObject('Plate', plateParts));
+
+            const result = await BambuExport.buildProject({ title: designName, objects, options, onProgress: setStatus });
+            if (!result) {
+                setStatus('Bambu export stopped: the model has no printable geometry.');
+                return;
+            }
+            download(result.blob, `${slugifyName(designName || cfg.type)}.3mf`);
+            setStatus(BambuExport.summarize(result, options).join(' · '));
+        } catch (e) {
+            console.error(e);
+            setStatus('Bambu Studio export failed: ' + e.message);
+        }
+    }
+
     function makeAxisLabel(text, color) {
         const canvas = document.createElement('canvas');
         canvas.width = 64; canvas.height = 64;
@@ -3916,6 +3980,7 @@ ${trianglesXml.join('\n')}
     window.onload = () => {
         initThree(); applyPathPreset(); applyProfilePreset(); onModelModeChange(); onShellThickChange();
         populateTexturePresets(); populatePatternPresets(); initBambuPalettes();
+        if (typeof BambuExport !== 'undefined') BambuExport.initOptions();
         document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeDesignJsonWindow(); });
         document.getElementById('designJsonInput').value = JSON.stringify(DEFAULT_DESIGN_CONFIG);
         applyDesignJson();

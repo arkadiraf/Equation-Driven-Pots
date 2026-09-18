@@ -272,12 +272,19 @@
             background: var(--export3mf);
         }
 
-        .btn-snapshot {
-            background: #16897b;
+        .btn-bambu {
+            background: #00ae42;
         }
 
-        .btn-reset {
-            background: #7f8c8d;
+        .bambu-export-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .btn-snapshot {
+            background: #16897b;
         }
 
         .filename-control {
@@ -1099,7 +1106,24 @@
         <button class="btn-3mf" onclick="exportMultiPart3MF()">DOWNLOAD MULTI-PART .3MF</button>
         <button class="btn-stl" onclick="exportSTL()">DOWNLOAD .STL</button>
         <button class="btn-snapshot" onclick="downloadViewportImage()">SAVE VIEW AS .PNG</button>
-        <button class="btn-reset" onclick="resetParameters()">RESET PARAMETERS</button>
+        <button class="btn-bambu" onclick="exportBambuStudio3MF()">DOWNLOAD BAMBU LAB .3MF</button>
+        <div class="bambu-export-options">
+            <div class="input-group">
+                <label for="bambuPrinter">Printer</label>
+                <select id="bambuPrinter"></select>
+            </div>
+            <div class="input-group">
+                <label for="bambuFilamentColors">Filament Colors</label>
+                <select id="bambuFilamentColors">
+                    <option value="pla">PLA Basic</option>
+                    <option value="exact">Exact design</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="bambuSparseInfill">Sparse Infill (%)</label>
+                <input type="number" id="bambuSparseInfill" value="35" min="0" max="100" step="1">
+            </div>
+        </div>
         <div class="desc-text"></div>
     </div>
 
@@ -1151,6 +1175,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="bambu-export.js"></script>
 
     <script>
         const pi = Math.PI, sin = Math.sin, cos = Math.cos, tan = Math.tan,
@@ -3087,7 +3112,7 @@
             };
 
             const titles = Array.from(sidebar.querySelectorAll(':scope > .section-title'));
-            titles.forEach((title, idx) => {
+            titles.forEach(title => {
                 const section = document.createElement('div');
                 section.className = 'collapsible-section';
 
@@ -3102,11 +3127,11 @@
                     content.appendChild(section.nextSibling);
                 }
 
-                const startsOpen = idx < 1;
-                section.classList.toggle('is-collapsed', !startsOpen);
+                // Every section starts collapsed.
+                section.classList.add('is-collapsed');
                 title.setAttribute('role', 'button');
                 title.setAttribute('tabindex', '0');
-                title.setAttribute('aria-expanded', startsOpen ? 'true' : 'false');
+                title.setAttribute('aria-expanded', 'false');
 
                 const toggleSection = () => {
                     const isCollapsed = section.classList.toggle('is-collapsed');
@@ -3230,6 +3255,7 @@
             populatePatternPresets();
             initCollapsibleSections();
             initBambuPalettes();
+            if (typeof BambuExport !== 'undefined') BambuExport.initOptions();
 
             const defaultJson = {
                 "name": "Five Petal Interlaced Bloom",
@@ -7470,6 +7496,81 @@ ${trianglesXml.join('\n')}
             } catch (err) {
                 console.error(err);
                 setStatus("3MF export failed.", 'error');
+            }
+        }
+
+        /* ---------- Bambu Studio project export (engine: bambu-export.js) ---------- */
+
+        // Every body the project gets, grouped per printed object, in printer coordinates (mm).
+        function buildBambuProjectObjects(cfg) {
+            const stateHexes = [cfg.baseColor, cfg.patternColor1, cfg.patternColor2, cfg.overlapColor];
+            const displayName = normalizePotName(cfg.exportName);
+            const toPart = (name, colorIndex, mesh, validation) => {
+                if (!mesh || !mesh.indices.length) return null;
+                const printerMesh = rotateMeshForPrinterCoordinates(mesh);
+                return {
+                    name,
+                    color: stateHexes[colorIndex],
+                    positions: printerMesh.positions.map(v => v * 10),
+                    indices: printerMesh.indices,
+                    validation
+                };
+            };
+            const toObject = (kind, parts) => ({ kind, name: displayName ? `${displayName} ${kind}` : kind, parts: parts.filter(Boolean) });
+            const objects = [];
+            if (!cfg.isPlate) {
+                const pot = memoizedMeshBuild(buildMultipartMeshes, cfg);
+                objects.push(toObject(cfg.isVase ? 'Vase' : 'Pot', [toPart('Base', 0, pot.coreMesh, pot.coreValidation)]
+                    .concat(pot.surfaceGroups.map(g => toPart(g.name, g.state, g.mergedMesh, g.mergedValidation)))));
+            }
+            if (cfg.isPlate || cfg.includePlate) {
+                const plate = memoizedMeshBuild(buildPlateMultipartMeshes, cfg);
+                objects.push(toObject('Plate', [toPart('Base', 0, plate.coreMesh, plate.coreValidation)]
+                    .concat(plate.surfaceGroups.map(g => toPart(g.name, g.colorIndex, g.mesh, g.validation)))));
+            }
+            return objects;
+        }
+
+        function buildBambuExportStem(cfg) {
+            const name = normalizePotName(cfg.exportName);
+            return name ? slugifyName(name) : buildExportStem(cfg, false);
+        }
+
+        async function exportBambuStudio3MF() {
+            if (typeof BambuExport === 'undefined') {
+                setStatus('Bambu export unavailable: bambu-export.js did not load.', 'error');
+                return;
+            }
+            try {
+                const cfg = getConfig();
+                const options = BambuExport.readOptions();
+                setStatus('Building Bambu Studio project...', '');
+                await BambuExport.nextFrame();
+
+                const objects = buildBambuProjectObjects(cfg);
+                const result = await BambuExport.buildProject({
+                    title: normalizePotName(cfg.exportName),
+                    objects,
+                    options,
+                    onProgress: msg => setStatus(msg, '')
+                });
+                if (!result) {
+                    setStatus('Bambu export stopped: the model has no printable geometry.', 'error');
+                    return;
+                }
+                downloadBlob(result.blob, `${buildBambuExportStem(cfg)}.3mf`);
+
+                const issues = [];
+                objects.forEach(o => o.parts.forEach(part => {
+                    const v = part.validation;
+                    if (v && (v.boundaryEdges || v.nonManifoldEdges)) issues.push(`${o.kind} ${part.name} B:${v.boundaryEdges} N:${v.nonManifoldEdges}`);
+                }));
+                const summary = BambuExport.summarize(result, options);
+                summary.push(issues.length ? `manifold warnings | ${issues.join(' | ')}` : 'manifold check passed');
+                setStatus(summary.join(' | '), issues.length || result.plates.some(p => !p.fits) ? 'warn' : '');
+            } catch (err) {
+                console.error(err);
+                setStatus("Bambu Studio export failed.", 'error');
             }
         }
 

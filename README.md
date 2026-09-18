@@ -21,6 +21,7 @@ This all-in-one GUI brings the current browser workflow together in a single int
 - dual color-mask pattern logic
 - plate and pot+plate generation
 - STL and multi-part 3MF export, plus a **Save View as .PNG** button that writes the viewport exactly as framed on screen at twice its pixel size, without the ground grid
+- **Bambu Lab .3MF** export: a single Bambu Studio project instead of separate pot and plate files. The pot and the plate each get their own build plate, and every color body is already assigned to a filament slot. The slots are set to Bambu PLA Basic in the nearest palette color, or the exact design colors, on the printer you pick (H2C, H2D, H2D Pro, H2S, X1 Carbon, X1E, P2S, P1S, A1 or A1 mini). The project also carries the purge volumes Bambu Studio would calculate for those colors, and a sparse infill density (35% by default)
 - two experimental math tools:
   - **Field Modifier**
   - **Field Distortion**
@@ -42,6 +43,7 @@ It reuses the cylindrical/spherical field-sampling core, openwork surface patter
 - **base color masking**, so the dual-mask pattern colors can extend onto the base itself instead of always falling back to a flat color
 - **Ring Base**, an optional round stand for spherical profiles whose bottom isn't flat (for example a full 180° pointed base) - a torus with an adjustable flat cut so it sits stably on a table
 - STL and 3MF export that automatically splits into separate bowl and ring files whenever a ring stand is attached, mirroring the Pot Designer's pot/plate export convention
+- the same **Bambu Lab .3MF** export as the Pot Designer: bowl and ring stand on separate build plates, with the bowl kept as one closed mesh and its colors painted onto it per triangle
 
 It's linked from the main site as an extension of the Pot Designer, with its own model gallery tabs for bowl and lamp designs.
 
@@ -61,6 +63,7 @@ Rather than sampling a radius from a single field, it sweeps a profile along the
 - **Base Plate**, a shelled dish generated from the pot's own bottom-cut silhouette rather than a separate equation - traced and splined for most paths, or fit with a smooth ellipse for topologies (like the Mobius curve) whose cross-section loops surround a hole - that can carry the same dual-mask coloring on its own bottom and sides. The silhouette is walked edge by edge rather than vertex by vertex, so a double-walled shape can't have its contour collapse onto an inner wall between sparse cross-section vertices, and a **Contour Smoothing** control sets the angular width below which a dip is treated as an artefact and filled back out - spending the plate's own clearance to cover what the smoothing rounds off, so the rim never ends up inside the silhouette it traced
 - Surface Texture displacement, self-intersection-safe by construction (re-clamped against the same pinch limit the base profile uses)
 - STL and multi-part 3MF export, including the base plate and every pattern-color part as separate objects, plus a **Save View as .PNG** button that writes the viewport exactly as framed on screen at twice its pixel size, without the axis gizmo
+- the same **Bambu Lab .3MF** export as the Pot Designer, with the pot and its base plate on separate build plates
 - Design JSON import/export for saving and re-loading a full configuration
 
 It's linked from the main site as a second extension of the Pot Designer.

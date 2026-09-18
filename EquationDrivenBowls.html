@@ -212,8 +212,24 @@
             background: var(--secondary);
         }
 
-        .btn-reset {
-            background: #7f8c8d;
+        .btn-bambu {
+            background: #00ae42;
+        }
+
+        .filename-control {
+            margin-top: 8px;
+        }
+
+        .filename-control input {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .bambu-export-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 6px;
+            margin-top: 6px;
         }
 
         .ai-file-input {
@@ -1100,19 +1116,34 @@
             equation transitions. The inner wall and liner follow the same motion, so wall thickness (and the pattern
             cut into it) stays exact; the base and rim remain anchored.</div>
 
-        <div class="section-title">5. Design File</div>
-        <div class="input-group">
-            <label>Design Name</label>
+        <div class="filename-control">
+            <label for="designName">Design File Name</label>
             <input type="text" id="designName" value="" placeholder="My Bowl" oninput="onDesignNameInput()">
         </div>
-        <div class="desc-text">Used as the export file name and stored in the design .json.</div>
         <button class="btn-json" onclick="downloadDesignJson()">DOWNLOAD DESIGN .JSON</button>
         <button class="btn-json" onclick="triggerDesignLoad()">LOAD DESIGN .JSON</button>
         <input id="designFileInput" class="ai-file-input" type="file" accept=".json,application/json"
             onchange="handleDesignFile(event)">
         <button class="btn-stl" onclick="exportSTL()">DOWNLOAD .STL</button>
         <button class="btn-3mf" onclick="export3MF()">DOWNLOAD COLOR .3MF</button>
-        <button class="btn-reset" onclick="resetParameters()">RESET PARAMETERS</button>
+        <button class="btn-bambu" onclick="exportBambuStudio3MF()">DOWNLOAD BAMBU LAB .3MF</button>
+        <div class="bambu-export-options">
+            <div class="input-group">
+                <label for="bambuPrinter">Printer</label>
+                <select id="bambuPrinter"></select>
+            </div>
+            <div class="input-group">
+                <label for="bambuFilamentColors">Filament Colors</label>
+                <select id="bambuFilamentColors">
+                    <option value="pla">PLA Basic</option>
+                    <option value="exact">Exact design</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="bambuSparseInfill">Sparse Infill (%)</label>
+                <input type="number" id="bambuSparseInfill" value="35" min="0" max="100" step="1">
+            </div>
+        </div>
         <div class="desc-text"></div>
     </div>
 
@@ -1123,6 +1154,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="bambu-export.js"></script>
 
     <script>
         /* ---------- math helpers (exposed to user equations) ---------- */
@@ -4461,6 +4493,58 @@ ${trianglesXml.join('\n')}
             }
         }
 
+        // Bambu Studio project (engine: bambu-export.js). As in the color .3mf, the bowl stays one
+        // closed mesh; its colors become per-triangle painting. A ring stand gets its own plate.
+        async function exportBambuStudio3MF() {
+            if (typeof BambuExport === 'undefined') {
+                setStatus('Bambu export unavailable: bambu-export.js did not load.', 'error');
+                return;
+            }
+            try {
+                const cfg = getConfig();
+                const options = BambuExport.readOptions();
+                setStatus('Building Bambu Studio project...');
+                await BambuExport.nextFrame();
+
+                const palette = [cfg.baseColor, cfg.patternColor1, cfg.patternColor2, cfg.overlapColor];
+                const designName = document.getElementById('designName').value.trim();
+                const toObject = (kind, mesh) => {
+                    const printerMesh = rotateMeshForPrinterCoordinates(mesh);
+                    return {
+                        kind,
+                        name: designName ? `${designName} ${kind}` : kind,
+                        validation: mesh.validation,
+                        parts: [{
+                            name: kind,
+                            positions: printerMesh.positions.map(v => v * 10),
+                            indices: printerMesh.indices,
+                            colors: palette,
+                            triangleColors: mesh.triangleColorIndices || []
+                        }]
+                    };
+                };
+                const objects = [toObject(cfg.lampMode ? 'Lamp' : 'Bowl', memoizedMeshBuild(buildMeshData, cfg))];
+                if (ringActive(cfg)) objects.push(toObject('Ring', memoizedMeshBuild(buildRingMeshData, cfg)));
+
+                const result = await BambuExport.buildProject({ title: designName, objects, options, onProgress: msg => setStatus(msg) });
+                if (!result) {
+                    setStatus('Bambu export stopped: the model has no printable geometry.', 'error');
+                    return;
+                }
+                downloadBlob(result.blob, `${exportStem(cfg)}.3mf`);
+
+                const issues = objects
+                    .filter(o => o.validation && (o.validation.boundaryEdges || o.validation.nonManifoldEdges))
+                    .map(o => `${o.kind} B:${o.validation.boundaryEdges} N:${o.validation.nonManifoldEdges}`);
+                const summary = BambuExport.summarize(result, options);
+                summary.push(issues.length ? `manifold warnings | ${issues.join(' | ')}` : 'manifold check passed');
+                setStatus(summary.join(' | '), issues.length || result.plates.some(p => !p.fits) ? 'warn' : '');
+            } catch (err) {
+                console.error(err);
+                setStatus('Bambu Studio export failed.', 'error');
+            }
+        }
+
         /* ---------- design .json save / load ---------- */
         // every GUI control, so a design round-trips exactly.
         const DESIGN_VALUE_IDS = [
@@ -4726,11 +4810,13 @@ ${trianglesXml.join('\n')}
 
         function initCollapsibles() {
             const titles = Array.from(document.querySelectorAll('.section-title'));
-            const last = titles.length - 1;
-            titles.forEach((title, idx) => {
+            titles.forEach(title => {
+                // A section also ends at the file name field or the first button, so those stay
+                // visible below the sections while every section starts collapsed.
                 const content = [];
                 let n = title.nextElementSibling;
-                while (n && !n.classList.contains('section-title')) { const next = n.nextElementSibling; content.push(n); n = next; }
+                const endsSection = el => el.classList.contains('section-title') || el.classList.contains('filename-control') || el.tagName === 'BUTTON';
+                while (n && !endsSection(n)) { const next = n.nextElementSibling; content.push(n); n = next; }
                 const section = document.createElement('div');
                 section.className = 'collapsible-section';
                 title.parentNode.insertBefore(section, title);
@@ -4740,14 +4826,8 @@ ${trianglesXml.join('\n')}
                 content.forEach(el => wrap.appendChild(el));
                 section.appendChild(wrap);
                 title.addEventListener('click', () => section.classList.toggle('is-collapsed'));
-                // collapse everything except Bowl Form (first) and Design File (last)
-                if (idx !== 0 && idx !== last) section.classList.add('is-collapsed');
+                section.classList.add('is-collapsed');
             });
-        }
-
-        function resetParameters() {
-            applyDesignConfig(DEFAULT_DESIGN);
-            lastAutoName = document.getElementById('designName').value.trim();
         }
 
         // design loaded when the app first opens (Gyroid 5-Petal Flower)
@@ -4912,6 +4992,7 @@ ${trianglesXml.join('\n')}
             populatePresets();
             populatePatternPresets();
             initCollapsibles();
+            if (typeof BambuExport !== 'undefined') BambuExport.initOptions();
             applyDesignConfig(DEFAULT_DESIGN);
             lastAutoName = document.getElementById('designName').value.trim();  // keep auto-naming live
         });
