@@ -33,6 +33,7 @@
                 "Barrel Oval": { type: "primitive", eq: "R / sqrt(1.45*pow(cos(theta), 2) + 0.82*pow(sin(theta), 2))", desc: "A fuller oval profile with a barrel-like body and gentle side expansion." },
                 "Shield Profile": { type: "primitive", eq: "R * (1 + 0.14*cos(theta) - 0.08*cos(2*theta))", desc: "A smooth shield-like section with a fuller upper body and tapered lower sweep." },
                 "Soft Clover": { type: "primitive", eq: "R * (1 + 0.09 * cos(4 * theta))", desc: "A mild four-lobed primitive between a circle and a floral clover form." },
+                "Catenary Waist": { type: "primitive", eq: "R * (0.62 + 0.38 * cosh(2.4*(v-0.5)) / cosh(1.2))", desc: "A minimal-surface catenoid-like profile: full at base and rim, cinched through the exact middle." },
 
                 // polygon
                 "Triangle": { type: "polygon", eq: "R * cos(pi/3) / cos(mod(theta, 2*pi/3) - pi/3)", desc: "Regular triangular cross-section with sharp planar faces and three corners." },
@@ -68,6 +69,7 @@
                 "Nested Warp Blossom": { type: "floral", eq: "R * (1 + 0.22 * cos(5 * (theta + 0.18*sin(3*pi*v) + 0.07*sin(11*theta))))", desc: "Domain-warped blossom with nested phase motion inside the petal field." },
                 "Twisted Rosette": { type: "floral", eq: "R * (1 + 0.16 * cos(8 * theta + 0.8*pi*v) + 0.05 * cos(4 * theta))", desc: "A rosette-style floral section whose petal phase rotates gradually up the body." },
                 "Bloom Lantern": { type: "floral", eq: "R * (1 + 0.18 * sin(pi * z / 10)) * (1 + 0.16 * cos(6 * theta))", desc: "A lantern-like floral vessel with a fuller body and evenly repeated petals." },
+                "Rose Curve (Cusped)": { type: "floral", eq: "R * (0.78 + 0.22 * abs(cos(2.5 * theta)))", desc: "A true half-integer-order polar rose curve. The abs() creates sharp cusps at each zero crossing instead of the smoothly rounded lobes of the harmonic-based petal presets." },
 
                 // folded
                 "Folded Mod Panels": { type: "folded", eq: "R * (1 + 0.18 * cos(8 * abs(mod(theta + pi*v, pi/4) - pi/8)))", desc: "Wrapped angular domains produce repeated folded panel segments around the body." },
@@ -101,6 +103,9 @@
                 "Compressed Wave Stack": { type: "nonlinear", eq: "R * (1 + 0.12 * atan(5 * (sin(4*theta + 3*pi*v) + 0.6*sin(9*theta - 2*pi*v))))", desc: "Layered harmonic waves compressed into stronger sculptural terraces." },
                 "Crown Splash Compression": { type: "nonlinear", eq: "R * (1 + (0.05 + 0.14*exp(-pow(v - 0.88, 2) * 50)) * atan(7 * cos(8*theta + pi*v)))", desc: "Compressed crown activity with sharper nonlinear ridges near the rim." },
                 "Nonlinear Turbine": { type: "nonlinear", eq: "R * (1 + 0.16 * atan(5 * cos(5*theta + 0.4*sin(theta))))", desc: "A turbine-like directional profile strengthened by nonlinear compression." },
+                "Superformula Hex Star": { type: "nonlinear", eq: "R * 0.9 * pow(pow(abs(cos(1.5*theta)), 14) + pow(abs(sin(1.5*theta)), 14), -0.125)", desc: "Gielis superformula star (m=6, n1=8, n2=n3=14): smooth flats between six sharply compressed points." },
+                "Superformula Starfish": { type: "nonlinear", eq: "R * 0.65 * pow(pow(abs(cos(1.25*theta)), 7) + pow(abs(sin(1.25*theta)), 7), -0.5)", desc: "Gielis superformula starfish (m=5): closes seamlessly because swapping cos and sin at theta+2pi leaves the sum unchanged." },
+                "Superformula Morph": { type: "nonlinear", eq: "R * ((1-v) * 0.9*pow(pow(abs(cos(1.5*theta)),14) + pow(abs(sin(1.5*theta)),14), -0.125) + v * 0.65*pow(pow(abs(cos(1.25*theta)),7) + pow(abs(sin(1.25*theta)),7), -0.5))", desc: "Cross-fades from the six-point superformula star at the base to the five-point starfish at the rim." },
 
                 // interference
                 "Fourier Bloom": { type: "interference", eq: "R * (1 + 0.18 * (cos(3*theta) + 0.45*cos(7*theta + pi*v) + 0.20*cos(13*theta - 2*pi*v)))", desc: "Layered harmonic bloom built from a small Fourier-style sum of angular modes." },
@@ -226,7 +231,9 @@
                 "Equatorial Interference Belt": { type: "interference", eq: "R * (1 + 0.12*exp(-pow(phi - pi/2, 2)*10) * (cos(8*theta + 6*phi) + 0.5*cos(13*theta - 5*phi)))", desc: "Interference structure concentrated through the equatorial belt while the poles remain calmer." },
                 "Polar Wave Crown": { type: "interference", eq: "R * (1 + 0.12*exp(-pow(phi - 0.35, 2)*18) * (cos(10*theta) + 0.4*cos(20*theta + 4*phi)))", desc: "A crown-like interference field concentrated toward the upper polar region." },
                 "Irrational Weave Orb": { type: "interference", eq: "R * (1 + 0.06*cos(9*theta + sqrt(2)*7*phi) + 0.06*cos(14*theta - sqrt(3)*5*phi))", desc: "Woven spherical field using irrational phase mixing to reduce obvious repeat patterns." },
-                "Quasi Lattice Orb": { type: "interference", eq: "R * (1 + 0.06*cos(10*theta + sqrt(2)*8*phi) + 0.06*cos(15*theta - sqrt(3)*6*phi) + 0.03*cos(20*theta + 4*phi))", desc: "Quasi-periodic lattice interference using irrational phase mixing and layered angular structure." }
+                "Quasi Lattice Orb": { type: "interference", eq: "R * (1 + 0.06*cos(10*theta + sqrt(2)*8*phi) + 0.06*cos(15*theta - sqrt(3)*6*phi) + 0.03*cos(20*theta + 4*phi))", desc: "Quasi-periodic lattice interference using irrational phase mixing and layered angular structure." },
+                "Spherical Harmonic Y32": { type: "interference", eq: "R * (1 + 0.25 * pow(sin(phi), 2) * cos(phi) * cos(2*theta))", desc: "The real spherical harmonic Y(3,2) as a bump field: two symmetric bands above and below the equator, split into two lobes by theta." },
+                "Spherical Harmonic Y44": { type: "interference", eq: "R * (1 + 0.2 * pow(sin(phi), 4) * cos(4*theta))", desc: "The real spherical harmonic Y(4,4) as a bump field: a four-fold lobed swelling concentrated at the equator, tapering smoothly to calm poles." }
             }
         };
 
@@ -280,6 +287,7 @@
             "Saturated Flutes": { type: "nonlinear", eq: "atan(7 * cos(12*theta))", desc: "Vertical flute texture compressed into flatter faces and sharper troughs." },
             "Nonlinear Chevron": { type: "nonlinear", eq: "atan(6 * (abs(sin(6*theta + 8*pi*v)) - 0.5*abs(sin(6*theta - 8*pi*v))))", desc: "Chevron texture sharpened through nonlinear compression." },
             "Arc Compression Relief": { type: "nonlinear", eq: "asin(0.96*sin(10*theta + 8*pi*v))", desc: "Arc-shaped texture grooves with clearer walls and stronger directional carving." },
+            "Chladni Plate": { type: "nonlinear", eq: "atan(4*(sin(4*theta)*sin(6*pi*v) + sin(6*theta)*sin(4*pi*v)))", desc: "Standing-wave nodal pattern in the style of a Chladni plate, atan-sharpened into clean ridges." },
 
             // carved
             "Modulo Tile Relief": { type: "carved", eq: "cos(10 * abs(mod(theta + pi*v, pi/4) - pi/8))", desc: "Wrapped angular domains create tiled or paneled carved relief." },
@@ -288,6 +296,8 @@
             "Meridian Carving": { type: "carved", eq: "cos(10 * abs(mod(theta, pi/5) - pi/10))", desc: "Wrapped meridian wedges form repeated carved grooves around the body." },
             "Panel Relief": { type: "carved", eq: "cos(8 * abs(mod(theta + pi*v, pi/4) - pi/8)) + 0.3*cos(16*pi*v)", desc: "Paneled carved texture with both wrapped angular structure and vertical segmentation." },
             "Diamond Carve": { type: "carved", eq: "abs(cos(8*theta + 6*pi*v)) + abs(cos(8*theta - 6*pi*v))", desc: "Crossed carved ridges create a diamond-facet relief." },
+            "Knot-Line Ribbons": { type: "carved", eq: "exp(-pow(abs(mod(3*theta - 4*pi*v + pi, 2*pi) - pi), 2) * 6)", desc: "A single raised ridge that spirals along a (2,3) torus-knot line as it winds up the body." },
+            "Loxodrome Ribbon (Spherical)": { type: "carved", eq: "exp(-pow(abs(mod(theta - 3*log(tan(min(pi - 0.05, max(0.05, phi))/2)) + pi, 2*pi) - pi), 2) * 8)", desc: "A constant-bearing rhumb-line ridge spiraling pole to pole. Written for spherical mode's phi; in cylindrical mode phi is always 0, so it degenerates to a single straight ridge." },
 
             // interference
             "Quasi Interference": { type: "interference", eq: "sin(7*theta + 9*pi*v) + 0.55*sin(11*theta - sqrt(2)*8*pi*v) + 0.35*cos(13*theta + sqrt(3)*5*pi*v)", desc: "Quasi-periodic interference using mixed frequencies to reduce obvious repetition." },
@@ -295,7 +305,13 @@
             "Braided Interference": { type: "interference", eq: "cos(8*theta + 7*pi*v) + cos(8*theta - 7*pi*v) + 0.3*cos(16*theta)", desc: "Counter-rotating interference waves produce a braided sculptural surface." },
             "Standing Wave Texture": { type: "interference", eq: "sin(10*theta) * sin(12*pi*v) + 0.4*sin(20*theta - 8*pi*v)", desc: "Standing-wave style interference with layered high-frequency texture." },
             "Equatorial Interference": { type: "interference", eq: "exp(-pow(v - 0.5, 2)*14) * (sin(8*theta + 8*pi*v) + 0.5*sin(13*theta - 6*pi*v))", desc: "An interference band concentrated through the middle of the body." },
-            "Crown Interference": { type: "interference", eq: "exp(-pow(v - 0.86, 2)*30) * (cos(10*theta) + 0.4*cos(18*theta + 8*pi*v))", desc: "Interference texture concentrated near the crown for richer upper detail." }
+            "Crown Interference": { type: "interference", eq: "exp(-pow(v - 0.86, 2)*30) * (cos(10*theta) + 0.4*cos(18*theta + 8*pi*v))", desc: "Interference texture concentrated near the crown for richer upper detail." },
+            "Gyroid Slice": { type: "interference", eq: "sin(6*theta)*cos(10*pi*v) + sin(10*pi*v)*cos(3*theta + 4*pi*v) + sin(3*theta + 4*pi*v)*cos(6*theta)", desc: "A single (theta, v) slice through the gyroid triply-periodic minimal surface - an organic interlocking relief." },
+            "Weierstrass Relief": { type: "interference", eq: "0.6*cos(3*theta + 2*pi*v) + 0.3*cos(9*theta - 4*pi*v) + 0.15*cos(27*theta + 8*pi*v) + 0.075*cos(81*theta - 16*pi*v)", desc: "A 4-octave Weierstrass-style cascade (amplitude halves, frequency triples each octave): fine fractal-like detail nested inside coarser waves." },
+            "Hammered Copper": { type: "interference", eq: "0.8 - 1.6*worley(theta, v, 9, 9, 7)", desc: "Cellular Worley noise inverted into a hammered-metal relief: broad raised facets with narrow grooves at the cell boundaries." },
+            "Bark Ridges": { type: "interference", eq: "ridged(theta, v, 3, 14, 4, 2)", desc: "Ridged multifractal noise (4 octaves) for a rough, organic bark-like surface." },
+            "Coral fBm Warp": { type: "interference", eq: "fbm(theta + 0.6*fbm(theta, v, 4, 6, 3, 5), v, 6, 9, 4, 1)", desc: "Domain-warped fractal noise: one noise field bends the sampling angle of a second, producing coral-like flowing detail instead of a flat noise grain." },
+            "Sunflower Belt": { type: "interference", eq: "phyllo(theta, v, 240, 0.05) * exp(-pow(v-0.5, 2)*8)", desc: "A golden-angle phyllotaxis stud field (240 seeds) gated to a band through the middle of the body, like a ring of sunflower-seed studs." }
         };
 
         const patternPresets = {
@@ -335,6 +351,25 @@
 
             // regional
             "Equatorial Arc Belt": { type: "regional", eq: "asin(0.98 * sin(8*theta)) * exp(-pow(v - 0.5, 2) * 30)", desc: "Arc-belt mask concentrated around the mid-body or equatorial zone." },
+
+            // interference
+            "Chladni Windows": { type: "interference", eq: "sin(3*theta)*sin(5*pi*v) + sin(5*theta)*sin(3*pi*v)", desc: "Classic Chladni nodal-line split used as a two-color mask instead of a texture." },
+            "Gyroid Mask": { type: "interference", eq: "sin(4*theta)*cos(8*pi*v) + sin(8*pi*v)*cos(2*theta + 2*pi*v) + sin(2*theta + 2*pi*v)*cos(4*theta) - 0.2", desc: "Gyroid-derived mask producing organic, interlocking color regions." },
+            "Noise Islands": { type: "interference", eq: "cnoise(theta, v, 3, 4, 11) - 0.15", desc: "Seeded simplex noise thresholded into irregular organic color islands." },
+
+            // noise / procedural (seeded - the same seed always gives the same pattern)
+            "Marble Veins": { type: "noise", eq: "0.12 - abs(sin(3*theta + 1.5*pi*v + 3.5*fbm(theta, v, 3, 4, 4, 9)))", desc: "Thin winding veins where a noise-warped wave crosses zero - classic marble figuring. Raise 0.12 for thicker veins." },
+            "Voronoi Pebbles": { type: "noise", eq: "0.34 - worley(theta, v, 7, 8, 3)", desc: "Rounded organic spots centered on each Worley cell - a pebble or animal-spot scatter that never repeats around the body." },
+            "Leopard Rosettes": { type: "noise", eq: "(worley(theta, v, 8, 9, 12) - 0.22) * (0.38 - worley(theta, v, 8, 9, 12))", desc: "Ring-shaped rosettes: the product selects only a distance band around each cell center, turning every Worley cell into a hollow ring." },
+            "Crackle Mortar": { type: "noise", eq: "worley(theta, v, 6, 7, 4) - 0.42", desc: "The complement of the pebble mask - selects the web of boundaries between cells for a cracked-glaze or giraffe-hide look." },
+            "Lightning Filaments": { type: "noise", eq: "ridged(theta, v, 4, 6, 4, 6) - 0.85", desc: "Selects only the sharpest crests of ridged multifractal noise, leaving branching filament networks. Lower 0.85 toward 0.75 for denser branching." },
+            "Phyllotaxis Dot Grid": { type: "noise", eq: "phyllo(theta, v, 320, 0.03) - 0.45", desc: "A sunflower-seed lattice of dots placed by the golden angle - evenly spaced yet never aligning into straight rows." },
+            "Shoreline Split": { type: "noise", eq: "tanh(3.5*(v - 0.52 + 0.16*cnoise(theta, v, 3, 3, 8)))", desc: "A two-tone horizontal split whose boundary wanders like a coastline instead of a straight line." },
+
+            // exotic math
+            "Gothic Arcade": { type: "exotic", eq: "0.82 - 0.3*(cosh(4.2*(mod(theta, pi/4) - pi/8)) - 1) - v", desc: "A band whose top edge is a chain of eight true catenary arches (cosh is the exact hanging-chain curve), like a colonnade wrapped around the body." },
+            "Sunburst Medallion": { type: "exotic", eq: "exp(-(pow(theta - pi, 2) + 8*pow(v - 0.55, 2)) * 1.6) * (0.35 + sin(7*atan2(v - 0.55, 0.4*(theta - pi)))) - 0.12", desc: "A pinwheel of rays radiating from a single point on the front face, built with atan2 and confined by a Gaussian window so the back stays clean." },
+            "Halo Ring": { type: "exotic", eq: "0.12 - abs(hypot(theta - pi, 3*(v - 0.6)) - 0.9)", desc: "A single elliptical ring emblem on the front face - hypot measures distance from a center point, and the mask keeps only a thin annulus of it." },
         };
 
         const modifierPresets = {
@@ -350,9 +385,11 @@
             "Basic Petal Drift": { type: "basicEffect", eq: "sin(5*theta) * sin(pi*v)", desc: "Demonstrates how angular remapping can create petal-like drift in the sampled field." },
             "Basic Window": { type: "basicEffect", eq: "exp(-pow(v - 0.75, 2)*20)", desc: "Demonstrates a simple regional modifier window without adding extra directional structure." },
             "Basic Interference Drift": { type: "basicEffect", eq: "sin(4*theta + 2*pi*v) + 0.5*sin(7*theta - 3*pi*v)", desc: "Demonstrates a more complex interference remap built from two directional motions." },
+            "Log-Spiral Pace": { type: "basicEffect", eq: "0.6*log(0.25 + v)", desc: "Demonstrates a twist whose rate follows logarithmic-spiral pacing: fast drift near the base, easing off toward the rim." },
 
             // twist
             "Twist Drift": { type: "twist", eq: "sin(3*pi*v)", desc: "Smooth rotational drift through the height. Good for gentle global twisting." },
+            "Mobius Squeeze": { type: "twist", eq: "2*atan(0.35*sin(theta) / (1 - 0.35*cos(theta)))", desc: "A conformal Mobius reparametrization of the circle: bunches features toward one side of the pot while leaving the opposite side calmer, with no discontinuity anywhere." },
             "Gentle Torsion": { type: "twist", eq: "0.6*sin(pi*v)", desc: "A softer rotational remap that keeps the form stable and printable." },
             "Crown Rotation": { type: "twist", eq: "exp(-pow(v - 0.85, 2)*40) * sin(2*pi*v)", desc: "Rotation concentrated near the upper body and rim while leaving the lower body calmer." },
             "Body Swirl": { type: "twist", eq: "exp(-pow(v - 0.55, 2)*14) * sin(4*theta + 2*pi*v)", desc: "Mid-body swirl that localizes rotational motion away from the base." },

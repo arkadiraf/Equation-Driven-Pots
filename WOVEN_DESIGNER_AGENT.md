@@ -50,19 +50,32 @@ A **tube** with cross-section radius `r(theta)` (the profile equation) swept alo
 
 Same idea as the Pot Designer guide §2, with these differences:
 
-- **One download sink.** Every exporter calls `download(content, name)` (L3261). Override
+- **One download sink.** Every exporter calls `download(content, name)` (L3658). Override
   `window.download` to POST the blob to a local save server.
+- **Body first, colours on request.** Edits (debounced 300 ms) rebuild only the **body** on the
+  page (`buildMesh(cfg, 1, { colors: false })`, ~2–6 s). The colour layer is built by a Web
+  Worker running the page's own `#woven-core` script, only when the viewer banner ("Render
+  colours") is pressed or an export needs it. A geometry edit cancels it; colour-picker edits
+  just recolour the meshes on screen. See `RENDER_PIPELINE_TODO.md`.
 - **Load without building:** stub `window.updatePreview`, put the JSON in `#designJsonInput`, call
-  `applyDesignJson()`. **Build synchronously:** `runPreview()`. Get geometry without touching the
-  scene: `buildMesh(readCfg(), 1.0)` → `geo` plus `geo.userData.patternParts / plateParts`.
+  `applyDesignJson()`. **Build the body synchronously:** `runPreview()`. **Colours:**
+  `await renderColours()` resolves with the full scale-1 geometry (and swaps it into the view);
+  it rejects if a newer edit cancels it. The page stays responsive meanwhile, so an awaiting JS
+  call can poll `colourJob` / `window.lastColourTimings` (per-stage seconds of the last worker
+  build). A full synchronous page build is still `buildMesh(readCfg(), 1.0)` → `geo` plus
+  `geo.userData.patternParts / plateParts`.
 - **The browser JS tool times out at ~45 s** and a coloured build at working resolution takes
-  40–85 s. While a build runs the page's event loop is blocked, so an awaiting call cannot even
-  poll. Start the work in `setTimeout`, return immediately, and watch the save folder from the
-  shell (a Monitor `until [ -f file ]` loop). A Bambu export takes ~110 s.
+  40–85 s. Start long work with `runAsync` (below) and check `__job` on a later call, or watch the
+  save folder from the shell. Exports reuse a finished colour build of the same geometry
+  (byte-identical output); otherwise the export starts the worker build itself and writes the
+  file when it arrives, so `runAsync(() => exportBambuStudio3MF())` alone is enough.
+- **A hidden Browser pane pauses `requestAnimationFrame`**, which the exporters await
+  (`nextPaint`, `BambuExport.nextFrame`) - an export then never starts. Front the pane, or shim
+  `window.requestAnimationFrame = cb => setTimeout(() => cb(performance.now()), 16)` in the harness.
 - **WASM memory runs out.** After several 2 M-triangle builds in one page, a 1750 × 160 build
-  failed with `Build failed: table index is out of bounds` (Manifold out of memory). **Reload the
-  page before every big build or export.** The same 1500 × 140 build that is fine in a fresh page
-  may fail in a tired one.
+  failed with `Build failed: table index is out of bounds` (Manifold out of memory). Colour builds
+  now get a fresh worker (and WASM heap) each time, but synchronous `buildMesh` calls on the page
+  still share one heap: **reload the page before a batch of big page-side builds.**
 - **Keep helpers on disk** and load them with `(0, eval)(await fetch('/__scratch/x.js').then(r =>
   r.text()))` — they are lost on every reload. Session helpers used: `W.load`, `W.build`,
   `W.snap` (offscreen `THREE.WebGLRenderer` render of `scene` from any azimuth/elevation, size
@@ -217,11 +230,10 @@ fit is guaranteed by CSG either way — but **the user wants the tubes left whol
   was cut. Earthworm (first version) let the inner strands intrude ~1 mm, leaving flat bearing
   strips; that is no longer the house style.
 
-**Solid tubes and the Fill trap.** Use `fillPct 100` (no cavity, no drain). But
-`getCurrentWovenPotConfig` writes `wallThickness` too, and on reload the wall wins
-(`onShellThickChange` recomputes Fill from it). With the default 0.35 cm wall on a 0.7 cm tube the
-reloaded design comes back **75 % filled — hollow**. Set `wallThickness` ≥ the tube radius (0.8 for
-r = 0.7): Fill then reads `100.0` and the round trip holds.
+**Solid tubes.** Use `fillPct 100` (no cavity, no drain). On reload the wall re-derives Fill, but
+a saved `fillPct` of 100 now overrides that, so a solid design reloads solid whatever its
+`wallThickness` (before 2026-09-26 it came back hollow unless the wall was ≥ the tube radius).
+Setting `wallThickness` ≥ the tube radius (0.8 for r = 0.7) still works and keeps both fields in agreement.
 
 **Something must be under the glass.** A lattice around a cylinder has no floor. Pull the bottom
 turns of the path in through the axis so they form a star under the glass. Custom Path used
@@ -488,8 +500,8 @@ function runAsync(fn) {                                // long builds: return no
   setTimeout(async () => { try { __job.result = await fn(); } catch (e) { __job.error = String(e); }
                            __job.done = true; }, 50);
 }
-runAsync(async () => { runPreview(); await snap('front.png', { az: 35, el: 18 }); });
-runAsync(() => exportBambuStudio3MF());
+runAsync(async () => { runPreview(); await renderColours(); await snap('front.png', { az: 35, el: 18 }); });
+runAsync(() => exportBambuStudio3MF());                // starts the colour worker itself if needed
 ```
 
 `snap` renders `scene` with its own `THREE.WebGLRenderer({ preserveDrawingBuffer: true })` and a

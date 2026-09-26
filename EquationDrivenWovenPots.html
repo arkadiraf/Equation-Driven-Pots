@@ -8,9 +8,16 @@
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: var(--bg); overflow: hidden; }
         #sidebar { width: clamp(360px, 29vw, 420px); background: var(--panel); padding: 16px 16px 14px; box-shadow: 2px 0 15px rgba(0,0,0,0.1); overflow-y: auto; z-index: 100; flex-shrink: 0; }
         #viewer-container { flex-grow: 1; background: #ffffff; position: relative; }
-        #status { position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 8px 18px; border-radius: 20px; font-size: 11px; }
+        #status { position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 8px 18px; border-radius: 20px; font-size: 11px; max-width: calc(100% - 80px); }
         #viewerControls { position: absolute; top: 18px; right: 20px; z-index: 150; display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.9); padding: 8px 14px; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.18); font-size: 12px; }
         #viewerControls input[type="checkbox"] { width: auto; height: 15px; margin: 0; cursor: pointer; }
+        #colourBanner { position: absolute; top: 18px; left: 20px; z-index: 150; font-size: 12px; max-width: calc(100% - 260px); }
+        #colourBanner[data-state="hidden"], #colourBanner[data-state="idle"] .cb-working, #colourBanner[data-state="working"] .cb-start { display: none; }
+        #colourBanner .cb-start { background: var(--primary, #2980b9); color: #fff; border: none; border-radius: 20px; padding: 9px 20px; font-weight: 700; font-size: 12px; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.25); width: auto; margin: 0; }
+        #colourBanner .cb-working { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.78); color: #fff; padding: 7px 8px 7px 16px; border-radius: 20px; white-space: nowrap; }
+        #colourBanner .cb-working button { background: rgba(255,255,255,0.18); color: #fff; border: none; border-radius: 14px; padding: 4px 12px; font-size: 11px; cursor: pointer; width: auto; margin: 0; }
+        #colourBanner .cb-spinner { width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff; border-radius: 50%; animation: cb-spin 0.9s linear infinite; }
+        @keyframes cb-spin { to { transform: rotate(360deg); } }
         #viewerControls label { margin: 0; font-weight: 600; color: #34495e; white-space: nowrap; cursor: pointer; }
 
         .section-title { font-size: 0.95rem; font-weight: 700; font-family: 'Segoe UI', sans-serif; color: var(--secondary); border-bottom: 1px solid #e7eaee; padding: 3px 36px 3px 0; margin-top: 8px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.35px; cursor: pointer; position: relative; user-select: none; }
@@ -123,7 +130,8 @@
                 </select>
             </div>
 
-            <textarea id="equation" onchange="updatePreview()">3.0</textarea>
+            <label for="equation">Profile Radius r(&theta;) (cm)</label>
+            <textarea id="equation" onchange="onProfileEquationChange()">3.0</textarea>
 
             <div class="sub-label">Geometric Basis</div>
             <div class="grid-inputs">
@@ -135,8 +143,11 @@
 
             <div id="customPathWrap" style="display:none;">
                 <div class="sub-label">Custom Path x(t), y(t), z(t)</div>
+                <label for="pathX">x(t)</label>
                 <textarea id="pathX" onchange="updatePreview()"></textarea>
+                <label for="pathY">y(t)</label>
                 <textarea id="pathY" onchange="updatePreview()"></textarea>
+                <label for="pathZ">z(t)</label>
                 <textarea id="pathZ" onchange="updatePreview()"></textarea>
                 <div class="desc-text">Three expressions in t, swept over t = 0 .. tSpan*pi. In scope: rx (half of Path Diam), zA (Z-Stretch), the a/b/c knobs above, pi, the usual math functions, and tri(angle, shape) / tric(angle, shape) - a sine and a cosine at shape=0 that sharpen into triangle waves as shape approaches 1. The curve must close: every expression has to return to its t=0 value at t = tSpan*pi, or the sweep will be forced shut with a kink.</div>
             </div>
@@ -284,14 +295,14 @@
             <div class="grid-inputs color-row">
                 <div class="input-group"><label>Neither / Base</label>
                     <div class="color-input-row">
-                        <input type="color" id="baseColor" class="color-chip" value="#bc9b70" oninput="updatePreview()">
+                        <input type="color" id="baseColor" class="color-chip" value="#bc9b70" oninput="onColorChange()">
                         <button type="button" class="bambu-toggle" onclick="toggleBambuPalette('baseColor')" title="Bambu Lab PLA colors" aria-label="Bambu Lab PLA colors">&#127912;</button>
                     </div>
                     <div class="bambu-palette" id="baseColor-palette"></div>
                 </div>
                 <div class="input-group"><label>Pattern A Only</label>
                     <div class="color-input-row">
-                        <input type="color" id="patternColor1" class="color-chip" value="#ff7062" oninput="updatePreview()">
+                        <input type="color" id="patternColor1" class="color-chip" value="#ff7062" oninput="onColorChange()">
                         <button type="button" class="bambu-toggle" onclick="toggleBambuPalette('patternColor1')" title="Bambu Lab PLA colors" aria-label="Bambu Lab PLA colors">&#127912;</button>
                     </div>
                     <div class="bambu-palette" id="patternColor1-palette"></div>
@@ -300,14 +311,14 @@
             <div class="grid-inputs color-row">
                 <div class="input-group"><label>Pattern B Only</label>
                     <div class="color-input-row">
-                        <input type="color" id="patternColor2" class="color-chip" value="#5f4a8b" oninput="updatePreview()">
+                        <input type="color" id="patternColor2" class="color-chip" value="#5f4a8b" oninput="onColorChange()">
                         <button type="button" class="bambu-toggle" onclick="toggleBambuPalette('patternColor2')" title="Bambu Lab PLA colors" aria-label="Bambu Lab PLA colors">&#127912;</button>
                     </div>
                     <div class="bambu-palette" id="patternColor2-palette"></div>
                 </div>
                 <div class="input-group"><label>Overlap (A + B)</label>
                     <div class="color-input-row">
-                        <input type="color" id="overlapColor" class="color-chip" value="#8ab04d" oninput="updatePreview()">
+                        <input type="color" id="overlapColor" class="color-chip" value="#8ab04d" oninput="onColorChange()">
                         <button type="button" class="bambu-toggle" onclick="toggleBambuPalette('overlapColor')" title="Bambu Lab PLA colors" aria-label="Bambu Lab PLA colors">&#127912;</button>
                     </div>
                     <div class="bambu-palette" id="overlapColor-palette"></div>
@@ -332,8 +343,8 @@
         <div class="section-title" onclick="toggleSection(this)">Mesh Resolution</div>
         <div class="section-body">
             <div class="grid-inputs">
-                <div class="input-group"><label>Path Steps</label><input type="number" id="sections" value="400" onchange="updatePreview()"></div>
-                <div class="input-group"><label>Radial Points</label><input type="number" id="radialRes" value="48" onchange="updatePreview()"></div>
+                <div class="input-group"><label>Path Steps</label><input type="number" id="sections" value="400" min="16" step="10" onchange="updatePreview()"></div>
+                <div class="input-group"><label>Radial Points</label><input type="number" id="radialRes" value="48" min="8" step="4" onchange="updatePreview()"></div>
             </div>
         </div>
     </div>
@@ -405,6 +416,10 @@
         <input type="checkbox" id="crossSectionPreview" onchange="onCrossSectionToggle()">
         <label for="crossSectionPreview">Cross Section Preview</label>
     </div>
+    <div id="colourBanner" data-state="hidden">
+        <button type="button" class="cb-start" onclick="onColourBannerStart()">Render colours</button>
+        <span class="cb-working"><span class="cb-spinner"></span><span id="colourBannerText">Rendering colours…</span><button type="button" onclick="cancelColourBuild()">Cancel</button></span>
+    </div>
     <div id="status">System Online</div>
 </div>
 
@@ -413,7 +428,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="bambu-export.js"></script>
 
-<script>
+<!-- id="woven-core": the colour worker evaluates this same script (see COLOUR_WORKER_SRC), so its
+     top level must stay free of DOM access - only function/const declarations and THREE maths. -->
+<script id="woven-core">
     let scene, camera, renderer, controls, currentMeshes = [];
     // Cuts everything on the +X side away so the hollow interior (vase cavity, wall thickness,
     // strand crossings) is visible; toggled on/off by the Cross Section Preview checkbox.
@@ -714,7 +731,7 @@
             "FivePetal": "3.0*(1+0.3*cos(5*theta))" 
         };
         document.getElementById('equation').value = p[document.getElementById('profileSelect').value];
-        updatePreview();
+        onProfileEquationChange();
     }
 
     // Compiles the active path's three expressions once and returns a sampler, so a rebuild pays
@@ -1813,11 +1830,21 @@
         return cavity;
     }
 
+    // Stage marker for the colour worker's progress line and timing log (the worker sets
+    // window.onBuildPhase; on the page it is unset and this does nothing).
+    function buildPhase(name) { if (typeof window.onBuildPhase === 'function') window.onBuildPhase(name); }
+
     // Solid outer body → shelled by subtracting the inward-offset body → (pot) cut between the two
     // planes, cavity opened from the raised floor upward, drainage holes drilled. Every step is an
     // exact boolean, so the result is always a single watertight manifold.
-    function buildMesh(cfg, scale) {
+    //
+    // `opts.colors === false` builds the body only: no Dual Pattern Color Layer and an uncoloured
+    // plate. The geometry of the body is the same either way (including the remesh to the
+    // pattern resolution below), so the body preview is exactly the printed base shape.
+    function buildMesh(cfg, scale, opts) {
         if (!window.CSG) throw new Error('Geometry engine not loaded');
+        const withColors = !opts || opts.colors !== false;
+        buildPhase('body');
         const trash = [];
         const keep = m => { trash.push(m); return m; };
         try {
@@ -1878,7 +1905,8 @@
             R.debris += cleaned.removed;
 
             let patternParts = null, patternClamped = false, patternNote = null, patternDroppedMaskB = null;
-            if (patternActive(cfg)) {
+            if (withColors && patternActive(cfg)) {
+                buildPhase('colour layer');
                 const wallCap = cfg.doHollow ? Math.max(0, cfg.shellThick - 0.02) : Infinity;
                 const depthCm = Math.max(0, Math.min(cfg.patternDepthCm, wallCap, 0.45 * R.profileMaxR));
                 patternClamped = depthCm < cfg.patternDepthCm - 1e-6;
@@ -1900,11 +1928,14 @@
             // always returns an array of one or more {state, positions, indices} parts.
             let plateParts = null;
             if (cfg.mode === 'pot' && cfg.includePlate && zLo !== null) {
-                try { plateParts = buildPlateMesh(cfg, outer, zLo); }
+                buildPhase('plate');
+                const plateCfg = withColors ? cfg : Object.assign({}, cfg, { applyPlateColoring: false });
+                try { plateParts = buildPlateMesh(plateCfg, outer, zLo); }
                 catch (e) { console.error('Plate build failed:', e); plateParts = null; }
                 if (scale !== 1 && plateParts) for (const part of plateParts) for (let i = 0; i < part.positions.length; i++) part.positions[i] *= scale;
             }
 
+            buildPhase('mesh');
             const mesh = result.getMesh();
             const positions = Float32Array.from(mesh.vertProperties);
             if (scale !== 1) for (let i = 0; i < positions.length; i++) positions[i] *= scale;
@@ -1919,6 +1950,7 @@
             geo.userData.patternDroppedMaskB = patternDroppedMaskB;
             geo.userData.plateParts = plateParts;
             geo.userData.vaseFloorZ = vaseFloorZ !== null ? vaseFloorZ * scale : null;
+            geo.userData.colored = withColors || !patternActive(cfg);
             return geo;
         } finally {
             trash.forEach(m => m.delete());
@@ -2282,7 +2314,7 @@
         input.value = hex;
         const container = document.getElementById(id + '-palette');
         if (container) container.classList.remove('open');
-        updatePreview();
+        onColorChange();
     }
 
     function pt(rows, iu, jt) { const row = rows[iu], o = jt * 3; return [row[o], row[o+1], row[o+2]]; }
@@ -2778,10 +2810,14 @@
         const meshOf = (state, m) => { const g = m.getMesh(); return { state, positions: Float32Array.from(g.vertProperties), indices: Uint32Array.from(g.triVerts) }; };
         const STATE_NAME = { 1: 'mask A', 2: 'mask B', 3: 'the A+B overlap' };
         try {
+            buildPhase('colour inset');
             const insetSolid = keep(buildInsetSolid(cfg, R, depthCm));
+            buildPhase('colour grid');
             const grid = buildPatternGrid(cfg, R, depthCm);
             const noNeither = bothPatternsActive(cfg);
+            buildPhase('colour edges');
             const raw = cfg.smoothPatternEdges ? buildSmoothPatternMeshes(grid, cfg.boundaryRefine, noNeither) : buildSteppedPatternMeshes(grid, noNeither);
+            buildPhase('colour prisms');
             const cutters = [];
             // A state that simply is not present in this design is not a failure, so the
             // per-state reason is only interesting if NOTHING usable comes out below.
@@ -2792,6 +2828,7 @@
             if (!cutters.length) return { parts: null, reason: failure || 'no mask region produced a usable solid' };
             failure = null;
 
+            buildPhase('colour booleans');
             const parts = [];
             let base;
             if (cutters.length === 1) {
@@ -2867,7 +2904,9 @@
             } : null,
             eq: document.getElementById('equation').value,
             diameter: parseFloat(document.getElementById('diameter').value), zStretch: parseFloat(document.getElementById('zStretch').value),
-            sections: parseInt(document.getElementById('sections').value), radialRes: parseInt(document.getElementById('radialRes').value),
+            // A blank or tiny resolution used to crash the sweep ("Cannot read properties of undefined").
+            sections: Math.max(16, parseInt(document.getElementById('sections').value) || 400),
+            radialRes: Math.max(8, parseInt(document.getElementById('radialRes').value) || 48),
             shellThick: parseFloat(document.getElementById('shellThick').value), doHollow: parseFloat(document.getElementById('fillPct').value) < 100,
             mode: document.getElementById('modelMode').value,
             avoidSelfIntersect: document.getElementById('avoidIntersection')?.checked ?? false,
@@ -2913,11 +2952,273 @@
     let previewTimer = null, previewPending = false;
     function setStatus(text) { document.getElementById('status').innerText = text; }
 
-    // Coalesces the bursts of updatePreview() calls the UI handlers make into a single CSG build,
-    // and defers it while the geometry engine is still loading.
+    // ---- Preview pipeline: body first, colour layer on request, in a worker -----------------
+    // Every edit rebuilds only the BODY on the page (buildMesh with colors:false, a few seconds).
+    // The Dual Pattern Color Layer - the part that takes a minute or more - is built only when
+    // the viewer banner is pressed (or an export needs it), by a Web Worker running this same
+    // script, so the page stays usable and a newer edit can cancel it (see RENDER_PIPELINE_TODO.md).
+    //
+    // All builds are kept at scale 1 and keyed on geometryKey(cfg): the config minus the four
+    // colours, which never change geometry - a colour edit just recolours what is on screen.
+    const COLOUR_FIELDS = ['baseColor', 'patternColor1', 'patternColor2', 'overlapColor'];
+    function geometryKey(cfg) {
+        const g = Object.assign({}, cfg);
+        for (const f of COLOUR_FIELDS) delete g[f];
+        return JSON.stringify(g);
+    }
+
+    let shown = null;          // { key, cfg, geo, status } - what the viewer currently shows
+    let bodyBuild = null;      // { key, geo } - the last body build (complete when no colour layer is active)
+    let colourBuild = null;    // { key, geo, timings } - the last finished colour build
+    let colourJob = null;      // the in-flight colour build, if any (see requestColourBuild)
+    let colourGen = 0;
+
+    // Coalesces the bursts of updatePreview() calls the UI handlers make (and a spinner held down)
+    // into one body build PREVIEW_DEBOUNCE_MS after the last of them, and defers it while the
+    // geometry engine is still loading. A geometry change cancels an in-flight colour build right
+    // away rather than after the debounce.
+    const PREVIEW_DEBOUNCE_MS = 300;
     function updatePreview() {
         previewPending = true;
-        if (previewTimer === null) previewTimer = setTimeout(runPreview, 0);
+        if (window.CSG) setStatus('Building…');
+        if (colourJob && colourJob.key !== geometryKey(readCfg())) cancelColourBuild();
+        clearTimeout(previewTimer);
+        previewTimer = setTimeout(runPreview, PREVIEW_DEBOUNCE_MS);
+    }
+
+    // The four colour pickers: recolour the meshes on screen in place, no rebuild, banner untouched.
+    function onColorChange() {
+        const cfg = readCfg();
+        if (previewPending || !shown || shown.key !== geometryKey(cfg)) { updatePreview(); return; }
+        recolorShown(cfg);
+    }
+
+    // Resolves once the browser has had a chance to paint (the status line, say) - for work that
+    // is about to block the page.
+    function nextPaint() { return new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0))); }
+
+    // The full (coloured) scale-1 build of this geometry, if one is already at hand.
+    function completeBuildFor(key) {
+        if (colourBuild && colourBuild.key === key) return colourBuild.geo;
+        if (bodyBuild && bodyBuild.key === key && bodyBuild.geo.userData.colored) return bodyBuild.geo;
+        return null;
+    }
+
+    // Exports are the full model at 10x (mm). A finished build of the same geometry is reused:
+    // buildMesh(cfg, 10) only multiplies the scale-1 positions by 10 in Float32, and so does this,
+    // so the files are byte-identical either way. With no such build, pressing export IS the
+    // request for colours: it starts the worker build (banner shows Working) and waits for it.
+    async function buildExportMesh(cfg) {
+        const s = 10.0;
+        const key = geometryKey(cfg);
+        let src = completeBuildFor(key);
+        if (!src) src = patternActive(cfg) ? await requestColourBuild(cfg) : buildMesh(cfg, 1.0);
+        const scaleParts = parts => parts ? parts.map(p => ({ state: p.state, positions: p.positions.map(x => x * s), indices: p.indices })) : parts;
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.Float32BufferAttribute(src.attributes.position.array.map(x => x * s), 3));
+        geo.setIndex(new THREE.BufferAttribute(src.index.array, 1));
+        geo.userData = Object.assign({}, src.userData, {
+            patternParts: scaleParts(src.userData.patternParts),
+            plateParts: scaleParts(src.userData.plateParts),
+            vaseFloorZ: src.userData.vaseFloorZ !== null ? src.userData.vaseFloorZ * s : null
+        });
+        return geo;
+    }
+
+    // The worker: a module worker that loads three (maths only) and Manifold itself, evaluates this
+    // page's own #woven-core script - so every geometry function is the very same code and the
+    // parts match a page build bit for bit - and answers each 'build' with buildMesh(cfg, 1.0)'s
+    // arrays, transferred rather than copied. Handshake: 'booted' (engines loaded) -> page sends
+    // 'core' -> 'ready'. A worker is used for ONE build and then terminated, which also hands the
+    // next build a fresh WASM heap (a tired one runs out of memory on big builds).
+    const COLOUR_WORKER_SRC = `
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.module.js';
+import Module from 'https://cdn.jsdelivr.net/npm/manifold-3d@3.5.3/manifold.js';
+self.window = self;
+self.THREE = THREE;
+const wasm = await Module();
+wasm.setup();
+self.CSG = wasm;
+self.onmessage = e => {
+    const msg = e.data;
+    if (msg.type === 'core') {
+        (0, eval)(msg.source);
+        self.postMessage({ type: 'ready' });
+    } else if (msg.type === 'build') {
+        const t0 = performance.now();
+        self.onBuildPhase = phase => self.postMessage({ type: 'phase', gen: msg.gen, phase, ms: performance.now() - t0 });
+        try {
+            const geo = buildMesh(msg.cfg, 1.0);
+            const u = geo.userData;
+            const positions = geo.attributes.position.array, indices = geo.index.array;
+            const buffers = new Set([positions.buffer, indices.buffer]);
+            for (const p of (u.patternParts || []).concat(u.plateParts || [])) { buffers.add(p.positions.buffer); buffers.add(p.indices.buffer); }
+            self.postMessage({ type: 'done', gen: msg.gen, ms: performance.now() - t0, positions, indices, userData: u }, [...buffers]);
+        } catch (err) {
+            self.postMessage({ type: 'failed', gen: msg.gen, message: (err && err.message) || String(err) });
+        }
+    }
+};
+self.postMessage({ type: 'booted' });
+`;
+
+    let spareWorker = null;          // { worker, ready } booted ahead of the next request
+    let workerUnavailable = false;   // blob module workers refused -> build colours on the page
+
+    function spawnColourWorker() {
+        const url = URL.createObjectURL(new Blob([COLOUR_WORKER_SRC], { type: 'text/javascript' }));
+        const worker = new Worker(url, { type: 'module' });
+        const ready = new Promise((resolve, reject) => {
+            worker.onmessage = e => {
+                if (e.data.type === 'booted') {
+                    URL.revokeObjectURL(url);
+                    worker.postMessage({ type: 'core', source: document.getElementById('woven-core').textContent });
+                } else if (e.data.type === 'ready') resolve(worker);
+            };
+            worker.onerror = e => { URL.revokeObjectURL(url); worker.terminate(); reject(new Error(e.message || 'the colour worker failed to start')); };
+        });
+        ready.catch(() => {});
+        return { worker, ready };
+    }
+
+    function warmSpareWorker() {
+        if (spareWorker || workerUnavailable) return;
+        try { spareWorker = spawnColourWorker(); }
+        catch (e) { console.warn('Colour worker unavailable:', e); workerUnavailable = true; }
+    }
+
+    // Starts (or joins) the colour build for this config and resolves with its scale-1 geometry,
+    // or rejects if it fails or is cancelled (by a newer edit or the banner's Cancel). Headless
+    // runs can simply `await renderColours()`.
+    function requestColourBuild(cfg) {
+        const key = geometryKey(cfg);
+        const done = completeBuildFor(key);
+        if (done) return Promise.resolve(done);
+        if (colourJob && colourJob.key === key) return colourJob.promise;
+        cancelColourBuild();
+        const job = { key, cfg, gen: ++colourGen, t0: performance.now(), phase: 'starting', phases: [], worker: null };
+        job.promise = new Promise((resolve, reject) => { job.resolve = resolve; job.reject = reject; });
+        job.promise.catch(() => {});     // a banner-started build has nobody awaiting it
+        colourJob = job;
+        job.timer = setInterval(renderColourBanner, 1000);
+        renderColourBanner();
+        if (!workerUnavailable) warmSpareWorker();
+        if (workerUnavailable) runColourJobOnPage(job); else startWorkerJob(job);
+        return job.promise;
+    }
+    function renderColours() {
+        if (previewPending) runPreview();
+        return requestColourBuild(readCfg());
+    }
+    function onColourBannerStart() { renderColours().catch(() => {}); }
+
+    async function startWorkerJob(job) {
+        const slot = spareWorker;
+        spareWorker = null;
+        job.worker = slot.worker;
+        let worker;
+        try { worker = await slot.ready; }
+        catch (e) {
+            if (colourJob !== job) return;
+            console.warn('Colour worker unavailable, building colours on the page instead:', e);
+            workerUnavailable = true;
+            job.worker = null;
+            return runColourJobOnPage(job);
+        }
+        if (colourJob !== job) return;   // cancelled while booting (and already terminated)
+        worker.onmessage = e => onColourWorkerMessage(job, e.data);
+        worker.onerror = e => finishColourJob(job, new Error(e.message || 'the colour worker crashed'));
+        worker.postMessage({ type: 'build', gen: job.gen, cfg: job.cfg });
+    }
+
+    // Stop-gap when workers are refused: the same build on the page, after the Working banner has
+    // painted. It cannot be cancelled once started and the page pauses for it - but only on request.
+    async function runColourJobOnPage(job) {
+        job.phase = 'on the page (no worker)';
+        renderColourBanner();
+        await nextPaint();
+        if (colourJob !== job) return;
+        try { finishColourJob(job, null, buildMesh(job.cfg, 1.0)); }
+        catch (e) { finishColourJob(job, e); }
+    }
+
+    function onColourWorkerMessage(job, msg) {
+        if (colourJob !== job || msg.gen !== job.gen) return;
+        if (msg.type === 'phase') {
+            job.phases.push([msg.phase, msg.ms]);
+            job.phase = msg.phase;
+            renderColourBanner();
+        } else if (msg.type === 'done') {
+            const geo = new THREE.BufferGeometry();
+            geo.setAttribute('position', new THREE.BufferAttribute(msg.positions, 3));
+            geo.setIndex(new THREE.BufferAttribute(msg.indices, 1));
+            geo.userData = msg.userData;
+            finishColourJob(job, null, geo, msg.ms);
+        } else if (msg.type === 'failed') {
+            finishColourJob(job, new Error(msg.message));
+        }
+    }
+
+    // Per-stage timings of a worker build (console table, and window.lastColourTimings for the
+    // harness) - the profile RENDER_PIPELINE_TODO.md asks for, gathered on every build.
+    function colourTimings(job, totalMs) {
+        return job.phases.map(([phase, ms], i) => ({
+            phase, startS: +(ms / 1000).toFixed(2),
+            seconds: +((((job.phases[i + 1] || [])[1] ?? totalMs) - ms) / 1000).toFixed(2)
+        }));
+    }
+
+    function finishColourJob(job, err, geo, workerMs) {
+        if (colourJob !== job) return;
+        colourJob = null;
+        clearInterval(job.timer);
+        if (job.worker) job.worker.terminate();
+        if (err) {
+            console.error('Colour build failed:', err);
+            setStatus('Colour build failed: ' + err.message);
+            job.reject(err);
+            renderColourBanner();
+            return;
+        }
+        const totalMs = performance.now() - job.t0;
+        const timings = colourTimings(job, workerMs ?? totalMs);
+        if (timings.length) console.table(timings);
+        window.lastColourTimings = timings;
+        colourBuild = { key: job.key, geo, timings };
+        job.resolve(geo);
+        if (shown && shown.key === job.key) showBuild(readCfg(), job.key, geo, totalMs);
+        else renderColourBanner();
+    }
+
+    function cancelColourBuild() {
+        const job = colourJob;
+        if (!job) return;
+        colourJob = null;
+        clearInterval(job.timer);
+        if (job.worker) job.worker.terminate();
+        job.reject(new Error('colour build cancelled'));
+        renderColourBanner();
+    }
+
+    // Idle: the body on screen has an active colour layer that has not been rendered.
+    // Working: a colour build is running. Hidden: otherwise.
+    function colourBannerState() {
+        if (colourJob) return 'working';
+        if (!shown || shown.geo.userData.colored) return 'hidden';
+        return 'idle';
+    }
+    function renderColourBanner() {
+        const el = document.getElementById('colourBanner');
+        if (!el) return;
+        const state = colourBannerState();
+        el.dataset.state = state;
+        if (state === 'working') {
+            const sec = Math.floor((performance.now() - colourJob.t0) / 1000);
+            const clock = `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+            document.getElementById('colourBannerText').textContent = `Rendering colours… ${clock}${colourJob.phase ? ' · ' + colourJob.phase : ''}`;
+        } else if (state === 'idle') {
+            warmSpareWorker();   // boot the engines now so pressing the banner starts building at once
+        }
     }
 
     function clearCurrentMeshes() {
@@ -3037,45 +3338,60 @@
         return meshes;
     }
 
+    // Builds the body for the current settings (or reuses a finished build of the same geometry)
+    // and shows it. Synchronous; the colour layer is left to the banner.
     function runPreview() {
+        clearTimeout(previewTimer);
         previewTimer = null;
         if (!window.CSG) { setStatus('Loading geometry engine…'); return; }
         previewPending = false;
-        clearCurrentMeshes();
         const cfg = readCfg();
+        const key = geometryKey(cfg);
+        if (shown && shown.key === key) {
+            recolorShown(cfg);
+            setStatus(shown.status);
+            renderColourBanner();
+            return;
+        }
+        if (colourJob && colourJob.key !== key) cancelColourBuild();
         const t0 = performance.now();
-        let geo;
-        try { geo = buildMesh(cfg, 1.0); }
-        catch (e) { console.error(e); setStatus('Build failed: ' + e.message); return; }
-        const parts = geo.userData.patternParts;
-        let triCount;
-        if (parts) {
-            const palette = { 0: cfg.baseColor, 1: cfg.patternColor1, 2: cfg.patternColor2, 3: cfg.overlapColor };
-            triCount = 0;
-            for (const part of parts) {
-                const pg = buildCreaseGeometry(part.positions, part.indices, PREVIEW_CREASE_DEG);
-                const mesh = new THREE.Mesh(pg, new THREE.MeshStandardMaterial({ color: new THREE.Color(palette[part.state]), side: THREE.DoubleSide, roughness: 0.4 }));
-                scene.add(mesh);
-                currentMeshes.push(mesh);
-                triCount += part.indices.length / 3;
-            }
-        } else {
-            const pg = buildCreaseGeometry(geo.attributes.position.array, geo.index.array, PREVIEW_CREASE_DEG);
-            const mesh = new THREE.Mesh(pg, new THREE.MeshStandardMaterial({color: new THREE.Color(cfg.baseColor), side: THREE.DoubleSide, roughness: 0.4}));
+        let geo = completeBuildFor(key);
+        if (!geo) {
+            // The previous model stays on screen when a build fails, rather than leaving a blank view.
+            try { geo = buildMesh(cfg, 1.0, { colors: false }); }
+            catch (e) { console.error(e); setStatus('Build failed: ' + e.message); renderColourBanner(); return; }
+            bodyBuild = { key, geo };
+        }
+        showBuild(cfg, key, geo, performance.now() - t0);
+    }
+
+    // Colour of a preview mesh's state: 0-3 pot (Base / A / B / Overlap), 4-7 plate.
+    function previewStateColor(cfg, state) {
+        return state >= 4 ? plateStateColor(cfg, state) : [cfg.baseColor, cfg.patternColor1, cfg.patternColor2, cfg.overlapColor][state];
+    }
+
+    function recolorShown(cfg) {
+        for (const m of currentMeshes) if (m.userData.colorState !== undefined) m.material.color.set(previewStateColor(cfg, m.userData.colorState));
+        if (shown) shown.cfg = cfg;
+    }
+
+    // Replaces the viewer's meshes with `geo` (a body-only or a full coloured build).
+    function showBuild(cfg, key, geo, ms) {
+        clearCurrentMeshes();
+        let triCount = 0;
+        const addPart = (positions, indices, state) => {
+            const pg = buildCreaseGeometry(positions, indices, PREVIEW_CREASE_DEG);
+            const mesh = new THREE.Mesh(pg, new THREE.MeshStandardMaterial({ color: new THREE.Color(previewStateColor(cfg, state)), side: THREE.DoubleSide, roughness: 0.4 }));
+            mesh.userData.colorState = state;
             scene.add(mesh);
             currentMeshes.push(mesh);
-            triCount = geo.index.count / 3;
-        }
+            triCount += indices.length / 3;
+        };
+        const parts = geo.userData.patternParts;
+        if (parts) for (const part of parts) addPart(part.positions, part.indices, part.state);
+        else addPart(geo.attributes.position.array, geo.index.array, 0);
         const plateParts = geo.userData.plateParts;
-        if (plateParts) {
-            for (const part of plateParts) {
-                const pg = buildCreaseGeometry(part.positions, part.indices, PREVIEW_CREASE_DEG);
-                const mesh = new THREE.Mesh(pg, new THREE.MeshStandardMaterial({ color: new THREE.Color(plateStateColor(cfg, part.state)), side: THREE.DoubleSide, roughness: 0.4 }));
-                scene.add(mesh);
-                currentMeshes.push(mesh);
-                triCount += part.indices.length / 3;
-            }
-        }
+        if (plateParts) for (const part of plateParts) addPart(part.positions, part.indices, part.state);
         if (cfg.vaseInsertEnabled && geo.userData.vaseFloorZ !== null) {
             for (const m of buildVaseInsertPreviewMeshes(cfg, geo.userData.vaseFloorZ)) {
                 scene.add(m);
@@ -3092,11 +3408,17 @@
         const clampNote = geo.userData.patternClamped ? ' · pattern depth clamped' : '';
         // A colour layer that did not build is reported, not swallowed - and so is one that only
         // built because mask B was dropped, since that pot is printable but not the design asked for.
-        const partsNote = parts
+        const partsNote = !geo.userData.colored ? ' · body only (colours not rendered)' : parts
             ? ` · pattern: ${parts.length} parts${geo.userData.patternDroppedMaskB ? ` · mask B dropped (${geo.userData.patternDroppedMaskB})` : ''}`
             : (geo.userData.patternNote ? ` · pattern layer skipped (${geo.userData.patternNote})` : '');
-        const plateNote = cfg.includePlate ? (plateParts ? (plateParts.length > 1 ? ` · +plate (${plateParts.length} parts)` : ' · +plate') : ' · plate skipped (bottom cut missed the pot)') : '';
-        setStatus(`3D Model · ${triCount.toLocaleString()} tris · ${Math.round(performance.now() - t0)} ms${debris}${clampNote}${partsNote}${plateNote}${getPathNote(cfg)}`);
+        // The plate is pot-mode only, so in object mode a ticked "Add a base plate" is just ignored.
+        const plateNote = cfg.includePlate && cfg.mode === 'pot' ? (plateParts ? (plateParts.length > 1 ? ` · +plate (${plateParts.length} parts)` : ' · +plate') : ' · plate skipped (bottom cut missed the pot)') : '';
+        const exprErrors = findExpressionErrors(cfg);
+        const exprNote = exprErrors.length ? ` · equation error — ${exprErrors.join('; ')}` : '';
+        const status = `3D Model · ${triCount.toLocaleString()} tris · ${Math.round(ms)} ms${debris}${clampNote}${partsNote}${plateNote}${getPathNote(cfg)}${exprNote}`;
+        shown = { key, cfg, geo, status };
+        setStatus(status);
+        renderColourBanner();
     }
 
     function onCsgReady() { if (previewPending && scene) updatePreview(); }
@@ -3110,16 +3432,62 @@
 
     // Samples the profile equation r(theta) once; area calculations then reuse the samples
     // without re-evaluating the (potentially slow, string-eval'd) equation.
+    //
+    // Compiled with the same math scope as the path expressions (it used to be eval'd with only
+    // pi/sin/cos in scope, so e.g. abs() or pow() threw and the whole tube silently fell back to
+    // the 3.0 cm default). A value that fails to evaluate still falls back to 3.0.
+    const profileExprCache = new Map();
+    function compileProfileExpr(src) {
+        const body = (typeof src === 'string' && src.trim()) ? src : '3.0';
+        if (profileExprCache.has(body)) return profileExprCache.get(body);
+        let fn;
+        try { fn = new Function('theta', ...PATH_MATH_ARGS, '"use strict"; return (' + body + ');'); }
+        catch (e) { fn = () => 3.0; }
+        if (profileExprCache.size > 100) profileExprCache.clear();
+        profileExprCache.set(body, fn);
+        return fn;
+    }
     function sampleProfileR(eq, N) {
         N = N || 360;
-        const pi = Math.PI, sin = Math.sin, cos = Math.cos;
+        const fn = compileProfileExpr(eq);
         const rs = [];
         for (let j = 0; j < N; j++) {
-            let theta = (j/N) * 2 * pi, r;
-            try { r = eval(eq); } catch (e) { r = 3.0; }
-            rs.push(r);
+            const theta = (j/N) * 2 * Math.PI;
+            let r;
+            try { r = fn(theta, ...PATH_MATH_VALS); } catch (e) { r = 3.0; }
+            rs.push((typeof r === 'number' && isFinite(r)) ? r : 3.0);
         }
         return rs;
+    }
+
+    // Every user expression, trial-evaluated once, so a typo is reported in the status line
+    // instead of silently compiling to a constant (0 for a path axis, -1 for a mask, 3.0 for the
+    // profile). Syntax errors and unknown names (e.g. `Sin`) both surface here.
+    function findExpressionErrors(cfg) {
+        const errors = [];
+        const check = (label, src, args, vals) => {
+            if (typeof src !== 'string' || !src.trim()) return;
+            try {
+                const v = new Function(...args, '"use strict"; return (' + src + ');')(...vals);
+                if (typeof v !== 'number') errors.push(`${label}: does not return a number`);
+            } catch (e) { errors.push(`${label}: ${e.message}`); }
+        };
+        check('profile', cfg.eq, ['theta', ...PATH_MATH_ARGS], [0.3, ...PATH_MATH_VALS]);
+        if (cfg.pathExpr) {
+            const ids = Object.keys(cfg.params || {});
+            const vals = [0.3, cfg.diameter / 2, cfg.zStretch, ...ids.map(id => cfg.params[id]), ...PATH_MATH_VALS];
+            for (const k of ['x', 'y', 'z']) check(`path ${k}(t)`, cfg.pathExpr[k], ['t', 'rx', 'zA', ...ids, ...PATH_MATH_ARGS], vals);
+        }
+        const pArgs = PATTERN_EXPR_ARGS;
+        const pVals = [0.3, 0.3, 0.3, 0.3, 1, 1, 1, 1, 1, 10,
+            Math.PI, Math.sin, Math.cos, Math.tan, Math.asin, Math.acos, Math.atan, Math.atan2,
+            Math.sinh, Math.cosh, Math.tanh, Math.sqrt, Math.pow, Math.abs, Math.min, Math.max, Math.exp, Math.log,
+            Math.floor, Math.ceil, Math.round, Math.sign, modFn, Math.hypot, smoothstepFn, clampNum,
+            cnoise, fbm, ridged, worley, phyllo];
+        check('texture', cfg.texEq, pArgs, pVals);
+        check('pattern A', cfg.patternEq1, pArgs, pVals);
+        check('pattern B', cfg.patternEq2, pArgs, pVals);
+        return errors;
     }
 
     function areaFromSamples(rs, radiusAdjust) {
@@ -3180,6 +3548,19 @@
         updatePreview();
     }
 
+    // Fill % is derived from (profile, wall), so a new profile makes the displayed Fill stale -
+    // and readCfg's doHollow reads that stale number. Re-derive it from the wall, except when the
+    // tube is solid (Fill 100): there the wall is unused, and keeping it solid is the intent.
+    function onProfileEquationChange() {
+        const fill = parseFloat(document.getElementById('fillPct').value);
+        if (!(fill >= 100)) {
+            const eq = document.getElementById('equation').value;
+            const shellThick = parseFloat(document.getElementById('shellThick').value) || 0;
+            document.getElementById('fillPct').value = computeFillPercent(eq, shellThick).toFixed(1);
+        }
+        updatePreview();
+    }
+
     function onModelModeChange() {
         const isPot = document.getElementById('modelMode').value === 'pot';
         document.getElementById('potCuttingWrap').style.display = isPot ? 'block' : 'none';
@@ -3231,9 +3612,25 @@
         return { positions, indices };
     }
 
-    function exportSTL() {
+    // Download name shared by every exporter: the design name, else the path type.
+    function exportBaseName(cfg) { return slugifyName(getConfiguredPotName() || cfg.type); }
+
+    async function exportSTL() {
         if (!requireCsg()) return;
-        const geo = buildMesh(readCfg(), 10.0);
+        try {
+            setStatus('Building STL...');
+            await nextPaint();
+            const cfg = readCfg();
+            const name = `${exportBaseName(cfg)}.stl`;
+            download(new Blob([buildStlBuffer(await buildExportMesh(cfg))]), name);
+            setStatus(`STL exported · ${name}`);
+        } catch (e) {
+            console.error(e);
+            setStatus('STL export failed: ' + e.message);
+        }
+    }
+
+    function buildStlBuffer(geo) {
         const { positions: pos, indices: idx } = appendPlateToGeometry(geo, geo.userData.plateParts);
         const buf = new ArrayBuffer(84 + (idx.length / 3) * 50);
         const view = new DataView(buf);
@@ -3255,13 +3652,16 @@
                 view.setFloat32(offset + 12 + j * 12 + 8, pos[vB + 2], true);
             }
         }
-        download(new Blob([buf]), "equation_driven_woven_pots.stl");
+        return buf;
     }
 
     function download(content, name) {
         const link = document.createElement('a');
-        link.href = (content instanceof Blob) ? URL.createObjectURL(content) : URL.createObjectURL(new Blob([content]));
+        const url = URL.createObjectURL((content instanceof Blob) ? content : new Blob([content]));
+        link.href = url;
         link.download = name; link.click();
+        // Exports run to tens of MB; without revoking, every one stays in memory for the page's life.
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
     }
 
     // Saves exactly the view on screen - same camera, same framing, same colours - as a PNG at
@@ -3578,12 +3978,15 @@
             // Wall thickness and Fill % are two views of the same value; prefer whichever the
             // JSON actually provides (wall thickness first, since geometry uses it directly) and
             // let that field's own handler re-derive the other one, same as the UI does.
+            // Exception: Fill 100 means SOLID, and that is what the saved build was (doHollow reads
+            // Fill, not the wall) - a design saved with Fill 100 and a wall thinner than the tube
+            // used to reload hollow, because the wall re-derived Fill below 100.
             const wallThickness = getAIValue(structure, ['wallThickness', 'shellThick']);
-            if (wallThickness !== undefined) { setFieldValue('shellThick', wallThickness); onShellThickChange(); }
-            else {
-                const fillPct = getAIValue(structure, ['fillPct']);
-                if (fillPct !== undefined) { setFieldValue('fillPct', fillPct); onFillPctChange(); }
-            }
+            const fillPct = getAIValue(structure, ['fillPct']);
+            if (wallThickness !== undefined) {
+                setFieldValue('shellThick', wallThickness); onShellThickChange();
+                if (parseFloat(fillPct) >= 100) setFieldValue('fillPct', 100);
+            } else if (fillPct !== undefined) { setFieldValue('fillPct', fillPct); onFillPctChange(); }
             setCheckboxValue('avoidIntersection', getAIValue(structure, ['avoidSelfIntersect']));
             setCheckboxValue('extraClean', getAIValue(structure, ['extraClean']));
             // No UI control for this (internal-only) - set the state variable readCfg() reads directly.
@@ -3638,6 +4041,8 @@
             return;
         }
 
+        // A loaded design can be a very different size from the last one: frame it once, as on page load.
+        hasFitCamera = false;
         updatePreview();
         const configName = getConfiguredPotName() || getAIValue(config, ['name', 'title']) || 'Design JSON';
         setDesignJsonFeedback(`Applied ${configName}. The form fields and equations have been updated.`, 'success');
@@ -3761,8 +4166,10 @@ ${trianglesXml.join('\n')}
     async function exportMultiColor3MF() {
         if (!requireCsg()) return;
         try {
+            setStatus('Building 3MF...');
+            await nextPaint();
             const cfg = readCfg();
-            const geo = buildMesh(cfg, 10.0);
+            const geo = await buildExportMesh(cfg);
             const parts = geo.userData.patternParts || [{ state: 0, positions: geo.attributes.position.array, indices: geo.index.array }];
             const palette = [cfg.baseColor, cfg.patternColor1, cfg.patternColor2, cfg.overlapColor];
             const names = ['Base', 'Pattern A', 'Pattern B', 'Overlap'];
@@ -3827,8 +4234,9 @@ ${trianglesXml.join('\n')}
             zip.folder('_rels').file('.rels', relsXml);
             zip.folder('3D').file('3dmodel.model', modelXml);
             const blob = await zip.generateAsync({ type: 'blob', mimeType: 'model/3mf' });
-            download(blob, "equation_driven_woven_pots_multicolor.3mf");
-            setStatus(`3MF exported (multi-color) · ${parts.length} part${parts.length === 1 ? '' : 's'}`);
+            const fileName = `${exportBaseName(cfg)}_multicolor.3mf`;
+            download(blob, fileName);
+            setStatus(`3MF exported (multi-color) · ${fileName} · ${parts.length} part${parts.length === 1 ? '' : 's'}`);
         } catch (e) {
             console.error(e);
             setStatus('3MF export failed: ' + e.message);
@@ -3849,7 +4257,7 @@ ${trianglesXml.join('\n')}
             setStatus('Building Bambu Studio project...');
             await BambuExport.nextFrame();
 
-            const geo = buildMesh(cfg, 10.0);
+            const geo = await buildExportMesh(cfg);
             const potParts = geo.userData.patternParts || [{ state: 0, positions: geo.attributes.position.array, indices: geo.index.array }];
             const plateParts = geo.userData.plateParts || [];
             const stateNames = ['Base', 'Pattern A', 'Pattern B', 'Overlap'];

@@ -1,7 +1,52 @@
 # TODO — body-first preview, colour layer in the background
 
-Status: **to do** (requested 2026-09-18). Primary target: `EquationDrivenWovenPots.html`; the same
-idea applies to `EquationDrivenPotDesigner.html` (`renderConfigToScene`).
+Status: **done for `EquationDrivenWovenPots.html`** (2026-09-26). Still to do: the same idea for
+`EquationDrivenPotDesigner.html` (`renderConfigToScene`), and the optional draft switch (plan 7).
+
+## What shipped (woven app)
+
+- `buildMesh(cfg, scale, { colors: false })` builds the body only (same remesh, uncoloured plate);
+  `runPreview` shows it at once and never starts a colour build. Edits are debounced 300 ms.
+- The colour layer runs in a **module Web Worker made from a Blob**: it imports three (maths) and
+  `manifold-3d` from the CDN, then evaluates the page's own `<script id="woven-core">`, so the
+  geometry code is literally the same and no separate `woven-core.js` split was needed (which
+  also keeps the page a single file). Parts come back as transferred typed arrays. One worker per
+  build (fresh WASM heap); a spare boots while the banner is Idle so a press starts at once.
+- Banner (top-left of the viewer): Idle "Render colours" → Working "Rendering colours… mm:ss ·
+  stage · Cancel" → Hidden. Geometry edits cancel (`worker.terminate()`); the 4 colour pickers
+  recolour in place. If a worker cannot start, the same build runs on the page (plan 8 stop-gap).
+- Exports reuse the finished build (keyed on the config minus colours) or start the worker build
+  themselves and write the file when it lands. `await renderColours()` for headless runs.
+- Per-stage timings of every worker build: console table + `window.lastColourTimings`.
+
+## Results (2026-09-26, H2C design files from `3dModels/Woven`)
+
+| | Before: whole build, page frozen | After: body on the page | Colours in the worker |
+|---|---|---|---|
+| Cinquefoil Wicker Planter | 67 s (Bambu export) | **4.7 s** | ~65 s, max main-thread stall 13 ms |
+| Earthworm Tangle Vase | ~60 s (Bambu export) | ~2.5 s | ~44 s |
+
+Bambu 3MF `3D/Objects/object_*.model` SHA-256 before/after: **identical** for both designs. A
+geometry edit 8 s into the Cinquefoil colour build cancelled it and returned the banner to Idle.
+The alien trial config was not saved anywhere, so it was not rerun; cancel is `terminate()`, which
+stops a worker regardless of what it is doing.
+
+Profile (worker, seconds) — the booleans dominate, then the JS edge/prism stages:
+
+| Stage | Cinquefoil | Earthworm |
+|---|---|---|
+| body (rings, wall, cuts, debris) | 6.2 | 2.4 |
+| colour inset solid | 2.1 | 1.4 |
+| colour grid | 0.1 | 0.0 |
+| colour edges (`buildSmoothPatternMeshes`) | 11.8 | 1.5 |
+| colour prisms (`toSolid` + prism ⊖ inset) | 9.6 | 2.4 |
+| colour booleans (result ∩ / ⊖ prisms) | 35.5 | 36.2 |
+
+Next speed-ups, if wanted: a draft preview (refine 0 / stepped edges) and fewer booleans in the
+multi-state path (one `split` per state instead of intersect + a separate all-states subtract).
+
+---
+
 
 ## Problem
 

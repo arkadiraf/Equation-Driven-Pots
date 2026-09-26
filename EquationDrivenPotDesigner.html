@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Equation-Driven Pots</title>
     <style>
         :root {
@@ -1226,13 +1226,16 @@
         const EXPR_ALLOWED_NAMES = new Set([...EXPR_MATH_NAMES, ...EXPR_FIELD_NAMES,
             ...EXPR_DISTORTION_NAMES, ...EXPR_PATTERN_NAMES]);
         const EXPR_IDENTIFIER_RE = /[A-Za-z_$][A-Za-z0-9_$]*/g;
+        const EXPR_NUMBER_RE = /(?<![A-Za-z0-9_$.])(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?/g;
         const EXPR_FORBIDDEN_RE = /[`\[\]{};]|=>|\bfunction\b|\bnew\b|\bthis\b|\bwindow\b|\bdocument\b|\bglobalThis\b|\bconstructor\b|\b__proto__\b/;
 
         function validateExprSource(src) {
             if (EXPR_FORBIDDEN_RE.test(src)) {
                 throw new Error('contains disallowed syntax');
             }
-            const tokens = src.match(EXPR_IDENTIFIER_RE) || [];
+            // Blank out number literals first, or the exponent of 2e-3 / 1E5 is read as an
+            // identifier "e" and a perfectly valid equation is rejected as an unknown name.
+            const tokens = src.replace(EXPR_NUMBER_RE, ' 0 ').match(EXPR_IDENTIFIER_RE) || [];
             for (const token of tokens) {
                 if (!EXPR_ALLOWED_NAMES.has(token)) {
                     throw new Error(`unknown name "${token}"`);
@@ -2578,7 +2581,11 @@
                     cylDrain: getFieldNumberValue('cylDrain', 0.5),
                     sphTopCut: getFieldNumberValue('sphTopCut', 25),
                     sphBotFlatten: getFieldNumberValue('sphBotFlatten', 150),
-                    sphBotCut: getFieldNumberValue('sphBotCut', 180)
+                    sphBotCut: getFieldNumberValue('sphBotCut', 180),
+                    // Laplacian smoothing moves the outer surface itself, so a design saved
+                    // without it reloads as different geometry.
+                    innerSmoothEnabled: !!document.getElementById('innerSmoothEnabled')?.checked,
+                    innerSmoothPasses: getFieldNumberValue('innerSmoothPasses', 2)
                 },
                 plate: {
                     enabled: modelMode === 'plate' || modelMode === 'potplate',
@@ -2621,7 +2628,8 @@
                     resV: getFieldNumberValue('resV', 120),
                     resT: getFieldNumberValue('resT', 180),
                     patternResV: getFieldNumberValue('patternResV', 120),
-                    patternResT: getFieldNumberValue('patternResT', 180)
+                    patternResT: getFieldNumberValue('patternResT', 180),
+                    autoResolution: !!document.getElementById('autoResolution')?.checked
                 },
                 modifier: {
                     type: getFieldStringValue('modifierTypeSelect', 'utility'),
@@ -3005,6 +3013,10 @@
                 setFieldValue('sphTopCut', getAIValue(structure, ['sphTopCut', 'topCut']));
                 setFieldValue('sphBotFlatten', getAIValue(structure, ['sphBotFlatten', 'botFlat', 'bottomFlatten']));
                 setFieldValue('sphBotCut', getAIValue(structure, ['sphBotCut', 'botCut', 'bottomCut']));
+                // Absent in designs saved before these keys existed: switchSystem() above has
+                // already reset them to off / 2 passes, which is what those files will get.
+                setCheckboxValue('innerSmoothEnabled', getAIValue(structure, ['innerSmoothEnabled', 'innerSmooth']));
+                setFieldValue('innerSmoothPasses', getAIValue(structure, ['innerSmoothPasses']));
                 const configuredName = getAIValue(config, ['name', 'title', 'potName', 'fileName', 'filename'])
                     || getAIValue(base, ['name', 'title']);
                 setConfiguredPotName(configuredName);
@@ -3055,6 +3067,15 @@
                 setFieldValue('resT', getAIValue(mesh, ['resT', 'radialNodes']));
                 setFieldValue('patternResV', getAIValue(mesh, ['patternResV', 'patternVerticalNodes']));
                 setFieldValue('patternResT', getAIValue(mesh, ['patternResT', 'patternRadialNodes']));
+                // Auto Resolution overwrites resV/resT on every build, so a box left ticked from
+                // the previous design used to silently replace the resolution this file saved.
+                // Files that predate the key were saved at their stored resolution: default off.
+                const autoRes = document.getElementById('autoResolution');
+                if (autoRes) {
+                    autoRes.checked = coerceBoolean(getAIValue(mesh, ['autoResolution', 'auto']) ?? false);
+                    document.getElementById('resV').disabled = autoRes.checked;
+                    document.getElementById('resT').disabled = autoRes.checked;
+                }
 
                 const modifierType = getAIValue(modifier, ['type', 'modifierType']);
                 if (modifierType) setSelectValue('modifierTypeSelect', modifierType);
@@ -3511,7 +3532,8 @@
         }
 
         function getConfig() {
-            const wall = parseFloat(document.getElementById('wall').value) || 0.35;
+            // A negative wall put the inner surface outside the outer one and still "built".
+            const wall = Math.max(0.05, parseFloat(document.getElementById('wall').value) || 0.35);
             const bottomThickness = Math.max(0.1, parseFloat(document.getElementById('bottomThickness')?.value) || 0.35);
             const requestedDepthCm = Math.max(0, (parseFloat(document.getElementById('patternDepthMm').value) || 0) / 10);
             const maxDepthCm = Math.max(0, wall - 0.02);
@@ -3524,8 +3546,9 @@
             const applyPlateColoring = document.getElementById('applyPlateColoring') ? document.getElementById('applyPlateColoring').checked : true;
             const uniformShell = coordSystem === 'cylindrical' && (document.getElementById('uniformShell') ? document.getElementById('uniformShell').checked : true);
 
-            let resV = parseInt(document.getElementById('resV').value) || 120;
-            let resT = parseInt(document.getElementById('resT').value) || 180;
+            // Same floor buildParametricShell applies; the STL generators read these directly.
+            let resV = Math.max(20, parseInt(document.getElementById('resV').value) || 120);
+            let resT = Math.max(20, parseInt(document.getElementById('resT').value) || 180);
             if (document.getElementById('autoResolution')?.checked) {
                 const probeCfg = {
                     eq: document.getElementById('equation').value,
@@ -3587,8 +3610,8 @@
                 h: parseFloat(document.getElementById('height').value) || 10.0,
                 resV,
                 resT,
-                patternResV: parseInt(document.getElementById('patternResV').value) || 120,
-                patternResT: parseInt(document.getElementById('patternResT').value) || 180,
+                patternResV: Math.max(20, parseInt(document.getElementById('patternResV').value) || 120),
+                patternResT: Math.max(20, parseInt(document.getElementById('patternResT').value) || 180),
                 isPot: modelMode === 'pot' || modelMode === 'potplate',
                 isPlate: modelMode === 'plate',
                 isVase: modelMode === 'vase',
@@ -6572,7 +6595,9 @@ ${trianglesXml.join('\n')}
         // function, so any change at all (including a resolution change) is a clean cache miss.
         const singleEntryMeshCache = new Map();
         function memoizedMeshBuild(builderFn, cfg) {
-            const key = JSON.stringify(cfg);
+            // The design name only names the download; keying on it made every export after a
+            // rename rebuild the whole mesh.
+            const key = JSON.stringify(cfg, (k, v) => k === 'exportName' ? undefined : v);
             const entry = singleEntryMeshCache.get(builderFn);
             if (entry && entry.key === key) return entry.result;
             const result = builderFn(cfg);
@@ -6874,16 +6899,22 @@ ${trianglesXml.join('\n')}
 
         function renderConfigToScene(cfg, isInteractivePass) {
                 try {
+                    const compileErrors = refreshExpressionCompileStatus();
+                    const draftSuffix = isInteractivePass ? ' | draft preview' : '';
+
+                    // Build first, then swap: a build that throws leaves the last good model on
+                    // screen instead of an empty viewport.
+                    const builtParts = supportsMultipart(cfg)
+                        ? memoizedMeshBuild(buildMultipartMeshes, cfg)
+                        : memoizedMeshBuild(buildPlateMultipartMeshes, cfg);
+                    if (supportsMultipart(cfg) && cfg.includePlate) memoizedMeshBuild(buildPlateMultipartMeshes, cfg);
                     if (currentObject) {
                         disposeObject(currentObject);
                         currentObject = null;
                     }
 
-                    const compileErrors = refreshExpressionCompileStatus();
-                    const draftSuffix = isInteractivePass ? ' | draft preview' : '';
-
                     if (supportsMultipart(cfg)) {
-                        const parts = memoizedMeshBuild(buildMultipartMeshes, cfg);
+                        const parts = builtParts;
                         const group = new THREE.Group();
 
                         const coreGeom = meshToThreeGeometry(parts.coreMesh);
@@ -6988,7 +7019,7 @@ ${trianglesXml.join('\n')}
                             setStatus(`field+distortion preview | Depth ${(cfg.patternDepthCm * 10).toFixed(1)} mm | ${formatMaterialEstimate(estimatePartsVolumeCm3(parts))} | ${activeStates}${suffix}${draftSuffix}`, warnBits.length ? 'warn' : '');
                         }
                     } else {
-                        const parts = memoizedMeshBuild(buildPlateMultipartMeshes, cfg);
+                        const parts = builtParts;
                         const group = new THREE.Group();
                         const plateColors = [cfg.baseColor, cfg.patternColor1, cfg.patternColor2, cfg.overlapColor];
                         if (parts.coreMesh.indices.length) {
@@ -7037,7 +7068,7 @@ ${trianglesXml.join('\n')}
                 } catch (err) {
                     console.error(err);
                     setGenerationNotice('OBJECT GENERATION FAILED - Fix the geometry before export.');
-                    setStatus("Error: invalid equation or geometry failure.", 'error');
+                    setStatus(`Build failed: ${err && err.message ? err.message : err}`, 'error');
                 }
         }
 
@@ -7397,7 +7428,7 @@ ${trianglesXml.join('\n')}
                 }
             } catch (err) {
                 console.error(err);
-                setStatus("STL export failed.", 'error');
+                setStatus(`STL export failed: ${err.message}`, 'error');
             }
         }
 
@@ -7410,7 +7441,10 @@ ${trianglesXml.join('\n')}
                 }
 
                 const exportSeparatePlate = !!cfg.includePlate;
-                const plateMeshData = exportSeparatePlate ? generatePlate(cfg) : null;
+                // The same memoized build exportPlateAssembly3MF writes (and the preview shows),
+                // so the diameter reported below costs nothing - generatePlate() here used to
+                // build a whole second plate just for this one number.
+                const plateMeshData = exportSeparatePlate ? memoizedMeshBuild(buildPlateMultipartMeshes, cfg) : null;
                 const parts = memoizedMeshBuild(buildMultipartMeshes, cfg);
                 const cleanSurfaceGroups = parts.surfaceGroups.every(part =>
                     part.validations.every(v => !v.boundaryEdges && !v.nonManifoldEdges) &&
@@ -7523,12 +7557,16 @@ ${trianglesXml.join('\n')}
                 if (exportSeparatePlate && plateMeshData) {
                     summaryBits.push(`Plate ${(plateMeshData.plateOuterDiameter).toFixed(2)} cm`);
                 }
-                const exportNote = allowCoreEdgeCase ? 'edge-case export allowed' : 'manifold check passed';
+                // Up to 50 issues still export (the slicer can usually repair them), but they are
+                // named here - this used to print "manifold check passed" over open edges.
+                const exportNote = blockingIssues.length
+                    ? `manifold warnings (${blockingIssues.length}) | ${blockingIssues.slice(0, 6).join(' | ')}${blockingIssues.length > 6 ? ' | ...' : ''}`
+                    : (allowCoreEdgeCase ? 'edge-case export allowed' : 'manifold check passed');
                 const prefix = exportSeparatePlate ? 'Separate Pot 3MF + Plate 3MF exported | Printer-flat orientation applied' : '3MF exported | Printer-flat orientation applied';
-                setStatus(`${prefix} | ${summaryBits.join(' | ')} | ${exportNote}`, allowCoreEdgeCase ? 'warn' : '');
+                setStatus(`${prefix} | ${summaryBits.join(' | ')} | ${exportNote}`, (allowCoreEdgeCase || blockingIssues.length) ? 'warn' : '');
             } catch (err) {
                 console.error(err);
-                setStatus("3MF export failed.", 'error');
+                setStatus(`3MF export failed: ${err.message}`, 'error');
             }
         }
 
@@ -7603,7 +7641,7 @@ ${trianglesXml.join('\n')}
                 setStatus(summary.join(' | '), issues.length || result.plates.some(p => !p.fits) ? 'warn' : '');
             } catch (err) {
                 console.error(err);
-                setStatus("Bambu Studio export failed.", 'error');
+                setStatus(`Bambu Studio export failed: ${err.message}`, 'error');
             }
         }
 

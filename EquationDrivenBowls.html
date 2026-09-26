@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EquationDrivenBowls</title>
     <style>
         :root {
@@ -1217,13 +1217,16 @@
 
         const EXPR_ALLOWED_NAMES = new Set([...EXPR_MATH_NAMES, ...EXPR_FIELD_NAMES, ...EXPR_MASK_NAMES]);
         const EXPR_IDENTIFIER_RE = /[A-Za-z_$][A-Za-z0-9_$]*/g;
+        const EXPR_NUMBER_RE = /(?<![A-Za-z0-9_$.])(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?/g;
         const EXPR_FORBIDDEN_RE = /[`\[\]{};]|=>|\bfunction\b|\bnew\b|\bthis\b|\bwindow\b|\bdocument\b|\bglobalThis\b|\bconstructor\b|\b__proto__\b/;
 
         function validateExprSource(src) {
             if (EXPR_FORBIDDEN_RE.test(src)) {
                 throw new Error('contains disallowed syntax');
             }
-            const tokens = src.match(EXPR_IDENTIFIER_RE) || [];
+            // Blank out number literals first, or the exponent of 2e-3 / 1E5 is read as an
+            // identifier "e" and a perfectly valid equation is rejected as an unknown name.
+            const tokens = src.replace(EXPR_NUMBER_RE, ' 0 ').match(EXPR_IDENTIFIER_RE) || [];
             for (const token of tokens) {
                 if (!EXPR_ALLOWED_NAMES.has(token)) {
                     throw new Error(`unknown name "${token}"`);
@@ -2284,6 +2287,11 @@
                     if (c & 4) d = Math.min(d, segDist(px, py, mx, my, 0, my));
                     if (c & 2) d = Math.min(d, segDist(px, py, mx, my, mx, cv));
                     if (c & 8) d = Math.min(d, segDist(px, py, mx, my, mx, 0));
+                    // Corridors run between cell centres, so without these the whole maze floats
+                    // half a cell clear of the base and rim - and with the liner off the island
+                    // pruning then deleted every strut. Tie the edge rows to both.
+                    if (cy === 0) d = Math.min(d, segDist(px, py, mx, my, mx, -half));
+                    if (cy === H - 1) d = Math.min(d, segDist(px, py, mx, my, mx, cv + half));
                     return half - d;
                 };
                 const predicate = (theta, s) => field(theta, s) > 0;
@@ -3693,7 +3701,7 @@
             // --- printability: drop openwork islands not joined (edge-to-edge)
             // down to the solid base. Cells in the lowest wall row touch the base;
             // flood-fill upward through occupied 4-neighbours (theta wraps). ---
-            let removedCells = 0;
+            let removedCells = 0, rimDetached = false;
             if (cfg.style !== 'solid' && cfg.style !== 'origami' && !liner) {
                 const reached = new Uint8Array(rowN * resT);
                 const stack = [];
@@ -3856,6 +3864,45 @@
                     }
                 }
                 for (const fix of fieldFixes) fieldRows[fix[0]][fix[1]] = fix[2];
+
+                // Printability, as in the stepped path's cell flood-fill above: that pruned the
+                // `occ` grid, which this mesher never reads, so every island it removed used to
+                // come back here as a floating body (Caustic: 500+). Material vertices connect
+                // along the triangle edges emitted below - the four grid neighbours plus the
+                // A-C diagonal each quad is split on - and every one not reachable from the
+                // forced-solid base rows is pushed to empty. Its neighbours are all empty
+                // already (otherwise it would have been reached), so no kept contour moves.
+                if (cfg.style !== 'solid' && cfg.style !== 'origami' && !liner) {
+                    const lastRow = rowN - 1;
+                    const reachedV = new Uint8Array(rowN * resT);
+                    const stackV = [];
+                    const NB = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1]];
+                    const seedRow = row => { for (let it = 0; it < resT; it++) { reachedV[row * resT + it] = 1; stackV.push(row, it); } };
+                    const flood = () => { while (stackV.length) {
+                        const it = stackV.pop(), iv = stackV.pop();
+                        for (const [dv, dt] of NB) {
+                            const niv = iv + dv, nit = (it + dt + resT) % resT;
+                            // Material is f >= 0, exactly as clipTriangle keeps it.
+                            if (niv < baseTopRow || niv > lastRow || !(fieldRows[niv][nit] >= 0)) continue;
+                            const key = niv * resT + nit;
+                            if (reachedV[key]) continue;
+                            reachedV[key] = 1; stackV.push(niv, nit);
+                        }
+                    } };
+                    seedRow(baseTopRow); flood();
+                    rimDetached = !reachedV[lastRow * resT];
+                    // Then from the rim too: the rim annulus below is emitted unconditionally, so
+                    // its forced-solid rings must never be pruned out from under it. A rim the
+                    // base could not reach is reported instead (it prints as a separate ring).
+                    if (rimDetached) { seedRow(lastRow); flood(); }
+                    let prunedVerts = 0;
+                    for (let iv = baseTopRow; iv <= lastRow; iv++) {
+                        for (let it = 0; it < resT; it++) {
+                            if (fieldRows[iv][it] >= 0 && !reachedV[iv * resT + it]) { fieldRows[iv][it] = -1; prunedVerts++; }
+                        }
+                    }
+                    if (!prunedVerts) removedCells = 0;
+                }
 
                 const lerp3 = (a, b, t) => ({
                     x: a.x + (b.x - a.x) * t,
@@ -4072,6 +4119,7 @@
             mesh.rimBotRow = rimBotRow;
             mesh.rowN = rowN;
             mesh.removedCells = removedCells;
+            mesh.rimDetached = rimDetached;
             mesh.patternEdgesContoured = useContourEdges;
             mesh.sealedContourCracks = sealedContourCracks;
             mesh.validation = validateMesh(mesh);
@@ -4228,14 +4276,16 @@
 
         function renderConfigToScene(cfg, isDraft) {
             try {
-                if (currentObject) { disposeObject(currentObject); currentObject = null; }
                 const compileErrors = refreshExpressionCompileStatus();
                 const mesh = memoizedMeshBuild(buildMeshData, cfg);
+                const ringMeshBuilt = ringActive(cfg) ? memoizedMeshBuild(buildRingMeshData, cfg) : null;
+                // Only now that both builds succeeded: a failure leaves the last good model on screen.
+                if (currentObject) { disposeObject(currentObject); currentObject = null; }
                 const palette = paletteOf(cfg);
                 const flat = cfg.style === 'origami';
                 const linerActive = cfg.solidLiner && cfg.style !== 'solid' && cfg.style !== 'origami';
                 const hasRing = ringActive(cfg);
-                const ringMesh = hasRing ? memoizedMeshBuild(buildRingMeshData, cfg) : null;
+                const ringMesh = ringMeshBuilt;
 
                 let bowlObject;
                 if (linerActive && cfg.transparentFrame) {
@@ -4279,7 +4329,8 @@
                 const tris = mesh.indices.length / 3;
                 const styleLbl = cfg.style.charAt(0).toUpperCase() + cfg.style.slice(1);
                 const edgeNote = mesh.patternEdgesContoured ? ' | diagonal contour edges' : '';
-                const islandNote = mesh.removedCells ? ` | removed ${mesh.removedCells} disconnected cell${mesh.removedCells === 1 ? '' : 's'}` : '';
+                const islandNote = (mesh.removedCells ? ` | removed ${mesh.removedCells} disconnected cell${mesh.removedCells === 1 ? '' : 's'}` : '')
+                    + (mesh.rimDetached ? ' | rim not connected to the base (turn on the solid liner or thicken the pattern)' : '');
                 const ringNote = hasRing ? ` | + ring ${(ringMesh.indices.length / 3).toLocaleString()} tris` : '';
                 const validation = mesh.validation || validateMesh(mesh);
                 const ringValidation = hasRing ? (ringMesh.validation || validateMesh(ringMesh)) : null;
@@ -4296,7 +4347,7 @@
                 const wallWarning = formatThinStrutWarning(cfg);
                 const wallNote = wallWarning ? ` | ${wallWarning}` : '';
                 const draftSuffix = isDraft ? ' | draft preview' : '';
-                const warnActive = !!(mesh.removedCells || manifoldIssues.length || wallWarning);
+                const warnActive = !!(mesh.removedCells || mesh.rimDetached || manifoldIssues.length || wallWarning);
 
                 if (compileErrors.length) {
                     const summary = compileErrors.length === 1
@@ -4308,7 +4359,7 @@
                 }
             } catch (err) {
                 console.error(err);
-                setStatus("Error: invalid equation or geometry failure.", 'error');
+                setStatus(`Build failed: ${err && err.message ? err.message : err}`, 'error');
             }
         }
 
@@ -4364,6 +4415,10 @@
         // alongside the bowl's — matching how EquationDrivenPotDesigner.html exports the pot and its
         // plate as two separate STL files whenever a plate is attached.
         function exportSTL() {
+            try { exportSTLUnguarded(); }
+            catch (err) { console.error(err); setStatus(`STL export failed: ${err.message}`, 'error'); }
+        }
+        function exportSTLUnguarded() {
             const cfg = getConfig();
             const stem = exportStem(cfg);
             const mesh = rotateMeshForPrinterCoordinates(memoizedMeshBuild(buildMeshData, cfg));
@@ -4472,6 +4527,10 @@ ${trianglesXml.join('\n')}
         // EquationDrivenPotDesigner.html exports the pot and its plate as two separate 3MF files
         // whenever a plate is attached.
         async function export3MF() {
+            try { await export3MFUnguarded(); }
+            catch (err) { console.error(err); setStatus(`3MF export failed: ${err.message}`, 'error'); }
+        }
+        async function export3MFUnguarded() {
             const cfg = getConfig();
             const stem = exportStem(cfg);
             const mesh = memoizedMeshBuild(buildMeshData, cfg);
@@ -4541,7 +4600,7 @@ ${trianglesXml.join('\n')}
                 setStatus(summary.join(' | '), issues.length || result.plates.some(p => !p.fits) ? 'warn' : '');
             } catch (err) {
                 console.error(err);
-                setStatus('Bambu Studio export failed.', 'error');
+                setStatus(`Bambu Studio export failed: ${err.message}`, 'error');
             }
         }
 

@@ -485,9 +485,10 @@ colour be the base state or a single-mask state, as on Caldera and Ironclad.
 
 ### 9.1 "manifold check passed" is not a manifold check
 
-`exportMultiPart3MF` only aborts when **`blockingIssues.length > 50`** (L7381), and the status
-string prints "manifold check passed" whenever the core edge-case flag is false. A model with
-6 boundary edges on the core and 12 on the overlap exported with a green light.
+`exportMultiPart3MF` only aborts when **`blockingIssues.length > 50`**. Until 2026-09-26 the status
+string then printed "manifold check passed" whenever the core edge-case flag was false, so a model
+with 6 boundary edges on the core and 12 on the overlap exported with a green light. It now says
+`manifold warnings (N)` and lists them, but it still exports.
 
 **Check the validations directly:**
 
