@@ -1,0 +1,83 @@
+{
+  "name": "Draped Silk Vase",
+  "base": {
+    "coordSystem": "cylindrical",
+    "baseType": "primitive",
+    "preset": "Circle (Pure Base)",
+    "equation": "R * (1 + 0.17*pow(1 - v, 1.2))",
+    "baseRadius": 5.75,
+    "height": 23.4
+  },
+  "structure": {
+    "modelMode": "vase",
+    "wall": 0.4,
+    "uniformShell": false,
+    "bottomThickness": 1.2,
+    "cylDrain": 0.5,
+    "sphTopCut": 25,
+    "sphBotFlatten": 150,
+    "sphBotCut": 175
+  },
+  "plate": {
+    "enabled": false,
+    "plateHeight": 1.5,
+    "plateOpeningAngle": 22,
+    "plateDiameterExtra": 0.5,
+    "plateRadiusExtra": 0.5,
+    "plateSphTopCut": 95,
+    "plateSphBotFlatten": 250,
+    "applyColoring": false
+  },
+  "vase": {
+    "enabled": true,
+    "baseDiameter": 10,
+    "topDiameter": 10,
+    "height": 20,
+    "insertOffsetMm": 1,
+    "wallMm": 1
+  },
+  "texture": {
+    "type": "utility",
+    "preset": "None (Flat Surface)",
+    "equation": "(log(exp(16*0.821*(1 + 0.250*sin(4.960*v + 6.182))*(1 - smoothstep(0, 1, 2*(1 - cos(theta - -0.082 - 0.424*sin(7.233*v + 5.824) - 0.300*fbm(theta, v, 0.8, 1.2, 2, 11)))/pow(0.377*(1 + 0.300*sin(11.479*v + 2.268)), 2)))) + exp(16*0.967*(1 + 0.250*sin(8.271*v + 5.354))*(1 - smoothstep(0, 1, 2*(1 - cos(theta - 0.777 - 0.309*sin(6.325*v + 3.442) - 0.300*fbm(theta, v, 0.8, 1.2, 2, 12)))/pow(0.479*(1 + 0.300*sin(10.888*v + 4.900)), 2)))) + exp(16*1.193*(1 + 0.250*sin(5.395*v + 2.857))*(1 - smoothstep(0, 1, 2*(1 - cos(theta - 1.213 - 0.294*sin(4.290*v + 4.707) - 0.300*fbm(theta, v, 0.8, 1.2, 2, 13)))/pow(0.521*(1 + 0.300*sin(7.727*v + 1.124)), 2)))) + exp(16*1.171*(1 + 0.250*sin(6.569*v + 3.710))*(1 - smoothstep(0, 1, 2*(1 - cos(theta - 1.871 - 0.182*sin(4.415*v + 3.906) - 0.300*fbm(theta, v, 0.8, 1.2, 2, 14)))/pow(0.510*(1 + 0.300*sin(5.664*v + 3.805)), 2)))) + exp(16*1.050*(1 + 0.250*sin(7.497*v + 6.260))*(1 - smoothstep(0, 1, 2*(1 - cos(theta - 2.467 - 0.244*sin(6.668*v + 4.472) - 0.300*fbm(theta, v, 0.8, 1.2, 2, 15)))/pow(0.425*(1 + 0.300*sin(6.219*v + 5.492)), 2)))) + exp(16*0.974*(1 + 0.250*sin(5.857*v + 0.013))*(1 - smoothstep(0, 1, 2*(1 - cos(theta - 3.137 - 0.203*sin(5.205*v + 5.785) - 0.300*fbm(theta, v, 0.8, 1.2, 2, 16)))/pow(0.476*(1 + 0.300*sin(8.742*v + 1.099)), 2)))) + exp(16*0.963*(1 + 0.250*sin(9.613*v + 5.206))*(1 - smoothstep(0, 1, 2*(1 - cos(theta - 3.830 - 0.378*sin(4.588*v + 3.412) - 0.300*fbm(theta, v, 0.8, 1.2, 2, 17)))/pow(0.505*(1 + 0.300*sin(11.683*v + 2.333)), 2)))) + exp(16*0.911*(1 + 0.250*sin(12.155*v + 4.492))*(1 - smoothstep(0, 1, 2*(1 - cos(theta - 4.399 - 0.295*sin(8.213*v + 6.014) - 0.300*fbm(theta, v, 0.8, 1.2, 2, 18)))/pow(0.428*(1 + 0.300*sin(11.698*v + 1.301)), 2)))) + exp(16*1.103*(1 + 0.250*sin(7.807*v + 2.073))*(1 - smoothstep(0, 1, 2*(1 - cos(theta - 4.935 - 0.166*sin(5.432*v + 5.190) - 0.300*fbm(theta, v, 0.8, 1.2, 2, 19)))/pow(0.508*(1 + 0.300*sin(6.615*v + 3.200)), 2)))) + exp(16*0.907*(1 + 0.250*sin(8.677*v + 2.116))*(1 - smoothstep(0, 1, 2*(1 - cos(theta - 5.608 - 0.212*sin(8.694*v + 1.285) - 0.300*fbm(theta, v, 0.8, 1.2, 2, 20)))/pow(0.493*(1 + 0.300*sin(10.302*v + 2.767)), 2)))))/16 + 0.12*(0.5 + 0.5*fbm(theta, v, 0.9, 1.1, 2, 33)))*(1 - 0.4*v)*(0.7 + 0.3*smoothstep(0, 0.08, v))",
+    "intensity": 1.7
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#0a2989",
+    "patternColor1": "#0a2989",
+    "patternColor2": "#0a2989",
+    "overlapColor": "#0a2989",
+    "depthMm": 1.2,
+    "mode": "color",
+    "smoothPatternEdges": false
+  },
+  "mesh": {
+    "resV": 320,
+    "resT": 440,
+    "patternResV": 320,
+    "patternResT": 440
+  },
+  "modifier": {
+    "type": "utility",
+    "preset": "None (No Modifier)",
+    "equation": "0",
+    "equationV": "",
+    "strength": 0,
+    "target": "base"
+  },
+  "distortion": {
+    "type": "utility",
+    "preset": "None (No Distortion)",
+    "dx": "0",
+    "dy": "0",
+    "dz": "0",
+    "strength": 0,
+    "region": "all",
+    "anchor": "none",
+    "space": "xyz"
+  }
+}
