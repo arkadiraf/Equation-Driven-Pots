@@ -68,6 +68,15 @@ Rather than sampling a radius from a single field, it sweeps a profile along the
 
 It's linked from the main site as a second extension of the Pot Designer.
 
+**Regression check (for development).** `tests/woven-regression.js` builds 25 reference designs:
+- every path;
+- solid, hollow and Object mode;
+- pinch, extra cleaning, texture and the vase insert;
+- smooth and stepped colour layers;
+- every Multi-Strand mode.
+
+It compares each result with its recorded exact fingerprint: triangle count, vertex checksum, bounding box, and every colour and plate part. Run it headless with `python tests/run_regression.py` (it needs Chrome or Edge, and exits 0 when everything passes), or open `EquationDrivenWovenPots.html?regression` in a browser for a results panel. When a change is meant to alter geometry, confirm that only the expected cases fail, then paste the panel's **Copy new fingerprints** output into the test file.
+
 ## Core idea
 
 For cylindrical designs, the main shape is sampled from a field such as:

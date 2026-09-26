@@ -19,6 +19,8 @@
         #colourBanner .cb-spinner { width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff; border-radius: 50%; animation: cb-spin 0.9s linear infinite; }
         @keyframes cb-spin { to { transform: rotate(360deg); } }
         #viewerControls label { margin: 0; font-weight: 600; color: #34495e; white-space: nowrap; cursor: pointer; }
+        #viewerControls button { margin: 0 0 0 6px; padding: 3px 10px; width: auto; border: 1px solid #cfd6dd; border-radius: 12px; background: #fff; color: #34495e; font-size: 12px; font-weight: 600; cursor: pointer; }
+        #viewerControls button:hover { background: #eef2f5; }
 
         .section-title { font-size: 0.95rem; font-weight: 700; font-family: 'Segoe UI', sans-serif; color: var(--secondary); border-bottom: 1px solid #e7eaee; padding: 3px 36px 3px 0; margin-top: 8px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.35px; cursor: pointer; position: relative; user-select: none; }
         .section-title::after { content: '\25BE'; position: absolute; right: 0; top: 50%; transform: translateY(-52%); font-size: 1.35rem; font-weight: 700; color: #7f8c8d; transition: transform 0.18s ease; line-height: 1; }
@@ -479,6 +481,7 @@
     <div id="viewerControls">
         <input type="checkbox" id="crossSectionPreview" onchange="onCrossSectionToggle()">
         <label for="crossSectionPreview">Cross Section Preview</label>
+        <button type="button" id="fitViewBtn" onclick="fitView()" title="Frame the whole model">Fit View</button>
     </div>
     <div id="colourBanner" data-state="hidden">
         <button type="button" class="cb-start" onclick="onColourBannerStart()">Render colours</button>
@@ -502,9 +505,13 @@
     // Zero-volume-shell cleanup threshold (% of the largest body a component must reach to be
     // kept, see cleanDebris) — no UI control; adjustable only via Design JSON import.
     let debrisThresholdPct = 0.1;
-    // Frames the camera on the very first model built after page load, then leaves the camera
-    // alone on every later rebuild so it doesn't jump back and undo the user's own pan/zoom/orbit.
+    // Frames the camera on the first model built after page load (or a loaded design), and again
+    // only when a rebuild changes the model's size or position a lot (see needsRefit) - so an
+    // ordinary edit never jumps the camera back and undoes the user's own pan/zoom/orbit, but a
+    // new path, strand count or diameter no longer leaves the model tiny or half off-screen.
+    // The Fit View button reframes on demand.
     let hasFitCamera = false;
+    let lastFitBox = null;
 
     // Positions the camera at an isometric-ish angle far enough back to frame `box` (a
     // THREE.Box3) with a small margin, replacing the fixed (65,65,65) default that only looks
@@ -1966,12 +1973,21 @@
     // (a pair of coincident faces glued together). They pass every manifold check but render as
     // floating discs, so drop each connected component whose volume is below `fraction` of the
     // largest one. Returns the recomposed solid (null if nothing was removed) and the count.
+    //
+    // A sealed cavity (a hollow closed loop in Object mode) decomposes into its own component
+    // too - the cavity's surface, facing inward, with NEGATIVE volume. It used to fail the
+    // `>= floor` test on its sign alone and be thrown away, so a hollow object came out solid.
+    // Size is therefore judged by |volume|, and an inward-facing component is only kept inside
+    // (by bounding box) a kept outward-facing one - a real cavity, not a stray inverted scrap.
     function cleanDebris(solid, fraction) {
         const { Manifold } = window.CSG;
         const parts = solid.decompose();
         const vols = parts.map(p => p.volume());
         const floor = Math.max(...vols) * fraction;
-        const kept = parts.filter((p, i) => vols[i] >= floor);
+        const solids = parts.filter((p, i) => vols[i] >= floor);
+        const boxes = solids.map(p => p.boundingBox());
+        const inside = b => boxes.some(o => [0, 1, 2].every(k => b.min[k] >= o.min[k] - 1e-6 && b.max[k] <= o.max[k] + 1e-6));
+        const kept = parts.filter((p, i) => vols[i] >= floor || (vols[i] <= -floor && inside(p.boundingBox())));
         const removed = parts.length - kept.length;
         const result = removed > 0 ? Manifold.compose(kept) : null;
         parts.forEach(p => p.delete());
@@ -2408,6 +2424,12 @@
     function buildPlateColorGrid(cfg, env, plateR, zBot, zTop, flare, depthCm) {
         const Nt = PLATE_RES, NvDisc = 28, NvWall = 44, Nv = NvDisc + NvWall - 1;
         const eps = 0.02;
+        // The disc rows start at a tiny radius instead of the exact centre: with every theta
+        // column meeting in ONE apex point, same-colour sectors on opposite sides touched only
+        // along the edge through it and the booleans left an uncovered void there (about 0.01 cm3
+        // under the plate's centre that belonged to no part). The 0.5 mm dot left in the middle is
+        // closed by a wall (see buildPlateSteppedMeshes) and simply keeps the base colour.
+        const r0 = 0.05;
         const eq1 = compilePatternExpr(cfg.patternEq1), eq2 = compilePatternExpr(cfg.patternEq2);
         const top = [], bot = [], fieldA = [], fieldB = [];
         for (let i = 0; i < Nv; i++) {
@@ -2420,7 +2442,7 @@
                 const rMax = plateR[j];
                 let x, y, z, v, nx, ny, nz;
                 if (onDisc) {
-                    const r = (i / (NvDisc - 1)) * rMax;
+                    const r = r0 + (i / (NvDisc - 1)) * (rMax - r0);
                     x = env.cx + r * Math.cos(theta); y = env.cy + r * Math.sin(theta); z = zBot;
                     v = 0; nx = 0; ny = 0; nz = -1;
                 } else {
@@ -2431,8 +2453,24 @@
                     v = hv; nx = Math.cos(theta); ny = Math.sin(theta); nz = 0;
                 }
                 topRow[j*3] = x + nx*eps; topRow[j*3+1] = y + ny*eps; topRow[j*3+2] = z + nz*eps;
+                // The prism's inner face runs along the plate's INSET outline (disc lifted by d,
+                // wall pulled in by d, meeting in a mitred corner), with rows spread over the disc
+                // and then up the wall in the same proportions as the outer rows. Offsetting each
+                // outer point along its own normal instead put the first wall rows - closer than d
+                // to the floor - below the disc's inset, so the rim cells folded into bow-ties that
+                // overlapped their neighbours (thin shared slivers between the plate's colour parts).
                 const d = depthCm + eps;
-                botRow[j*3] = x - nx*d; botRow[j*3+1] = y - ny*d; botRow[j*3+2] = z - nz*d;
+                let bx, by, bz;
+                if (onDisc) {
+                    const rb = r0 + (i / (NvDisc - 1)) * Math.max(0, rMax - d - r0);
+                    bx = env.cx + rb * Math.cos(theta); by = env.cy + rb * Math.sin(theta); bz = zBot + d;
+                } else {
+                    const hv = (i - (NvDisc - 1)) / (NvWall - 1);
+                    bz = zBot + d + hv * Math.max(0, zTop - zBot - d);
+                    const rb = Math.max(0, rMax + flare * (bz - zBot) - d);
+                    bx = env.cx + rb * Math.cos(theta); by = env.cy + rb * Math.sin(theta);
+                }
+                botRow[j*3] = bx; botRow[j*3+1] = by; botRow[j*3+2] = bz;
                 const rNow = Math.hypot(x - env.cx, y - env.cy);
                 rowA[j] = evalPatternMask(eq1, theta, u, u, v, x, y, z, rNow, rNow, 0);
                 rowB[j] = evalPatternMask(eq2, theta, u, u, v, x, y, z, rNow, rNow, 0);
@@ -2443,11 +2481,9 @@
     }
 
     // Stepped-edge prisms over the plate's grid - periodic in theta (j), OPEN in the profile (i):
-    // a cell's "previous" neighbour is skipped (no wall) at i=0, since every theta column
-    // coincides there (the disc's centre point) and the top/bottom fans already close the shape
-    // at that apex on their own; a cell's "next" neighbour is treated as state 0 (always a wall)
-    // past i=Nv-2, since the profile simply ends at the rim - there's no cell beyond it to compare
-    // against. Otherwise identical in structure (and wall-quad winding) to buildSteppedPatternMeshes.
+    // the profile starts on a tiny ring round the disc's centre (see buildPlateColorGrid) and ends
+    // at the rim, so a cell's "previous" neighbour at i=0 and its "next" one past i=Nv-2 are both
+    // treated as state 0 - there is a closing wall at each end. Otherwise identical in structure (and wall-quad winding) to buildSteppedPatternMeshes.
     function buildPlateSteppedMeshes(grid, noNeither) {
         const { Nt, Nv, top, bot, fieldA, fieldB } = grid;
         const pools = { 1: { positions: [], indices: [] }, 2: { positions: [], indices: [] }, 3: { positions: [], indices: [] }, all: { positions: [], indices: [] } };
@@ -2469,7 +2505,7 @@
                 if (s === 0) continue;
                 const topA=pt2(top,i,j), topB=pt2(top,i,j1), topC=pt2(top,i+1,j1), topD=pt2(top,i+1,j);
                 const botA=pt2(bot,i,j), botB=pt2(bot,i,j1), botC=pt2(bot,i+1,j1), botD=pt2(bot,i+1,j);
-                const sPrevU = i > 0 ? state(i-1, j) : s;              // no wall at the apex
+                const sPrevU = i > 0 ? state(i-1, j) : 0;              // always a wall round the centre dot
                 const sNextU = i < Nv - 2 ? state(i+1, j) : 0;         // always a wall at the rim
                 const sNextT = state(i, j1), sPrevT = state(i, jPrev); // theta is genuinely periodic
                 for (const pool of [pools[s], pools.all]) {
@@ -2477,8 +2513,15 @@
                     quad(pool, topA, topB, topC, topD);
                     quad(pool, botD, botC, botB, botA);
                     if (out(sPrevU)) quad(pool, topB, topA, botA, botB);
-                    if (out(sNextT)) quad(pool, topC, topB, botB, botC);
-                    if (out(sNextU)) quad(pool, topD, topC, botC, botD);
+                    // Theta-side walls join two different rows, so they are twisted, not flat, and
+                    // the two cells either side must split the shared quad along the SAME diagonal
+                    // (topB-botC, as the neighbour's sPrevT wall does). Split the other way, the two
+                    // copies bulge apart into sliver wedges - overlap on one side, gap on the other.
+                    if (out(sNextT)) { tri(pool, topC, topB, botC); tri(pool, topB, botB, botC); }
+                    // Same rule for the u-side walls: split along topC-botD, the diagonal the
+                    // next row's own sPrevU wall uses (on the pot's rings these walls happen to be
+                    // flat, on the plate's rows they are not).
+                    if (out(sNextU)) { tri(pool, topD, topC, botD); tri(pool, topC, botC, botD); }
                     if (out(sPrevT)) quad(pool, topA, topD, botD, botA);
                 }
             }
@@ -3229,8 +3272,15 @@
                     // as the top face above, the outward-facing wall is quad(Qtop,Ptop,Pbot,Qbot) -
                     // reversed relative to the edge's own P->Q direction.
                     if (out(sPrevU)) quad(pool, topB, topA, botA, botB);
-                    if (out(sNextT)) quad(pool, topC, topB, botB, botC);
-                    if (out(sNextU)) quad(pool, topD, topC, botC, botD);
+                    // Theta-side walls join two different rows, so they are twisted, not flat, and
+                    // the two cells either side must split the shared quad along the SAME diagonal
+                    // (topB-botC, as the neighbour's sPrevT wall does). Split the other way, the two
+                    // copies bulge apart into sliver wedges - overlap on one side, gap on the other.
+                    if (out(sNextT)) { tri(pool, topC, topB, botC); tri(pool, topB, botB, botC); }
+                    // Same rule for the u-side walls: split along topC-botD, the diagonal the
+                    // next row's own sPrevU wall uses (on the pot's rings these walls happen to be
+                    // flat, on the plate's rows they are not).
+                    if (out(sNextU)) { tri(pool, topD, topC, botD); tri(pool, topC, botC, botD); }
                     if (out(sPrevT)) quad(pool, topA, topD, botD, botA);
                 }
             }
@@ -3360,8 +3410,16 @@
         function push(pool, p) { const i = pool.positions.length/3; pool.positions.push(p[0], p[1], p[2]); return i; }
         function tri(pool, a, b, c) { const ia=push(pool,a), ib=push(pool,b), ic=push(pool,c); pool.indices.push(ia,ib,ic); }
         function fan(pool, poly, key) { for (let i = 1; i < poly.length - 1; i++) tri(pool, poly[0][key], poly[i][key], poly[i+1][key]); }
-        // Same reversed-wall convention as the stepped builder: quad(Qtop,Ptop,Pbot,Qbot).
-        function wall(pool, v1, v2) { tri(pool, v2.top, v1.top, v1.bot); tri(pool, v2.top, v1.bot, v2.bot); }
+        // Same reversed-wall convention as the stepped builder: quad(Qtop,Ptop,Pbot,Qbot). A wall
+        // quad is generally twisted, and the region on its other side emits the same wall walked
+        // the other way (v2 -> v1), so the diagonal must not depend on the direction: it always
+        // runs from the lexicographically smaller top point to the other end's bottom. Otherwise
+        // the two copies split it differently and overlap/gap in thin wedges.
+        function topFirst(a, b) { for (let k = 0; k < 3; k++) if (a.top[k] !== b.top[k]) return a.top[k] < b.top[k]; return true; }
+        function wall(pool, v1, v2) {
+            if (topFirst(v2, v1)) { tri(pool, v2.top, v1.top, v1.bot); tri(pool, v2.top, v1.bot, v2.bot); }
+            else { tri(pool, v2.top, v1.top, v2.bot); tri(pool, v1.top, v1.bot, v2.bot); }
+        }
 
         // ---- records: grid nodes, and mask evaluation anywhere between them ----
         function nodeRec(iu, jt, thAdd, uAdd) {
@@ -4277,7 +4335,8 @@ self.postMessage({ type: 'booted' });
             const h = geo.boundingBox.max.z - geo.boundingBox.min.z;
             document.getElementById('potHeight').value = h.toFixed(2);
         }
-        if (!hasFitCamera) { fitCameraToObject(geo.boundingBox); hasFitCamera = true; }
+        const viewBox = modelViewBox(geo);
+        if (!hasFitCamera || needsRefit(lastFitBox, viewBox)) { fitCameraToObject(viewBox); lastFitBox = viewBox.clone(); hasFitCamera = true; }
         const debris = geo.userData.debrisRemoved ? ` · ${geo.userData.debrisRemoved} debris shells removed` : '';
         const clampNote = geo.userData.patternClamped ? ' · pattern depth clamped' : '';
         // A colour layer that did not build is reported, not swallowed - and so is one that only
@@ -4295,6 +4354,34 @@ self.postMessage({ type: 'booted' });
         shown = { key, cfg, geo, status };
         setStatus(status);
         renderColourBanner();
+    }
+
+    // What the camera frames: the pot plus its plate, when there is one.
+    function modelViewBox(geo) {
+        if (!geo.boundingBox) geo.computeBoundingBox();
+        const box = geo.boundingBox.clone(), v = new THREE.Vector3();
+        for (const part of geo.userData.plateParts || []) {
+            const p = part.positions;
+            for (let i = 0; i < p.length; i += 3) box.expandByPoint(v.set(p[i], p[i+1], p[i+2]));
+        }
+        return box;
+    }
+
+    // A rebuild is reframed when the model grew or shrank by more than half again, or its
+    // centre moved by more than a third of its size - a smaller change keeps the user's camera.
+    function needsRefit(prev, next) {
+        if (!prev || prev.isEmpty() || next.isEmpty()) return !next.isEmpty();
+        const a = prev.getSize(new THREE.Vector3()).length(), b = next.getSize(new THREE.Vector3()).length();
+        if (!(a > 0) || b / a > 1.5 || b / a < 1 / 1.5) return true;
+        return prev.getCenter(new THREE.Vector3()).distanceTo(next.getCenter(new THREE.Vector3())) > b / 3;
+    }
+
+    function fitView() {
+        if (!shown || !shown.geo) return;
+        const box = modelViewBox(shown.geo);
+        fitCameraToObject(box);
+        lastFitBox = box.clone();
+        hasFitCamera = true;
     }
 
     function onCsgReady() { if (previewPending && scene) updatePreview(); }
@@ -5292,6 +5379,12 @@ ${trianglesXml.join('\n')}
         document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeDesignJsonWindow(); });
         document.getElementById('designJsonInput').value = JSON.stringify(DEFAULT_DESIGN_CONFIG);
         applyDesignJson();
+        // Developer regression check: open this page with #regression (see tests/woven-regression.js).
+        if (/regression/.test(location.hash + location.search)) {
+            const s = document.createElement('script');
+            s.src = 'tests/woven-regression.js';
+            document.body.appendChild(s);
+        }
     };
 </script>
 
