@@ -377,6 +377,37 @@ relief and put colour on a few long boundaries.
 
 ---
 
+## 6d. Recipe: chevron basket (stakes + weaver rows, Multi-Strand Expression)
+
+Built for **Candy Chevron Basket Vase** (2026-09-26): a real basket structure — vertical stakes
+from a star floor, weaver rows going over/under them — using Multi-Strand **Expression** mode
+(`strand == 0 ? stakes : weaver`, 7 strands, one closed ring per weaver row).
+
+- **Weaver rows must zigzag, not run level.** A level ring's round underside is a > 60° overhang
+  all the way round. Chevrons `z = zj + H*(1 − tric(2q*t, 0.97))/2` put every **valley on a stake**
+  (supported, fused) and a pointed apex between stakes; with `H` ≈ half the stake gap the rows
+  climb at ~43°. Keep the in/out weave `b` below the stake radius so each valley's lowest point
+  lies inside the stake (no mid-air island start): `rho = rx + b*cos(q*t + pi*strand)` alternates
+  over/under per stake and per row.
+- **Stakes as one closed path:** q up/down cycles, each = up stake → pointed cap to the neighbouring
+  stake (π/q) → down stake → straight floor spoke **through the axis** (signed radius +rx → −rx)
+  → up stake; the next cycle starts at φ + π + π/q. q = 7 visits all 14 stake positions and the
+  floor becomes 7 diameters (a 14-arm star). Written as a piecewise-linear function of the cycle
+  fraction with softened hinges `x ≥ w ? x : (x ≤ −w ? 0 : (x+w)²/4w)` (exact zeros outside the
+  corner window, so the cycle seams match exactly), knots spaced by segment length for uniform speed.
+- **Flare** `×(1 + 0.15*(z − zF)/(zT − zF))` on both stakes and weavers reads as a basket and costs
+  little (0.11 → 0.23 % past 60°).
+- **Thinner weavers** via texture: `strand > 0 ? (rw − r)/intensity : 0`.
+- **Colour by Strand** (strand 0 = Base, then A, B, Overlap, Base, … by index among the *kept*
+  strands, so a duplicate strand does not skip a colour): strand 4 inherits the stake colour and
+  vanishes into the stakes as a weave row. Make strand 4 a **foot hoop** instead (a ring at the
+  floor-spoke height, cut flat with them): it reads as the basket's base rim, raises bed contact
+  65 → 89 cm², and frees strands 1–3 and 5–7 for rows (pink, yellow, green, repeated; the top row
+  is green). Cheap: 8 full-depth parts, ~16 s colour build; the first 16 mm print in the stake
+  colour only.
+
+---
+
 ## 7. Measuring
 
 - **Overhang on the uncoloured build.** The coloured parts have internal interfaces (each colour
@@ -415,8 +446,11 @@ relief and put colour on a few long boundaries.
 | JSON round trip | reloading the JSON and re-exporting gives identical `3D/Objects/object_*.model` hashes | Root `3dmodel.model` carries the date — hash the object files |
 | JSON idempotence | `getCurrentWovenPotConfig()` after loading the JSON equals the file | |
 
-The Bambu Studio command line cannot slice the app's export (partial project config — it
-segfaults on this install). Open it in the GUI to slice.
+The Bambu Studio command line cannot slice the app's export as-is (partial project config — it
+segfaults on this install). It can slice a **test copy** whose `project_settings.config` is replaced
+by the full config of a GUI-saved gallery 3MF, with every `*_gcode` template stubbed out (the CLI
+does not know the newer H2C template variables). Read `Metadata/slice_info.config` in the sliced
+3MF for warnings, `support_used` and grams per filament.
 
 ---
 
@@ -440,6 +474,17 @@ Tell the user the image is a render. Re-saving in Bambu Studio adds plate thumbn
 | Cinquefoil Wicker Planter | Torus (2,5), d 5.1, z 5.1, amp 4.0, taper −0.12, tube 2.6 | 17.5 × 18.1 × 12.3 cm | 16.0 × 15.8 × 1.5 cm | 3.5 / 4.5 mm | 0.48 % (0.20 / 0.28) | teal 40 %, orange 40 %, navy 20 % | 486 g / 89 g | 1500 × 140 | 83–93 s / 110 s, 37.5 MB |
 | Earthworm Tangle Vase (v2) | Custom (3,5) worm path (§6b), rx 5.45, zA 6.72, a 0.16, b 0.55, c 30, tube 0.7 | 13.1 × 13.3 × 14.0 cm, glass 8 × 13 cm | — | solid tubes / glass floor 9.7 mm on uncut tubes | 1.40 % (0.39 bottom 1 cm / 0.13 body / 0.88 hairpin arches) | pink 73 %, maroon 21 %, brown 6 % | 391 g | 3200 × 32, refine 2 | 63 s (3.3 M triangles) / ~120 s, 44.3 MB |
 | Xeno Claw Pod Vase | Custom (3,7) egg + claws (§6c), rx 5.3, zA 6.57, a 0.08, b 0.55, c 30, tube 0.6 | 16.3 × 16.1 × 15.8 cm, glass 8 × 13 cm | — | solid tubes / glass floor 8.6 mm on uncut tubes | 0.14 % (0.08 bottom 1 cm / 0.00 body / 0.06 claws) | bronze 67 %, black 12 %, green 21 % | 435 g | 3300 × 24, refine 0 | 23–26 s / ~60 s, 24.9 MB |
+| Candy Chevron Basket Vase | Custom stakes + foot hoop + 6 chevron weavers (§6d), 8 strands, q 7, rx 4.93, no flare, stakes r 0.6 / weavers 0.42 | 11.5 × 11.3 × 14.2 cm, glass 8 × 13 cm | — | solid tubes / glass floor 7.9 mm on uncut spokes | 0.06 % (0.01 bottom 1 cm / 0.05 body / 0 top) | by strand: blue stakes + hoop, pink / yellow / green rows (green on top) | Bambu Studio slice: 325 g, no supports, 711 layers | 2400 × 32 | 10 s body, 16 s colour / ~50 s, 16 MB |
+
+Candy Chevron is sized for a **1 mm glass clearance**: `rx = bore + b + rw + 0.01` puts the inner
+passes of the weavers at 4.11 cm (bore 4.10). A flare cannot keep 1 mm up the height of a
+cylindrical glass (flare 0.15 opened a 12 mm gap at the top), so the tight version is straight.
+
+Candy Chevron verification: 8 bodies, all 0 / 0 edges; `minBoreR` 4.11 cm; 84.7 cm² bed contact;
+identical object hashes after a JSON reload; **sliced headlessly in Bambu Studio 02.05** (full H2C
+config borrowed from a GUI-saved gallery 3MF, start/change G-code templates stubbed; see the
+`bambu-printer-setup` memory): no supports generated, no slicer warnings about the model, blue 213 g,
+pink / yellow / green ~37 g each, layers 0–79 blue only.
 
 Cinquefoil verification: every body 0 boundary / 0 non-manifold edges in the exported 3MF;
 2,777,052 preview triangles on every rebuild; reloading the JSON in a fresh page and re-exporting

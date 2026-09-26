@@ -1630,16 +1630,47 @@
     // pot never extends outside the union of its strands, so nothing real is lost. Parts reuse
     // the colour layer's four states - and so its four colour chips and every exporter:
     // strand 1 = Base, 2 = Pattern A, 3 = Pattern B, 4 = Overlap, then round again.
+    //
+    // Subtracting the earlier strands can still leave a hair-thin leftover on a middle strand,
+    // where those surfaces coincide with the finished pot's (0.025 mm3 on a real design). Any
+    // piece under STRAND_SLIVER_CM3 is therefore handed to the first other strand's part it
+    // actually fuses with - so the parts keep tiling the pot exactly - or, fusing with none,
+    // dropped. Returns { parts, moved, dropped }.
+    const STRAND_SLIVER_CM3 = 1e-3;   // 1 mm3
     function buildStrandColourParts(result, walls, keep) {
-        const parts = [];
+        const { Manifold } = window.CSG;
+        const solids = [];
         let rest = result;
         for (let k = 0; k < walls.length; k++) {
-            const piece = keep(rest.intersect(walls[k]));
+            solids.push(keep(rest.intersect(walls[k])));
             if (k < walls.length - 1) rest = keep(rest.subtract(walls[k]));
-            const m = piece.getMesh();
-            if (m.triVerts.length) parts.push({ state: k % 4, positions: Float32Array.from(m.vertProperties), indices: Uint32Array.from(m.triVerts) });
         }
-        return parts;
+        let moved = 0, dropped = 0;
+        const pieceCount = m => { const d = m.decompose(); d.forEach(x => x.delete()); return d.length; };
+        for (let k = 0; k < solids.length; k++) {
+            const pcs = solids[k].decompose().map(keep);
+            const small = pcs.filter(pc => { const v = pc.volume(); return v > 0 && v < STRAND_SLIVER_CM3; });
+            if (!small.length) continue;
+            // Subtracted rather than recomposed from the other pieces: compose() merges pieces
+            // that touch face to face and would lose their shared slivers.
+            solids[k] = keep(solids[k].subtract(keep(Manifold.union(small))));
+            for (const sliver of small) {
+                let home = -1;
+                for (let j = 0; j < solids.length && home < 0; j++) {
+                    if (j === k || solids[j].isEmpty()) continue;
+                    // Fused = the union has no more pieces than the part had on its own.
+                    const joined = keep(Manifold.union([solids[j], sliver]));
+                    if (pieceCount(joined) <= pieceCount(solids[j])) { solids[j] = joined; home = j; }
+                }
+                if (home >= 0) moved++; else dropped++;
+            }
+        }
+        const parts = [];
+        solids.forEach((sol, k) => {
+            const m = sol.getMesh();
+            if (m.triVerts.length) parts.push({ state: k % 4, positions: Float32Array.from(m.vertProperties), indices: Uint32Array.from(m.triVerts) });
+        });
+        return { parts, moved, dropped };
     }
 
     function strandColoursActive(cfg) {
@@ -1974,24 +2005,53 @@
     // floating discs, so drop each connected component whose volume is below `fraction` of the
     // largest one. Returns the recomposed solid (null if nothing was removed) and the count.
     //
-    // A sealed cavity (a hollow closed loop in Object mode) decomposes into its own component
-    // too - the cavity's surface, facing inward, with NEGATIVE volume. It used to fail the
-    // `>= floor` test on its sign alone and be thrown away, so a hollow object came out solid.
-    // Size is therefore judged by |volume|, and an inward-facing component is only kept inside
-    // (by bounding box) a kept outward-facing one - a real cavity, not a stray inverted scrap.
+    // A sealed cavity decomposes into its own component too - the cavity's surface, facing
+    // inward, with NEGATIVE volume: the hollow of a closed loop in Object mode, or an air pocket
+    // fully enclosed where fat strands interleave. Such a cavity is not debris, whatever its size:
+    // it belongs to the tightest outward-facing component around it (by bounding box) and is
+    // kept exactly when that component is. Only positive components are judged against `floor`.
+    // (Dropping cavities used to fill them with material - on one 3-strand design 1.5 cm3 of
+    // plastic outside every strand.) The survivors are reassembled with recompose(), since
+    // Manifold.compose() alone silently drops inward-facing components.
     function cleanDebris(solid, fraction) {
-        const { Manifold } = window.CSG;
         const parts = solid.decompose();
         const vols = parts.map(p => p.volume());
         const floor = Math.max(...vols) * fraction;
-        const solids = parts.filter((p, i) => vols[i] >= floor);
-        const boxes = solids.map(p => p.boundingBox());
-        const inside = b => boxes.some(o => [0, 1, 2].every(k => b.min[k] >= o.min[k] - 1e-6 && b.max[k] <= o.max[k] + 1e-6));
-        const kept = parts.filter((p, i) => vols[i] >= floor || (vols[i] <= -floor && inside(p.boundingBox())));
-        const removed = parts.length - kept.length;
-        const result = removed > 0 ? Manifold.compose(kept) : null;
+        const boxes = parts.map(p => p.boundingBox());
+        const contains = (o, b) => [0, 1, 2].every(k => b.min[k] >= o.min[k] - 1e-6 && b.max[k] <= o.max[k] + 1e-6);
+        const boxVol = b => (b.max[0] - b.min[0]) * (b.max[1] - b.min[1]) * (b.max[2] - b.min[2]);
+        const keep = vols.map(v => v >= floor);
+        vols.forEach((v, i) => {
+            if (!(v < -1e-9)) return;
+            let host = -1;
+            vols.forEach((w, j) => { if (w > 0 && contains(boxes[j], boxes[i]) && (host < 0 || boxVol(boxes[j]) < boxVol(boxes[host]))) host = j; });
+            keep[i] = host >= 0 && vols[host] >= floor;
+        });
+        const removed = keep.filter(k => !k).length;
+        const result = removed > 0 ? recompose(parts.filter((p, i) => keep[i])) : null;
         parts.forEach(p => p.delete());
         return { solid: result, removed };
+    }
+
+    // Manifold.compose() for components from decompose(), cavities included: compose() keeps
+    // only the outward-facing components (a cube with a sealed cavity comes back solid), so each
+    // inward-facing one is flipped into an ordinary solid and carved back out afterwards. With no
+    // cavity among them this is exactly compose(). Returns a new Manifold; the inputs are not
+    // consumed.
+    function recompose(components) {
+        const { Manifold, Mesh } = window.CSG;
+        const cavities = components.filter(c => c.volume() < 0);
+        const solid = Manifold.compose(components.filter(c => !(c.volume() < 0)));
+        if (!cavities.length) return solid;
+        const flipped = cavities.map(c => {
+            const m = c.getMesh(), t = Uint32Array.from(m.triVerts);
+            for (let k = 0; k < t.length; k += 3) { const x = t[k + 1]; t[k + 1] = t[k + 2]; t[k + 2] = x; }
+            return new Manifold(new Mesh({ numProp: m.numProp, vertProperties: m.vertProperties, triVerts: t }));
+        });
+        const holes = Manifold.union(flipped);
+        const carved = solid.subtract(holes);
+        [solid, holes, ...flipped].forEach(m => m.delete());
+        return carved;
     }
 
     // Where to drill in one floor region (a set of 2D contours, possibly concave or holed): its
@@ -2702,9 +2762,12 @@
             R.debris += cleaned.removed;
 
             let patternParts = null, patternClamped = false, patternNote = null, patternDroppedMaskB = null;
+            let patternBuried = 0, strandSlivers = 0;
             if (strandWalls && strandWalls.length) {
                 buildPhase('strand colours');
-                patternParts = buildStrandColourParts(result, strandWalls, keep);
+                const sc = buildStrandColourParts(result, strandWalls, keep);
+                patternParts = sc.parts;
+                strandSlivers = sc.moved + sc.dropped;
                 if (scale !== 1) for (const part of patternParts) for (let i = 0; i < part.positions.length; i++) part.positions[i] *= scale;
             } else if (withColors && patternActive(cfg)) {
                 buildPhase('colour layer');
@@ -2719,6 +2782,7 @@
                     patternParts = attempt.parts;
                     patternNote = attempt.reason;
                     patternDroppedMaskB = attempt.droppedMaskB || null;
+                    patternBuried = attempt.buried || 0;
                 } else {
                     patternNote = 'pattern depth collapsed to zero against the wall thickness';
                 }
@@ -2753,6 +2817,8 @@
             geo.userData.patternClamped = patternClamped;
             geo.userData.patternNote = patternNote;
             geo.userData.patternDroppedMaskB = patternDroppedMaskB;
+            geo.userData.patternBuried = patternBuried;
+            geo.userData.strandSlivers = strandSlivers;
             geo.userData.plateParts = plateParts;
             geo.userData.vaseFloorZ = vaseFloorZ !== null ? vaseFloorZ * scale : null;
             geo.userData.colored = withColors || !colourLayerActive(cfg);
@@ -3616,6 +3682,115 @@
     // several, each insert is cut from the pristine pot and the base is carved by the merged
     // all-states cutter, so inserts only ever meet each other on exact input planes. Returns null
     // if nothing could be built.
+    // Buried colour pockets. Where the tube overlaps itself heavily, part of one arm's colour
+    // skin lies INSIDE another arm but less than the colour depth below the finished surface, so
+    // the inset trim keeps it: a colour island sealed inside the wall - invisible, but it still
+    // costs filament changes. Such an island shows up twice: as a piece of a colour part, and as
+    // a sealed void (a negative-volume component) of the base, with exactly the same surface.
+    //
+    // Each void of the base is matched with the colour pieces lying inside its bounding box:
+    //  - "sealed": their volumes add up to the void's - colour completely enclosed by base. The
+    //    void is filled back with base material and the pieces dropped.
+    //  - "lined": colour + the pot's own sealed air pockets inside that box add up to the void -
+    //    colour lining the inside of an air pocket fully enclosed by the strands (fat interleaving
+    //    strands make these). Equally invisible, so the lining is merged into the base, leaving
+    //    just the air pocket.
+    // A void with no colour inside (the cavity of a hollow Object-mode pot, a bare air pocket),
+    // or whose volumes do not add up, is left alone.
+    //
+    // Removing whole pieces is done on the output MESH (meshShells / shellsMesh), not by
+    // decompose() + compose(): compose() merges components that touch face to face and loses the
+    // shared sliver (1.9 mm3 across the 431 touching lightning pieces of one design), whereas
+    // dropping a shell's triangles is exact. Only merging a lining into the base needs a boolean.
+    // Nothing is rebuilt when no pocket is found, so an ordinary design comes out bit-for-bit as
+    // before. `inserts` is [{ state, solid }], `pot` the finished pot the parts were cut from;
+    // returns the finished part meshes (base first) and how many pockets were cleared.
+    function fillBuriedPockets(base, inserts, keep, pot, meshOf) {
+        const { Manifold, Mesh } = window.CSG;
+        const untouched = () => ({ parts: [meshOf(0, base), ...inserts.map(i => meshOf(i.state, i.solid))], filled: 0, volume: 0 });
+        const B = meshShells(base);
+        const voids = B.shells.filter(sh => sh.v < -1e-9);
+        if (!voids.length) return untouched();
+        const within = (b, o) => [0, 1, 2].every(k => b.min[k] >= o.min[k] - 1e-5 && b.max[k] <= o.max[k] + 1e-5);
+        const air = pot.decompose().map(keep).filter(c => c.volume() < -1e-9).map(c => ({ v: -c.volume(), box: c.boundingBox() }));
+        // Every colour piece, tagged with the TIGHTEST void whose box contains it - small sealed
+        // pockets often sit inside a big air pocket's box, and must not be counted towards it.
+        const boxVol = b => (b.max[0] - b.min[0]) * (b.max[1] - b.min[1]) * (b.max[2] - b.min[2]);
+        const tightest = box => { let h = -1; voids.forEach((o, i) => { if (within(box, o.box) && (h < 0 || boxVol(o.box) < boxVol(voids[h].box))) h = i; }); return h; };
+        const insMeshes = inserts.map(ins => meshShells(ins.solid));
+        insMeshes.forEach(M => M.shells.forEach(sh => { sh.home = sh.v > 0 ? tightest(sh.box) : -1; }));
+        const all = insMeshes.flatMap(M => M.shells);
+        const kind = voids.map((o, i) => {
+            const vv = -o.v, inside = all.filter(sh => sh.home === i).reduce((a, sh) => a + sh.v, 0);
+            if (!(inside > 0)) return null;
+            const tol = 1e-6 + 1e-4 * vv;
+            if (Math.abs(inside - vv) <= tol) return 'sealed';
+            const airInside = air.filter(a => within(a.box, o.box)).reduce((s, a) => s + a.v, 0);
+            return airInside > 0 && Math.abs(inside + airInside - vv) <= tol ? 'lined' : null;
+        });
+        const filled = kind.filter(k => k !== null).length;
+        if (!filled) return untouched();
+        const gone = sh => sh.home >= 0 && kind[sh.home] !== null;
+        const volume = all.reduce((a, sh) => a + (gone(sh) ? sh.v : 0), 0);
+        // Base: every shell except the sealed voids (those pockets filled back in), then the
+        // lining of every lined void merged in (that void shrinking to its bare air pocket).
+        let baseMesh = shellsMesh(B, B.shells.filter(sh => !(sh.v < 0 && kind[voids.indexOf(sh)] === 'sealed')));
+        const lining = [];
+        insMeshes.forEach(M => M.shells.forEach(sh => { if (sh.home >= 0 && kind[sh.home] === 'lined') lining.push(shellsMesh(M, [sh])); }));
+        if (lining.length) {
+            const toSolid = m => keep(new Manifold(new Mesh({ numProp: 3, vertProperties: m.positions, triVerts: m.indices })));
+            baseMesh = meshOf(0, keep(Manifold.union([toSolid(baseMesh), ...lining.map(toSolid)])));
+        } else {
+            baseMesh = Object.assign({ state: 0 }, baseMesh);
+        }
+        const parts = [baseMesh];
+        inserts.forEach((ins, n) => {
+            const M = insMeshes[n], keepShells = M.shells.filter(sh => !gone(sh));
+            if (keepShells.length === M.shells.length) parts.push(meshOf(ins.state, ins.solid));
+            else if (keepShells.length) parts.push(Object.assign({ state: ins.state }, shellsMesh(M, keepShells)));
+        });
+        return { parts, filled, volume };
+    }
+
+    // A Manifold's output mesh split into its connected shells (each a closed, vertex-connected
+    // surface), with each shell's signed volume and bounding box. The volume is summed about the
+    // shell's own first vertex, so a tiny shell far from the origin loses no precision.
+    function meshShells(m) {
+        const g = m.getMesh();
+        const pos = Float32Array.from(g.vertProperties), tv = Uint32Array.from(g.triVerts);
+        const par = new Int32Array(pos.length / 3);
+        for (let i = 0; i < par.length; i++) par[i] = i;
+        const find = a => { while (par[a] !== a) { par[a] = par[par[a]]; a = par[a]; } return a; };
+        for (let t = 0; t < tv.length; t += 3) { const a = find(tv[t]); par[find(tv[t + 1])] = a; par[find(tv[t + 2])] = a; }
+        const byRoot = new Map();
+        for (let t = 0; t < tv.length; t += 3) {
+            const r = find(tv[t]);
+            let sh = byRoot.get(r);
+            if (!sh) byRoot.set(r, sh = { tris: [], v: 0, o: [pos[r * 3], pos[r * 3 + 1], pos[r * 3 + 2]],
+                box: { min: [Infinity, Infinity, Infinity], max: [-Infinity, -Infinity, -Infinity] } });
+            sh.tris.push(t);
+            const q = [tv[t], tv[t + 1], tv[t + 2]].map(i => [pos[i * 3] - sh.o[0], pos[i * 3 + 1] - sh.o[1], pos[i * 3 + 2] - sh.o[2]]);
+            sh.v += (q[0][0] * (q[1][1] * q[2][2] - q[1][2] * q[2][1]) - q[0][1] * (q[1][0] * q[2][2] - q[1][2] * q[2][0]) + q[0][2] * (q[1][0] * q[2][1] - q[1][1] * q[2][0])) / 6;
+            for (const i of [tv[t], tv[t + 1], tv[t + 2]]) for (let k = 0; k < 3; k++) {
+                const x = pos[i * 3 + k];
+                if (x < sh.box.min[k]) sh.box.min[k] = x;
+                if (x > sh.box.max[k]) sh.box.max[k] = x;
+            }
+        }
+        return { pos, tv, shells: [...byRoot.values()] };
+    }
+
+    // Mesh of just the given shells of a meshShells() result, vertices re-indexed compactly.
+    function shellsMesh(M, shells) {
+        const remap = new Int32Array(M.pos.length / 3).fill(-1), P = [], I = [];
+        for (const sh of shells) for (const t of sh.tris) for (let k = 0; k < 3; k++) {
+            const v = M.tv[t + k];
+            if (remap[v] < 0) { remap[v] = P.length / 3; P.push(M.pos[v * 3], M.pos[v * 3 + 1], M.pos[v * 3 + 2]); }
+            I.push(remap[v]);
+        }
+        return { positions: Float32Array.from(P), indices: Uint32Array.from(I) };
+    }
+
     // Returns { parts, reason }. Every way this can give up now names itself: a colour layer that
     // quietly does not appear is indistinguishable from one the user configured wrong, and the
     // status line only ever said "pattern: N parts" when it worked - on failure it said nothing at
@@ -3680,7 +3855,7 @@
             failure = null;
 
             buildPhase('colour booleans');
-            const parts = [];
+            let inserts = [];
             let base;
             if (cutters.length === 1) {
                 const cutter = cutters[0].solid;
@@ -3691,7 +3866,7 @@
                         ? `${STATE_NAME[cutters[0].state]} does not reach the printed surface anywhere`
                         : `splitting the pot by ${STATE_NAME[cutters[0].state]} failed (${insert.status()})` };
                 }
-                parts.push(meshOf(cutters[0].state, insert));
+                inserts.push({ state: cutters[0].state, solid: insert });
                 base = rest;
             } else {
                 const prismAll = statePrism('all', 'the merged all-masks');
@@ -3700,13 +3875,15 @@
                 for (const c of cutters) {
                     const insert = keep(result.intersect(c.solid));
                     if (insert.status() !== 'NoError' || insert.isEmpty()) continue;
-                    parts.push(meshOf(c.state, insert));
+                    inserts.push({ state: c.state, solid: insert });
                 }
-                if (!parts.length) return { parts: null, reason: 'no mask region reaches the printed surface' };
+                if (!inserts.length) return { parts: null, reason: 'no mask region reaches the printed surface' };
             }
             if (base.status() !== 'NoError') return { parts: null, reason: `the base body came out invalid (${base.status()})` };
-            parts.unshift(meshOf(0, base));
-            return { parts, reason: null };
+            buildPhase('colour pockets');
+            const pockets = fillBuriedPockets(base, inserts, keep, result, meshOf);
+            if (pockets.parts.length < 2) return { parts: null, reason: 'every mask region lies buried inside the wall' };
+            return { parts: pockets.parts, reason: null, buried: pockets.filled };
         } catch (e) {
             console.error('Pattern layer failed:', e);
             return { parts: null, reason: e.message };
@@ -3726,7 +3903,7 @@
         const soloCfg = Object.assign({}, cfg, { patternEq2: '-1' });
         const solo = buildPatternParts(soloCfg, R, result, depthCm, S);
         if (!solo.parts) return { parts: null, reason: first.reason };
-        return { parts: solo.parts, reason: null, droppedMaskB: first.reason };
+        return { parts: solo.parts, reason: null, droppedMaskB: first.reason, buried: solo.buried };
     }
 
     // The active path's own parameters, read by the ids pathLib declares for it, each falling back
@@ -4342,8 +4519,8 @@ self.postMessage({ type: 'booted' });
         // A colour layer that did not build is reported, not swallowed - and so is one that only
         // built because mask B was dropped, since that pot is printable but not the design asked for.
         const partsNote = !geo.userData.colored ? ' · body only (colours not rendered)' : geo.userData.strandColoured
-            ? ` · coloured by strand: ${parts.length} parts` : parts
-            ? ` · pattern: ${parts.length} parts${geo.userData.patternDroppedMaskB ? ` · mask B dropped (${geo.userData.patternDroppedMaskB})` : ''}`
+            ? ` · coloured by strand: ${parts.length} parts${geo.userData.strandSlivers ? ` · ${geo.userData.strandSlivers} sliver${geo.userData.strandSlivers > 1 ? 's' : ''} merged` : ''}` : parts
+            ? ` · pattern: ${parts.length} parts${geo.userData.patternBuried ? ` · ${geo.userData.patternBuried} buried colour pocket${geo.userData.patternBuried > 1 ? 's' : ''} filled` : ''}${geo.userData.patternDroppedMaskB ? ` · mask B dropped (${geo.userData.patternDroppedMaskB})` : ''}`
             : (geo.userData.patternNote ? ` · pattern layer skipped (${geo.userData.patternNote})` : '');
         // The plate is pot-mode only, so in object mode a ticked "Add a base plate" is just ignored.
         const plateNote = cfg.includePlate && cfg.mode === 'pot' ? (plateParts ? (plateParts.length > 1 ? ` · +plate (${plateParts.length} parts)` : ' · +plate') : ' · plate skipped (bottom cut missed the pot)') : '';

@@ -1,0 +1,98 @@
+{
+  "name": "Candy Chevron Basket Vase",
+  "path": {
+    "type": "Custom Path",
+    "diameter": 9.86,
+    "zStretch": 1,
+    "params": {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "tSpan": 2
+    },
+    "custom": {
+      "x": "strand==0 ? (4.930000+0.000000*(7*t/(2*pi)-floor(7*t/(2*pi)))+-37.849059*(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.575287)>=0.013210?((7*t/(2*pi)-floor(7*t/(2*pi)))-0.575287):(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.575287)<=-0.013210?0:pow(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.575287)+0.013210,2)/0.052841))+37.849059*(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.835795)>=0.013210?((7*t/(2*pi)-floor(7*t/(2*pi)))-0.835795):(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.835795)<=-0.013210?0:pow(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.835795)+0.013210,2)/0.052841)))*1*cos((floor(7*t/(2*pi))*3.590392+(0.000000+0.000000*(7*t/(2*pi)-floor(7*t/(2*pi)))+5.428667*(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.164205)>=0.009247?((7*t/(2*pi)-floor(7*t/(2*pi)))-0.164205):(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.164205)<=-0.009247?0:pow(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.164205)+0.009247,2)/0.036989))+-5.428667*(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.246877)>=0.009247?((7*t/(2*pi)-floor(7*t/(2*pi)))-0.246877):(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.246877)<=-0.009247?0:pow(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.246877)+0.009247,2)/0.036989))))) : strand==4 ? 4.930000*cos(t) : (4.930000+0.400000*cos(7*t+pi*strand))*1*cos(t)",
+      "y": "strand==0 ? (4.930000+0.000000*(7*t/(2*pi)-floor(7*t/(2*pi)))+-37.849059*(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.575287)>=0.013210?((7*t/(2*pi)-floor(7*t/(2*pi)))-0.575287):(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.575287)<=-0.013210?0:pow(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.575287)+0.013210,2)/0.052841))+37.849059*(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.835795)>=0.013210?((7*t/(2*pi)-floor(7*t/(2*pi)))-0.835795):(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.835795)<=-0.013210?0:pow(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.835795)+0.013210,2)/0.052841)))*1*sin((floor(7*t/(2*pi))*3.590392+(0.000000+0.000000*(7*t/(2*pi)-floor(7*t/(2*pi)))+5.428667*(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.164205)>=0.009247?((7*t/(2*pi)-floor(7*t/(2*pi)))-0.164205):(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.164205)<=-0.009247?0:pow(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.164205)+0.009247,2)/0.036989))+-5.428667*(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.246877)>=0.009247?((7*t/(2*pi)-floor(7*t/(2*pi)))-0.246877):(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.246877)<=-0.009247?0:pow(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.246877)+0.009247,2)/0.036989))))) : strand==4 ? 4.930000*sin(t) : (4.930000+0.400000*cos(7*t+pi*strand))*1*sin(t)",
+      "z": "strand==0 ? (6.215000+37.849059*(7*t/(2*pi)-floor(7*t/(2*pi)))+-11.085733*(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.164205)>=0.009247?((7*t/(2*pi)-floor(7*t/(2*pi)))-0.164205):(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.164205)<=-0.009247?0:pow(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.164205)+0.009247,2)/0.036989))+-53.526653*(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.205541)>=0.006605?((7*t/(2*pi)-floor(7*t/(2*pi)))-0.205541):(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.205541)<=-0.006605?0:pow(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.205541)+0.006605,2)/0.026421))+-11.085733*(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.246877)>=0.009247?((7*t/(2*pi)-floor(7*t/(2*pi)))-0.246877):(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.246877)<=-0.009247?0:pow(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.246877)+0.009247,2)/0.036989))+37.849059*(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.575287)>=0.013210?((7*t/(2*pi)-floor(7*t/(2*pi)))-0.575287):(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.575287)<=-0.013210?0:pow(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.575287)+0.013210,2)/0.052841))+37.849059*(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.835795)>=0.013210?((7*t/(2*pi)-floor(7*t/(2*pi)))-0.835795):(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.835795)<=-0.013210?0:pow(((7*t/(2*pi)-floor(7*t/(2*pi)))-0.835795)+0.013210,2)/0.052841))) : strand==4 ? 0.000000 : ((strand==1?1.775714:(strand==2?3.551429:(strand==3?5.327143:(strand==5?7.102857:(strand==6?8.878571:10.654286)))))+1.100000*(1-tric(14*t,0.97))/2)"
+    },
+    "strands": {
+      "mode": "expression",
+      "count": 8,
+      "stepDeg": null,
+      "zOffCm": 0,
+      "rOffCm": 0,
+      "counterWind": false,
+      "cableD": 1,
+      "cableT": 6,
+      "altScale": 1,
+      "crossMode": "merge",
+      "crossClrMm": 1,
+      "crossLenCm": 3,
+      "crossParity": 0,
+      "colourByStrand": true
+    }
+  },
+  "profile": {
+    "preset": "Circle",
+    "equation": "0.6"
+  },
+  "orientation": {
+    "rotX": 0,
+    "rotY": 0,
+    "rotZ": 0
+  },
+  "structure": {
+    "mode": "pot",
+    "bottomCutPct": 2.8675,
+    "topCutPct": 100,
+    "bottomThickness": 0.79,
+    "drainHoleDiameter": 0,
+    "fillPct": 100,
+    "wallThickness": 0.8,
+    "avoidSelfIntersect": false,
+    "extraClean": false,
+    "debrisThresholdPct": 0.1
+  },
+  "plate": {
+    "enabled": false,
+    "applyColoring": false,
+    "offsetCm": 1.5,
+    "heightCm": 1.5,
+    "wallThickness": 0.35,
+    "baseThickness": 0.35,
+    "openingAngleDeg": 25,
+    "smoothingDeg": 10
+  },
+  "vase": {
+    "enabled": true,
+    "baseDiameter": 8,
+    "topDiameter": 8,
+    "height": 13,
+    "insertOffsetMm": 1,
+    "wallMm": 1
+  },
+  "texture": {
+    "preset": "None (Flat Surface)",
+    "equation": "strand > 0 && strand != 4 ? -1.800000 : 0",
+    "intensity": 0.1
+  },
+  "patterns": {
+    "preset1": "None (Solid Base Color)",
+    "equation1": "-1",
+    "preset2": "None (Solid Base Color)",
+    "equation2": "-1",
+    "baseColor": "#0056b8",
+    "patternColor1": "#f5547c",
+    "patternColor2": "#fec600",
+    "overlapColor": "#00ae42",
+    "depthMm": 1.2,
+    "smoothEdges": true,
+    "boundaryRefine": 0
+  },
+  "mesh": {
+    "sections": 2400,
+    "radialRes": 32,
+    "patternResU": 2400,
+    "patternResT": 32
+  }
+}

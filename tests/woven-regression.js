@@ -42,6 +42,13 @@
     const strands = over => Object.assign({}, BASE.strands, over);
     const lowColour = { sections: 160, radialRes: 24, patternResU: 160, patternResT: 24,
         patternEq1: 'sin(8*theta + 12*pi*u)', patternEq2: 'cos(10*pi*v)' };
+    const debrisDesign = over => () => Object.assign(pathCase('Torus Knot')(), {
+        diameter: 5, zStretch: 5, eq: '3.0', doHollow: true, shellThick: 0.35,
+        texEq: 'cos(12*theta + 10*pi*u)', texIntensity: 0.15,
+        patternEq1: 'ridged(theta, v, 4, 6, 4, 6) - 0.85', patternEq2: '-1', patternDepthCm: 0.12, smoothPatternEdges: true, boundaryRefine: 2,
+        sections: 240, radialRes: 32, patternResU: 240, patternResT: 32,
+        strands: strands({ mode: 'wound', count: 3, rOffCm: 1 })
+    }, over);
 
     // [name, cfg factory, build colours?]
     const CASES = [
@@ -72,6 +79,12 @@
         ['strands pinch + clean',  pathCase('Torus Knot', { eq: '2.2', doHollow: true, extraClean: true, strands: strands({ mode: 'wound', count: 3 }) })],
         ['strands colour-by',      pathCase('Torus Knot', { eq: '1.2', sections: 200, strands: strands({ mode: 'wound', count: 3, colourByStrand: true }) }), true],
         ['strands pattern',        pathCase('Torus Knot', Object.assign({ eq: '1.2', smoothPatternEdges: false, strands: strands({ mode: 'wound', count: 3 }) }, lowColour)), true],
+        // COLOUR_LAYER_DEBRIS_TODO.md reference design (torus_knot (1).json) at reduced resolution:
+        // fat strands overlapping themselves and each other leave colour sealed inside the wall
+        // (and lining sealed air pockets), and Colour by Strand leaves slivers - all cleaned up.
+        ['pockets 3 strands',      debrisDesign({}), true],
+        ['pockets single strand',  debrisDesign({ strands: strands({ mode: 'off' }) }), true],
+        ['slivers colour-by',      debrisDesign({ strands: strands({ mode: 'wound', count: 3, rOffCm: 1, colourByStrand: true }) }), true],
     ];
 
     // Paste "Copy new fingerprints" output here.
@@ -100,7 +113,10 @@
         "strands over-under": {"tris": 76800, "sum": "-74.224532", "bbox": "-14.497120857,-14.724132538,-8.999578476,14.499827385,14.733332634,8.999534607", "debris": 0},
         "strands pinch + clean": {"tris": 277422, "sum": "67498.232477", "bbox": "-15.397548676,-15.622204781,-8.158859253,15.699620247,15.619665146,8.158859253", "debris": 0, "plate": "4:1798:-31427.644551"},
         "strands colour-by": {"tris": 51312, "sum": "-2030.178973", "bbox": "-14.398456573,-14.623083115,-7.359390736,14.699171066,14.620474815,7.359393120", "debris": 0, "parts": "0:17268:-2022.782971 1:17280:-1486.286792 2:17302:1173.414895", "plate": "4:1800:-28442.928987"},
-        "strands pattern": {"tris": 21588, "sum": "125.087389", "bbox": "-14.394639969,-14.619270325,-7.359399796,14.698704720,14.607286453,7.359405518", "debris": 0, "parts": "0:21552:984.365768 1:85350:4296.284175 2:85290:-22028.968316 3:85462:24775.689951", "plate": "4:2880:-46252.867665 5:28640:-461100.163861 6:34622:-576400.224600 7:34620:-574379.618242"}
+        "strands pattern": {"tris": 21588, "sum": "125.087389", "bbox": "-14.394639969,-14.619270325,-7.359399796,14.698704720,14.607286453,7.359405518", "debris": 0, "parts": "0:21552:984.365768 1:85350:4296.284175 2:85290:-22028.968316 3:85462:24775.689951", "plate": "4:2880:-46252.867665 5:28640:-461100.163861 6:34622:-576400.224600 7:34620:-574379.618242"},
+        "pockets 3 strands": {"tris": 19508, "sum": "5111.992152", "bbox": "-10.885913849,-10.023885727,-6.502583981,10.141257286,11.052597046,6.502711296", "debris": 65, "parts": "0:42818:34255.938130 1:22988:32862.025682", "buriedPockets": 28, "plate": "4:26962:-389521.217156 5:23770:-367055.269950"},
+        "pockets single strand": {"tris": 17850, "sum": "845.246318", "bbox": "-7.377613544,-8.568842888,-6.502583981,9.147747993,8.568449974,6.502711296", "debris": 0, "parts": "0:45576:28469.294065 1:27970:27678.382705", "buriedPockets": 17, "plate": "4:27086:-397045.814556 5:23894:-374644.837412"},
+        "slivers colour-by": {"tris": 19508, "sum": "5111.992152", "bbox": "-10.885913849,-10.023885727,-6.502583981,10.141257286,11.052597046,6.502711296", "debris": 65, "parts": "0:10076:-8423.624351 1:12562:1752.035033 2:12988:-2346.904828", "slivers": 3, "plate": "4:1800:-25273.925520"}
     };
 
     function checksum(a) { let s = 0; for (let i = 0; i < a.length; i++) s += a[i] * ((i % 7) + 1); return s.toFixed(6); }
@@ -114,6 +130,8 @@
         const u = geo.userData, pos = geo.attributes.position.array;
         const fp = { tris: geo.index.count / 3, sum: checksum(pos), bbox: bboxOf(pos), debris: u.debrisRemoved || 0 };
         if (u.patternParts) fp.parts = u.patternParts.map(partPrint).join(' ');
+        if (u.patternBuried) fp.buriedPockets = u.patternBuried;
+        if (u.strandSlivers) fp.slivers = u.strandSlivers;
         if (u.plateParts) fp.plate = u.plateParts.map(partPrint).join(' ');
         return fp;
     }
