@@ -57,6 +57,11 @@ sweep parameterisation:
 
 ### 1. How a strand is generated — recommend t-offset
 
+> **Superseded — see `MULTI_STRAND_EXPERIMENTAL_PLAN.md`.** A `t` offset on a closed curve only
+> moves the start point; every copy traces the same locus (verified: Hausdorff distance 0 on all
+> built-in paths). Use a Z rotation of `2π/(g·N)`, where `g` is the path's rotational symmetry
+> order, or the Cable mode.
+
 Offset each copy along the curve: strand `k` samples `t + k · period / N`.
 
 Works for every path including Custom, needs no per-path knowledge, and for a wound path it

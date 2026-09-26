@@ -149,7 +149,7 @@
                 <textarea id="pathY" onchange="updatePreview()"></textarea>
                 <label for="pathZ">z(t)</label>
                 <textarea id="pathZ" onchange="updatePreview()"></textarea>
-                <div class="desc-text">Three expressions in t, swept over t = 0 .. tSpan*pi. In scope: rx (half of Path Diam), zA (Z-Stretch), the a/b/c knobs above, pi, the usual math functions, and tri(angle, shape) / tric(angle, shape) - a sine and a cosine at shape=0 that sharpen into triangle waves as shape approaches 1. The curve must close: every expression has to return to its t=0 value at t = tSpan*pi, or the sweep will be forced shut with a kink.</div>
+                <div class="desc-text">Three expressions in t, swept over t = 0 .. tSpan*pi. In scope: rx (half of Path Diam), zA (Z-Stretch), the a/b/c knobs above, pi, the usual math functions, and tri(angle, shape) / tric(angle, shape) - a sine and a cosine at shape=0 that sharpen into triangle waves as shape approaches 1. Also strand, strands and sp (= 2*pi*strand/strands): 0, 1 and 0 normally, and each strand's own values in the Multi-Strand tool's Expression mode. The curve must close: every expression has to return to its t=0 value at t = tSpan*pi, or the sweep will be forced shut with a kink.</div>
             </div>
 
             <div class="sub-label">Orientation</div>
@@ -340,6 +340,70 @@
     </div>
 
     <div class="collapsible-section is-collapsed">
+        <div class="section-title" style="color: var(--highlight)" onclick="toggleSection(this)">Experimental Tool - Multi-Strand</div>
+        <div class="section-body">
+            <div class="grid-inputs">
+                <div class="input-group">
+                    <label>Strand Mode</label>
+                    <select id="strandMode" onchange="onStrandChange()">
+                        <option value="off" selected>Off (single strand)</option>
+                        <option value="wound">Wound Array</option>
+                        <option value="cable">Cable</option>
+                        <option value="expression">Expression (Custom Path)</option>
+                    </select>
+                </div>
+                <div class="input-group"><label>Strand Count</label><input type="number" id="strandCount" value="3" min="1" max="8" step="1" onchange="onStrandChange()"></div>
+            </div>
+            <div id="strandWoundWrap" style="display:none;">
+                <div class="input-group"><label>Rotation Step Override (&deg;, blank = auto)</label><input type="number" id="strandStepDeg" value="" step="0.5" placeholder="auto" onchange="onStrandChange()"></div>
+                <div class="grid-inputs">
+                    <div class="input-group"><label>Z Offset per Strand (cm)</label><input type="number" id="strandZOffCm" value="0" step="0.1" onchange="onStrandChange()"></div>
+                    <div class="input-group"><label>Radial Offset per Strand (cm)</label><input type="number" id="strandROffCm" value="0" step="0.1" onchange="onStrandChange()"></div>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="strandCounterWind" onchange="onStrandChange()">
+                    <label for="strandCounterWind" style="margin-bottom:0;">Counter-wind strands 2, 4, &hellip; (mirror image: a two-way, finger-trap braid)</label>
+                </div>
+            </div>
+            <div id="strandCableWrap" style="display:none;">
+                <div class="grid-inputs">
+                    <div class="input-group"><label>Cable Spacing (cm)</label><input type="number" id="strandCableD" value="1" step="0.1" min="0" onchange="onStrandChange()"></div>
+                    <div class="input-group"><label>Cable Twists per Loop (whole)</label><input type="number" id="strandCableT" value="6" step="1" onchange="onStrandChange()"></div>
+                </div>
+            </div>
+            <div id="strandCommonWrap" style="display:none;">
+                <div class="input-group">
+                    <label>Crossings</label>
+                    <select id="strandCrossMode" onchange="onStrandChange()">
+                        <option value="merge" selected>Merge (strands fuse where they meet)</option>
+                        <option value="alternate">Alternating over / under</option>
+                    </select>
+                </div>
+                <div id="strandCrossWrap" style="display:none;">
+                    <div class="grid-inputs">
+                        <div class="input-group"><label>Crossing Clearance (mm)</label><input type="number" id="strandCrossClrMm" value="1" step="0.1" min="0" onchange="onStrandChange()"></div>
+                        <div class="input-group"><label>Transition Length (cm)</label><input type="number" id="strandCrossLenCm" value="3" step="0.5" min="0.1" onchange="onStrandChange()"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Starting Parity</label>
+                        <select id="strandCrossParity" onchange="onStrandChange()">
+                            <option value="0" selected>A over first</option>
+                            <option value="1">B over first (every crossing flipped)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group"><label>Alternate Strand Profile Scale (strands 2, 4, &hellip;; 1 = same)</label><input type="number" id="strandAltScale" value="1" step="0.05" min="0.1" onchange="onStrandChange()"></div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="strandColourBy" onchange="onStrandChange()">
+                    <label for="strandColourBy" style="margin-bottom:0;">Colour by Strand (strand 1 = Base, 2 = Pattern A, 3 = Pattern B, 4 = Overlap colour, then repeating)</label>
+                </div>
+            </div>
+            <div id="strandInfo" class="desc-text"></div>
+            <div class="desc-text"><b>Wound Array</b> sweeps copies of the selected path turned about the vertical axis and unions them into one solid. A path that repeats every 360/g&deg; (a (2,3) Torus Knot repeats every 120&deg;) is unchanged by that turn, so the automatic step is 360/(g &middot; count): the strands then sit evenly between each other instead of on top of one another. <b>Cable</b> twists the strands around the selected path like a rope - it works on every path, Lissajous and Custom included. <b>Expression</b> draws strand k from the Custom Path equations with strand = k, strands = count and sp = 2&pi;k/count in scope. Strands that still coincide (e.g. with an override step) are detected and left out. Pinch and Extra cleaning (Structural Geometry) account for contacts between different strands as well as each strand's own crossings. The Dual Pattern Color Layer runs on every strand: u goes 0 &rarr; 1 along each strand, v is height over the whole piece, and the masks can use strand (0, 1, 2, &hellip;) and strands - e.g. <code>strand == 1 ? 1 : -1</code> colours only the second strand. Colour by Strand instead splits the finished pot into one full-depth part per strand, using the same four colour chips; where strands merge, the lower-numbered strand's colour wins. It replaces the pattern masks while it is on. <b>Crossings: Alternating over / under</b> finds every place two strands (or two distant parts of one strand) would fuse, and lifts one passage outward and the other inward just enough to clear by the Crossing Clearance, alternating over-under-over along every strand. Near-parallel contacts (coil turns, cable strands side by side) are left to merge. Where the crossings form an odd loop the order cannot alternate everywhere; the status line counts those places.</div>
+        </div>
+    </div>
+
+    <div class="collapsible-section is-collapsed">
         <div class="section-title" onclick="toggleSection(this)">Mesh Resolution</div>
         <div class="section-body">
             <div class="grid-inputs">
@@ -504,7 +568,8 @@
             x: "(rx + amp*tric(q*t + phase, wave)) * (1 + taper*pow(tri(q*t, wave), 2)) * cos(p*t)",
             y: "(rx + amp*tric(q*t + phase, wave)) * (1 + taper*pow(tri(q*t, wave), 2)) * sin(p*t)",
             z: "zA * tri(q*t, wave)",
-            period: c => 2 * Math.PI / turnsGcd(c.p, c.q)
+            period: c => 2 * Math.PI / turnsGcd(c.p, c.q),
+            zSymmetry: c => windingSymmetry(c.q, c.p)
         },
         "Spherical Knot": {
             // `amp` defaults to the Torus Knot's 3.5 for the same reason that path uses it: with
@@ -526,7 +591,8 @@
             x: "(rx*cos(reach*sin(q*t)) + amp*cos(q*t)) * (1 + taper*pow(sin(reach*sin(q*t)), 2)) * cos(p*t)",
             y: "(rx*cos(reach*sin(q*t)) + amp*cos(q*t)) * (1 + taper*pow(sin(reach*sin(q*t)), 2)) * sin(p*t)",
             z: "zA * sin(reach*sin(q*t))",
-            period: c => 2 * Math.PI / turnsGcd(c.p, c.q)
+            period: c => 2 * Math.PI / turnsGcd(c.p, c.q),
+            zSymmetry: c => windingSymmetry(c.q, c.p)
         },
         "Coiled Basket": {
             params: [{id:'k',label:'Turns per Wall',val:8,step:1},{id:'amp',label:'Wall Gap',val:2,step:0.1},
@@ -546,11 +612,14 @@
             y: "(rx + amp*sin(t) + weave*cos(m*t)) * sin(k*t)",
             z: "zA * (1 - cos(t)) / 2",
             period: 2 * Math.PI,
+            zSymmetry: 1,
             warn: (p, cfg, strandDia) => {
-                const k = Math.max(1, Math.abs(Math.round(p.k)));
+                // An N-start coil (Multi-Strand) lays N turns in the rise of one.
+                const starts = strandsActive(cfg) && cfg.strands.mode === 'wound' ? cfg.strands.count : 1;
+                const k = Math.max(1, Math.abs(Math.round(p.k))) * starts;
                 const rise = Math.PI * Math.abs(cfg.zStretch) / k;   // peak rise per turn, at the belly
                 if (rise <= strandDia || strandDia <= 0) return null;
-                return `coil turns are ${(rise / strandDia).toFixed(1)}x too far apart to fuse into a wall — raise Turns per Wall to ${Math.ceil(Math.PI * Math.abs(cfg.zStretch) / strandDia)}+ or thicken the profile`;
+                return `coil turns are ${(rise / strandDia).toFixed(1)}x too far apart to fuse into a wall — raise Turns per Wall to ${Math.ceil(Math.PI * Math.abs(cfg.zStretch) / strandDia / starts)}+ or thicken the profile`;
             }
         },
         // Both of the paths below drive their angle straight from t. That is worth stating
@@ -574,6 +643,7 @@
             y: "(rx + amp*cos(n*t)) * sin(t + weave*sin(n*t))",
             z: "zA * sin(n*t)",
             period: 2 * Math.PI,
+            zSymmetry: c => windingSymmetry(c.n, 1),
             warn: p => weaveAdvisory(p.weave, p.n, 'Petals (n)')
         },
         "Braided Loop": {
@@ -584,6 +654,7 @@
             y: "(rx + amp1*cos(n1*t) + amp2*cos((n1+3)*t)) * sin(t + weave*sin(n1*t))",
             z: "zA*sin(n1*t) + amp2*sin((n1+3)*t)",
             period: 2 * Math.PI,
+            zSymmetry: c => turnsGcd(c.n1, c.n1 + 3),
             warn: p => weaveAdvisory(p.weave, p.n1, 'Base Freq (n1)')
         },
         "Mobius Curve": {
@@ -597,6 +668,9 @@
             y: "(rx + zA*cos(halfTwists*t/2)) * sin(t)",
             z: "zA * sin(halfTwists*t/2)",
             period: c => (Math.abs(Math.round(c.halfTwists)) % 2 === 1 ? 4 : 2) * Math.PI,
+            // Odd h: the edge repeats every 4*pi/h in t, which is a turn of 4*pi/h about Z - a
+            // group of order h. Even h: only half of those survive inside one 2*pi traversal.
+            zSymmetry: c => { const h = Math.abs(Math.round(c.halfTwists)); return !h ? 1 : (h % 2 ? h : h / 2); },
             plateMode: 'ellipse'
         },
         "Lissajous Tangle": {
@@ -617,6 +691,8 @@
             y: "rx * cos(ny*t + py)",
             z: "zA * cos(nz*t + pz)",
             period: c => 2 * Math.PI / turnsGcd(turnsGcd(c.nx, c.ny), c.nz),
+            // Not wound around Z, so rotated copies are not a weave - Wound Array is refused.
+            zSymmetry: null,
             // Its cross-section can surround a hole the way the Mobius curve's does, and a traced
             // contour that has to bridge a hole is exactly the case the silhouette tracer cannot
             // do safely - see the base-plate header.
@@ -627,6 +703,8 @@
                      {id:'tSpan',label:'t Span (x pi)',val:2,step:1}],
             defaultRotY: 0,
             custom: true,
+            // Unknown: assume none, and let the strand coincidence guard catch a symmetric curve.
+            zSymmetry: 1,
             // Ships as a "looping rosette": the angle itself wobbles (t + b*sin(a*t)) instead of
             // advancing steadily, so once b*a > 1 the strand doubles back and each petal closes
             // into an eyelet. It is the one crossing mechanism none of the built-in paths use -
@@ -660,6 +738,15 @@
         return x || 1;
     }
 
+    // Order of the rotational symmetry about Z of a curve whose angle winds `other` times while
+    // its radius/height repeat `freq` times per traversal: |freq| / gcd(freq, other). A (2,3)
+    // torus knot is unchanged by a 120 degree turn, so three strands 120 degrees apart would be
+    // one strand three times over - see the Multi-Strand section. Non-integers fall back to 1.
+    function windingSymmetry(freq, other) {
+        if (!isFinite(freq) || Math.abs(freq - Math.round(freq)) > 1e-9 || !Math.round(freq)) return 1;
+        return Math.abs(Math.round(freq)) / turnsGcd(freq, other);
+    }
+
     // A sine that sharpens into a triangle wave: shape 0 is exactly Math.sin, shape -> 1 is a
     // near-perfect triangle, and the output stays in [-1, 1] throughout. Straight-sided strands
     // cross at a constant angle, which reads as woven cane rather than as a stack of sine waves.
@@ -688,12 +775,16 @@
     // brings its own parameter names into scope), so the cache key carries those names too. A
     // broken expression compiles to a constant 0 instead of throwing, which collapses that
     // coordinate to the axis - visibly wrong in the preview, rather than a blank canvas.
-    function compilePathExpr(src, paramIds) {
+    //
+    // `extraIds` are further names appended after the math scope - Custom Path passes
+    // STRAND_EXPR_ARGS so its equations can see which Multi-Strand strand they are drawing.
+    function compilePathExpr(src, paramIds, extraIds) {
         const body = (typeof src === 'string' && src.trim()) ? src : '0';
-        const key = paramIds.join(',') + '|' + body;
+        const extra = extraIds || [];
+        const key = paramIds.join(',') + '|' + extra.join(',') + '|' + body;
         if (pathExprCache.has(key)) return pathExprCache.get(key);
         let fn;
-        try { fn = new Function('t', 'rx', 'zA', ...paramIds, ...PATH_MATH_ARGS, '"use strict"; return (' + body + ');'); }
+        try { fn = new Function('t', 'rx', 'zA', ...paramIds, ...PATH_MATH_ARGS, ...extra, '"use strict"; return (' + body + ');'); }
         catch (e) { fn = () => 0; }
         if (pathExprCache.size > 200) pathExprCache.clear();
         pathExprCache.set(key, fn);
@@ -718,6 +809,7 @@
             }
         }
         document.getElementById('rotY').value = data.defaultRotY || 0;
+        refreshStrandInfo(null);
         updatePreview();
     }
 
@@ -737,14 +829,24 @@
     // Compiles the active path's three expressions once and returns a sampler, so a rebuild pays
     // for the compile once rather than per step. `cfg.pathExpr` is only set when the path is
     // "Custom Path" (readCfg reads the three textareas); everything else comes from pathLib.
-    function makePathSampler(cfg) {
+    //
+    // Custom Path always has `strand`, `strands` and `sp` (= 2*pi*strand/strands) in scope: 0, 1
+    // and 0 for an ordinary build, and strand k of N when the Multi-Strand tool's Expression mode
+    // samples it (`strandExpr` = { k, N }). Built-in paths never see them.
+    const STRAND_EXPR_ARGS = ['strand', 'strands', 'sp'];
+    function makePathSampler(cfg, strandExpr) {
         const entry = pathLib[cfg.type] || pathLib["Torus Knot"];
         const src = cfg.pathExpr || entry;
         const ids = entry.params.map(p => p.id);
         const vals = ids.map(id => { const v = cfg.params ? cfg.params[id] : undefined; return isFinite(v) ? v : 0; });
-        const fx = compilePathExpr(src.x, ids), fy = compilePathExpr(src.y, ids), fz = compilePathExpr(src.z, ids);
+        const extra = cfg.pathExpr ? STRAND_EXPR_ARGS : [];
+        const fx = compilePathExpr(src.x, ids, extra), fy = compilePathExpr(src.y, ids, extra), fz = compilePathExpr(src.z, ids, extra);
         const rx = cfg.diameter * 0.5, zA = cfg.zStretch;
         const head = [0, rx, zA, ...vals, ...PATH_MATH_VALS];
+        if (cfg.pathExpr) {
+            const k = strandExpr ? strandExpr.k : 0, n = strandExpr ? strandExpr.N : 1;
+            head.push(k, n, 2 * Math.PI * k / n);
+        }
         const call = (fn, t) => {
             head[0] = t;
             let v;
@@ -812,19 +914,55 @@
 
     // Samples the path and builds rotation-minimizing frames, spreading the closed-loop twist
     // evenly along the sweep so the last ring lines up with the first.
-    function buildSweepFrames(cfg) {
+    //
+    // `strand` (Multi-Strand only) moves the sampled curve: `dr` outward from the Z axis, then a
+    // turn of `phi` about Z, then `dz` up. The starting frame is chosen on the UNMOVED curve and
+    // turned with it, so for a pure turn every strand's frames are exactly the first strand's
+    // frames rotated - a non-circular profile sits the same way on every strand. `mirror`
+    // reflects the curve (y -> -y) BEFORE that frame is chosen, so a counter-wound strand's frames
+    // stay right-handed and its tube still faces outward; `expr` samples Custom Path as strand
+    // { k, N } (see makePathSampler). Without `strand` nothing below differs from the
+    // single-strand sweep.
+    function buildSweepFrames(cfg, strand) {
         const steps = cfg.sections;
         const maxT = getPathPeriod(cfg);
-        const samplePath = makePathSampler(cfg);
+        const samplePath = makePathSampler(cfg, strand && strand.expr);
         const pts = [];
         for (let i = 0; i <= steps; i++) pts.push(samplePath((i/steps)*maxT));
+        if (strand && strand.mirror) for (const p of pts) p.y = -p.y;
 
-        let tang = new THREE.Vector3().subVectors(pts[1], pts[0]).normalize();
-        let norm = new THREE.Vector3(1,0,0);
+        const { tang, norm, bino } = startFrame(pts[0], pts[1]);
+
+        if (strand && (strand.phi || strand.dr || strand.dz)) {
+            const c = Math.cos(strand.phi || 0), s = Math.sin(strand.phi || 0);
+            const dr = strand.dr || 0, dz = strand.dz || 0;
+            const turn = v => v.set(c * v.x - s * v.y, s * v.x + c * v.y, v.z);
+            for (const p of pts) {
+                const rho = Math.hypot(p.x, p.y);
+                if (dr && rho > 1e-9) { p.x += dr * p.x / rho; p.y += dr * p.y / rho; }
+                turn(p);
+                p.z += dz;
+            }
+            turn(tang); turn(norm); turn(bino);
+        }
+        return sweepFramesFromPoints(pts, steps, tang, norm, bino);
+    }
+
+    // A start frame for a sweep beginning p0 -> p1: tangent along it, normal from the x axis
+    // (the y axis when the tangent is nearly along x).
+    function startFrame(p0, p1) {
+        const tang = new THREE.Vector3().subVectors(p1, p0).normalize();
+        const norm = new THREE.Vector3(1,0,0);
         if (Math.abs(tang.x) > 0.9) norm.set(0,1,0);
-        let bino = new THREE.Vector3().crossVectors(tang, norm).normalize();
+        const bino = new THREE.Vector3().crossVectors(tang, norm).normalize();
         norm.crossVectors(bino, tang).normalize();
+        return { tang, norm, bino };
+    }
 
+    // Rotation-minimizing frames along the closed polyline pts[0..steps] (pts[steps] closes back
+    // onto pts[0]), transported from the given start frame, with the leftover closing twist
+    // spread evenly along the loop. Consumes tang/norm/bino.
+    function sweepFramesFromPoints(pts, steps, tang, norm, bino) {
         const raw = [];
         for (let i = 0; i <= steps; i++) {
             const pNext = pts[(i+1)%(steps+1)], pPrev = pts[(i-1+steps+1)%(steps+1)];
@@ -853,10 +991,18 @@
     // Rotated ring outlines (flat xyz arrays) and ring centers for the outer wall — and, when
     // hollow, the inner wall offset inward by the wall thickness — plus how the sweep has to be
     // split into pieces for the CSG union.
-    function buildRings(cfg) {
-        const { frames, pts, steps } = buildSweepFrames(cfg);
+    //
+    // `opts` is Multi-Strand only: `sweep` is this strand's buildSweepFrames result,
+    // `texZRange` the [min, max] centre height over ALL strands, so a texture's v runs over the
+    // whole piece rather than restarting on each strand, `crossMinDist` each ring's distance
+    // to the nearest ring of any other strand (Pinch mode only), `profileScale` a factor on
+    // the profile radius (the alternate-strand scale), and `strand` = { k, N } this strand's
+    // index among those built, for the texture equation's strand / strands.
+    function buildRings(cfg, opts) {
+        const { frames, pts, steps } = (opts && opts.sweep) || buildSweepFrames(cfg);
         const resR = cfg.radialRes;
         const profile = sampleProfileR(cfg.eq, resR).map(r => Math.max(0.01, r));
+        if (opts && opts.profileScale) for (let j = 0; j < resR; j++) profile[j] = Math.max(0.01, profile[j] * opts.profileScale);
         const profileMaxR = Math.max(...profile);
         const prox = computeRingProximity(pts, steps, profileMaxR);
         const rot = makeRotationMatrix(cfg.rotX, cfg.rotY, cfg.rotZ);
@@ -885,6 +1031,7 @@
                 if (tmpV.z < cMinZ) cMinZ = tmpV.z;
                 if (tmpV.z > cMaxZ) cMaxZ = tmpV.z;
             }
+            if (opts && opts.texZRange) [cMinZ, cMaxZ] = opts.texZRange;
         }
         const cZRange = Math.max(1e-6, cMaxZ - cMinZ);
 
@@ -892,8 +1039,10 @@
         let minZ = Infinity, maxZ = -Infinity;
         for (let i = 0; i < steps; i++) {
             const f = frames[i];
-            // Pinch mode: cap the radius so this ring stays clear of the nearest other ring.
-            const cap = cfg.avoidSelfIntersect && isFinite(prox.minDist[i]) ? prox.minDist[i] * 0.45 : Infinity;
+            // Pinch mode: cap the radius so this ring stays clear of the nearest other ring -
+            // of this strand or, with Multi-Strand, of any other strand (opts.crossMinDist).
+            const near = opts && opts.crossMinDist ? Math.min(prox.minDist[i], opts.crossMinDist[i]) : prox.minDist[i];
+            const cap = cfg.avoidSelfIntersect && isFinite(near) ? near * 0.45 : Infinity;
             const ro = new Float64Array(resR * 3), ri = cfg.doHollow ? new Float64Array(resR * 3) : null;
             const rRow = new Float64Array(resR);
             const s = i / steps, u = prox.totalLen > 0 ? prox.cumLen[i] / prox.totalLen : s;
@@ -904,7 +1053,9 @@
                 if (texFn) {
                     v.copy(f.p).addScaledVector(f.n, r * Math.cos(theta)).addScaledVector(f.b, r * Math.sin(theta));
                     if (rot) v.applyMatrix4(rot);
-                    const disp = evalPatternMask(texFn, theta, u, s, vHeight, v.x, v.y, v.z, 0, 0, prox.totalLen);
+                    const disp = opts && opts.strand
+                        ? evalPatternMask(texFn, theta, u, s, vHeight, v.x, v.y, v.z, 0, 0, prox.totalLen, opts.strand.k, opts.strand.N)
+                        : evalPatternMask(texFn, theta, u, s, vHeight, v.x, v.y, v.z, 0, 0, prox.totalLen);
                     r = Math.max(0.01, Math.min(r + disp * cfg.texIntensity, cap));
                 }
                 rRow[j] = r;
@@ -952,6 +1103,589 @@
 
     function buildInsetSolid(cfg, R, offset) {
         return buildWallSolid(buildOffsetRingSet(cfg, R, offset), R);
+    }
+
+    // ---- Experimental Tool: Multi-Strand (phase A - Wound Array, solid only) ----------------
+    // N copies of the path, each turned about Z, swept separately and unioned - see
+    // MULTI_STRAND_EXPERIMENTAL_PLAN.md. Two traps decide the design:
+    //  - Offsetting t (strand k starting k/N of the way round) does nothing: a closed curve
+    //    started elsewhere is the same curve, so all N tubes would coincide.
+    //  - Turning by 360/N does nothing either on a path that already repeats every 360/g
+    //    degrees whenever g shares a factor with N (a (2,3) Torus Knot, N = 3). The step is
+    //    360/(g*N), which spaces the copies evenly inside one repeat; each pathLib row declares
+    //    its g as `zSymmetry`. A numeric guard backs this up for Custom Path and user overrides.
+    // Each strand keeps its own piece splitting (buildWallSolid), so a crossing between two
+    // strands is resolved by the union like any other. Strand 0 is the untouched single sweep.
+
+    // Rotational symmetry order about Z of the active path, or null when the path is not wound
+    // around Z at all (rotated copies of it are not a weave, so Wound Array refuses it).
+    function getPathSymmetry(cfg) {
+        const entry = pathLib[cfg.type] || pathLib["Torus Knot"];
+        if (entry.zSymmetry === null) return null;
+        const g = typeof entry.zSymmetry === 'function' ? entry.zSymmetry(cfg.params || {}) : entry.zSymmetry;
+        return (isFinite(g) && g >= 1) ? Math.round(g) : 1;
+    }
+
+    // Why the requested strand mode cannot be built for this design, or null when it can.
+    function strandProblem(cfg) {
+        const st = cfg.strands;
+        if (!st) return null;
+        if (st.mode === 'wound' && getPathSymmetry(cfg) === null) return `${cfg.type} is not wound around the vertical axis, so Wound Array does not apply (Cable works on any path)`;
+        if (st.mode === 'cable') {
+            if (!(st.cableD > 0)) return 'Cable Spacing must be above 0';
+            // The frames close up after one loop, so a strand circling the guide a fractional
+            // number of times would end half-way round from where it started: an open cable.
+            if (!Number.isInteger(st.cableT)) return 'Cable Twists must be a whole number, or the strands cannot close';
+        }
+        if (st.mode === 'expression' && !cfg.pathExpr) return 'Expression mode draws each strand from the Custom Path equations - select Custom Path';
+        return null;
+    }
+
+    // True only when more than one strand is actually requested AND possible. Everything
+    // multi-strand hangs off this, so with it false the build is the single-strand one untouched.
+    function strandsActive(cfg) {
+        const st = cfg.strands;
+        return !!st && st.mode !== 'off' && st.count > 1 && !strandProblem(cfg);
+    }
+
+    // Cable mode: strand k rides `d` cm off the guide path in its own (rotation-minimizing)
+    // frame, circling it T times per loop, the N strands spaced evenly around it:
+    //   Ck(s) = C(s) + d*cos(2*pi*(T*s + k/N))*n(s) + d*sin(2*pi*(T*s + k/N))*b(s)
+    // with s the fraction of the guide's length. Works on any path - nothing assumes an axis.
+    // The guide's frames already close up after one loop, so an integer T closes each strand.
+    // Tightest bend of a closed polyline: the smallest circumradius through three consecutive
+    // points. A cable strand on the inside of a bend tighter than its spacing passes (nearly)
+    // through the bend's centre and kinks, so Cable mode compares the two.
+    function minBendRadius(pts) {
+        const n = pts.length, ab = new THREE.Vector3(), ac = new THREE.Vector3();
+        let best = Infinity;
+        for (let i = 0; i < n; i++) {
+            const a = pts[(i - 1 + n) % n], b = pts[i], c = pts[(i + 1) % n];
+            const area2 = ab.subVectors(b, a).cross(ac.subVectors(c, a)).length();
+            if (area2 < 1e-12) continue;
+            const r = a.distanceTo(b) * b.distanceTo(c) * c.distanceTo(a) / (2 * area2);
+            if (r < best) best = r;
+        }
+        return isFinite(best) ? best : null;
+    }
+
+    function buildCableSweep(base, k, N, d, T) {
+        const { frames, steps } = base;
+        const cum = [0];
+        for (let i = 0; i < steps; i++) cum.push(cum[i] + frames[i].p.distanceTo(frames[(i + 1) % steps].p));
+        const total = cum[steps] || 1;
+        const pts = [];
+        for (let i = 0; i <= steps; i++) {
+            const f = frames[i % steps], a = 2 * Math.PI * (T * cum[i] / total + k / N);
+            pts.push(f.p.clone().addScaledVector(f.n, d * Math.cos(a)).addScaledVector(f.b, d * Math.sin(a)));
+        }
+        const { tang, norm, bino } = startFrame(pts[0], pts[1]);
+        return sweepFramesFromPoints(pts, steps, tang, norm, bino);
+    }
+
+    function strandStepRad(cfg) {
+        const st = cfg.strands;
+        if (st.stepDeg !== null && isFinite(st.stepDeg)) return THREE.MathUtils.degToRad(st.stepDeg);
+        return 2 * Math.PI / (getPathSymmetry(cfg) * st.count);
+    }
+
+    // Distance from point p to the closed polyline `line` (both flat [x,y,z] rows).
+    function pointToPolylineDist(p, line) {
+        let best = Infinity;
+        for (let i = 0, n = line.length; i < n; i++) {
+            const a = line[i], b = line[(i + 1) % n];
+            const ex = b[0]-a[0], ey = b[1]-a[1], ez = b[2]-a[2];
+            const wx = p[0]-a[0], wy = p[1]-a[1], wz = p[2]-a[2];
+            const ee = ex*ex + ey*ey + ez*ez;
+            const t = ee > 0 ? clampNum((wx*ex + wy*ey + wz*ez) / ee, 0, 1) : 0;
+            const dx = wx - t*ex, dy = wy - t*ey, dz = wz - t*ez;
+            const d = dx*dx + dy*dy + dz*dz;
+            if (d < best) best = d;
+        }
+        return Math.sqrt(best);
+    }
+
+    // Symmetric Hausdorff distance between two closed centrelines (how far apart they are at
+    // their MOST different - zero means the same curve, however each happens to be sampled) and
+    // their closest approach. Point-to-segment, so two samplings of one curve read as ~0 even
+    // when their samples interleave. ~256 probe points per side keeps this a few ms.
+    function compareCenterlines(A, B) {
+        let haus = 0, closest = Infinity;
+        for (const [P, Q] of [[A, B], [B, A]]) {
+            const stride = Math.max(1, Math.floor(P.length / 256));
+            for (let i = 0; i < P.length; i += stride) {
+                const d = pointToPolylineDist(P[i], Q);
+                if (d > haus) haus = d;
+                if (d < closest) closest = d;
+            }
+        }
+        return { haus, closest };
+    }
+
+    // Calls fn(a, i, b, j, d) for every pair of points on DIFFERENT strands closer than h, each
+    // unordered pair once. `flats` holds one Float64Array (x,y,z,x,y,z,...) per strand. A uniform
+    // grid of cell h means only the 27 surrounding cells are ever searched, so this stays close to
+    // linear in the point count instead of comparing every point with every other one.
+    function forEachCrossStrandPair(flats, h, fn) {
+        const key = (x, y, z) => x + ',' + y + ',' + z;
+        const grids = flats.map(f => {
+            const g = new Map();
+            for (let i = 0, n = f.length / 3; i < n; i++) {
+                const k = key(Math.floor(f[i*3] / h), Math.floor(f[i*3+1] / h), Math.floor(f[i*3+2] / h));
+                let cell = g.get(k);
+                if (!cell) g.set(k, cell = []);
+                cell.push(i);
+            }
+            return g;
+        });
+        const h2 = h * h;
+        for (let a = 0; a < flats.length; a++) {
+            const fa = flats[a];
+            for (let b = a + 1; b < flats.length; b++) {
+                const fb = flats[b], gb = grids[b];
+                for (let i = 0, n = fa.length / 3; i < n; i++) {
+                    const x = fa[i*3], y = fa[i*3+1], z = fa[i*3+2];
+                    const cx = Math.floor(x / h), cy = Math.floor(y / h), cz = Math.floor(z / h);
+                    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) for (let dz = -1; dz <= 1; dz++) {
+                        const cell = gb.get(key(cx + dx, cy + dy, cz + dz));
+                        if (!cell) continue;
+                        for (const j of cell) {
+                            const ex = fb[j*3] - x, ey = fb[j*3+1] - y, ez = fb[j*3+2] - z;
+                            const d2 = ex*ex + ey*ey + ez*ez;
+                            if (d2 < h2) fn(a, i, b, j, Math.sqrt(d2));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // ---- Alternating over/under crossings (Multi-Strand phase E) ------------------------------
+    // Where two passes of centreline come close enough to merge - two strands, or two distant
+    // parts of one strand - they are pushed apart instead, one over and one under, alternating
+    // along every strand the way a woven cane does. Three steps:
+    //  1. findCrossings: close pairs of points, clustered into one crossing each and refined to
+    //     the closest points between centreline SEGMENTS (a nearby sample is not a crossing).
+    //     Pairs running nearly parallel are contacts, not crossings (coil turns that fuse into a
+    //     wall, cable strands side by side) and are left to merge.
+    //  2. solveCrossingOrder: one unknown per crossing (is its first passage over?). Along each
+    //     strand consecutive passages must alternate; that is a parity constraint between two
+    //     crossings, so the whole thing is a 2-colouring. A closed chain of crossings with an odd
+    //     parity cannot alternate everywhere - those are counted and reported, never hidden.
+    //  3. displaceCrossings: each passage moves along the crossing's normal (perpendicular to
+    //     both strands, oriented outward from the vertical axis - "over" = outside the wall),
+    //     just far enough that the tubes clear by the requested clearance. The lift is held FLAT
+    //     for as long as the two strands are still too close side by side - strands crossing at
+    //     an angle theta are only 2*d*sin(theta/2) apart a distance d from the crossing, so a
+    //     bump that starts dropping at once lets them touch just off-centre - and only then
+    //     eases out over the Transition Length.
+
+    // Closest points between segments p0-p1 and q0-q1: { s, t, d2 } with s, t in [0, 1].
+    function segmentClosest(p0, p1, q0, q1) {
+        const ux = p1.x-p0.x, uy = p1.y-p0.y, uz = p1.z-p0.z;
+        const vx = q1.x-q0.x, vy = q1.y-q0.y, vz = q1.z-q0.z;
+        const wx = p0.x-q0.x, wy = p0.y-q0.y, wz = p0.z-q0.z;
+        const a = ux*ux+uy*uy+uz*uz, b = ux*vx+uy*vy+uz*vz, c = vx*vx+vy*vy+vz*vz;
+        const d = ux*wx+uy*wy+uz*wz, e = vx*wx+vy*wy+vz*wz;
+        const den = a*c - b*b;
+        let s = den > 1e-12 ? clampNum((b*e - c*d) / den, 0, 1) : 0;
+        let t = c > 1e-12 ? (b*s + e) / c : 0;
+        if (t < 0) { t = 0; s = a > 1e-12 ? clampNum(-d / a, 0, 1) : 0; }
+        else if (t > 1) { t = 1; s = a > 1e-12 ? clampNum((b - d) / a, 0, 1) : 0; }
+        const dx = wx + s*ux - t*vx, dy = wy + s*uy - t*vy, dz = wz + s*uz - t*vz;
+        return { s, t, d2: dx*dx + dy*dy + dz*dz };
+    }
+
+    // `curves`: [{ pts: Vector3[steps] (closed), steps }], `radii`: tube radius per curve.
+    function findCrossings(curves, radii, clr) {
+        const cum = curves.map(cv => { const c = [0]; for (let i = 0; i < cv.steps; i++) c.push(c[i] + cv.pts[i].distanceTo(cv.pts[(i + 1) % cv.steps])); return c; });
+        const rMax = Math.max(...radii);
+        const h = 2 * rMax + clr;
+        const key = (x, y, z) => x + ',' + y + ',' + z;
+        const grids = curves.map(cv => {
+            const g = new Map();
+            cv.pts.forEach((p, i) => { const k = key(Math.floor(p.x / h), Math.floor(p.y / h), Math.floor(p.z / h)); let cell = g.get(k); if (!cell) g.set(k, cell = []); cell.push(i); });
+            return g;
+        });
+        const crossings = [];
+        let contacts = 0;
+        for (let a = 0; a < curves.length; a++) for (let b = a; b < curves.length; b++) {
+            const A = curves[a], B = curves[b], reach = radii[a] + radii[b] + clr, reach2 = reach * reach;
+            const totA = cum[a][A.steps], exclude = Math.max(3 * rMax, 0.02 * totA);
+            // 1a. every close pair (non-local when both points are on the same curve)
+            const cand = new Map();   // "i,j" -> d2
+            for (let i = 0; i < A.steps; i++) {
+                const p = A.pts[i], cx = Math.floor(p.x / h), cy = Math.floor(p.y / h), cz = Math.floor(p.z / h);
+                for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) for (let dz = -1; dz <= 1; dz++) {
+                    const cell = grids[b].get(key(cx + dx, cy + dy, cz + dz));
+                    if (!cell) continue;
+                    for (const j of cell) {
+                        if (a === b) {
+                            if (j <= i) continue;
+                            let arc = Math.abs(cum[a][i] - cum[a][j]); arc = Math.min(arc, totA - arc);
+                            if (arc < exclude) continue;
+                        }
+                        const d2 = p.distanceToSquared(B.pts[j]);
+                        if (d2 < reach2) cand.set(i + ',' + j, d2);
+                    }
+                }
+            }
+            if (!cand.size) continue;
+            // 1b. cluster neighbouring pairs (within 2 samples on both curves, cyclically)
+            const ids = [...cand.keys()], idx = new Map(ids.map((k, n) => [k, n]));
+            const parent = ids.map((_, n) => n);
+            const find = n => { while (parent[n] !== n) { parent[n] = parent[parent[n]]; n = parent[n]; } return n; };
+            ids.forEach((k, n) => {
+                const [i, j] = k.split(',').map(Number);
+                for (let di = -2; di <= 2; di++) for (let dj = -2; dj <= 2; dj++) {
+                    const m = idx.get(((i + di + A.steps) % A.steps) + ',' + ((j + dj + B.steps) % B.steps));
+                    if (m !== undefined) parent[find(m)] = find(n);
+                }
+            });
+            const best = new Map();
+            ids.forEach((k, n) => { const r = find(n), d2 = cand.get(k); if (!best.has(r) || d2 < best.get(r).d2) best.set(r, { k, d2 }); });
+            // 1c. refine each cluster to the closest points between the neighbouring segments
+            for (const { k } of best.values()) {
+                const [i, j] = k.split(',').map(Number);
+                let top = null;
+                for (const ia of [(i - 1 + A.steps) % A.steps, i]) for (const jb of [(j - 1 + B.steps) % B.steps, j]) {
+                    const p0 = A.pts[ia], p1 = A.pts[(ia + 1) % A.steps], q0 = B.pts[jb], q1 = B.pts[(jb + 1) % B.steps];
+                    const r = segmentClosest(p0, p1, q0, q1);
+                    if (!top || r.d2 < top.d2) top = { ...r, ia, jb, p0, p1, q0, q1 };
+                }
+                const tA = new THREE.Vector3().subVectors(top.p1, top.p0).normalize();
+                const tB = new THREE.Vector3().subVectors(top.q1, top.q0).normalize();
+                if (Math.abs(tA.dot(tB)) > Math.cos(THREE.MathUtils.degToRad(30))) { contacts++; continue; }
+                const pA = top.p0.clone().lerp(top.p1, top.s), pB = top.q0.clone().lerp(top.q1, top.t);
+                const n = new THREE.Vector3().crossVectors(tA, tB).normalize();
+                const mid = pA.clone().add(pB).multiplyScalar(0.5), radial = new THREE.Vector3(mid.x, mid.y, 0);
+                if (radial.lengthSq() > 1e-12 && n.dot(radial) < 0) n.negate();
+                const sA = cum[a][top.ia] + top.s * (cum[a][top.ia + 1] - cum[a][top.ia]);
+                const sB = cum[b][top.jb] + top.t * (cum[b][top.jb + 1] - cum[b][top.jb]);
+                const need = radii[a] + radii[b] + clr;
+                const sinHalf = Math.sqrt(Math.max(0, (1 - Math.abs(tA.dot(tB))) / 2));
+                crossings.push({ a, b, sA, sB, pA, pB, n, need, plateau: need / (2 * Math.max(sinHalf, 0.1)) });
+            }
+        }
+        return { crossings, contacts, cum };
+    }
+
+    // x[c] = 1: crossing c's first passage (curve a) goes over. Returns { x, conflicts }.
+    function solveCrossingOrder(crossings, nCurves, parityFlip) {
+        const passages = Array.from({ length: nCurves }, () => []);
+        crossings.forEach((c, id) => { passages[c.a].push({ id, side: 0, s: c.sA }); passages[c.b].push({ id, side: 1, s: c.sB }); });
+        const adj = crossings.map(() => []);
+        const edges = [];
+        for (const list of passages) {
+            list.sort((p, q) => p.s - q.s);
+            if (list.length < 2) continue;
+            for (let k = 0; k < list.length; k++) {
+                const p = list[k], q = list[(k + 1) % list.length];
+                if (list.length === 2 && k === 1) break;          // the same pair again
+                // over(p) != over(q), with over = x XOR side  =>  x_p XOR x_q = 1 XOR side_p XOR side_q
+                const par = 1 ^ p.side ^ q.side;
+                edges.push([p.id, q.id, par]);
+                adj[p.id].push([q.id, par]); adj[q.id].push([p.id, par]);
+            }
+        }
+        const x = new Int8Array(crossings.length).fill(-1);
+        for (let s0 = 0; s0 < crossings.length; s0++) {
+            if (x[s0] !== -1) continue;
+            x[s0] = 1;
+            const queue = [s0];
+            while (queue.length) { const c = queue.shift(); for (const [d, par] of adj[c]) if (x[d] === -1) { x[d] = x[c] ^ par; queue.push(d); } }
+        }
+        let conflicts = 0;
+        for (const [p, q, par] of edges) if ((x[p] ^ x[q]) !== par) conflicts++;
+        if (parityFlip) for (let c = 0; c < x.length; c++) x[c] ^= 1;
+        return { x, conflicts };
+    }
+
+    // Moves each curve's points apart at its crossings and returns new closed point lists.
+    function displaceCrossings(curves, found, x, lenCm) {
+        const { crossings, cum } = found;
+        const disp = curves.map(cv => cv.pts.map(() => new THREE.Vector3()));
+        const passages = Array.from({ length: curves.length }, () => []);
+        let maxLift = 0;
+        crossings.forEach((c, id) => {
+            const aOver = x[id] === 1;
+            const over = aOver ? c.pA : c.pB, under = aOver ? c.pB : c.pA;
+            const gap = new THREE.Vector3().subVectors(over, under).dot(c.n);
+            const delta = Math.max(0, (c.need - gap) / 2);
+            maxLift = Math.max(maxLift, delta);
+            passages[c.a].push({ s: c.sA, sign: aOver ? 1 : -1, delta, n: c.n, P: c.plateau, c });
+            passages[c.b].push({ s: c.sB, sign: aOver ? -1 : 1, delta, n: c.n, P: c.plateau, c });
+        });
+        let cramped = 0;
+        curves.forEach((cv, k) => {
+            const list = passages[k].sort((p, q) => p.s - q.s), tot = cum[k][cv.steps];
+            list.forEach((p, m) => {
+                // Plateau P then transition L, but the whole half-width never more than just under
+                // half the way to the neighbouring passage - two opposite lifts overlapping would
+                // cancel. When it has to shrink, the transition gives way first (down to a third
+                // of the room) and the crossing is counted as cramped.
+                let P = p.P, L = lenCm;
+                if (list.length > 1) {
+                    const prev = list[(m - 1 + list.length) % list.length], next = list[(m + 1) % list.length];
+                    const gp = ((p.s - prev.s) % tot + tot) % tot || tot, gn = ((next.s - p.s) % tot + tot) % tot || tot;
+                    const room = Math.min(0.45 * gp, 0.45 * gn);
+                    if (P + L > room) {
+                        L = Math.max(room - P, room / 3);
+                        if (P > room - L) { P = room - L; if (!p.c.cramped) { p.c.cramped = true; cramped++; } }
+                    }
+                }
+                p.c.reach = Math.max(p.c.reach || 0, P + L);
+                if (!(p.delta > 0)) return;
+                for (let i = 0; i < cv.steps; i++) {
+                    let ds = Math.abs(cum[k][i] - p.s); ds = Math.min(ds, tot - ds);
+                    if (ds >= P + L) continue;
+                    const w = ds <= P ? 1 : 0.5 * (1 + Math.cos(Math.PI * (ds - P) / L));
+                    disp[k][i].addScaledVector(p.n, p.sign * p.delta * w);
+                }
+            });
+        });
+        return { pts: curves.map((cv, k) => cv.pts.map((p, i) => p.clone().add(disp[k][i]))), maxLift, cramped };
+    }
+
+    // Whole pass over the kept strands' sweeps; returns new sweeps plus a report.
+    function alternateCrossings(sweeps, radii, st) {
+        const clr = Math.max(0, st.crossClrMm || 0) / 10;
+        const found = findCrossings(sweeps, radii, clr);
+        if (!found.crossings.length) return { sweeps, report: { crossings: 0, contacts: found.contacts, conflicts: 0, maxLift: 0, minClear: null } };
+        const { x, conflicts } = solveCrossingOrder(found.crossings, sweeps.length, st.crossParity === 1);
+        const { pts, maxLift, cramped } = displaceCrossings(sweeps, found, x, Math.max(0.1, st.crossLenCm || 3));
+        const out = pts.map((list, k) => {
+            const closed = list.concat([list[0].clone()]);
+            const { tang, norm, bino } = startFrame(closed[0], closed[1]);
+            return sweepFramesFromPoints(closed, sweeps[k].steps, tang, norm, bino);
+        });
+        // What the move actually achieved: the smallest tube-surface clearance anywhere in each
+        // crossing's lifted zone (segment to segment, both strands), not just at its centre.
+        let minClear = Infinity;
+        for (const c of found.crossings) {
+            const A = out[c.a], B = out[c.b];
+            const near = (cv, p) => { let bi = 0, bd = Infinity; cv.pts.forEach((q, i) => { const d = q.distanceToSquared(p); if (d < bd) { bd = d; bi = i; } }); return bi; };
+            const i0 = near(A, c.pA), j0 = near(B, c.pB);
+            const seg = (cv, i) => cv.pts[i].distanceTo(cv.pts[(i + 1) % cv.steps]) || 1e-3;
+            const W = Math.min(80, Math.ceil((c.reach || c.plateau) / Math.min(seg(A, i0), seg(B, j0))) + 2);
+            let d2 = Infinity;
+            for (let di = -W; di <= W; di++) for (let dj = -W; dj <= W; dj++) {
+                const ia = ((i0 + di) % A.steps + A.steps) % A.steps, jb = ((j0 + dj) % B.steps + B.steps) % B.steps;
+                if (c.a === c.b) { let arc = Math.abs(ia - jb); arc = Math.min(arc, A.steps - arc); if (arc < 3) continue; }
+                d2 = Math.min(d2, segmentClosest(A.pts[ia], A.pts[(ia + 1) % A.steps], B.pts[jb], B.pts[(jb + 1) % B.steps]).d2);
+            }
+            minClear = Math.min(minClear, Math.sqrt(d2) - (c.need - clr));
+        }
+        return { sweeps: out, report: { crossings: found.crossings.length, contacts: found.contacts, conflicts, cramped, maxLift, minClear, clr } };
+    }
+
+    // One buildRings result per DISTINCT strand, plus an aggregate standing in for R wherever
+    // buildMesh only needs whole-model facts (height range, debris, profile size).
+    function buildStrandSet(cfg) {
+        const st = cfg.strands, N = st.count;
+        const step = st.mode === 'wound' ? strandStepRad(cfg) : null;
+        const sweeps = [];
+        let guideMinBend = null;
+        if (st.mode === 'cable') {
+            const base = buildSweepFrames(cfg);
+            guideMinBend = minBendRadius(base.pts);
+            for (let k = 0; k < N; k++) sweeps.push(buildCableSweep(base, k, N, st.cableD, st.cableT));
+        } else if (st.mode === 'expression') {
+            for (let k = 0; k < N; k++) sweeps.push(buildSweepFrames(cfg, { expr: { k, N } }));
+        } else {
+            // Counter-wind: strands 2, 4, ... (odd k) are the mirror image - the other hand.
+            for (let k = 0; k < N; k++) {
+                sweeps.push(buildSweepFrames(cfg, k ? { phi: k * step, dz: k * (st.zOffCm || 0), dr: k * (st.rOffCm || 0), mirror: !!st.counterWind && k % 2 === 1 } : undefined));
+            }
+        }
+        const profileMaxR = Math.max(...sampleProfileR(cfg.eq, cfg.radialRes).map(r => Math.max(0.01, r)));
+        // Alternate Strand Profile Scale: strands 2, 4, ... (odd k) get their profile scaled.
+        const alt = st.altScale > 0 && st.altScale !== 1 ? st.altScale : null;
+        const scaleOf = k => (alt && k % 2 === 1) ? alt : null;
+        const maxR = profileMaxR * (alt ? Math.max(1, alt) : 1);
+        const rows = sweeps.map(sw => sw.pts.map(p => [p.x, p.y, p.z]));
+
+        // Coincidence guard, run on the bare centrelines BEFORE any rings exist: a strand lying on
+        // top of one already kept adds nothing but a pile of exactly coincident tubes for the CSG
+        // union (and in Pinch mode would squeeze its twin to nothing), so it is left out and
+        // reported. Distances are rotation-invariant, so the unrotated points will do.
+        const lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
+        for (const p of rows[0]) for (let a = 0; a < 3; a++) { lo[a] = Math.min(lo[a], p[a]); hi[a] = Math.max(hi[a], p[a]); }
+        const tol = Math.max(0.25 * profileMaxR, 1e-3 * Math.hypot(hi[0]-lo[0], hi[1]-lo[1], hi[2]-lo[2]));
+        const kept = [0], dropped = [];
+        let closest = Infinity;
+        for (let k = 1; k < N; k++) {
+            let dup = -1, near = Infinity;
+            for (const j of kept) {
+                const cmp = compareCenterlines(rows[k], rows[j]);
+                if (cmp.haus < tol) { dup = j; break; }
+                near = Math.min(near, cmp.closest);
+            }
+            if (dup >= 0) dropped.push({ strand: k, same: dup });
+            else { kept.push(k); closest = Math.min(closest, near); }
+        }
+        let keptSweeps = kept.map(k => sweeps[k]);
+
+        // Alternating over/under: separate every crossing BEFORE anything below measures the
+        // strands, so pinch, rings and the readout all see the lifted centrelines.
+        let crossReport = null;
+        if (st.crossMode === 'alternate' && keptSweeps.length > 1) {
+            const alt0 = alternateCrossings(keptSweeps, kept.map(k => profileMaxR * (scaleOf(k) || 1)), st);
+            keptSweeps = alt0.sweeps;
+            crossReport = alt0.report;
+            if (crossReport.crossings) {
+                const lifted = keptSweeps.map(sw => sw.pts.map(q => [q.x, q.y, q.z]));
+                closest = Infinity;
+                for (let a = 0; a < lifted.length; a++) for (let b = a + 1; b < lifted.length; b++) closest = Math.min(closest, compareCenterlines(lifted[a], lifted[b]).closest);
+            }
+        }
+
+        // Pinch mode: each ring must also stay clear of the OTHER strands, not just of its own
+        // arms, or strands interpenetrate in the one mode whose whole point is that they do not.
+        // Only a distance under `reach` can ever lower the cap (0.45 * d against the profile
+        // radius), so farther pairs are never even looked at.
+        let crossMinDist = null;
+        if (cfg.avoidSelfIntersect && keptSweeps.length > 1) {
+            crossMinDist = keptSweeps.map(sw => new Float64Array(sw.steps).fill(Infinity));
+            const flats = keptSweeps.map(sw => Float64Array.from(sw.pts.flatMap(p => [p.x, p.y, p.z])));
+            const reach = 2.5 * maxR + 1;
+            forEachCrossStrandPair(flats, reach, (a, i, b, j, d) => {
+                if (d < crossMinDist[a][i]) crossMinDist[a][i] = d;
+                if (d < crossMinDist[b][j]) crossMinDist[b][j] = d;
+            });
+        }
+
+        // Texture v spans the centre height of ALL strands (see buildRings).
+        const rot = makeRotationMatrix(cfg.rotX, cfg.rotY, cfg.rotZ);
+        const tmp = new THREE.Vector3();
+        let zMin = Infinity, zMax = -Infinity;
+        for (const sw of keptSweeps) for (const f of sw.frames) {
+            tmp.copy(f.p); if (rot) tmp.applyMatrix4(rot);
+            if (tmp.z < zMin) zMin = tmp.z;
+            if (tmp.z > zMax) zMax = tmp.z;
+        }
+        const strands = keptSweeps.map((sweep, k) => buildRings(cfg, { sweep, texZRange: [zMin, zMax], crossMinDist: crossMinDist ? crossMinDist[k] : null, profileScale: scaleOf(kept[k]), strand: { k, N: keptSweeps.length } }));
+        strands.forEach((Rk, k) => { Rk.strandIndex = k; });
+        const agg = {
+            minZ: Math.min(...strands.map(R => R.minZ)), maxZ: Math.max(...strands.map(R => R.maxZ)),
+            profileMaxR: Math.max(...strands.map(R => R.profileMaxR)), debris: 0, debrisFrac: strands[0].debrisFrac
+        };
+        const info = {
+            mode: st.mode, requested: N, built: strands.length, g: getPathSymmetry(cfg),
+            stepDeg: step === null ? null : THREE.MathUtils.radToDeg(step), dropped,
+            closest: isFinite(closest) ? closest : null, strandDia: 2 * profileMaxR,
+            pinchedCross: !!crossMinDist, guideMinBend, maxProfileR: agg.profileMaxR, crossReport
+        };
+        return { strands, agg, info };
+    }
+
+    // One wall (`which` = 'outer' | 'inner') of every strand, unioned. Debris removed while
+    // building each strand's wall is carried into the aggregate count. With `keepEach`, the
+    // per-strand solids are handed back too (the caller then owns them) - Colour by Strand needs
+    // them after the cuts to decide which strand each piece of the finished pot belongs to.
+    function buildStrandWalls(S, which, keepEach) {
+        const { Manifold } = window.CSG;
+        const walls = S.strands.map(Rk => {
+            const before = Rk.debris;
+            const w = buildWallSolid(Rk[which], Rk);
+            S.agg.debris += Rk.debris - before;
+            return w;
+        });
+        if (walls.length === 1) return keepEach ? { solid: walls[0], each: [] } : walls[0];
+        const solid = Manifold.union(walls);
+        if (keepEach) return { solid, each: walls };
+        walls.forEach(w => w.delete());
+        return solid;
+    }
+
+    // Extra cleaning across strands: every strand's own overlap zones plus the zones where two
+    // DIFFERENT strands' tubes touch, grouped and boxed by the same routine as the single sweep
+    // (overlapBoxesCore), run over all strands' rings laid end to end.
+    function strandOverlapBoxes(S, t, e) {
+        const centers = [], touching = [], next = [], starts = [];
+        for (const Rk of S.strands) {
+            const off = centers.length;
+            starts.push(off);
+            for (let i = 0; i < Rk.steps; i++) { centers.push(Rk.centers[i]); next.push(off + (i + 1) % Rk.steps); }
+            for (const idx of Rk.touching) touching.push(off + idx);
+        }
+        const touchDist = 2 * S.agg.profileMaxR + 0.05;   // the same contact test as computeRingProximity
+        const flats = S.strands.map(Rk => { const f = new Float64Array(Rk.steps * 3); Rk.centers.forEach((c, i) => f.set(c, i * 3)); return f; });
+        forEachCrossStrandPair(flats, touchDist, (a, i, b, j) => touching.push(starts[a] + i, starts[b] + j));
+        return overlapBoxesCore(centers, touching, S.agg.profileMaxR, centers.length, i => next[i], t, e);
+    }
+
+    // Colour by Strand: the finished pot split into one part per strand. Where strands merge, the
+    // material belongs to the FIRST strand that contains it. Every part - the last one included -
+    // is cut out WITH its strand's solid rather than being "whatever is left": the pot's surface
+    // is made of those same strand surfaces, so the leftover after subtracting the earlier strands
+    // carries hundreds of zero-thickness slivers along them, which intersecting discards. The
+    // pot never extends outside the union of its strands, so nothing real is lost. Parts reuse
+    // the colour layer's four states - and so its four colour chips and every exporter:
+    // strand 1 = Base, 2 = Pattern A, 3 = Pattern B, 4 = Overlap, then round again.
+    function buildStrandColourParts(result, walls, keep) {
+        const parts = [];
+        let rest = result;
+        for (let k = 0; k < walls.length; k++) {
+            const piece = keep(rest.intersect(walls[k]));
+            if (k < walls.length - 1) rest = keep(rest.subtract(walls[k]));
+            const m = piece.getMesh();
+            if (m.triVerts.length) parts.push({ state: k % 4, positions: Float32Array.from(m.vertProperties), indices: Uint32Array.from(m.triVerts) });
+        }
+        return parts;
+    }
+
+    function strandColoursActive(cfg) {
+        return strandsActive(cfg) && !!cfg.strands.colourByStrand;
+    }
+
+    // Whether this design has a colour pass at all - the Dual Pattern layer or, with several
+    // strands, Colour by Strand. The worker / banner / export pipeline keys on this.
+    function colourLayerActive(cfg) {
+        return patternActive(cfg) || strandColoursActive(cfg);
+    }
+
+    // A cable strand on the inside of a bend of radius R follows a bend of radius R - d; once that
+    // is tighter than its own tube radius r the tube folds through itself (and at d >= R the
+    // strand passes through the bend's centre). So the cable is sound while d + r < R.
+    function cableKinks(st, info) {
+        return st.mode === 'cable' && info && info.guideMinBend !== null && st.cableD + info.maxProfileR >= info.guideMinBend;
+    }
+
+    // Status-line fragment for the Multi-Strand tool ('' when it is off).
+    function getStrandNote(cfg, info) {
+        const st = cfg.strands;
+        if (!st || st.mode === 'off' || st.count <= 1) return '';
+        const problem = strandProblem(cfg);
+        if (problem) return ` · Multi-Strand: ${problem} - built as one strand`;
+        if (!info) return '';
+        let note = ` · ${info.built}${info.built < info.requested ? '/' + info.requested : ''} strands`
+            + (st.mode === 'wound' ? ` @ ${info.stepDeg.toFixed(1)}°${st.counterWind ? ', counter-wound' : ''}`
+                : st.mode === 'cable' ? ` cabled (${st.cableT} twists, ${st.cableD} cm)` : ' from the Custom Path expressions');
+        const cr = info.crossReport;
+        if (cr) {
+            note += cr.crossings
+                ? ` · ${cr.crossings} crossings over/under (lifted up to ${cr.maxLift.toFixed(2)} cm${cr.minClear !== null ? `, clearance ≥ ${(10 * cr.minClear).toFixed(1)} mm` : ''})`
+                : ' · no crossings close enough to separate';
+            if (cr.conflicts) note += ` · ${cr.conflicts} place${cr.conflicts > 1 ? 's' : ''} where the order cannot alternate (an odd loop of crossings) - two unders or two overs follow each other there`;
+            // A shortened lift only matters if it actually cost clearance.
+            if (cr.cramped && cr.minClear !== null && cr.minClear < cr.clr - 0.005) note += ` · crossings sit too close together for a full lift, so the tubes clear by less than asked - thin the profile, lower the clearance or shorten the Transition Length`;
+        }
+        if (cableKinks(st, info)) {
+            note += ` · the path bends as tightly as ${info.guideMinBend.toFixed(2)} cm radius - a strand on the inside of that bend is folded tighter than its own tube and kinks (keep Cable Spacing + profile radius under ${info.guideMinBend.toFixed(2)} cm, or raise Path Diam)`;
+        }
+        if (info.dropped.length) {
+            // g = 1 means none was declared (Custom Path), so the path's real repeat is unknown.
+            const hint = st.mode === 'expression' ? 'the equations do not use strand or sp, so those strands are the same curve'
+                : st.mode === 'cable' ? 'Cable Spacing is too small to tell them apart'
+                : info.g > 1 ? `use a step that is not a multiple of ${(360 / info.g).toFixed(1)}°`
+                : 'the path repeats under that turn - try another Strand Count or a Rotation Step Override';
+            note += ` · ${info.dropped.map(d => `strand ${d.strand + 1} coincides with strand ${d.same + 1}`).join(', ')} - left out (${hint})`;
+        }
+        const hasMasks = (cfg.patternEq1 || '-1').trim() !== '-1' || (cfg.patternEq2 || '-1').trim() !== '-1';
+        if (hasMasks && cfg.patternDepthCm > 1e-4 && st.colourByStrand) note += ' · pattern layer replaced by Colour by Strand';
+        if (info.pinchedCross) note += ' · pinched against other strands';
+        return note;
     }
 
     // Closed solid for one run of rings a..b (indices wrap around the loop), or for the whole
@@ -1018,6 +1752,11 @@
     // than boxing whole tube cross-sections. Boxes that still overlap are merged.
     function overlapBoxes(R, t, e) {
         const { centers, touching, profileMaxR, steps } = R;
+        return overlapBoxesCore(centers, touching, profileMaxR, steps, i => (i + 1) % steps, t, e);
+    }
+    // The grouping itself, over any set of `steps` rings whose path neighbour is next(i) - one
+    // closed sweep above, or several strands laid end to end (strandOverlapBoxes).
+    function overlapBoxesCore(centers, touching, profileMaxR, steps, next, t, e) {
         if (!touching.length) return [];
         const parent = new Int32Array(steps);
         for (let i = 0; i < steps; i++) parent[i] = i;
@@ -1027,7 +1766,7 @@
             parent[find(touching[k])] = find(touching[k+1]);
             isTouching[touching[k]] = 1; isTouching[touching[k+1]] = 1;
         }
-        for (let i = 0; i < steps; i++) if (isTouching[i] && isTouching[(i+1) % steps]) parent[find(i)] = find((i+1) % steps);
+        for (let i = 0; i < steps; i++) if (isTouching[i] && isTouching[next(i)]) parent[find(i)] = find(next(i));
         const pad = t + 3 * e, R2 = profileMaxR * profileMaxR;
         const byRoot = new Map();
         for (let k = 0; k < touching.length; k += 2) {
@@ -1861,14 +2600,29 @@
                     radialRes: Math.max(cfg.radialRes, cfg.patternResT)
                 });
             }
-            const R = buildRings(cfg);
-            const outer = keep(buildWallSolid(R.outer, R));
-            let inner = cfg.doHollow ? keep(buildWallSolid(R.inner, R)) : null;
+            // Multi-Strand: S holds every strand's rings and R becomes their aggregate, which
+            // is all the code below needs; the colour layer is handed S itself so it can lay one
+            // grid per strand.
+            const S = strandsActive(cfg) ? buildStrandSet(cfg) : null;
+            const R = S ? S.agg : buildRings(cfg);
+            // Colour by Strand keeps each strand's own outer solid for the split at the end.
+            const strandColours = withColors && S && strandColoursActive(cfg);
+            let strandWalls = null, outer;
+            if (S && strandColours) {
+                const w = buildStrandWalls(S, 'outer', true);
+                outer = keep(w.solid);
+                strandWalls = w.each.map(keep);
+            } else {
+                outer = keep(S ? buildStrandWalls(S, 'outer') : buildWallSolid(R.outer, R));
+            }
+            let inner = cfg.doHollow ? keep(S ? buildStrandWalls(S, 'inner') : buildWallSolid(R.inner, R)) : null;
             // Optional (slower) extra cleaning in merge mode: replace the per-arm cavity inside
             // every self-overlap zone with the true offset of the merged outer surface, which
             // removes the thin blades left between nearly-touching arm cavities. Pinch mode
             // never overlaps, so there is nothing to do there.
-            const boxes = inner && cfg.extraClean && !cfg.avoidSelfIntersect ? overlapBoxes(R, cfg.shellThick, shellFieldSpacing(cfg.shellThick)) : [];
+            const boxes = !(inner && cfg.extraClean && !cfg.avoidSelfIntersect) ? []
+                : S ? strandOverlapBoxes(S, cfg.shellThick, shellFieldSpacing(cfg.shellThick))
+                : overlapBoxes(R, cfg.shellThick, shellFieldSpacing(cfg.shellThick));
             if (boxes.length) {
                 const { boxSolid, patch } = buildTrueCavityPatch(outer, boxes, cfg.shellThick);
                 inner = keep(inner.subtract(keep(boxSolid)));
@@ -1905,13 +2659,20 @@
             R.debris += cleaned.removed;
 
             let patternParts = null, patternClamped = false, patternNote = null, patternDroppedMaskB = null;
-            if (withColors && patternActive(cfg)) {
+            if (strandWalls && strandWalls.length) {
+                buildPhase('strand colours');
+                patternParts = buildStrandColourParts(result, strandWalls, keep);
+                if (scale !== 1) for (const part of patternParts) for (let i = 0; i < part.positions.length; i++) part.positions[i] *= scale;
+            } else if (withColors && patternActive(cfg)) {
                 buildPhase('colour layer');
                 const wallCap = cfg.doHollow ? Math.max(0, cfg.shellThick - 0.02) : Infinity;
-                const depthCm = Math.max(0, Math.min(cfg.patternDepthCm, wallCap, 0.45 * R.profileMaxR));
+                // With strands of different sizes (Alternate Strand Profile Scale) the thinnest
+                // one bounds how deep the colour skin may go.
+                const thinR = S ? Math.min(...S.strands.map(Rk => Rk.profileMaxR)) : R.profileMaxR;
+                const depthCm = Math.max(0, Math.min(cfg.patternDepthCm, wallCap, 0.45 * thinR));
                 patternClamped = depthCm < cfg.patternDepthCm - 1e-6;
                 if (depthCm > 1e-4) {
-                    const attempt = buildPatternPartsOrFallback(cfg, R, result, depthCm);
+                    const attempt = buildPatternPartsOrFallback(cfg, R, result, depthCm, S);
                     patternParts = attempt.parts;
                     patternNote = attempt.reason;
                     patternDroppedMaskB = attempt.droppedMaskB || null;
@@ -1944,13 +2705,15 @@
             geo.setIndex(new THREE.BufferAttribute(Uint32Array.from(mesh.triVerts), 1));
             geo.computeVertexNormals();
             geo.userData.debrisRemoved = R.debris;
+            geo.userData.strandInfo = S ? S.info : null;
             geo.userData.patternParts = patternParts;
             geo.userData.patternClamped = patternClamped;
             geo.userData.patternNote = patternNote;
             geo.userData.patternDroppedMaskB = patternDroppedMaskB;
             geo.userData.plateParts = plateParts;
             geo.userData.vaseFloorZ = vaseFloorZ !== null ? vaseFloorZ * scale : null;
-            geo.userData.colored = withColors || !patternActive(cfg);
+            geo.userData.colored = withColors || !colourLayerActive(cfg);
+            geo.userData.strandColoured = !!(strandWalls && strandWalls.length);
             return geo;
         } finally {
             trash.forEach(m => m.delete());
@@ -1958,7 +2721,7 @@
     }
 
     function getFullHeightCm(cfg) {
-        const R = buildRings(cfg);
+        const R = strandsActive(cfg) ? buildStrandSet(cfg).agg : buildRings(cfg);
         return R.maxZ - R.minZ;
     }
 
@@ -1975,7 +2738,10 @@
 
     const PATTERN_EXPR_ARGS = ['theta','u','s','v','x','y','z','R','r','len',
         'pi','sin','cos','tan','asin','acos','atan','atan2','sinh','cosh','tanh','sqrt','pow','abs','min','max','exp','log',
-        'floor','ceil','round','sign','mod','hypot','smoothstep','clamp','cnoise','fbm','ridged','worley','phyllo'];
+        'floor','ceil','round','sign','mod','hypot','smoothstep','clamp','cnoise','fbm','ridged','worley','phyllo',
+        // Multi-Strand: which strand the point is on (0-based) and how many were built - 0 and 1
+        // on a single-strand design, so every existing equation evaluates exactly as before.
+        'strand','strands'];
     const patternExprCache = new Map();
     function compilePatternExpr(src) {
         const key = (typeof src === 'string' && src.trim()) ? src : '-1';
@@ -1987,13 +2753,13 @@
         patternExprCache.set(key, fn);
         return fn;
     }
-    function evalPatternMask(fn, theta, u, s, v, x, y, z, R, r, len) {
+    function evalPatternMask(fn, theta, u, s, v, x, y, z, R, r, len, strand = 0, strands = 1) {
         try {
             const val = fn(theta, u, s, v, x, y, z, R, r, len,
                 Math.PI, Math.sin, Math.cos, Math.tan, Math.asin, Math.acos, Math.atan, Math.atan2,
                 Math.sinh, Math.cosh, Math.tanh, Math.sqrt, Math.pow, Math.abs, Math.min, Math.max, Math.exp, Math.log,
                 Math.floor, Math.ceil, Math.round, Math.sign, modFn, Math.hypot, smoothstepFn, clampNum,
-                cnoise, fbm, ridged, worley, phyllo);
+                cnoise, fbm, ridged, worley, phyllo, strand, strands);
             return (typeof val === 'number' && isFinite(val)) ? val : -1;
         } catch (e) { return -1; }
     }
@@ -2258,8 +3024,10 @@
         updatePreview();
     }
 
+    // Off only while Multi-Strand's Colour by Strand is in use - that owns the four colour
+    // states instead. With several strands otherwise, the masks run on one grid per strand.
     function patternActive(cfg) {
-        return cfg.patternDepthCm > 1e-4 &&
+        return !strandColoursActive(cfg) && cfg.patternDepthCm > 1e-4 &&
             ((cfg.patternEq1 || '-1').trim() !== '-1' || (cfg.patternEq2 || '-1').trim() !== '-1');
     }
 
@@ -2325,7 +3093,10 @@
     // grid that could ever look coarser or misaligned ("pixelated") next to it. rGrid already has
     // the pinch clamp and Surface Texture baked in (see buildRings), so neither is recomputed
     // here. `top` sits just outside each node's radius, `bot` just inside (radius - depth).
-    function buildPatternGrid(cfg, R, depthCm) {
+    // `ctx` (Multi-Strand only): { strand, strands, zRange: [min, max] } - the strand this grid
+    // lies on, and the height range of the WHOLE piece, so v means the same height on every
+    // strand and horizontal bands line up across them.
+    function buildPatternGrid(cfg, R, depthCm, ctx) {
         const Nu = R.steps, Nt = R.resR;
         const { frames, rot, rGrid, profile } = R;
         const totalLen = R.prox.totalLen || 1;
@@ -2356,6 +3127,8 @@
             top.push(topRow); bot.push(botRow); worldPt.push(midRow);
         }
 
+        if (ctx && ctx.zRange) [minZ, maxZ] = ctx.zRange;
+        const strand = ctx ? ctx.strand : 0, strands = ctx ? ctx.strands : 1;
         const zRange = Math.max(1e-6, maxZ - minZ);
         const eq1 = compilePatternExpr(cfg.patternEq1), eq2 = compilePatternExpr(cfg.patternEq2);
         const fieldA = [], fieldB = [], uRow = new Float64Array(Nu), sRow = new Float64Array(Nu);
@@ -2368,14 +3141,14 @@
                 const x = worldPt[iu][jt*3], y = worldPt[iu][jt*3+1], z = worldPt[iu][jt*3+2];
                 const v = (z - minZ) / zRange;
                 const r = rGrid[iu][jt];
-                rowA[jt] = evalPatternMask(eq1, theta, u, s, v, x, y, z, profile[jt], r, totalLen);
-                rowB[jt] = evalPatternMask(eq2, theta, u, s, v, x, y, z, profile[jt], r, totalLen);
+                rowA[jt] = evalPatternMask(eq1, theta, u, s, v, x, y, z, profile[jt], r, totalLen, strand, strands);
+                rowB[jt] = evalPatternMask(eq2, theta, u, s, v, x, y, z, profile[jt], r, totalLen, strand, strands);
             }
             fieldA.push(rowA); fieldB.push(rowB);
         }
         // Everything the smooth builder needs to re-evaluate a mask at an arbitrary point of the
         // (u, theta) domain (see buildSmoothPatternMeshes' records) travels with the grid.
-        return { Nu, Nt, top, bot, fieldA, fieldB, worldPt, uRow, sRow, profile, rGrid, eq1, eq2, minZ, zRange, totalLen };
+        return { Nu, Nt, top, bot, fieldA, fieldB, worldPt, uRow, sRow, profile, rGrid, eq1, eq2, minZ, zRange, totalLen, strand, strands };
     }
 
     // Normally a corner's state is a straight (A>0)+(B>0) sum, and "neither" (0) is a real,
@@ -2579,7 +3352,7 @@
     // reassignment as cellState's no-neither branch, just carried out geometrically here instead
     // of numerically (see emitState/emitTriangle for how the fa=0 edge stops being a real wall).
     function buildSmoothPatternMeshes(grid, refineLevel, noNeither) {
-        const { Nu, Nt, top, bot, worldPt, uRow, sRow, profile, rGrid, eq1, eq2, minZ, zRange, totalLen } = grid;
+        const { Nu, Nt, top, bot, worldPt, uRow, sRow, profile, rGrid, eq1, eq2, minZ, zRange, totalLen, strand, strands } = grid;
         const fA = nearZeroFixWrap(grid.fieldA, Nu, Nt);
         const fB = nearZeroFixWrap(grid.fieldB, Nu, Nt);
         const TWO_PI = 2 * Math.PI, EMPTY = [];
@@ -2605,7 +3378,7 @@
             const th = rec.th - Math.floor(rec.th / TWO_PI) * TWO_PI;
             const u = rec.u - Math.floor(rec.u), s = rec.s - Math.floor(rec.s);
             const z = rec.w[2];
-            return evalPatternMask(key === 'fa' ? eq1 : eq2, th, u, s, (z - minZ) / zRange, rec.w[0], rec.w[1], z, rec.pr, rec.rr, totalLen);
+            return evalPatternMask(key === 'fa' ? eq1 : eq2, th, u, s, (z - minZ) / zRange, rec.w[0], rec.w[1], z, rec.pr, rec.rr, totalLen, strand, strands);
         }
         // Same guard nearZeroFixWrap gives the grid nodes: a vertex reading exactly 0 would be
         // taken for a contour vertex by the wall detection in emitState.
@@ -2790,8 +3563,19 @@
     // status line only ever said "pattern: N parts" when it worked - on failure it said nothing at
     // all and the pot came out in the base colour with no explanation. `parts` is null exactly
     // when `reason` is set.
-    function buildPatternParts(cfg, R, result, depthCm) {
+    //
+    // Multi-Strand (`S` given): one grid per strand, so u runs 0 -> 1 along EACH strand and the
+    // pattern repeats per strand. Each state's prism is the union of that state's prism on every
+    // strand, and everything is trimmed by the union of every strand's inset solid - the same
+    // job the single sweep's inset does at its own crossings: where one strand is buried inside
+    // another, its colour skin lies deeper than the colour depth below the other's surface and
+    // is cut away there, instead of leaving coloured pieces inside the wall. With one strand
+    // (S absent) the booleans below are exactly the single-sweep ones.
+    function buildPatternParts(cfg, R, result, depthCm, S) {
         const { Manifold, Mesh } = window.CSG;
+        const Rs = S ? S.strands : [R];
+        const multi = Rs.length > 1;
+        const unionOf = solids => solids.length === 1 ? solids[0] : keep(Manifold.union(solids));
         const trash = [];
         const keep = m => { trash.push(m); return m; };
         // Keeps the FIRST reason, not the last: the three states are tried in order, and when all
@@ -2811,18 +3595,27 @@
         const STATE_NAME = { 1: 'mask A', 2: 'mask B', 3: 'the A+B overlap' };
         try {
             buildPhase('colour inset');
-            const insetSolid = keep(buildInsetSolid(cfg, R, depthCm));
+            const insetSolid = unionOf(Rs.map(Rk => keep(buildInsetSolid(cfg, Rk, depthCm))));
             buildPhase('colour grid');
-            const grid = buildPatternGrid(cfg, R, depthCm);
+            const zRange = multi ? [S.agg.minZ, S.agg.maxZ] : null;
+            const grids = Rs.map((Rk, k) => buildPatternGrid(cfg, Rk, depthCm, multi ? { strand: k, strands: Rs.length, zRange } : undefined));
             const noNeither = bothPatternsActive(cfg);
             buildPhase('colour edges');
-            const raw = cfg.smoothPatternEdges ? buildSmoothPatternMeshes(grid, cfg.boundaryRefine, noNeither) : buildSteppedPatternMeshes(grid, noNeither);
+            const raws = grids.map(grid => cfg.smoothPatternEdges ? buildSmoothPatternMeshes(grid, cfg.boundaryRefine, noNeither) : buildSteppedPatternMeshes(grid, noNeither));
             buildPhase('colour prisms');
+            const onStrand = k => multi ? ` on strand ${k + 1}` : '';
+            // Per strand, a state missing from THAT strand is not a failure either (another strand
+            // may carry it) - but a region that exists and will not close names its strand.
+            const statePrism = (state, name) => {
+                const solids = [];
+                raws.forEach((raw, k) => { const m = toSolid(raw[state], name + onStrand(k)); if (m) solids.push(m); });
+                return solids.length ? unionOf(solids) : null;
+            };
             const cutters = [];
             // A state that simply is not present in this design is not a failure, so the
             // per-state reason is only interesting if NOTHING usable comes out below.
             for (const k of [1, 2, 3]) {
-                const prism = toSolid(raw[k], STATE_NAME[k]);
+                const prism = statePrism(k, STATE_NAME[k]);
                 if (prism) cutters.push({ state: k, solid: keep(prism.subtract(insetSolid)) });
             }
             if (!cutters.length) return { parts: null, reason: failure || 'no mask region produced a usable solid' };
@@ -2843,7 +3636,7 @@
                 parts.push(meshOf(cutters[0].state, insert));
                 base = rest;
             } else {
-                const prismAll = toSolid(raw.all, 'the merged all-masks');
+                const prismAll = statePrism('all', 'the merged all-masks');
                 if (!prismAll) return { parts: null, reason: failure };
                 base = keep(result.subtract(keep(prismAll.subtract(insetSolid))));
                 for (const c of cutters) {
@@ -2869,11 +3662,11 @@
     // insert has to meet its neighbours on exact planes. When that fails, mask A on its own
     // almost always still builds - so build it, rather than dropping the whole colour layer and
     // handing back a plain pot. The caller reports which of the two happened.
-    function buildPatternPartsOrFallback(cfg, R, result, depthCm) {
-        const first = buildPatternParts(cfg, R, result, depthCm);
+    function buildPatternPartsOrFallback(cfg, R, result, depthCm, S) {
+        const first = buildPatternParts(cfg, R, result, depthCm, S);
         if (first.parts || !bothPatternsActive(cfg)) return first;
         const soloCfg = Object.assign({}, cfg, { patternEq2: '-1' });
-        const solo = buildPatternParts(soloCfg, R, result, depthCm);
+        const solo = buildPatternParts(soloCfg, R, result, depthCm, S);
         if (!solo.parts) return { parts: null, reason: first.reason };
         return { parts: solo.parts, reason: null, droppedMaskB: first.reason };
     }
@@ -2945,8 +3738,89 @@
             vaseTopDiameter: Math.max(0, parseFloat(document.getElementById('vaseTopDiameter')?.value) || 0),
             vaseHeight: Math.max(0.02, parseFloat(document.getElementById('vaseHeight')?.value) || 0.02),
             vaseInsertOffsetCm: Math.max(0, (parseFloat(document.getElementById('vaseInsertOffsetMm')?.value) || 0) / 10),
-            vaseWallCm: Math.max(0.01, (parseFloat(document.getElementById('vaseWallMm')?.value) || 0) / 10)
+            vaseWallCm: Math.max(0.01, (parseFloat(document.getElementById('vaseWallMm')?.value) || 0) / 10),
+            strands: readStrandCfg()
         };
+    }
+
+    function readStrandCfg() {
+        const stepSrc = (document.getElementById('strandStepDeg')?.value ?? '').trim();
+        const step = parseFloat(stepSrc);
+        return {
+            mode: document.getElementById('strandMode')?.value || 'off',
+            count: clampNum(parseInt(document.getElementById('strandCount')?.value) || 1, 1, 8),
+            stepDeg: stepSrc !== '' && isFinite(step) ? step : null,
+            zOffCm: parseFloat(document.getElementById('strandZOffCm')?.value) || 0,
+            rOffCm: parseFloat(document.getElementById('strandROffCm')?.value) || 0,
+            counterWind: document.getElementById('strandCounterWind')?.checked ?? false,
+            // Kept exactly as typed (not rounded), so a fractional twist count is refused rather
+            // than quietly built as a different cable.
+            cableD: parseFloat(document.getElementById('strandCableD')?.value) || 0,
+            cableT: parseFloat(document.getElementById('strandCableT')?.value) || 0,
+            altScale: parseFloat(document.getElementById('strandAltScale')?.value) > 0 ? parseFloat(document.getElementById('strandAltScale').value) : 1,
+            crossMode: document.getElementById('strandCrossMode')?.value || 'merge',
+            crossClrMm: Math.max(0, parseFloat(document.getElementById('strandCrossClrMm')?.value) || 0),
+            crossLenCm: Math.max(0.1, parseFloat(document.getElementById('strandCrossLenCm')?.value) || 3),
+            crossParity: parseInt(document.getElementById('strandCrossParity')?.value) === 1 ? 1 : 0,
+            colourByStrand: document.getElementById('strandColourBy')?.checked ?? false
+        };
+    }
+
+    // Multi-Strand controls: show the Wound Array fields only when that mode is on, and describe
+    // the step the next build will use before it runs (the built result is added by showBuild).
+    function onStrandChange() {
+        refreshStrandInfo(null);
+        updatePreview();
+    }
+    function refreshStrandInfo(info) {
+        const el = document.getElementById('strandInfo');
+        if (!el) return;
+        const cfg = readCfg(), st = cfg.strands;
+        document.getElementById('strandWoundWrap').style.display = st.mode === 'wound' ? 'block' : 'none';
+        document.getElementById('strandCableWrap').style.display = st.mode === 'cable' ? 'block' : 'none';
+        document.getElementById('strandCommonWrap').style.display = st.mode !== 'off' ? 'block' : 'none';
+        document.getElementById('strandCrossWrap').style.display = st.crossMode === 'alternate' ? 'block' : 'none';
+        if (st.mode === 'off') { el.innerText = 'Off - one strand, exactly as before.'; return; }
+        const problem = strandProblem(cfg);
+        if (problem) { el.innerText = problem + '.'; return; }
+        if (st.count <= 1) { el.innerText = 'One strand - raise Strand Count to add more.'; return; }
+        const r = Math.max(...sampleProfileR(cfg.eq, 64).map(v => Math.max(0.01, v)));
+        let text;
+        if (st.mode === 'wound') {
+            const g = getPathSymmetry(cfg), auto = 360 / (g * st.count);
+            text = `${cfg.type} repeats every ${(360 / g).toFixed(1)}° (g = ${g}) → automatic step 360/(${g}·${st.count}) = ${auto.toFixed(1)}°`;
+            if (st.stepDeg !== null) text += `; override ${st.stepDeg}° in use`;
+            text += '.';
+            if (st.counterWind && st.crossMode !== 'alternate') text += ' Strands 2, 4, … are mirrored: the two opposite-handed families meet where they cross and merge there - set Crossings to Alternating over/under to weave them instead.';
+        } else if (st.mode === 'cable') {
+            // Neighbouring strands sit 2*d*sin(pi/N) apart, centre to centre, all the way along.
+            const gap = 2 * st.cableD * Math.sin(Math.PI / st.count);
+            text = `Each strand circles the path ${st.cableD} cm from its centreline, ${st.cableT} times per loop. Neighbouring strands are ${gap.toFixed(2)} cm apart centre to centre - ${gap < 2 * r ? `with a ${r.toFixed(2)} cm profile radius they fuse into one rope (a radius under ${(gap / 2).toFixed(2)} cm keeps them apart)` : 'they stay separate'}. The whole cable is ${(2 * (st.cableD + r)).toFixed(2)} cm across, so the path itself needs that much room wherever it passes close to itself.`;
+        } else {
+            text = `Strand k samples the Custom Path equations with strand = k, strands = ${st.count} and sp = 2π·k/${st.count} - put sp into an angle, wave or radius term to move each strand. Strands whose curves coincide are left out.`;
+        }
+        if (st.altScale !== 1) text += ` Strands 2, 4, … use ${st.altScale}× the profile.`;
+        if (info) {
+            text += ` Built ${info.built} of ${info.requested} strands.`;
+            const cr = info.crossReport;
+            if (cr) {
+                text += cr.crossings
+                    ? ` Over/under: ${cr.crossings} crossings separated, each passage lifted up to ${cr.maxLift.toFixed(2)} cm along the crossing's normal${cr.minClear !== null ? `; the tubes now clear by at least ${(10 * cr.minClear).toFixed(1)} mm` : ''}.${cr.conflicts ? ` ${cr.conflicts} place${cr.conflicts > 1 ? 's' : ''} cannot alternate (an odd loop of crossings) and keep the nearest consistent order.` : ''}${cr.contacts ? ` ${cr.contacts} near-parallel contact${cr.contacts > 1 ? 's were' : ' was'} left to merge.` : ''}`
+                    : ' Over/under: no crossings are close enough to need separating.';
+            }
+            if (st.mode === 'cable' && info.guideMinBend !== null) {
+                text += ` The path's tightest bend has a ${info.guideMinBend.toFixed(2)} cm radius${cableKinks(st, info) ? ` - tighter than spacing + profile radius (${(st.cableD + info.maxProfileR).toFixed(2)} cm), so strands kink on its inside` : ', wider than spacing + profile radius'}.`;
+            }
+            if (info.closest !== null) {
+                const verdict = info.closest < 0.05 * info.strandDia
+                    ? 'the centrelines themselves meet, so strands always merge there'
+                    : info.closest < info.strandDia
+                        ? `strands merge where they come close (a profile radius under ${(info.closest / 2).toFixed(2)} cm keeps them apart)`
+                        : 'strands stay clear of each other';
+                text += ` Closest approach between strand centrelines ${info.closest.toFixed(2)} cm vs strand Ø ${info.strandDia.toFixed(2)} cm - ${verdict}.`;
+            }
+        }
+        el.innerText = text;
     }
 
     let previewTimer = null, previewPending = false;
@@ -3012,7 +3886,7 @@
         const s = 10.0;
         const key = geometryKey(cfg);
         let src = completeBuildFor(key);
-        if (!src) src = patternActive(cfg) ? await requestColourBuild(cfg) : buildMesh(cfg, 1.0);
+        if (!src) src = colourLayerActive(cfg) ? await requestColourBuild(cfg) : buildMesh(cfg, 1.0);
         const scaleParts = parts => parts ? parts.map(p => ({ state: p.state, positions: p.positions.map(x => x * s), indices: p.indices })) : parts;
         const geo = new THREE.BufferGeometry();
         geo.setAttribute('position', new THREE.Float32BufferAttribute(src.attributes.position.array.map(x => x * s), 3));
@@ -3408,14 +4282,16 @@ self.postMessage({ type: 'booted' });
         const clampNote = geo.userData.patternClamped ? ' · pattern depth clamped' : '';
         // A colour layer that did not build is reported, not swallowed - and so is one that only
         // built because mask B was dropped, since that pot is printable but not the design asked for.
-        const partsNote = !geo.userData.colored ? ' · body only (colours not rendered)' : parts
+        const partsNote = !geo.userData.colored ? ' · body only (colours not rendered)' : geo.userData.strandColoured
+            ? ` · coloured by strand: ${parts.length} parts` : parts
             ? ` · pattern: ${parts.length} parts${geo.userData.patternDroppedMaskB ? ` · mask B dropped (${geo.userData.patternDroppedMaskB})` : ''}`
             : (geo.userData.patternNote ? ` · pattern layer skipped (${geo.userData.patternNote})` : '');
         // The plate is pot-mode only, so in object mode a ticked "Add a base plate" is just ignored.
         const plateNote = cfg.includePlate && cfg.mode === 'pot' ? (plateParts ? (plateParts.length > 1 ? ` · +plate (${plateParts.length} parts)` : ' · +plate') : ' · plate skipped (bottom cut missed the pot)') : '';
         const exprErrors = findExpressionErrors(cfg);
         const exprNote = exprErrors.length ? ` · equation error — ${exprErrors.join('; ')}` : '';
-        const status = `3D Model · ${triCount.toLocaleString()} tris · ${Math.round(ms)} ms${debris}${clampNote}${partsNote}${plateNote}${getPathNote(cfg)}${exprNote}`;
+        const status = `3D Model · ${triCount.toLocaleString()} tris · ${Math.round(ms)} ms${debris}${clampNote}${partsNote}${plateNote}${getStrandNote(cfg, geo.userData.strandInfo)}${getPathNote(cfg)}${exprNote}`;
+        refreshStrandInfo(geo.userData.strandInfo);
         shown = { key, cfg, geo, status };
         setStatus(status);
         renderColourBanner();
@@ -3475,15 +4351,15 @@ self.postMessage({ type: 'booted' });
         check('profile', cfg.eq, ['theta', ...PATH_MATH_ARGS], [0.3, ...PATH_MATH_VALS]);
         if (cfg.pathExpr) {
             const ids = Object.keys(cfg.params || {});
-            const vals = [0.3, cfg.diameter / 2, cfg.zStretch, ...ids.map(id => cfg.params[id]), ...PATH_MATH_VALS];
-            for (const k of ['x', 'y', 'z']) check(`path ${k}(t)`, cfg.pathExpr[k], ['t', 'rx', 'zA', ...ids, ...PATH_MATH_ARGS], vals);
+            const vals = [0.3, cfg.diameter / 2, cfg.zStretch, ...ids.map(id => cfg.params[id]), ...PATH_MATH_VALS, 0, 1, 0];
+            for (const k of ['x', 'y', 'z']) check(`path ${k}(t)`, cfg.pathExpr[k], ['t', 'rx', 'zA', ...ids, ...PATH_MATH_ARGS, ...STRAND_EXPR_ARGS], vals);
         }
         const pArgs = PATTERN_EXPR_ARGS;
         const pVals = [0.3, 0.3, 0.3, 0.3, 1, 1, 1, 1, 1, 10,
             Math.PI, Math.sin, Math.cos, Math.tan, Math.asin, Math.acos, Math.atan, Math.atan2,
             Math.sinh, Math.cosh, Math.tanh, Math.sqrt, Math.pow, Math.abs, Math.min, Math.max, Math.exp, Math.log,
             Math.floor, Math.ceil, Math.round, Math.sign, modFn, Math.hypot, smoothstepFn, clampNum,
-            cnoise, fbm, ridged, worley, phyllo];
+            cnoise, fbm, ridged, worley, phyllo, 0, 1];
         check('texture', cfg.texEq, pArgs, pVals);
         check('pattern A', cfg.patternEq1, pArgs, pVals);
         check('pattern B', cfg.patternEq2, pArgs, pVals);
@@ -3827,7 +4703,10 @@ self.postMessage({ type: 'booted' });
                 // for Custom Path, the three expressions, without which the design would reload
                 // as whichever curve the textareas last held.
                 params: { ...cfg.params },
-                ...(cfg.pathExpr ? { custom: { ...cfg.pathExpr } } : {})
+                ...(cfg.pathExpr ? { custom: { ...cfg.pathExpr } } : {}),
+                // Experimental Multi-Strand - written only when switched on, so single-strand
+                // designs export exactly as before.
+                ...(cfg.strands.mode !== 'off' ? { strands: { ...cfg.strands } } : {})
             },
             profile: {
                 preset: document.getElementById('profileSelect')?.value || 'Circle',
@@ -3960,6 +4839,27 @@ self.postMessage({ type: 'booted' });
                 setFieldValue('pathZ', getAIValue(customPath, ['z']));
             }
             for (const [id, value] of Object.entries(params || {})) setFieldValue(id, value);
+            // Unlike the fields around it, a design WITHOUT a strands block resets the tool to
+            // Off: every file saved before it existed is a single-strand design, and must not
+            // reload as whatever strand count was last on screen.
+            const strands = getAIValue(path, ['strands']);
+            const strandsObj = strands && typeof strands === 'object' ? strands : {};
+            if (!setSelectValue('strandMode', getAIValue(strandsObj, ['mode']))) setSelectValue('strandMode', 'off');
+            setFieldValue('strandCount', getAIValue(strandsObj, ['count']));
+            const stepDeg = strandsObj.stepDeg;
+            document.getElementById('strandStepDeg').value = (stepDeg === null || stepDeg === undefined) ? '' : String(stepDeg);
+            setFieldValue('strandZOffCm', getAIValue(strandsObj, ['zOffCm']) ?? 0);
+            setFieldValue('strandROffCm', getAIValue(strandsObj, ['rOffCm']) ?? 0);
+            setCheckboxValue('strandColourBy', getAIValue(strandsObj, ['colourByStrand', 'colorByStrand']) ?? false);
+            setCheckboxValue('strandCounterWind', getAIValue(strandsObj, ['counterWind']) ?? false);
+            setFieldValue('strandCableD', getAIValue(strandsObj, ['cableD']) ?? 1);
+            setFieldValue('strandCableT', getAIValue(strandsObj, ['cableT']) ?? 6);
+            setFieldValue('strandAltScale', getAIValue(strandsObj, ['altScale']) ?? 1);
+            if (!setSelectValue('strandCrossMode', getAIValue(strandsObj, ['crossMode']))) setSelectValue('strandCrossMode', 'merge');
+            setFieldValue('strandCrossClrMm', getAIValue(strandsObj, ['crossClrMm']) ?? 1);
+            setFieldValue('strandCrossLenCm', getAIValue(strandsObj, ['crossLenCm']) ?? 3);
+            setSelectValue('strandCrossParity', String(getAIValue(strandsObj, ['crossParity']) ?? 0));
+            refreshStrandInfo(null);
 
             const profilePreset = getAIValue(profile, ['preset']);
             if (profilePreset && setSelectValue('profileSelect', profilePreset)) applyProfilePreset();
